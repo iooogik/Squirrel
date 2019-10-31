@@ -38,6 +38,7 @@
         android:layout_marginStart="16dp"
         android:backgroundTint="@android:color/transparent"
         android:fontFamily="@font/fira_sans_bold"
+        android:onClick="onClick"
         android:text="Войти"
         android:textColor="#000000"
         android:textSize="18sp"
@@ -55,10 +56,10 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="459dp"
-        android:layout_height="51dp"
+        android:layout_height="0dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="676dp"
+        android:layout_marginBottom="539dp"
         android:fontFamily="@font/fira_sans_bold"
         android:lineSpacingExtra="10sp"
         android:text="Вход"
@@ -66,7 +67,7 @@
         android:textColor="#000000"
         android:textSize="34sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -97,22 +98,16 @@
         app:layout_constraintStart_toStartOf="@+id/password"
         app:layout_constraintTop_toBottomOf="@+id/email" />
 
-    <TextView
-        android:id="@+id/textView_reg"
-        android:layout_width="235dp"
-        android:layout_height="31dp"
-        android:layout_marginStart="96dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+    <Button
+        android:id="@+id/button"
+        android:layout_width="252dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="80dp"
+        android:onClick="onRegClick"
         android:text="Зарегистрироваться"
-        android:textAlignment="center"
-        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_signIn"
-        app:layout_constraintVertical_bias="0.238" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
