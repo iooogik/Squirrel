@@ -54,4 +54,9 @@ public class SignIn extends android.app.Activity implements View.OnClickListener
         Intent intent = new Intent(this, Registration.class);
         startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }
