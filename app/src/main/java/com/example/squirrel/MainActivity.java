@@ -1,17 +1,17 @@
 package com.example.squirrel;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ScrollView;
@@ -87,6 +87,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        EditText search = (EditText)findViewById(R.id.search);
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //появляется подсказка с найденными совпадениями
+                //добавить значок поиска
+            }
+        });
         updProjects();
 
     }
@@ -107,10 +125,31 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(openNote);
             }
         });
+
+        btn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                mDb = mDBHelper.getReadableDatabase();
+                userCursor =  mDb.rawQuery("Select * from Notes", null);
+                int btnID = dataProjects.indexOf(btn.getText().toString());
+                userCursor.moveToPosition(btnID);
+
+                String message = userCursor.getString(2);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setMessage(message);
+                builder.setCancelable(true);
+                AlertDialog dlg = builder.create();
+                dlg.show();
+                return true;
+            }
+        });
+
         //динамическое добавление кнопок на активити
         linear.addView(view);
-        HorizontalScrollView scroll = findViewById(R.id.scrol);
-        scroll.fullScroll(ScrollView.FOCUS_RIGHT);
+        ScrollView scroll = findViewById(R.id.scroll);
+        scroll.fullScroll(ScrollView.FOCUS_DOWN);
 
     }
 
@@ -153,5 +192,12 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDb.close();
+        userCursor.close();
+    }
 }
 
