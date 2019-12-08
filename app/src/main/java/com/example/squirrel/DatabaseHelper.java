@@ -15,7 +15,7 @@ import java.io.OutputStream;
 class DatabaseHelper extends SQLiteOpenHelper {
     private static String DB_NAME = "squirrel.db";
     private static String DB_PATH;
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 1;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;
@@ -38,7 +38,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 dbFile.delete();
 
             copyDataBase();
-
             mNeedUpdate = false;
         }
     }

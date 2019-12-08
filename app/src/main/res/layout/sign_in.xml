@@ -13,12 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="14dp"
-        android:fontFamily="@font/fira_sans_bold"
+        android:fontFamily="@font/rostelekom"
         android:text="Вход"
         android:textColor="#000000"
         android:textSize="34sp"
-        android:textStyle="bold"
-        />
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,13 +25,14 @@
         android:layout_weight="1"
         android:gravity="center|bottom"
         android:orientation="vertical" >
+
         <TextView
             android:id="@+id/textView3"
             android:layout_width="233dp"
             android:layout_height="38dp"
             android:layout_gravity="center_horizontal|center_vertical"
             android:layout_marginTop="180dp"
-            android:fontFamily="@font/fira_sans_bold"
+            android:fontFamily="@font/rostelekom"
             android:text="E-Mail"
             android:textColor="#000000"
             android:textSize="18sp" />
@@ -41,19 +41,18 @@
             android:id="@+id/email"
             android:layout_width="238dp"
             android:layout_height="52dp"
-            android:fontFamily="@font/scada_bold"
-            android:inputType="textEmailAddress"
-            android:textSize="15sp"
             android:layout_gravity="center_vertical|center_horizontal"
-            />
+            android:fontFamily="@font/rostelekom"
+            android:inputType="textEmailAddress"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="235dp"
             android:layout_height="38dp"
-            android:fontFamily="@font/fira_sans_bold"
-            android:text="Пароль"
             android:layout_gravity="center_horizontal|center_vertical"
+            android:fontFamily="@font/rostelekom"
+            android:text="Пароль"
             android:textColor="#000000"
             android:textSize="18sp" />
 
@@ -62,11 +61,11 @@
             android:id="@+id/password"
             android:layout_width="235dp"
             android:layout_height="46dp"
-            android:textSize="15sp"
-
             android:layout_gravity="center_horizontal|center_vertical"
-            android:fontFamily="@font/scada_bold"
-            android:inputType="textPassword" />
+
+            android:fontFamily="@font/rostelekom"
+            android:inputType="textPassword"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_signIn"
@@ -75,20 +74,21 @@
             android:layout_gravity="center_horizontal|center_vertical"
             android:layout_marginBottom="80dp"
             android:backgroundTint="@android:color/transparent"
-            android:fontFamily="@font/fira_sans_bold"
+            android:fontFamily="@font/rostelekom"
             android:onClick="onClick"
             android:text="Войти"
             android:textColor="#000000"
             android:textSize="18sp" />
+
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onRegClick"
-            android:text="Зарегистрироваться"
             android:layout_gravity="center"
             android:layout_marginBottom="50dp"
-            />
+            android:fontFamily="@font/rostelekom"
+            android:onClick="onRegClick"
+            android:text="Зарегистрироваться" />
     </LinearLayout>
 
 </LinearLayout>

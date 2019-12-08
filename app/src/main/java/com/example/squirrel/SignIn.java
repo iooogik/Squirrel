@@ -19,12 +19,12 @@ public class SignIn extends android.app.Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in);
-
+        final Intent signin = new Intent(this, SignIn.class);
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
+                startActivity(signin);
             }
         };
 

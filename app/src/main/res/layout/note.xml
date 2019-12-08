@@ -33,22 +33,34 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/editName"
             style="@android:style/Widget.DeviceDefault.Light.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:ems="10"
+            android:fontFamily="@font/rostelekom"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/shortNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
             android:inputType="textPersonName"
             android:text="Name" />
 
         <MultiAutoCompleteTextView
-            android:id="@+id/multiAutoCompleteTextView"
+            android:id="@+id/editNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="#00FFFFFF"
+            android:fontFamily="@font/rostelekom"
             android:text="MultiAutoCompleteTextView"
-            android:textAlignment="viewStart" />
+            android:textAlignment="viewStart"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

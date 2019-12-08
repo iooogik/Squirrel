@@ -19,12 +19,12 @@ public class Registration extends android.app.Activity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration);
-
+        final Intent signin = new Intent(this, SignIn.class);
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
+                startActivity(signin);
             }
         };
 

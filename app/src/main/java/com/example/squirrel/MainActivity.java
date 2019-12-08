@@ -1,22 +1,20 @@
 package com.example.squirrel;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -26,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +43,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
+/*
+        Intent intent = new Intent(this, SignIn.class);
+        if(mAuth.getCurrentUser() == null){
+            startActivity(intent);
+        }
+*/
         mDBHelper = new DatabaseHelper(this);
         mDBHelper.openDataBase();
         try {
@@ -54,70 +58,70 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //получаем данные из бд в виде курсора
-/*
-        Intent intent = new Intent(this, SignIn.class);
-        if(mAuth.getCurrentUser() == null){
-            startActivity(intent);
-        }
-*/
-
 
         setContentView(R.layout.activity_main);
 
-        Button add = findViewById(R.id.addProject);
+        FloatingActionButton add = findViewById(R.id.addProject);
+
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDb = mDBHelper.getWritableDatabase();
                 addProject(String.valueOf(id), true);
+                //добавление в бд и запись в строчки
+                ContentValues cv = new ContentValues();
+                id++;
+                cv.put("id", id);
+                cv.put("name", String.valueOf(id));
+                cv.put("shortName", "короткое описание");
+                cv.put("text", "hello, it's the best note ever");
+                //получение даты
+                Date currentDate = new Date();
+                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+                String dateText = dateFormat.format(currentDate);
+                cv.put("date", dateText);
+                //запись
+                dataProjects.add(String.valueOf(id));
+                mDb.insert("Notes", null, cv);
+                mDb.close();
             }
         });
 
-        updateProjects();
+        updProjects();
 
     }
 
     protected void addProject(String name, boolean New){
         LinearLayout linear = findViewById(R.id.linear);
         View view = getLayoutInflater().inflate(R.layout.item_project, null);
-        Button btn = view.findViewById(R.id.project_name);
+        final Button btn = view.findViewById(R.id.project_name);
         final Intent openNote = new Intent(this, Note.class);
+        btn.setText(name);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //получение id и названия нажатой кнопки и отправка этих данных в другое активити
+                openNote.putExtra("button name", btn.getText().toString());
+                openNote.putExtra("buttonID", dataProjects.indexOf(btn.getText().toString()));
                 startActivity(openNote);
             }
         });
-        btn.setText(name);
+        //динамическое добавление кнопок на активити
         linear.addView(view);
-        if(New) {
-            //добавление в бд и запись в строчки
-            ContentValues cv = new ContentValues();
-            cv.put("id", id + 1);
-            cv.put("name", name);
-            cv.put("shortName", "короткое описание");
-            cv.put("text", " ");
-            //получение даты
-            Date currentDate = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-            String dateText = dateFormat.format(currentDate);
-            cv.put("date", dateText);
-            //запись
-            dataProjects.add(String.valueOf(id + 1));
-            id++;
-            SQLiteDatabase database = new DatabaseHelper(this).getWritableDatabase();
-            database.insert("Notes", null, cv);
-        }
+        HorizontalScrollView scroll = findViewById(R.id.scrol);
+        scroll.fullScroll(ScrollView.FOCUS_RIGHT);
 
     }
 
     public void delete(View view){
-        if(id >= 1) {
+        if(id > 0) {
             mDb = mDBHelper.getWritableDatabase();
             mDb.delete("Notes", "id = " + id, null);
             //Toast.makeText(this, dataProjects.size() + " " + id, Toast.LENGTH_SHORT).show();
             dataProjects.remove(id - 1);
             LinearLayout linear = findViewById(R.id.linear);
-            linear.removeViewAt(id);
+            linear.removeViewAt(id - 1);
             id--;
 
 
@@ -125,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public  void updateProjects(){
-
+    public  void updProjects(){
+        //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
@@ -144,8 +148,9 @@ public class MainActivity extends AppCompatActivity {
                 addProject(dataProjects.get(i), false);
             }
         }
-        id = dataProjects.size();
-        //Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
+        if(dataProjects.size() == 0){id = 0;}
+        else {id = dataProjects.size() - 1;}
+        Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
     }
 
 }
