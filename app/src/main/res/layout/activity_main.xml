@@ -3,7 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#7AB5FD"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        android:paddingTop="@dimen/tool_bar_top_padding"
+        android:transitionName="actionBar" />
 
     <TextView
         android:id="@+id/project"
@@ -33,9 +45,9 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:fontFamily="@font/rostelekom"
-            android:hint="Поиск"
+            android:hint="@string/search"
             android:inputType="textPersonName"
-            android:textAlignment="textStart" />
+            android:textAlignment="viewStart" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -47,6 +59,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
+                app:backgroundTint="#7AB5FD"
+                app:maxImageSize="76dp"
                 app:srcCompat="@android:drawable/ic_menu_add" />
 
             <ScrollView

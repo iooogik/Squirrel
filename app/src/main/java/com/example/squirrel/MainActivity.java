@@ -2,21 +2,30 @@ package com.example.squirrel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.widget.Toolbar;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,6 +35,12 @@ import java.util.Locale;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.iconics.typeface.FontAwesome;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,12 +58,68 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 /*
         Intent intent = new Intent(this, SignIn.class);
         if(mAuth.getCurrentUser() == null){
             startActivity(intent);
         }
 */
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final Intent qrReader = new Intent(this, QrReader.class);
+        new Drawer()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.drawer_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).
+                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(2),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(3)
+                        /*запятая после прдыдущего!
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).
+                                withIcon(FontAwesome.Icon.faw_cog),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).
+                                withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).
+                                withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(1)
+
+                         */
+                )
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        // Скрываем клавиатуру при открытии Navigation Drawer
+                        InputMethodManager inputMethodManager = (InputMethodManager) MainActivity.
+                                this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(MainActivity.
+                                this.getCurrentFocus().getWindowToken(), 0);
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {}
+                })
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position,
+                                            long id, IDrawerItem drawerItem) {
+
+                        if(position == 1){
+
+                        } else if(position == 2){
+
+                        } else if (position == 3) {
+                            startActivity(qrReader);
+                        }
+
+                    }
+                })
+                .build();
+
         mDBHelper = new DatabaseHelper(this);
         mDBHelper.openDataBase();
         try {
@@ -59,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         //получаем данные из бд в виде курсора
 
-        setContentView(R.layout.activity_main);
+
 
         FloatingActionButton add = findViewById(R.id.addProject);
 
@@ -67,7 +138,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mDb = mDBHelper.getWritableDatabase();
-                addProject(String.valueOf(id), true);
+
+                addProject(String.valueOf(id + 1), true);
                 //добавление в бд и запись в строчки
                 ContentValues cv = new ContentValues();
                 id++;
@@ -106,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         updProjects();
+        Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -126,21 +199,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final LinearLayout mainLayout  = new LinearLayout(this);
+        final LinearLayout layout1 = new LinearLayout(this);
+
         btn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
                 mDb = mDBHelper.getReadableDatabase();
                 userCursor =  mDb.rawQuery("Select * from Notes", null);
-                int btnID = dataProjects.indexOf(btn.getText().toString());
+                final int btnID = dataProjects.indexOf(btn.getText().toString());
                 userCursor.moveToPosition(btnID);
 
                 String message = userCursor.getString(2);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setMessage(message);
+
+
+                mainLayout.setOrientation(LinearLayout.VERTICAL);
+                layout1.setOrientation(LinearLayout.HORIZONTAL);
+                TextView tv = new TextView(getApplicationContext());
+                tv.setText("\n  " + message);
+                tv.setTextColor(Color.BLACK);
+                Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+                tv.setTypeface(tpf);
+                tv.setTextSize(18);
+                tv.setMinHeight(15);
+                layout1.addView(tv);
+
+                mainLayout.addView(layout1);
+                builder.setView(mainLayout);
+
                 builder.setCancelable(true);
+                builder.setPositiveButton(Html.fromHtml
+                                ("<font color='#7AB5FD'>Удалить выбранную запись</font>"),
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        delete(btnID);
+
+                    }
+                });
                 AlertDialog dlg = builder.create();
+
                 dlg.show();
                 return true;
             }
@@ -150,20 +251,20 @@ public class MainActivity extends AppCompatActivity {
         linear.addView(view);
         ScrollView scroll = findViewById(R.id.scroll);
         scroll.fullScroll(ScrollView.FOCUS_DOWN);
-
     }
 
-    public void delete(View view){
-        if(id > 0) {
+    public void delete(int selected){
+        if(id >= 0) {
             mDb = mDBHelper.getWritableDatabase();
-            mDb.delete("Notes", "id = " + id, null);
-            //Toast.makeText(this, dataProjects.size() + " " + id, Toast.LENGTH_SHORT).show();
-            dataProjects.remove(id - 1);
+            mDb.delete("Notes", "id = " + selected, null);
+            dataProjects.remove(selected);
             LinearLayout linear = findViewById(R.id.linear);
-            linear.removeViewAt(id - 1);
-            id--;
-
-
+            linear.removeViewAt(selected);
+            if(id - 1 >=0){
+                id--;
+            } else {
+                id = 0;
+            }
         }
 
     }

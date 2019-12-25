@@ -13,9 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
-import java.util.Objects;
-
-import static java.lang.String.*;
 
 public class Note extends android.app.Activity {
 

@@ -19,6 +19,7 @@
         <activity android:name=".Registration"></activity>
         <activity android:name=".SignIn"></activity>
         <activity android:name=".Note"></activity>
+        <activity android:name=".QrReader"></activity>
 
         <meta-data
             android:name="preloaded_fonts"
