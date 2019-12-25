@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,7 +38,6 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity {
@@ -138,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mDb = mDBHelper.getWritableDatabase();
-
                 addProject(String.valueOf(id + 1), true);
                 //добавление в бд и запись в строчки
                 ContentValues cv = new ContentValues();
@@ -156,6 +153,14 @@ public class MainActivity extends AppCompatActivity {
                 dataProjects.add(String.valueOf(id));
                 mDb.insert("Notes", null, cv);
                 mDb.close();
+            }
+        });
+
+        add.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                return true;
             }
         });
 

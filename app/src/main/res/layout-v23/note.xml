@@ -27,8 +27,7 @@
             android:id="@+id/buttonSave"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:foreground="@android:drawable/ic_menu_save"
-            android:text="Button" />
+            android:foreground="@android:drawable/ic_menu_save" />
 
         <ImageButton
             android:id="@+id/buttonShare"
