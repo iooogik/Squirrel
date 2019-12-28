@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.squirrel">
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,10 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Registration"></activity>
-        <activity android:name=".SignIn"></activity>
+        <activity android:name=".registration.Registration"></activity>
+        <activity android:name=".registration.SignIn"></activity>
         <activity android:name=".Note"></activity>
-        <activity android:name=".QrReader"></activity>
+        <activity android:name=".BarcodeCaptureActivity"
+            android:label="Read Barcode"/>
 
         <meta-data
             android:name="preloaded_fonts"

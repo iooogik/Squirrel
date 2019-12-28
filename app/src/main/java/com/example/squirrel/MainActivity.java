@@ -14,10 +14,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,16 +42,16 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-public class MainActivity extends AppCompatActivity {
-
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Переменная для работы с БД
     public static int id = 0;
-    Cursor userCursor;
     //Переменная для работы с БД
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    Cursor userCursor;
     ArrayList<String> dataProjects = new ArrayList<String>();
 
 
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 /*
         Intent intent = new Intent(this, SignIn.class);
         if(mAuth.getCurrentUser() == null){
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final Intent qrReader = new Intent(this, QrReader.class);
+        final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
         new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -111,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
                         } else if(position == 2){
 
                         } else if (position == 3) {
+                            qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                            qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
+
                             startActivity(qrReader);
                         }
 
@@ -126,67 +133,100 @@ public class MainActivity extends AppCompatActivity {
             throw new Error("UnableToUpdateDatabase");
         }
 
-        //получаем данные из бд в виде курсора
-
-
 
         FloatingActionButton add = findViewById(R.id.addProject);
 
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDb = mDBHelper.getWritableDatabase();
-                addProject(String.valueOf(id + 1), true);
-                //добавление в бд и запись в строчки
-                ContentValues cv = new ContentValues();
-                id++;
-                cv.put("id", id);
-                cv.put("name", String.valueOf(id));
-                cv.put("shortName", "короткое описание");
-                cv.put("text", "hello, it's the best note ever");
-                //получение даты
-                Date currentDate = new Date();
-                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-                String dateText = dateFormat.format(currentDate);
-                cv.put("date", dateText);
-                //запись
-                dataProjects.add(String.valueOf(id));
-                mDb.insert("Notes", null, cv);
-                mDb.close();
-            }
-        });
+        final LinearLayout mainLayout  = new LinearLayout(this);
+        final LinearLayout layout1 = new LinearLayout(this);
 
         add.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+                mainLayout.setOrientation(LinearLayout.VERTICAL);
+                layout1.setOrientation(LinearLayout.HORIZONTAL);
+                final EditText name = new EditText(getApplicationContext());
+                name.setText("Введите имя");
+
+
+                Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+                name.setTypeface(tpf);
+                name.setTextSize(18);
+                name.setMinHeight(15);
+                layout1.addView(name);
+
+                mainLayout.addView(layout1);
+                builder.setView(mainLayout);
+
+                builder.setCancelable(true);
+                builder.setPositiveButton(Html.fromHtml
+                                ("<font color='#7AB5FD'>Добавить запись</font>"),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDb = mDBHelper.getWritableDatabase();
+                                addProject(name.getText().toString(), true);
+                                //добавление в бд и запись в строчки
+                                ContentValues cv = new ContentValues();
+                                id++;
+                                cv.put("id", id);
+                                cv.put("name", name.getText().toString());
+                                cv.put("shortName", "короткое описание");
+                                cv.put("text", "hello, it's the best note ever");
+                                //получение даты
+                                Date currentDate = new Date();
+                                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                                        Locale.getDefault());
+                                String dateText = dateFormat.format(currentDate);
+                                cv.put("date", dateText);
+                                //запись
+                                dataProjects.add(String.valueOf(id));
+                                mDb.insert("Notes", null, cv);
+                                mDb.close();
+                            }
+                        });
+                AlertDialog dlg = builder.create();
+
+                dlg.show();
 
                 return true;
             }
         });
 
-        EditText search = (EditText)findViewById(R.id.search);
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //появляется подсказка с найденными совпадениями
-                //добавить значок поиска
-            }
-        });
         updProjects();
         Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
 
     }
 
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.addProject){
+            //кнопка "Добавить проект"
+            mDb = mDBHelper.getWritableDatabase();
+            String nameNote = "Быстрая заметка " + id;
+            id++;
+            addProject(nameNote, true);
+            //добавление в бд и запись в строчки
+            ContentValues cv = new ContentValues();
+            cv.put("id", id);
+            cv.put("name", nameNote);
+            cv.put("shortName", "короткое описание");
+            cv.put("text", "hello, it's the best note ever");
+            //получение даты
+            Date currentDate = new Date();
+            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                    Locale.getDefault());
+            String dateText = dateFormat.format(currentDate);
+            cv.put("date", dateText);
+            //запись
+            dataProjects.add(nameNote);
+            mDb.insert("Notes", null, cv);
+            mDb.close();
+        }
+    }
+
+    //добавление проекта на активити и запись его в бд
     protected void addProject(String name, boolean New){
         LinearLayout linear = findViewById(R.id.linear);
         View view = getLayoutInflater().inflate(R.layout.item_project, null);
@@ -256,8 +296,11 @@ public class MainActivity extends AppCompatActivity {
         linear.addView(view);
         ScrollView scroll = findViewById(R.id.scroll);
         scroll.fullScroll(ScrollView.FOCUS_DOWN);
+
+        //добавление кнопки в бд
     }
 
+    //удаление проекта из активити и удаление его из бд
     public void delete(int selected){
         if(id >= 0) {
             mDb = mDBHelper.getWritableDatabase();
@@ -274,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //обновление проектов на активити
     public  void updProjects(){
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
@@ -294,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(dataProjects.size() == 0){id = 0;}
-        else {id = dataProjects.size() - 1;}
+        else {id = dataProjects.size() + 1;}
         Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
     }
 
@@ -305,5 +349,8 @@ public class MainActivity extends AppCompatActivity {
         mDb.close();
         userCursor.close();
     }
+
+    @Override
+    public void onBackPressed(){}
 }
 

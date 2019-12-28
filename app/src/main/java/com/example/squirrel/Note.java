@@ -13,6 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class Note extends android.app.Activity {
 
@@ -38,7 +42,14 @@ public class Note extends android.app.Activity {
         updateData();
 
         ImageButton saveBtn = findViewById(R.id.buttonSave);
+
+        Bundle arguments = getIntent().getExtras();
+        int btnID = arguments.getInt("buttonID");
+
         final Intent mainActivity = new Intent(this, MainActivity.class);
+
+        //Toast.makeText(this, String.valueOf(btnID + 1), Toast.LENGTH_SHORT).show();
+
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,19 +60,24 @@ public class Note extends android.app.Activity {
                 TextView shortNote = findViewById(R.id.shortNote);
 
                 ContentValues cv = new ContentValues();
+
                 cv.put("name", name.getText().toString());
                 cv.put("shortName", shortNote.getText().toString());
                 cv.put("text", note.getText().toString());
-                cv.put("date", note.getText().toString());
+
+                Date currentDate = new Date();
+                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                        Locale.getDefault());
+
+                cv.put("date", dateFormat.format(currentDate));
 
 
                 //получение данных из main activity
                 Bundle arguments = getIntent().getExtras();
                 int btnID = arguments.getInt("buttonID");
-                System.out.println(btnID);
                 //обновление базы данных
 
-                mDb.update("Notes", cv, "id =" + btnID + 1, null);
+                mDb.update("Notes", cv, "id =" + (btnID + 1), null);
 
                 startActivity(mainActivity);
             }
