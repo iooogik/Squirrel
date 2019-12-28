@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        add.setOnClickListener(this);
         updProjects();
         Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
 
@@ -205,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //кнопка "Добавить проект"
             mDb = mDBHelper.getWritableDatabase();
             String nameNote = "Быстрая заметка " + id;
-            id++;
             addProject(nameNote, true);
             //добавление в бд и запись в строчки
             ContentValues cv = new ContentValues();
@@ -223,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             dataProjects.add(nameNote);
             mDb.insert("Notes", null, cv);
             mDb.close();
+            id++;
         }
     }
 
@@ -281,8 +282,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        delete(btnID);
-
+                        delete(btnID + 1);
                     }
                 });
                 AlertDialog dlg = builder.create();
@@ -304,10 +304,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void delete(int selected){
         if(id >= 0) {
             mDb = mDBHelper.getWritableDatabase();
-            mDb.delete("Notes", "id = " + selected, null);
-            dataProjects.remove(selected);
+            mDb.delete("Notes", "id=" + selected, null);
+
+            dataProjects.remove(selected - 1);
             LinearLayout linear = findViewById(R.id.linear);
-            linear.removeViewAt(selected);
+            linear.removeViewAt(selected - 1);
+            ContentValues cv = new ContentValues();
+            for(int i = 0; i < dataProjects.size(); i++){
+                cv.put("id", String.valueOf(i + 1));
+                mDb.update("Notes", cv, "id =" + (i + 1), null);
+            }
+
             if(id - 1 >=0){
                 id--;
             } else {
@@ -324,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userCursor =  mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
         String item = "";
+        TextView tv = findViewById(R.id.project);
         while (!userCursor.isAfterLast()) {
             item = userCursor.getString(1); //колонки считаются с 0
             //Log.d("my best tag","**********************************" + item);
@@ -339,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(dataProjects.size() == 0){id = 0;}
         else {id = dataProjects.size() + 1;}
-        Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
+        tv.setText(dataProjects.get(dataProjects.size() - 1));
     }
 
 
