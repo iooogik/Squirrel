@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -43,12 +42,8 @@ public class Note extends android.app.Activity {
 
         ImageButton saveBtn = findViewById(R.id.buttonSave);
 
-        Bundle arguments = getIntent().getExtras();
-        int btnID = arguments.getInt("buttonID");
-
         final Intent mainActivity = new Intent(this, MainActivity.class);
 
-        //Toast.makeText(this, String.valueOf(btnID + 1), Toast.LENGTH_SHORT).show();
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +98,6 @@ public class Note extends android.app.Activity {
         userCursor =  mDb.rawQuery("Select * from Notes", null);
         Bundle arguments = getIntent().getExtras();
         int btnID = arguments.getInt("buttonID");
-        Toast.makeText(this, String.valueOf(btnID), Toast.LENGTH_SHORT).show();
         userCursor.moveToPosition(btnID);
 
         name.setText(arguments.getString("button name"));

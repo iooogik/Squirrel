@@ -11,21 +11,17 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.Html;
-import android.text.TextWatcher;
-import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -49,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Переменная для работы с БД
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
+    //размеры экрана
+    public static int ScreenWidth = 0;
+    public static int ScreenHeight = 0;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
@@ -59,7 +58,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Display display = getWindowManager().getDefaultDisplay();
+        ScreenHeight = display.getHeight();
+        ScreenWidth = display.getWidth();
 
 /*
         Intent intent = new Intent(this, SignIn.class);
@@ -196,8 +197,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         add.setOnClickListener(this);
         updProjects();
-        Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -331,7 +330,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userCursor =  mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
         String item = "";
-        TextView tv = findViewById(R.id.project);
         while (!userCursor.isAfterLast()) {
             item = userCursor.getString(1); //колонки считаются с 0
             //Log.d("my best tag","**********************************" + item);
@@ -347,7 +345,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(dataProjects.size() == 0){id = 0;}
         else {id = dataProjects.size() + 1;}
-        tv.setText(dataProjects.get(dataProjects.size() - 1));
     }
 
 
