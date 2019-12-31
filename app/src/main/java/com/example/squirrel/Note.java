@@ -4,10 +4,15 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -21,6 +26,7 @@ public class Note extends android.app.Activity {
 
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
+
     Cursor userCursor;
 
     @Override
@@ -37,8 +43,6 @@ public class Note extends android.app.Activity {
             throw new Error("UnableToUpdateDatabase");
         }
         /* БД ************************ */
-
-        updateData();
 
         ImageButton saveBtn = findViewById(R.id.buttonSave);
 
@@ -77,6 +81,7 @@ public class Note extends android.app.Activity {
                 startActivity(mainActivity);
             }
         });
+        updateData();
 
         //поделиться
         ImageButton shareBtn = findViewById(R.id.buttonShare);
@@ -94,16 +99,30 @@ public class Note extends android.app.Activity {
         TextView name = findViewById(R.id.editName);
         TextView note = findViewById(R.id.editNote);
         TextView shortNote = findViewById(R.id.shortNote);
+
         mDb = mDBHelper.getReadableDatabase();
+
         userCursor =  mDb.rawQuery("Select * from Notes", null);
+
+        ImageView imgQR = (ImageView) findViewById(R.id.imageView2);
         Bundle arguments = getIntent().getExtras();
+
         int btnID = arguments.getInt("buttonID");
+
         userCursor.moveToPosition(btnID);
 
         name.setText(arguments.getString("button name"));
-
         shortNote.setText(userCursor.getString(2));
         note.setText(userCursor.getString(3));
+
+        byte[] img = userCursor.getBlob(5);
+        Toast.makeText(getApplicationContext(), String.valueOf(userCursor.isNull(5)), Toast.LENGTH_LONG).show();
+
+        if(!userCursor.isNull(5)){
+            imgQR.setImageBitmap(BitmapFactory.decodeByteArray(img, 0, img.length));
+        }
+
+
     }
 
 }

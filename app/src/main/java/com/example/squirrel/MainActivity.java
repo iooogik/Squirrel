@@ -16,13 +16,22 @@ import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -61,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Display display = getWindowManager().getDefaultDisplay();
         ScreenHeight = display.getHeight();
         ScreenWidth = display.getWidth();
+
 
 /*
         Intent intent = new Intent(this, SignIn.class);
@@ -197,32 +207,117 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         add.setOnClickListener(this);
         updProjects();
+
+    }
+
+    private void showFragment(Fragment f){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        //ft.replace(R.id.frame, f);
+        ft.commit();
+    }
+
+    private void hideFragment(Fragment f){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        //ft.replace(R.id.frame, f);
+        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).hide(f).commit();
     }
 
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.addProject){
             //кнопка "Добавить проект"
-            mDb = mDBHelper.getWritableDatabase();
-            String nameNote = "Быстрая заметка " + id;
-            addProject(nameNote, true);
-            //добавление в бд и запись в строчки
-            ContentValues cv = new ContentValues();
-            cv.put("id", id);
-            cv.put("name", nameNote);
-            cv.put("shortName", "короткое описание");
-            cv.put("text", "hello, it's the best note ever");
-            //получение даты
-            Date currentDate = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                    Locale.getDefault());
-            String dateText = dateFormat.format(currentDate);
-            cv.put("date", dateText);
-            //запись
-            dataProjects.add(nameNote);
-            mDb.insert("Notes", null, cv);
-            mDb.close();
-            id++;
+
+            final LinearLayout mainLayout  = new LinearLayout(this);
+            final LinearLayout layout1 = new LinearLayout(this);
+
+            //AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+
+            mainLayout.setOrientation(LinearLayout.VERTICAL);
+            layout1.setOrientation(LinearLayout.VERTICAL);
+            //ввод названия заметки
+            final EditText nameNote = new EditText(getApplicationContext());
+
+            nameNote.setText("Введите название");
+            nameNote.setTextColor(Color.BLACK);
+            final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+            nameNote.setTypeface(tpf);
+            nameNote.setTextSize(18);
+            nameNote.setMinHeight(15);
+            layout1.addView(nameNote);
+
+            String[] types = new String[]{"standart", "shop"};
+            //выбор типа
+            final Spinner spinner = new Spinner(getApplicationContext());
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_dropdown_item, types);
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent,
+                                           View itemSelected, int selectedItemPosition, long selectedId) {
+
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+                    ((TextView) parent.getChildAt(0)).setTextSize(18);
+                    ((TextView) parent.getChildAt(0)).setTypeface(tpf);
+
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Выбран: " + selectedItemPosition, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+
+            layout1.addView(spinner);
+
+            mainLayout.addView(layout1);
+
+
+            builder.setView(mainLayout);
+
+            builder.setCancelable(true);
+            builder.setPositiveButton(Html.fromHtml
+                            ("<font color='#7AB5FD'>Добавить</font>"),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mDb = mDBHelper.getWritableDatabase();
+                            addProject(nameNote.getText().toString(), true);
+                            //добавление в бд и запись в строчки
+                            ContentValues cv = new ContentValues();
+                            cv.put("id", id);
+                            cv.put("name", nameNote.getText().toString());
+                            cv.put("shortName", "короткое описание");
+                            cv.put("text", "hello, it's the best note ever");
+                            cv.put("type", spinner.getSelectedItem().toString());
+                            //получение даты
+                            Date currentDate = new Date();
+                            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                                    Locale.getDefault());
+                            String dateText = dateFormat.format(currentDate);
+                            cv.put("date", dateText);
+                            //запись
+                            dataProjects.add(nameNote.getText().toString());
+                            mDb.insert("Notes", null, cv);
+                            mDb.close();
+                            id++;
+                        }
+                    });
+
+            AlertDialog dlg = builder.create();
+
+            dlg.show();
+
         }
     }
 
@@ -241,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 openNote.putExtra("button name", btn.getText().toString());
                 openNote.putExtra("buttonID", dataProjects.indexOf(btn.getText().toString()));
                 startActivity(openNote);
+                finish();
             }
         });
 
@@ -250,7 +346,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-
                 mDb = mDBHelper.getReadableDatabase();
                 userCursor =  mDb.rawQuery("Select * from Notes", null);
                 final int btnID = dataProjects.indexOf(btn.getText().toString());
@@ -288,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 dlg.show();
                 return true;
+
             }
         });
 

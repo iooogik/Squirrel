@@ -133,7 +133,6 @@ public class QR_Demo extends AppCompatActivity {
         Bundle arguments = getIntent().getExtras();
         assert arguments != null;
         String qr_text = arguments.getString("qr_text");
-        Toast.makeText(getApplicationContext(), qr_text, Toast.LENGTH_LONG).show();
         tv.setText(qr_text);
         return qr_text;
     }
@@ -190,5 +189,6 @@ public class QR_Demo extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(this, BarcodeCaptureActivity.class);
         startActivity(intent);
+        finish();
     }
 }
