@@ -10,5 +10,11 @@ public class ShopActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shop_activity);
+
+        StandartNote standartNote = new StandartNote();
+        standartNote.updateDataActivity();
     }
+
+    protected void getCheckers(){}
+
 }

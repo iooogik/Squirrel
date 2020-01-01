@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout linear = findViewById(R.id.linear);
         View view = getLayoutInflater().inflate(R.layout.item_project, null);
         final Button btn = view.findViewById(R.id.project_name);
-        final Intent openNote = new Intent(this, Note.class);
+        final Intent openNote = new Intent(this, StandartNote.class);
         btn.setText(name);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

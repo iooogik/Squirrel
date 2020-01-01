@@ -46,6 +46,7 @@
             android:ems="10"
             android:fontFamily="@font/rostelekom"
             android:hint="@string/search"
+            android:textColorHint="#AFADAD"
             android:inputType="textPersonName"
             android:textAlignment="viewStart" />
 

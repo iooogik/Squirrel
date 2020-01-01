@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#F3F3F3"
     android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar2"
@@ -53,8 +54,9 @@
             android:background="#00FFFFFF"
             android:ems="10"
             android:fontFamily="@font/rostelekom"
+            android:hint="@string/name"
+            android:textColorHint="#AFADAD"
             android:inputType="textPersonName"
-            android:text="@string/name"
             android:textColor="#000000" />
 
         <EditText
@@ -65,7 +67,8 @@
             android:ems="10"
             android:fontFamily="@font/rostelekom"
             android:inputType="textPersonName"
-            android:text="@string/short_note"
+            android:hint="@string/short_note"
+            android:textColorHint="#AFADAD"
             android:textColor="#000000" />
 
         <ScrollView
@@ -78,22 +81,33 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:id="@+id/layout_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/qr_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:minWidth="200dp"
+                        android:minHeight="200dp"
+                        tools:src="@tools:sample/avatars" />
+                </LinearLayout>
+
                 <MultiAutoCompleteTextView
                     android:id="@+id/editNote"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:background="#FFFFFF"
                     android:fontFamily="@font/rostelekom"
-                    android:text="@string/note"
+                    android:hint="@string/note"
                     android:textAlignment="viewStart"
-                    android:textColor="#000000" />
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:srcCompat="@tools:sample/avatars" />
+                    android:textColor="#000000"
+                    android:textColorHint="#AFADAD" />
 
             </LinearLayout>
         </ScrollView>

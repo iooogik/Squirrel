@@ -93,6 +93,7 @@ public class QR_Demo extends AppCompatActivity {
                                         saveQRandText(name.getText().toString(),
                                                 stream.toByteArray());
                                         startActivity(intent);
+                                        finish();
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         Toast.makeText(getApplicationContext(),
