@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ScreenWidth = display.getWidth();
 
 
-
 /*
         Intent intent = new Intent(this, SignIn.class);
         if(mAuth.getCurrentUser() == null){
@@ -382,8 +381,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 mainLayout.setOrientation(LinearLayout.VERTICAL);
-                layout1.setOrientation(LinearLayout.HORIZONTAL);
+                layout1.setOrientation(LinearLayout.VERTICAL);
                 TextView tv = new TextView(getApplicationContext());
+                tv.setMinHeight(25);
+                tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
                 tv.setText("\n  " + message);
                 tv.setTextColor(Color.BLACK);
                 Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");

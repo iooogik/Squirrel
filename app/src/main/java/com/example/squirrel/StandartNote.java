@@ -3,31 +3,39 @@ package com.example.squirrel;
 
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.WriterException;
+
 import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class StandartNote extends Fragment implements View.OnClickListener {
@@ -47,6 +55,11 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
         View view = inflater.inflate(R.layout.standart_note,
                 container, false);
+
+        ImageButton btnSave = view.findViewById(R.id.buttonSave);
+        ImageButton btnShare = view.findViewById(R.id.buttonShare);
+        btnSave.setOnClickListener(this);
+        btnShare.setOnClickListener(this);
 
         return view;
     }
@@ -87,7 +100,6 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         if(!userCursor.isNull(5)){
             linearLayout.setVisibility(View.VISIBLE);
             img.setImageBitmap(setImage());
-            shortNote.setText("Расшифровка: " + shortNote.getText().toString());
             shortNote.setEnabled(false);
         }
     }
@@ -132,57 +144,78 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         mDb.update(databaseName, cv, "id =" + (getBtnID() + 1), null);
     }
 
-    private void share(View view){
-        TextView name = view.findViewById(R.id.editName);
-        TextView note = view.findViewById(R.id.editNote);
-        TextView shortNote = view.findViewById(R.id.shortNote);
+    private void share(){
+        TextView name = getView().findViewById(R.id.editName);
+        TextView note = getView().findViewById(R.id.editNote);
+        TextView shortNote = getView().findViewById(R.id.shortNote);
 
-        LinearLayout linearLayout = view.findViewById(R.id.layout_img);
-        ImageView img = view.findViewById(R.id.qr_view);
-        String IMGbytes = null;
+        LinearLayout linearLayout = getView().findViewById(R.id.layout_img);
+        String sendText;
         if(linearLayout.getVisibility() == View.VISIBLE){
-            mDb = mDBHelper.getWritableDatabase();
-            userCursor = mDb.rawQuery("Select * from Notes", null);
-            userCursor.moveToPosition(getBtnID());
-            byte[] bytesImg = userCursor.getBlob(5);
-            IMGbytes = new BigInteger(1, bytesImg).toString();
-        }
-
-        String codedName = stringToBinary(name.getText().toString());
-
-        byte[] tempMessage = name.getText().toString().getBytes(StandardCharsets.UTF_8);
-
-
-        System.out.println(codedName);
-
-
-        String messageQR;
-        if(IMGbytes != null){
-            messageQR = "[name]" + name.getText().toString() + "[/name]" +
+            sendText = "[name]" + name.getText().toString() + "[/name]" +
                     "[note]" + note.getText().toString() + "[/note]" + "[shortNote]" +
-                    shortNote.getText().toString() + "[/shortNote]" + "[img]" + IMGbytes + "[/img]";
+                    shortNote.getText().toString() + "[/shortNote]" +
+                    "[QR]" + shortNote.getText().toString() + "[/QR]";
         } else {
-            messageQR = "[name]" + name.getText().toString() + "[/name]" +
+            sendText = "[name]" + name.getText().toString() + "[/name]" +
                     "[note]" + note.getText().toString() + "[/note]" + "[shortNote]" +
                     shortNote.getText().toString() + "[/shortNote]";
         }
-        /*
-        System.out.println(messageQR);
-        byte[] tempMessage = messageQR.getBytes(StandardCharsets.UTF_8);
-        System.out.println(tempMessage.length);
-        for (int i = 0; i < tempMessage.length; i++){
-            System.out.println(tempMessage[i]);
+
+        QR_Demo qr_demo = new QR_Demo();
+        try {
+            createDialog(qr_demo.encodeAsBitmap(sendText));
+        } catch (WriterException e) {
+            e.printStackTrace();
         }
 
-        //System.out.println(Arrays.toString(tempMessage));
-        //System.out.println(stringToBinary(messageQR));
-        //System.out.println(Integer.parseInt(stringToBinary(messageQR), 2));
-        */
+    }
 
+    @SuppressLint("SetTextI18n")
+    private void createDialog(Bitmap bitmap){
 
-        Toast.makeText(view.getContext(), "удача", Toast.LENGTH_LONG).show();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
+        LinearLayout mainLayout  = new LinearLayout(getActivity());
+        LinearLayout layout1 = new LinearLayout(getActivity());
 
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        layout1.setOrientation(LinearLayout.VERTICAL);
+
+        int padding = 70;
+
+        mainLayout.setPadding(padding, padding, padding, padding);
+
+        ImageView imageView = new ImageView(getContext());
+        imageView.setMinimumHeight(1000);
+        imageView.setMinimumWidth(1000);
+        imageView.setImageBitmap(bitmap);
+
+        TextView tv = new TextView(getContext());
+        tv.setMinHeight(25);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        tv.setText("Наведите второй телефон на QR-код, чтобы считать данные.");
+        tv.setTextColor(Color.BLACK);
+        tv.setTextSize(18);
+        tv.setMinHeight(15);
+
+        layout1.addView(tv);
+        layout1.addView(imageView);
+
+        mainLayout.addView(layout1);
+        builder.setView(mainLayout);
+
+        builder.setCancelable(true);
+        builder.setPositiveButton(Html.fromHtml
+                        ("<font color='" + R.color.colorCursor + "'>Готово</font>"),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog dlg = builder.create();
+        dlg.show();
     }
 
     private String stringToBinary(String s) {
@@ -198,16 +231,18 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.save){
-            String dataName = "Notes";
-            TextView name = view.findViewById(R.id.editName);
-            TextView note = view.findViewById(R.id.editNote);
-            TextView shortNote = view.findViewById(R.id.shortNote);
+        if(view.getId() == R.id.buttonSave){
 
-            updDatabase(dataName, name.getText().toString(),
-                    note.getText().toString(), shortNote.getText().toString());
+            String dataName = "Notes";
+            EditText name = Objects.requireNonNull(getActivity()).findViewById(R.id.editName);
+            EditText note = getActivity().findViewById(R.id.editNote);
+            EditText shortNote = getActivity().findViewById(R.id.shortNote);
+
+            updDatabase(dataName, name.getText().toString(), note.getText().toString(),
+                    shortNote.getText().toString());
+
         } else if(view.getId() == R.id.buttonShare){
-            share(view);
+            share();
         }
     }
 

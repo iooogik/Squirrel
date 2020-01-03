@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:background="#00FFFFFF"
+            android:textCursorDrawable="@drawable/color_cursor"
             android:ems="10"
             android:fontFamily="@font/rostelekom"
             android:hint="@string/name"
@@ -56,6 +57,7 @@
             android:layout_margin="8dp"
             android:ems="10"
             android:fontFamily="@font/rostelekom"
+            android:textCursorDrawable="@drawable/color_cursor"
             android:inputType="textPersonName"
             android:hint="@string/short_note"
             android:textColorHint="#AFADAD"
@@ -91,14 +93,14 @@
                 <MultiAutoCompleteTextView
                     android:id="@+id/editNote"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="8dp"
-                    android:background="#FFFFFF"
                     android:fontFamily="@font/rostelekom"
                     android:hint="@string/note"
-                    android:textColorHint="#AFADAD"
                     android:textAlignment="viewStart"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textColorHint="#AFADAD"
+                    android:textCursorDrawable="@drawable/color_cursor" />
 
             </LinearLayout>
         </ScrollView>
