@@ -19,6 +19,8 @@
             android:id="@+id/buttonSave"
             android:layout_width="46dp"
             android:layout_height="46dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
             android:foreground="@android:drawable/ic_menu_save"
             android:text="Button" />
 
@@ -26,7 +28,18 @@
             android:id="@+id/buttonShare"
             android:layout_width="46dp"
             android:layout_height="46dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
             app:srcCompat="@android:drawable/ic_menu_share" />
+
+        <ImageButton
+            android:id="@+id/buttonAlarm"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:src="@android:drawable/ic_lock_idle_alarm"
+            />
 
     </LinearLayout>
 
@@ -48,7 +61,7 @@
             android:hint="@string/name"
             android:textColorHint="#AFADAD"
             android:inputType="textPersonName"
-            android:textColor="#000000" />
+            android:textColor="@color/colorFont" />
 
         <EditText
             android:id="@+id/shortNote"
@@ -61,7 +74,7 @@
             android:inputType="textPersonName"
             android:hint="@string/short_note"
             android:textColorHint="#AFADAD"
-            android:textColor="#000000" />
+            android:textColor="@color/colorFont" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -72,6 +85,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/laypoutCheckers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/layout_img"
@@ -98,7 +117,7 @@
                     android:fontFamily="@font/rostelekom"
                     android:hint="@string/note"
                     android:textAlignment="viewStart"
-                    android:textColor="#000000"
+                    android:textColor="@color/colorFont"
                     android:textColorHint="#AFADAD"
                     android:textCursorDrawable="@drawable/color_cursor" />
 

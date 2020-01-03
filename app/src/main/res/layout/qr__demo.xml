@@ -22,7 +22,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/rostelekom"
         android:text="расшифрованный текст"
-        android:textColor="#000000"
+        android:textColor="@color/colorFont"
         android:textSize="24sp" />
 
     <Button
@@ -35,6 +35,6 @@
         android:background="@drawable/projectframe"
         android:fontFamily="@font/rostelekom"
         android:text="Сохранить в 'Заметки' текст и QR"
-        android:textColor="#000000" />
+        android:textColor="@color/colorFont" />
 
 </LinearLayout>

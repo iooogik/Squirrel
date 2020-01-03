@@ -55,9 +55,8 @@
             android:hint="@string/search"
             android:inputType="textPersonName"
             android:textAlignment="viewStart"
-            android:textColor="#000000"
+            android:textColor="@color/colorFont"
             android:textColorHint="#ADAFAF"
-            android:textColorLink="#00FFFFFF"
             android:textCursorDrawable="@drawable/color_cursor" />
 
         <FrameLayout
