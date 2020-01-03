@@ -64,7 +64,7 @@ public class QR_Demo extends AppCompatActivity {
                 }
                 if(bitmap != null){
                     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 2, stream);
 
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -72,7 +72,7 @@ public class QR_Demo extends AppCompatActivity {
                     mainLayout.setOrientation(LinearLayout.VERTICAL);
                     layout1.setOrientation(LinearLayout.HORIZONTAL);
                     final EditText name = new EditText(getApplicationContext());
-                    name.setText("Введите имя");
+                    name.setHint("Введите имя");
 
                     Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
 

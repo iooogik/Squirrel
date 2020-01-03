@@ -9,16 +9,6 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#7AB5FD"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:paddingTop="@dimen/tool_bar_top_padding"
-        android:transitionName="actionBar" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -103,11 +93,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
+                    android:background="#FFFFFF"
                     android:fontFamily="@font/rostelekom"
                     android:hint="@string/note"
+                    android:textColorHint="#AFADAD"
                     android:textAlignment="viewStart"
-                    android:textColor="#000000"
-                    android:textColorHint="#AFADAD" />
+                    android:textColor="#000000" />
 
             </LinearLayout>
         </ScrollView>

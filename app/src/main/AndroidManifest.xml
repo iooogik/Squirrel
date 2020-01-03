@@ -14,7 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".StandartNote"></activity>
-        <activity android:name=".ShopActivity" />
         <activity android:name=".QR_Demo" />
         <activity android:name=".MainActivity">
             <intent-filter>

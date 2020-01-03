@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,6 +15,12 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.Display;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,10 +65,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //размеры экрана
     public static int ScreenWidth = 0;
     public static int ScreenHeight = 0;
-
+    StandartNote standartNote = new StandartNote();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
     ArrayList<String> dataProjects = new ArrayList<String>();
+
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,69 +81,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ScreenWidth = display.getWidth();
 
 
+
 /*
         Intent intent = new Intent(this, SignIn.class);
         if(mAuth.getCurrentUser() == null){
             startActivity(intent);
         }
 */
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
-        new Drawer()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withActionBarDrawerToggle(true)
-                .withHeader(R.layout.drawer_header)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).
-                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(2),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(3)
-                        /*запятая после прдыдущего!
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).
-                                withIcon(FontAwesome.Icon.faw_cog),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).
-                                withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).
-                                withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(1)
-
-                         */
-                )
-                .withOnDrawerListener(new Drawer.OnDrawerListener() {
-                    @Override
-                    public void onDrawerOpened(View drawerView) {
-                        // Скрываем клавиатуру при открытии Navigation Drawer
-                        InputMethodManager inputMethodManager = (InputMethodManager) MainActivity.
-                                this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(MainActivity.
-                                this.getCurrentFocus().getWindowToken(), 0);
-                    }
-
-                    @Override
-                    public void onDrawerClosed(View drawerView) {}
-                })
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position,
-                                            long id, IDrawerItem drawerItem) {
-
-                        if(position == 1){
-
-                        } else if(position == 2){
-
-                        } else if (position == 3) {
-                            qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
-                            qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
-
-                            startActivity(qrReader);
-                        }
-
-                    }
-                })
-                .build();
+        createToolbar();
 
         mDBHelper = new DatabaseHelper(this);
         mDBHelper.openDataBase();
@@ -210,18 +164,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void showFragment(Fragment f){
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        //ft.replace(R.id.frame, f);
-        ft.commit();
-    }
+    public void createToolbar(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setSubtitle(R.string.textNotes);
+        final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
+        new Drawer()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.drawer_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).
+                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(2),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(3)
+                        /*запятая после прдыдущего!
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).
+                                withIcon(FontAwesome.Icon.faw_cog),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).
+                                withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).
+                                withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(1)
 
-    private void hideFragment(Fragment f){
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        //ft.replace(R.id.frame, f);
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).hide(f).commit();
+                         */
+                )
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        // Скрываем клавиатуру при открытии Navigation Drawer
+                        try {
+                            InputMethodManager inputMethodManager = (InputMethodManager) MainActivity.
+                                    this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            if (inputMethodManager != null) {
+                                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(MainActivity.
+                                        this.getCurrentFocus()).getWindowToken(), 0);
+                            }
+                        } catch (Exception e){
+                            System.out.println(e);
+                        }
+
+                    }
+
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {}
+                })
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position,
+                                            long id, IDrawerItem drawerItem) {
+
+                        if(position == 1){
+
+                        } else if(position == 2){
+
+                        } else if (position == 3) {
+                            qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                            qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
+
+                            startActivity(qrReader);
+                        }
+
+                    }
+                })
+                .build();
+
     }
 
     @Override
@@ -317,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             AlertDialog dlg = builder.create();
 
             dlg.show();
-
         }
     }
 
@@ -326,17 +334,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout linear = findViewById(R.id.linear);
         View view = getLayoutInflater().inflate(R.layout.item_project, null);
         final Button btn = view.findViewById(R.id.project_name);
-        final Intent openNote = new Intent(this, StandartNote.class);
+
+        //final Intent openNote = new Intent(this, StandartNote.class);
+
+
+
         btn.setText(name);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 //получение id и названия нажатой кнопки и отправка этих данных в другое активити
+                /*
                 openNote.putExtra("button name", btn.getText().toString());
                 openNote.putExtra("buttonID", dataProjects.indexOf(btn.getText().toString()));
                 startActivity(openNote);
                 finish();
+
+                 */
+                FrameLayout frameLayout = findViewById(R.id.frame);
+                frameLayout.setVisibility(View.VISIBLE);
+                Bundle args = new Bundle();
+                args.putString("button name", btn.getText().toString());
+                args.putInt("buttonID", dataProjects.indexOf(btn.getText().toString()));
+                standartNote.setArguments(args);
+                showStandartNote(standartNote);
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                toolbar.setSubtitle("Заметка: " + btn.getText().toString());
+
             }
         });
 
@@ -389,10 +414,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //динамическое добавление кнопок на активити
         linear.addView(view);
-        ScrollView scroll = findViewById(R.id.scroll);
-        scroll.fullScroll(ScrollView.FOCUS_DOWN);
+        //ScrollView scroll = (ScrollView) findViewById(R.id.scroll);
+        //scroll.fullScroll(ScrollView.FOCUS_DOWN);
 
         //добавление кнопки в бд
+    }
+
+    private void showStandartNote(Fragment fragment){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.replace(R.id.frame, fragment);
+        ft.commit();
     }
 
     //удаление проекта из активити и удаление его из бд
@@ -443,15 +476,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {id = dataProjects.size() + 1;}
     }
 
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mDb.close();
-        userCursor.close();
+    public void onBackPressed() {
+        final FrameLayout frameLayout = findViewById(R.id.frame);
+        if(frameLayout.getVisibility() == View.VISIBLE){
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+            ft.remove(standartNote).commit();
+            frameLayout.setVisibility(View.GONE);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            toolbar.setSubtitle(R.string.textNotes);
+        }
     }
-
-    @Override
-    public void onBackPressed(){}
 }
 
