@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +38,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -68,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     StandartNote standartNote = new StandartNote();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
+
+
     ArrayList<String> dataProjects = new ArrayList<String>();
 
 
@@ -351,6 +358,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
 
                  */
+
+
                 FrameLayout frameLayout = findViewById(R.id.frame);
                 frameLayout.setVisibility(View.VISIBLE);
                 Bundle args = new Bundle();
@@ -360,6 +369,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showStandartNote(standartNote);
                 Toolbar toolbar = findViewById(R.id.toolbar);
                 toolbar.setSubtitle("Заметка: " + btn.getText().toString());
+
+
 
             }
         });

@@ -3,9 +3,19 @@ package com.example.squirrel;
 
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -25,6 +35,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -33,9 +47,12 @@ import com.google.zxing.WriterException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+
+import static android.content.Context.ALARM_SERVICE;
 
 
 public class StandartNote extends Fragment implements View.OnClickListener {
@@ -44,6 +61,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
+
 
     private Cursor userCursor;
 
@@ -58,8 +76,10 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
         ImageButton btnShare = view.findViewById(R.id.buttonShare);
+        ImageButton btnAlarm = view.findViewById(R.id.buttonAlarm);
         btnSave.setOnClickListener(this);
         btnShare.setOnClickListener(this);
+        btnAlarm.setOnClickListener(this);
 
         return view;
     }
@@ -174,7 +194,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
     @SuppressLint("SetTextI18n")
     private void createDialog(Bitmap bitmap){
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         LinearLayout mainLayout  = new LinearLayout(getActivity());
         LinearLayout layout1 = new LinearLayout(getActivity());
@@ -229,21 +249,53 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return sent.toString();
     }
 
+    private void alarmDialog(String title, String text){
+
+
+
+        Intent notificationIntent = new Intent(getContext(), NotificationReceiver.class);
+        notificationIntent.putExtra("title", title);
+        notificationIntent.putExtra("text", text);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
+                1, notificationIntent,
+                0);
+
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.set(Calendar.MINUTE, 15);
+        calendar.set(Calendar.SECOND, 0);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(), pendingIntent);
+        Toast.makeText(getContext(), "Уведомление установлено", Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public void onClick(View view) {
+
+        EditText name = Objects.requireNonNull(getActivity()).findViewById(R.id.editName);
+        EditText note = getActivity().findViewById(R.id.editNote);
+        EditText shortNote = getActivity().findViewById(R.id.shortNote);
+
+        String nameNote = name.getText().toString();
+        String Note = note.getText().toString();
+        String shortnote = shortNote.getText().toString();
+
         if(view.getId() == R.id.buttonSave){
 
             String dataName = "Notes";
-            EditText name = Objects.requireNonNull(getActivity()).findViewById(R.id.editName);
-            EditText note = getActivity().findViewById(R.id.editNote);
-            EditText shortNote = getActivity().findViewById(R.id.shortNote);
 
-            updDatabase(dataName, name.getText().toString(), note.getText().toString(),
-                    shortNote.getText().toString());
+            updDatabase(dataName, nameNote, Note, shortnote);
 
         } else if(view.getId() == R.id.buttonShare){
             share();
+        } else if (view.getId() == R.id.buttonAlarm){
+            alarmDialog(nameNote, shortnote);
         }
     }
-
 }
+
+
