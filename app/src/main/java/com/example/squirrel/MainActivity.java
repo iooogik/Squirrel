@@ -2,28 +2,23 @@ package com.example.squirrel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.Layout;
+import android.text.TextWatcher;
 import android.view.Display;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,14 +27,11 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -56,6 +48,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -71,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static int ScreenWidth = 0;
     public static int ScreenHeight = 0;
     StandartNote standartNote = new StandartNote();
+    Shop shopActivity = new Shop();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
 
@@ -108,29 +102,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FloatingActionButton add = findViewById(R.id.addProject);
 
         final LinearLayout mainLayout  = new LinearLayout(this);
-        final LinearLayout layout1 = new LinearLayout(this);
 
         add.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
 
                 mainLayout.setOrientation(LinearLayout.VERTICAL);
-                layout1.setOrientation(LinearLayout.HORIZONTAL);
+                int padding = 30;
+                mainLayout.setPadding(padding, padding, padding, padding);
+
                 final EditText name = new EditText(getApplicationContext());
-                name.setText("Введите имя");
-
-
                 Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+                name.setHint("Введите имя");
                 name.setTypeface(tpf);
                 name.setTextSize(18);
-                name.setMinHeight(15);
-                layout1.addView(name);
+                name.setMinimumWidth(1500);
 
-                mainLayout.addView(layout1);
+                mainLayout.addView(name);
+
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setView(mainLayout);
-
-                builder.setCancelable(true);
                 builder.setPositiveButton(Html.fromHtml
                                 ("<font color='#7AB5FD'>Добавить запись</font>"),
                         new DialogInterface.OnClickListener() {
@@ -157,9 +149,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 mDb.close();
                             }
                         });
-                AlertDialog dlg = builder.create();
+                builder.setNegativeButton(Html.fromHtml
+                        ("<font color='#7AB5FD'>Закрыть</font>"), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                });
+
+                AlertDialog dlg = builder.create();
                 dlg.show();
+
+
 
                 return true;
             }
@@ -184,7 +185,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
                                 withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(2),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(3)
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(3),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName("Покупки").withIdentifier(4),
+                        new SecondaryDrawerItem().withName("Карточки").withIdentifier(5)
+
                         /*запятая после прдыдущего!
                         new SecondaryDrawerItem().withName(R.string.drawer_item_help).
                                 withIcon(FontAwesome.Icon.faw_cog),
@@ -223,14 +228,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             long id, IDrawerItem drawerItem) {
 
                         if(position == 1){
-
-                        } else if(position == 2){
-
-                        } else if (position == 3) {
+                            closeFragment();
+                        } else if(position == 2){}
+                        else if (position == 3) {
                             qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                             qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
-
                             startActivity(qrReader);
+                        } else if(position == 4){}
+                        else if(position == 5){
+
                         }
 
                     }
@@ -239,29 +245,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.addProject){
             //кнопка "Добавить проект"
-
             final LinearLayout mainLayout  = new LinearLayout(this);
             final LinearLayout layout1 = new LinearLayout(this);
-
             //AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-
-
             mainLayout.setOrientation(LinearLayout.VERTICAL);
             layout1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
             final EditText nameNote = new EditText(getApplicationContext());
 
-            nameNote.setText("Введите название");
+
             nameNote.setTextColor(Color.BLACK);
             final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+            nameNote.setHint("Введите название");
             nameNote.setTypeface(tpf);
             nameNote.setTextSize(18);
-            nameNote.setMinHeight(15);
+            nameNote.setMinimumWidth(1500);
             layout1.addView(nameNote);
+
+            final TextView tv = new TextView(getApplicationContext());
+            tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            tv.setText("    Пожалуйста, введите название!");
+            tv.setTextColor(Color.RED);
+            tv.setTextSize(13);
+            tv.setTypeface(tpf);
+            tv.setMinimumWidth(1500);
+            tv.setVisibility(View.GONE);
+            layout1.addView(tv);
 
             String[] types = new String[]{"standart", "shop"};
             //выбор типа
@@ -280,9 +294,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ((TextView) parent.getChildAt(0)).setTextSize(18);
                     ((TextView) parent.getChildAt(0)).setTypeface(tpf);
 
-                    Toast toast = Toast.makeText(getApplicationContext(),
-                            "Выбран: " + selectedItemPosition, Toast.LENGTH_SHORT);
-                    toast.show();
                 }
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
@@ -294,13 +305,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
             layout1.addView(spinner);
-
             mainLayout.addView(layout1);
-
-
             builder.setView(mainLayout);
 
-            builder.setCancelable(true);
             builder.setPositiveButton(Html.fromHtml
                             ("<font color='#7AB5FD'>Добавить</font>"),
                     new DialogInterface.OnClickListener() {
@@ -335,9 +342,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private String getType(String name){
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor =  mDb.rawQuery("Select * from Notes", null);
+        final int btnID = dataProjects.indexOf(name);
+        userCursor.moveToPosition(btnID);
+
+        return userCursor.getString(8);
+    }
+
     //добавление проекта на активити и запись его в бд
     protected void addProject(String name, boolean New){
-        LinearLayout linear = findViewById(R.id.linear);
+        LinearLayout linear = findViewById(R.id.standardNote);
+        final LinearLayout shop = findViewById(R.id.shopNote);
         View view = getLayoutInflater().inflate(R.layout.item_project, null);
         final Button btn = view.findViewById(R.id.project_name);
 
@@ -350,28 +367,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-                //получение id и названия нажатой кнопки и отправка этих данных в другое активити
-                /*
-                openNote.putExtra("button name", btn.getText().toString());
-                openNote.putExtra("buttonID", dataProjects.indexOf(btn.getText().toString()));
-                startActivity(openNote);
-                finish();
-
-                 */
-
-
                 FrameLayout frameLayout = findViewById(R.id.frame);
                 frameLayout.setVisibility(View.VISIBLE);
                 Bundle args = new Bundle();
                 args.putString("button name", btn.getText().toString());
                 args.putInt("buttonID", dataProjects.indexOf(btn.getText().toString()));
-                standartNote.setArguments(args);
-                showStandartNote(standartNote);
-                Toolbar toolbar = findViewById(R.id.toolbar);
-                toolbar.setSubtitle("Заметка: " + btn.getText().toString());
+                if(getType(btn.getText().toString()).equals("standart")) {
 
+                    standartNote.setArguments(args);
+                    showFragment(standartNote);
+                    Toolbar toolbar = findViewById(R.id.toolbar);
+                    toolbar.setSubtitle("Заметка: " + btn.getText().toString());
 
+                } else if(getType(btn.getText().toString()).equals("shop")){
 
+                    shopActivity.setArguments(args);
+                    showFragment(shopActivity);
+                    Toolbar toolbar = findViewById(R.id.toolbar);
+                    toolbar.setSubtitle("Заметка: " + btn.getText().toString());
+
+                }
             }
         });
 
@@ -423,16 +438,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+        Toast.makeText(getApplicationContext(), getType(btn.getText().toString()), Toast.LENGTH_LONG).show();
+        if(getType(btn.getText().toString()).equals("standart")) {
+            linear.addView(view);
+        } else if(getType(btn.getText().toString()).equals("shop")){
+            shop.addView(view);
+        }
 
-        //динамическое добавление кнопок на активити
-        linear.addView(view);
-        //ScrollView scroll = (ScrollView) findViewById(R.id.scroll);
-        //scroll.fullScroll(ScrollView.FOCUS_DOWN);
 
-        //добавление кнопки в бд
     }
 
-    private void showStandartNote(Fragment fragment){
+    private void showFragment(Fragment fragment){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -447,7 +463,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mDb.delete("Notes", "id=" + selected, null);
 
             dataProjects.remove(selected - 1);
-            LinearLayout linear = findViewById(R.id.linear);
+            LinearLayout linear;
+
+            if(getType(dataProjects.get(id)).equals("standart")) {
+                linear = findViewById(R.id.standardNote);
+            } else {
+                linear = findViewById(R.id.shopNote);
+            }
+
             linear.removeViewAt(selected - 1);
             ContentValues cv = new ContentValues();
             for(int i = 0; i < dataProjects.size(); i++){
@@ -490,6 +513,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
+        closeFragment();
+    }
+
+    private void closeFragment(){
         final FrameLayout frameLayout = findViewById(R.id.frame);
         if(frameLayout.getVisibility() == View.VISIBLE){
             FragmentManager fm = getSupportFragmentManager();

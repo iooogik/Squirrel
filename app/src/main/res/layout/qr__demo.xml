@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".QR_Demo">
+    tools:context="com.example.squirrel.QR_Demo">
 
     <ImageView
         android:id="@+id/imageView"

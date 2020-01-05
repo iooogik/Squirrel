@@ -42,7 +42,6 @@
         android:layout_marginTop="15dp"
         android:layout_marginRight="3dp"
         android:layout_marginBottom="3dp"
-        android:background="@drawable/myframe"
         android:orientation="vertical">
 
         <EditText
@@ -74,17 +73,32 @@
                 app:srcCompat="@android:drawable/ic_menu_add" />
 
             <ScrollView
-                android:id="@+id/scroll"
+                android:id="@+id/shop"
                 style="@android:style/Widget.Material.Light.ScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
 
                 <LinearLayout
-                    android:id="@+id/linear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <LinearLayout
+                        android:id="@+id/standardNote"
+                        android:layout_margin="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/myframe"
+                        android:orientation="vertical"/>
+
+                    <LinearLayout
+                        android:id="@+id/shopNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/myframe"
+                        android:layout_margin="10dp"
+                        android:orientation="vertical"/>
                 </LinearLayout>
             </ScrollView>
 

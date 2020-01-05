@@ -63,6 +63,16 @@
             android:inputType="textPersonName"
             android:textColor="@color/colorFont" />
 
+        <TextView
+            android:id="@+id/nameWarn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:fontFamily="@font/rostelekom"
+            android:text="@string/nameWarning"
+            android:textColor="@color/colorWarning"
+            android:visibility="gone" />
+
         <EditText
             android:id="@+id/shortNote"
             android:layout_width="match_parent"
@@ -76,12 +86,22 @@
             android:textColorHint="#AFADAD"
             android:textColor="@color/colorFont" />
 
+        <TextView
+            android:id="@+id/shortNoteWarn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:fontFamily="@font/rostelekom"
+            android:text="@string/shortNoteWarning"
+            android:textColor="@color/colorWarning"
+            android:visibility="gone" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:id="@+id/scroll"
+                android:id="@+id/shop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -108,6 +128,16 @@
                         android:minHeight="200dp"
                         tools:src="@tools:sample/avatars" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/noteWarn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:fontFamily="@font/rostelekom"
+                    android:text="@string/noteWarning"
+                    android:textColor="@color/colorWarning"
+                    android:visibility="gone" />
 
                 <MultiAutoCompleteTextView
                     android:id="@+id/editNote"

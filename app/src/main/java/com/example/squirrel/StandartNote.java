@@ -5,15 +5,9 @@ package com.example.squirrel;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.app.DatePickerDialog;
 import android.app.PendingIntent;
-import android.app.TimePickerDialog;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,27 +15,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.WriterException;
 
 import java.io.IOException;
@@ -61,6 +50,8 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
+    private Calendar calendar = Calendar.getInstance();
+    private DatePickerDialog.OnDateSetListener DataListener;
 
 
     private Cursor userCursor;
@@ -71,7 +62,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        View view = inflater.inflate(R.layout.standart_note,
+        final View view = inflater.inflate(R.layout.standart_note,
                 container, false);
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
@@ -81,6 +72,61 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
 
+
+        final EditText name = view.findViewById(R.id.editName);
+        final EditText shortNote = view.findViewById(R.id.shortNote);
+
+        name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                TextView tv = view.findViewById(R.id.nameWarn);
+                if(name.getText().toString().length() > 30){
+                    if(tv.getVisibility() != View.VISIBLE) {
+                        tv.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if(tv.getVisibility() != View.GONE) {
+                        tv.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
+        shortNote.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                TextView tv = view.findViewById(R.id.shortNoteWarn);
+                if(shortNote.getText().toString().length() > 100){
+                    if(tv.getVisibility() != View.VISIBLE) {
+                        tv.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if(tv.getVisibility() != View.GONE) {
+                        tv.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
         return view;
     }
 
@@ -133,19 +179,19 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
     }
 
-    private int getBtnID(){
+    public int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("buttonID");
     }
 
-    private String getBtnName(){
+    public String getBtnName(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
     }
 
-    private void updDatabase(String databaseName, String name, String note, String shortNote){
+    public void updDatabase(String databaseName, String name, String note, String shortNote){
         mDb = mDBHelper.getWritableDatabase();
 
         //код сохранения в бд
@@ -164,7 +210,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         mDb.update(databaseName, cv, "id =" + (getBtnID() + 1), null);
     }
 
-    private void share(){
+    public void share(){
         TextView name = getView().findViewById(R.id.editName);
         TextView note = getView().findViewById(R.id.editNote);
         TextView shortNote = getView().findViewById(R.id.shortNote);
@@ -172,13 +218,13 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         LinearLayout linearLayout = getView().findViewById(R.id.layout_img);
         String sendText;
         if(linearLayout.getVisibility() == View.VISIBLE){
-            sendText = "[name]" + name.getText().toString() + "[/name]" +
-                    "[note]" + note.getText().toString() + "[/note]" + "[shortNote]" +
-                    shortNote.getText().toString() + "[/shortNote]" +
-                    "[QR]" + shortNote.getText().toString() + "[/QR]";
+            sendText = name.getText().toString() + "[/name]" +
+                    note.getText().toString() + "[/note]" +
+                    shortNote.getText().toString() + "[/shortNote]"
+                    + shortNote.getText().toString() + "[/QR]";
         } else {
-            sendText = "[name]" + name.getText().toString() + "[/name]" +
-                    "[note]" + note.getText().toString() + "[/note]" + "[shortNote]" +
+            sendText = name.getText().toString() + "[/name]" +
+                    note.getText().toString() + "[/note]" +
                     shortNote.getText().toString() + "[/shortNote]";
         }
 
@@ -249,9 +295,32 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return sent.toString();
     }
 
+
     private void alarmDialog(String title, String text){
 
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
+/*
+        DatePickerDialog dialog;
+        dialog = new DatePickerDialog(
+                getContext(),
+                Widget_Holo_ActionBar_Solid,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    }
+                },
+                year, month, day);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+
+
+ */
 
         Intent notificationIntent = new Intent(getContext(), NotificationReceiver.class);
         notificationIntent.putExtra("title", title);
@@ -263,10 +332,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
         AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
-        calendar.set(Calendar.MINUTE, 15);
-        calendar.set(Calendar.SECOND, 0);
+
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), pendingIntent);
@@ -274,10 +340,10 @@ public class StandartNote extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
 
-        EditText name = Objects.requireNonNull(getActivity()).findViewById(R.id.editName);
-        EditText note = getActivity().findViewById(R.id.editNote);
+        final EditText name = Objects.requireNonNull(getActivity()).findViewById(R.id.editName);
+        final EditText note = getActivity().findViewById(R.id.editNote);
         EditText shortNote = getActivity().findViewById(R.id.shortNote);
 
         String nameNote = name.getText().toString();
@@ -290,8 +356,41 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
             updDatabase(dataName, nameNote, Note, shortnote);
 
+            Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
+
         } else if(view.getId() == R.id.buttonShare){
-            share();
+            if(note.getText().toString().length() <= 300) {
+                    share();
+                }
+            else {
+                note.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        TextView tv = view.findViewById(R.id.noteWarn);
+                        if(note.getText().toString().length() > 300){
+                            if(tv.getVisibility() != View.VISIBLE) {
+                                tv.setVisibility(View.VISIBLE);
+                            }
+                        } else {
+                            if(tv.getVisibility() != View.GONE) {
+                                tv.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+                });
+
+
+            }
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortnote);
         }

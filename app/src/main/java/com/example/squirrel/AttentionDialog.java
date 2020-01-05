@@ -73,7 +73,7 @@ public class AttentionDialog extends Fragment implements View.OnClickListener {
             mDb.delete("Notes", "id=" + selected, null);
             MainActivity mainActivity = new MainActivity();
             mainActivity.dataProjects.remove(selected - 1);
-            LinearLayout linear = mainActivity.findViewById(R.id.linear);
+            LinearLayout linear = mainActivity.findViewById(R.id.standardNote);
             linear.removeViewAt(selected - 1);
             ContentValues cv = new ContentValues();
             for(int i = 0; i < mainActivity.dataProjects.size(); i++){

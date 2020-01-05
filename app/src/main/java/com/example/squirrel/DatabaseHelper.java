@@ -4,7 +4,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,7 +14,7 @@ import java.io.OutputStream;
 class DatabaseHelper extends SQLiteOpenHelper {
     private static String DB_NAME = "squirrel.db";
     private static String DB_PATH;
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 6;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;

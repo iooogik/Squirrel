@@ -7,4 +7,5 @@
     <color name="colorCursor">#0088FF</color>
     <color name="colorSmallButtons">#8DBDC4</color>
     <color name="colorFont">#000000</color>
+    <color name="colorWarning">#FF0000</color>
 </resources>
