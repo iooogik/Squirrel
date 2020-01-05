@@ -191,7 +191,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return arguments.getString("button name");
     }
 
-    public void updDatabase(String databaseName, String name, String note, String shortNote){
+    private void updDatabase(String databaseName, String name, String note, String shortNote){
         mDb = mDBHelper.getWritableDatabase();
 
         //код сохранения в бд
@@ -210,7 +210,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         mDb.update(databaseName, cv, "id =" + (getBtnID() + 1), null);
     }
 
-    public void share(){
+    private void share(){
         TextView name = getView().findViewById(R.id.editName);
         TextView note = getView().findViewById(R.id.editNote);
         TextView shortNote = getView().findViewById(R.id.shortNote);

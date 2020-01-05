@@ -235,9 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
                             startActivity(qrReader);
                         } else if(position == 4){}
-                        else if(position == 5){
-
-                        }
+                        else if(position == 5){}
 
                     }
                 })
@@ -358,10 +356,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         View view = getLayoutInflater().inflate(R.layout.item_project, null);
         final Button btn = view.findViewById(R.id.project_name);
 
-        //final Intent openNote = new Intent(this, StandartNote.class);
-
-
-
         btn.setText(name);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -438,7 +432,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-        Toast.makeText(getApplicationContext(), getType(btn.getText().toString()), Toast.LENGTH_LONG).show();
         if(getType(btn.getText().toString()).equals("standart")) {
             linear.addView(view);
         } else if(getType(btn.getText().toString()).equals("shop")){

@@ -76,7 +76,7 @@
                 android:id="@+id/shop"
                 style="@android:style/Widget.Material.Light.ScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="10dp">
 
                 <LinearLayout
@@ -89,16 +89,36 @@
                         android:layout_margin="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/myframe"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView2"
+                            android:text="Заметки"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="3dp"
+                            android:fontFamily="@font/rostelekom"
+                            android:textColor="@color/colorFont"
+                            />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/shopNote"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/myframe"
                         android:layout_margin="10dp"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView5"
+                            android:text="Списки"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="3dp"
+                            android:fontFamily="@font/rostelekom"
+                            android:textColor="@color/colorFont"
+                            />
+                    </LinearLayout>
                 </LinearLayout>
             </ScrollView>
 

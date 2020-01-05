@@ -1,6 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".shop"/>
+    android:orientation="vertical"
+    tools:context=".Shop">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/buttonSave"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:foreground="@android:drawable/ic_menu_save"
+            android:text="Button" />
+
+        <ImageButton
+            android:id="@+id/buttonShare"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            app:srcCompat="@android:drawable/ic_menu_share" />
+
+        <ImageButton
+            android:id="@+id/buttonAlarm"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:src="@android:drawable/ic_lock_idle_alarm" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editNameShopNote"
+            style="@android:style/Widget.DeviceDefault.Light.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="#00FFFFFF"
+            android:ems="10"
+            android:fontFamily="@font/rostelekom"
+            android:hint="@string/name"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorFont"
+            android:textColorHint="#AFADAD"
+            android:textCursorDrawable="@drawable/color_cursor" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/shopScroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+    </LinearLayout>
+
+</LinearLayout>
