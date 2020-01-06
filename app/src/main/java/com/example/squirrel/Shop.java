@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -39,22 +41,30 @@ public class Shop extends Fragment {
     String[] tempArrBool;
     boolean[] booleans;
     String[] tempArr;
-
+    View view;
     public Shop() {}
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.shop_fragment,
+
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null) {
+                parent.removeView(view);
+            }
+        }
+        view = inflater.inflate(R.layout.shop_fragment,
                 container, false);
+        getPoints();
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        getPoints();
+
     }
 
     public int getBtnID(){
@@ -79,7 +89,7 @@ public class Shop extends Fragment {
         } catch (IOException mIOException) {
             throw new Error("UnableToUpdateDatabase");
         }
-        final TextView name = getActivity().findViewById(R.id.editNameShopNote);
+        final TextView name = view.findViewById(R.id.editNameShopNote);
 
         mDb = mDBHelper.getReadableDatabase();
 
@@ -97,21 +107,20 @@ public class Shop extends Fragment {
             booleans[i] = Boolean.valueOf(tempArrBool[i]);
         }
 
-
-
         for(int i = 0; i < tempArr.length; i++){
             addCheck(booleans[i], tempArr[i]);
         }
 
     }
 
-    private void addCheck(boolean state, final String name){
+    private void addCheck(boolean state, String nameCheck){
 
-        LinearLayout linear = getActivity().findViewById(R.id.shopScroll);
-        View view = getLayoutInflater().inflate(R.layout.item_check, null);
-        final CheckBox check = view.findViewById(R.id.checkBox);
+        LinearLayout linear = view.findViewById(R.id.shopScroll);
+        View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
+        final CheckBox check = view2.findViewById(R.id.checkBox);
+        final EditText tv = view.findViewById(R.id.editNameShopNote);
         check.setChecked(state);
-        check.setText(name);
+        check.setText(nameCheck);
 
         check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -119,13 +128,13 @@ public class Shop extends Fragment {
                 int index = Arrays.asList(tempArr).indexOf(check.getText().toString());
                 booleans[index] = isChecked;
                 StringBuilder sendBool = new StringBuilder();
-                for (int j = 0; j < booleans.length; j++) {
-                    sendBool.append(String.valueOf(booleans[j]) + "\n");
+                for (boolean aBoolean : booleans) {
+                    sendBool.append(String.valueOf(aBoolean) + "\n");
                 }
-                updDatabase("Notes", name,sendBool.toString());
+                updDatabase("Notes", tv.getText().toString(), sendBool.toString());
             }
         });
-        linear.addView(check);
+        linear.addView(view2);
     }
 
     private void updDatabase(String databaseName, String name, String booleans){

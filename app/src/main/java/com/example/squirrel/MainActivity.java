@@ -14,22 +14,22 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FilterQueryProvider;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -67,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Shop shopActivity = new Shop();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
+    SimpleCursorAdapter userAdapter;
+    ListView userList;
+    EditText userFilter;
 
 
     ArrayList<String> dataProjects = new ArrayList<String>();
@@ -166,6 +169,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        EditText search = findViewById(R.id.search);
+        userList = (ListView)findViewById(R.id.userList);
+        String[] headers = new String[]{"name"};
+
+        userAdapter = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
+                userCursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                userAdapter.getFilter().filter(s.toString());
+            }
+        });
+
+        userAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                if (constraint == null || constraint.length() == 0) {
+
+                    return mDb.rawQuery("select * from Notes", null);
+                }
+                else {
+                    return mDb.rawQuery("select * from Notes" + " where " +
+                            "name" + " like ?", new String[]{"%" + constraint.toString() + "%"});
+                }
+            }
+        });
+
+        userList.setAdapter(userAdapter);
+
         add.setOnClickListener(this);
         updProjects();
 
@@ -174,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void createToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         toolbar.setSubtitle(R.string.textNotes);
         final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
         new Drawer()
@@ -516,6 +560,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FragmentTransaction ft = fm.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
             ft.remove(standartNote).commit();
+            frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
             Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setSubtitle(R.string.textNotes);
