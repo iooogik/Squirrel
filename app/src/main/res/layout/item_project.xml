@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/project_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="7dp"
-        android:background="@drawable/projectframe"
-        android:fontFamily="@font/rostelekom"
-        android:text="Название проекта"
-        android:textColor="@color/colorFont"
-        android:textSize="15dp"
-        android:textStyle="bold" />
-</RelativeLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/project_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="7dp"
+    android:background="@drawable/projectframe"
+    android:fontFamily="@font/rostelekom"
+    android:minHeight="30dp"
+    android:text="Название проекта"
+    android:textAlignment="center"
+    android:textAllCaps="false"
+    android:textColor="@color/colorFont"
+    android:textSize="17dp"
+    android:textStyle="bold" />

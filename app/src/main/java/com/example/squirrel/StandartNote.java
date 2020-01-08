@@ -130,7 +130,6 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onStart() {
         super.onStart();
@@ -283,18 +282,6 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         AlertDialog dlg = builder.create();
         dlg.show();
     }
-
-    private String stringToBinary(String s) {
-
-        StringBuilder sent = new StringBuilder();
-
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            sent.append(Integer.toBinaryString(c));
-        }
-        return sent.toString();
-    }
-
 
     private void alarmDialog(String title, String text){
 

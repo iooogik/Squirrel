@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.FrameLayout;
@@ -30,6 +29,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -64,12 +64,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static int ScreenWidth = 0;
     public static int ScreenHeight = 0;
     StandartNote standartNote = new StandartNote();
+    Fragment currFragment;
     Shop shopActivity = new Shop();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
     SimpleCursorAdapter userAdapter;
     ListView userList;
     EditText userFilter;
+    public static ArrayList<String> standartItems = new ArrayList<>();
+    public static ArrayList<String> shopItems = new ArrayList<>();
+
+    ArrayAdapter<String> adapterStndrtList;
+    ArrayAdapter<String> adapterShopList;
+
 
 
     ArrayList<String> dataProjects = new ArrayList<String>();
@@ -132,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 mDb = mDBHelper.getWritableDatabase();
-                                addProject(name.getText().toString(), true);
+                                //addProject(name.getText().toString(), true);
                                 //добавление в бд и запись в строчки
                                 ContentValues cv = new ContentValues();
                                 id++;
@@ -170,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         EditText search = findViewById(R.id.search);
-        userList = (ListView)findViewById(R.id.userList);
+        userList = (ListView)findViewById(R.id.standartList);
         String[] headers = new String[]{"name"};
 
         userAdapter = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
@@ -220,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         toolbar.setSubtitle(R.string.textNotes);
         final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
+        int identifier = 1;
         new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -227,12 +235,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
-                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(2),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(3),
+                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(identifier),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(identifier++),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(identifier++),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName("Покупки").withIdentifier(4),
-                        new SecondaryDrawerItem().withName("Карточки").withIdentifier(5)
+                        new SecondaryDrawerItem().withName("Стандартные заметки").withIdentifier(identifier++),
+                        new SecondaryDrawerItem().withName("Покупки").withIdentifier(identifier++),
+                        new SecondaryDrawerItem().withName("Карточки").withIdentifier(identifier++)
 
                         /*запятая после прдыдущего!
                         new SecondaryDrawerItem().withName(R.string.drawer_item_help).
@@ -272,14 +281,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             long id, IDrawerItem drawerItem) {
 
                         if(position == 1){
-                            closeFragment();
+                            if(currFragment != null) {
+                                closeFragment(currFragment);
+                            }
                         } else if(position == 2){}
                         else if (position == 3) {
                             qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                             qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
                             startActivity(qrReader);
-                        } else if(position == 4){}
-                        else if(position == 5){}
+                        }
+                        else if(position == 4){
+
+                        }
+                        else if(position == 5){
+
+                        }
+                        else if(position == 6){
+
+                        }
 
                     }
                 })
@@ -294,7 +313,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //кнопка "Добавить проект"
             final LinearLayout mainLayout  = new LinearLayout(this);
             final LinearLayout layout1 = new LinearLayout(this);
-            //AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
             mainLayout.setOrientation(LinearLayout.VERTICAL);
             layout1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
@@ -319,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tv.setVisibility(View.GONE);
             layout1.addView(tv);
 
-            String[] types = new String[]{"standart", "shop"};
+            final String[] types = new String[]{"standart", "shop"};
             //выбор типа
             final Spinner spinner = new Spinner(getApplicationContext());
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -356,7 +374,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mDb = mDBHelper.getWritableDatabase();
-                            addProject(nameNote.getText().toString(), true);
+                            String type = spinner.getSelectedItem().toString();
+                            //addProject(nameNote.getText().toString(), true);
                             //добавление в бд и запись в строчки
                             ContentValues cv = new ContentValues();
                             cv.put("id", id);
@@ -375,11 +394,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             mDb.insert("Notes", null, cv);
                             mDb.close();
                             id++;
+
+                            if(type.equals("standart")){
+                                standartItems.add(nameNote.getText().toString());
+                                adapterStndrtList.notifyDataSetChanged();
+                            }else if(type.equals("shop")){
+                                shopItems.add(nameNote.getText().toString());
+                                adapterShopList.notifyDataSetChanged();
+                            }
                         }
                     });
 
             AlertDialog dlg = builder.create();
-
             dlg.show();
         }
     }
@@ -393,101 +419,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return userCursor.getString(8);
     }
 
-    //добавление проекта на активити и запись его в бд
-    protected void addProject(String name, boolean New){
-        LinearLayout linear = findViewById(R.id.standardNote);
-        final LinearLayout shop = findViewById(R.id.shopNote);
-        View view = getLayoutInflater().inflate(R.layout.item_project, null);
-        final Button btn = view.findViewById(R.id.project_name);
-
-        btn.setText(name);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                FrameLayout frameLayout = findViewById(R.id.frame);
-                frameLayout.setVisibility(View.VISIBLE);
-                Bundle args = new Bundle();
-                args.putString("button name", btn.getText().toString());
-                args.putInt("buttonID", dataProjects.indexOf(btn.getText().toString()));
-                if(getType(btn.getText().toString()).equals("standart")) {
-
-                    standartNote.setArguments(args);
-                    showFragment(standartNote);
-                    Toolbar toolbar = findViewById(R.id.toolbar);
-                    toolbar.setSubtitle("Заметка: " + btn.getText().toString());
-
-                } else if(getType(btn.getText().toString()).equals("shop")){
-
-                    shopActivity.setArguments(args);
-                    showFragment(shopActivity);
-                    Toolbar toolbar = findViewById(R.id.toolbar);
-                    toolbar.setSubtitle("Заметка: " + btn.getText().toString());
-
-                }
-            }
-        });
-
-        final LinearLayout mainLayout  = new LinearLayout(this);
-        final LinearLayout layout1 = new LinearLayout(this);
-
-        btn.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mDb = mDBHelper.getReadableDatabase();
-                userCursor =  mDb.rawQuery("Select * from Notes", null);
-                final int btnID = dataProjects.indexOf(btn.getText().toString());
-                userCursor.moveToPosition(btnID);
-
-                String message = userCursor.getString(2);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-
-
-                mainLayout.setOrientation(LinearLayout.VERTICAL);
-                layout1.setOrientation(LinearLayout.VERTICAL);
-                TextView tv = new TextView(getApplicationContext());
-                tv.setMinHeight(25);
-                tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                tv.setText("\n  " + message);
-                tv.setTextColor(Color.BLACK);
-                Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
-                tv.setTypeface(tpf);
-                tv.setTextSize(18);
-                tv.setMinHeight(15);
-                layout1.addView(tv);
-
-                mainLayout.addView(layout1);
-                builder.setView(mainLayout);
-
-                builder.setCancelable(true);
-                builder.setPositiveButton(Html.fromHtml
-                                ("<font color='#7AB5FD'>Удалить выбранную запись</font>"),
-                        new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        delete(btnID + 1);
-                    }
-                });
-                AlertDialog dlg = builder.create();
-
-                dlg.show();
-                return true;
-
-            }
-        });
-        if(getType(btn.getText().toString()).equals("standart")) {
-            linear.addView(view);
-        } else if(getType(btn.getText().toString()).equals("shop")){
-            shop.addView(view);
-        }
-
-
-    }
-
     private void showFragment(Fragment fragment){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+        currFragment = fragment;
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.replace(R.id.frame, fragment);
         ft.commit();
@@ -497,24 +432,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void delete(int selected){
         if(id >= 0) {
             mDb = mDBHelper.getWritableDatabase();
-            mDb.delete("Notes", "id=" + selected, null);
 
-            dataProjects.remove(selected - 1);
-            LinearLayout linear;
+            mDb.delete("Notes", "id=" + (selected), null);
 
-            if(getType(dataProjects.get(id)).equals("standart")) {
-                linear = findViewById(R.id.standardNote);
+            if(getType(standartItems.get(selected - 1)).equals("standart") ||
+            getType(shopItems.get(selected - 1)).equals("shop")) {
+
+                standartItems.remove(selected - 1);
+                adapterStndrtList.notifyDataSetChanged();
             } else {
-                linear = findViewById(R.id.shopNote);
+                shopItems.remove(selected - 2);
+                adapterShopList.notifyDataSetChanged();
             }
 
-            linear.removeViewAt(selected - 1);
+
+
             ContentValues cv = new ContentValues();
             for(int i = 0; i < dataProjects.size(); i++){
                 cv.put("id", String.valueOf(i + 1));
+                System.out.println(i + 1);
                 mDb.update("Notes", cv, "id =" + (i + 1), null);
             }
-
             if(id - 1 >=0){
                 id--;
             } else {
@@ -531,36 +469,164 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userCursor =  mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
         String item = "";
+
+        final ListView standartList = findViewById(R.id.standartList);
+        final ListView shopList = findViewById(R.id.shopList);
+
         while (!userCursor.isAfterLast()) {
             item = userCursor.getString(1); //колонки считаются с 0
-            //Log.d("my best tag","**********************************" + item);
             dataProjects.add(String.valueOf(item));
+
+            if(getType(String.valueOf(item)).equals("standart")) {
+                standartItems.add(String.valueOf(item));
+            } else if(getType(String.valueOf(item)).equals("shop")){
+                shopItems.add(String.valueOf(item));
+            }
+
             userCursor.moveToNext();
         }
         userCursor.close();
-        for(int i = 0; i < dataProjects.size(); i ++){
-            //Log.d("my best tag","**********************************" + dataProjects.get(i));
-            if(dataProjects.get(i) != null) {
-                addProject(dataProjects.get(i), false);
+
+        adapterShopList = new ArrayAdapter<>(this,
+                R.layout.item_project, shopItems);
+
+        adapterStndrtList = new ArrayAdapter<>(this,
+                R.layout.item_project, standartItems);
+
+        standartList.setAdapter(adapterStndrtList);
+        shopList.setAdapter(adapterShopList);
+
+        shopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onItemListClicked(position + standartItems.size());
             }
-        }
+        });
+
+        standartList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onItemListClicked(position);
+            }
+        });
+
+        standartList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position,
+                                           long id) {
+                onItemLongListClicked(position, "standart");
+                return false;
+            }
+        });
+
+        shopList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position,
+                                           long id) {
+                onItemLongListClicked(position, "shop");
+                return false;
+            }
+        });
+
         if(dataProjects.size() == 0){id = 0;}
         else {id = dataProjects.size() + 1;}
     }
 
-    @Override
-    public void onBackPressed() {
-        closeFragment();
+    private void onItemListClicked(int position){
+        FrameLayout frameLayout = findViewById(R.id.frame);
+        frameLayout.setVisibility(View.VISIBLE);
+        Bundle args = new Bundle();
+        String name = dataProjects.get(position);
+        args.putString("button name", name);
+        args.putInt("buttonID", dataProjects.indexOf(name));
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if(getType(name).equals("standart")) {
+
+            standartNote.setArguments(args);
+            showFragment(standartNote);
+            toolbar.setSubtitle("Заметка: " + name);
+
+        } else if(getType(name).equals("shop")){
+
+            shopActivity.setArguments(args);
+            showFragment(shopActivity);
+            toolbar.setSubtitle("Заметка: " + name);
+
+        }
     }
 
-    private void closeFragment(){
+    private void onItemLongListClicked(int position, String type){
+
+        final ListView standartList = findViewById(R.id.standartList);
+        final ListView shopList = findViewById(R.id.shopList);
+
+        String name = String.valueOf(standartList.getItemAtPosition(position));
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor =  mDb.rawQuery("Select * from Notes", null);
+        userCursor.moveToPosition(position);
+
+        String message = userCursor.getString(2);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        final LinearLayout mainLayout  = new LinearLayout(MainActivity.this);
+        final LinearLayout layout1 = new LinearLayout(MainActivity.this);
+
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        layout1.setOrientation(LinearLayout.VERTICAL);
+        TextView tv = new TextView(MainActivity.this);
+        tv.setMinHeight(25);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        tv.setText("\n  " + message);
+        tv.setTextColor(Color.BLACK);
+        Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+        tv.setTypeface(tpf);
+        tv.setTextSize(18);
+        tv.setMinHeight(15);
+        layout1.addView(tv);
+
+        mainLayout.addView(layout1);
+        builder.setView(mainLayout);
+
+        if(type.equals("shop")){
+            position = position + standartItems.size() + 1;
+        } else if(type.equals("standart")){
+            position = position + 1;
+        }
+
+        builder.setCancelable(true);
+        final int finalPosition = position;
+        Toast.makeText(getApplicationContext(), String.valueOf(finalPosition), Toast.LENGTH_LONG).show();
+        builder.setPositiveButton(Html.fromHtml
+                        ("<font color='#7AB5FD'>Удалить выбранную запись</font>"),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Toast.makeText(getApplicationContext(), String.valueOf(position),
+                        // Toast.LENGTH_LONG).show();
+                        delete(finalPosition);
+                    }
+                });
+        AlertDialog dlg = builder.create();
+        dlg.show();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(currFragment != null) {
+            closeFragment(currFragment);
+        }
+    }
+
+    private void closeFragment(Fragment fragment){
         final FrameLayout frameLayout = findViewById(R.id.frame);
         if(frameLayout.getVisibility() == View.VISIBLE){
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-            ft.remove(standartNote).commit();
-            frameLayout.removeAllViews();
+            ft.remove(fragment).commit();
+            //frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
             Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setSubtitle(R.string.textNotes);
