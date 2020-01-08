@@ -447,28 +447,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //удаление проекта из активити и удаление его из бд
-    public void delete(int selected){
+    public void delete(int selected, String name){
         if(id >= 0) {
+            //Toast.makeText(getApplicationContext(), getType(standartItems.get(selected - 1)),
+              //      Toast.LENGTH_LONG).show();
+
             mDb = mDBHelper.getWritableDatabase();
-
-            mDb.delete("Notes", "id=" + (selected), null);
-
-            if(getType(standartItems.get(selected - 1)).equals("standart") ||
-            getType(shopItems.get(selected - 1)).equals("shop")) {
-
-                standartItems.remove(selected - 1);
-                adapterStndrtList.notifyDataSetChanged();
-            } else {
-                shopItems.remove(selected - 2);
-                adapterShopList.notifyDataSetChanged();
-            }
-
-
-
+            mDb.delete("Notes", "id=" + (selected + 1), null);
+            dataProjects.remove(selected);
             ContentValues cv = new ContentValues();
             for(int i = 0; i < dataProjects.size(); i++){
                 cv.put("id", String.valueOf(i + 1));
-                System.out.println(i + 1);
                 mDb.update("Notes", cv, "id =" + (i + 1), null);
             }
             if(id - 1 >=0){
@@ -476,6 +465,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 id = 0;
             }
+
+
+
+
         }
 
     }
@@ -578,12 +571,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final ListView standartList = findViewById(R.id.standartList);
         final ListView shopList = findViewById(R.id.shopList);
 
-        String name = String.valueOf(standartList.getItemAtPosition(position));
+        final String name = String.valueOf(standartList.getItemAtPosition(position));
         mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Notes", null);
-        userCursor.moveToPosition(position);
 
-        String message = userCursor.getString(2);
+
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
@@ -595,34 +588,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextView tv = new TextView(MainActivity.this);
         tv.setMinHeight(25);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-        tv.setText("\n  " + message);
+
         tv.setTextColor(Color.BLACK);
         Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
         tv.setTypeface(tpf);
         tv.setTextSize(18);
         tv.setMinHeight(15);
+
         layout1.addView(tv);
 
         mainLayout.addView(layout1);
         builder.setView(mainLayout);
 
         if(type.equals("shop")){
-            position = position + standartItems.size() + 1;
-        } else if(type.equals("standart")){
-            position = position + 1;
+            position = position + standartItems.size();
         }
+
+        userCursor.moveToPosition(position);
+        String message = userCursor.getString(2);
+        tv.setText("\n  " + message);
 
         builder.setCancelable(true);
         final int finalPosition = position;
-        Toast.makeText(getApplicationContext(), String.valueOf(finalPosition), Toast.LENGTH_LONG).show();
         builder.setPositiveButton(Html.fromHtml
                         ("<font color='#7AB5FD'>Удалить выбранную запись</font>"),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //Toast.makeText(getApplicationContext(), String.valueOf(position),
-                        // Toast.LENGTH_LONG).show();
-                        delete(finalPosition);
+                        Toast.makeText(getApplicationContext(), String.valueOf(finalPosition),
+                         Toast.LENGTH_LONG).show();
+                        delete(finalPosition, name);
                     }
                 });
         AlertDialog dlg = builder.create();
