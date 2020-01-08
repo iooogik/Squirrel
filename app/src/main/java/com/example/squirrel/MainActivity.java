@@ -17,9 +17,11 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.FrameLayout;
@@ -318,6 +320,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //ввод названия заметки
             final EditText nameNote = new EditText(getApplicationContext());
 
+            int padding = 70;
+
+            mainLayout.setPadding(padding, padding, padding, padding);
 
             nameNote.setTextColor(Color.BLACK);
             final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
@@ -368,8 +373,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mainLayout.addView(layout1);
             builder.setView(mainLayout);
 
-            builder.setPositiveButton(Html.fromHtml
-                            ("<font color='#7AB5FD'>Добавить</font>"),
+            builder.setPositiveButton("Добавить",
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -406,6 +410,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     });
 
             AlertDialog dlg = builder.create();
+
+            dlg.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Window v = ((AlertDialog)dialog).getWindow();
+                    v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
+                    Button posButton = ((AlertDialog)dialog).
+                            getButton(DialogInterface.BUTTON_POSITIVE);
+                    posButton.setTypeface(tpf);
+                    posButton.setTypeface(Typeface.DEFAULT_BOLD);
+                    posButton.setTextColor(Color.BLACK);
+                }
+            });
+
             dlg.show();
         }
     }
