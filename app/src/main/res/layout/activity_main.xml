@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -44,8 +45,7 @@
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
-    </FrameLayout>
+        android:visibility="gone"></FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -91,8 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorWhite"
-                    android:dividerHeight="12dp"
-                    />
+                    android:dividerHeight="12dp" />
 
                 <TextView
                     android:id="@+id/textView5"
@@ -107,8 +106,8 @@
                     android:id="@+id/shopList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:dividerHeight="12dp"
-                    android:background="@color/colorWhite" />
+                    android:background="@color/colorWhite"
+                    android:dividerHeight="12dp" />
 
             </LinearLayout>
 

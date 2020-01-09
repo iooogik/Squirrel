@@ -70,9 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Shop shopActivity = new Shop();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Cursor userCursor;
+
     SimpleCursorAdapter userAdapter;
-    ListView userList;
     EditText userFilter;
+
     public static ArrayList<String> standartItems = new ArrayList<>();
     public static ArrayList<String> shopItems = new ArrayList<>();
 
@@ -178,14 +179,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        EditText search = findViewById(R.id.search);
-        userList = (ListView)findViewById(R.id.standartList);
-        String[] headers = new String[]{"name"};
+        add.setOnClickListener(this);
+        updProjects();
 
-        userAdapter = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
-                userCursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+        userFilter = findViewById(R.id.search);
 
-        search.addTextChangedListener(new TextWatcher() {
+        userFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -193,48 +192,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ListView listView = findViewById(R.id.standartList);
+                ListView listView2 = findViewById(R.id.shopList);
+                TextView tv5 = findViewById(R.id.textView5);
 
+                if(!s.toString().isEmpty()) {
+                    search();
+                    try {
+                        listView2.setVisibility(View.GONE);
+                        tv5.setVisibility(View.GONE);
+                    } catch (Exception e){
+                        Toast.makeText(getApplicationContext(), String.valueOf(e),
+                                Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    listView.setAdapter(adapterStndrtList);
+                    listView2.setAdapter(adapterShopList);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                userAdapter.getFilter().filter(s.toString());
+
             }
         });
-
-        userAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            @Override
-            public Cursor runQuery(CharSequence constraint) {
-                if (constraint == null || constraint.length() == 0) {
-
-                    return mDb.rawQuery("select * from Notes", null);
-                }
-                else {
-                    return mDb.rawQuery("select * from Notes" + " where " +
-                            "name" + " like ?", new String[]{"%" + constraint.toString() + "%"});
-                }
-            }
-        });
-
-        userList.setAdapter(userAdapter);
-
-        add.setOnClickListener(this);
-        updProjects();
 
     }
 
     public void createToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.app_name);
 
         toolbar.setSubtitle(R.string.textNotes);
         final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
         int identifier = 1;
+
         new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggle(true)
-                .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
                                 withIcon(FontAwesome.Icon.faw_home).withIdentifier(identifier),
@@ -453,22 +450,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               //      Toast.LENGTH_LONG).show();
 
             mDb = mDBHelper.getWritableDatabase();
-            mDb.delete("Notes", "id=" + (selected + 1), null);
-            dataProjects.remove(selected);
-            ContentValues cv = new ContentValues();
-            for(int i = 0; i < dataProjects.size(); i++){
-                cv.put("id", String.valueOf(i + 1));
-                mDb.update("Notes", cv, "id =" + (i + 1), null);
+            mDb.delete("Notes", "_id=" + (selected + 1), null);
+
+
+            if(getType(dataProjects.get(selected)).equals("standart")){
+                try {
+                    standartItems.remove(selected);
+                } catch (Exception e){
+                    Toast.makeText(getApplicationContext(), String.valueOf(e),
+                            Toast.LENGTH_LONG).show();
+                }
+
+            }else {
+                try {
+                    shopItems.remove(selected);
+                } catch (Exception e){
+                    Toast.makeText(getApplicationContext(), String.valueOf(e),
+                            Toast.LENGTH_LONG).show();
+                }
             }
+            dataProjects.remove(selected);
+
             if(id - 1 >=0){
                 id--;
             } else {
                 id = 0;
             }
 
-
-
-
+            LinearLayout main = findViewById(R.id.main);
+            main.setEnabled(true);
         }
 
     }
@@ -525,7 +535,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position,
                                            long id) {
+                standartList.setEnabled(false);
                 onItemLongListClicked(position, "standart");
+                standartList.setEnabled(true);
                 return false;
             }
         });
@@ -534,7 +546,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position,
                                            long id) {
+                shopList.setEnabled(false);
                 onItemLongListClicked(position, "shop");
+                shopList.setEnabled(true);
                 return false;
             }
         });
@@ -574,8 +588,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final String name = String.valueOf(standartList.getItemAtPosition(position));
         mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Notes", null);
-
-
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -621,6 +633,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
         AlertDialog dlg = builder.create();
+        LinearLayout main = findViewById(R.id.main);
+        main.setEnabled(false);
         dlg.show();
 
     }
@@ -644,6 +658,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setSubtitle(R.string.textNotes);
         }
+    }
+
+    private void search(){
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor = mDb.rawQuery("select * from Notes", null);
+        String[] headers = new String[]{"name"};
+        userAdapter = new SimpleCursorAdapter(getApplicationContext(),
+                android.R.layout.simple_list_item_activated_1,
+                userCursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+
+        if(!userFilter.getText().toString().isEmpty())
+            userAdapter.getFilter().filter(userFilter.getText().toString());
+
+        // установка слушателя изменения текста
+        userFilter.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            // при изменении текста выполняем фильтрацию
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                TextView tv5 = findViewById(R.id.textView5);
+                ListView listView = findViewById(R.id.shopList);
+                if(!s.toString().isEmpty()) {
+                    userAdapter.getFilter().filter(s.toString());
+                    tv5.setVisibility(View.GONE);
+                    listView.setVisibility(View.GONE);
+                }else {
+                    tv5.setVisibility(View.VISIBLE);
+                    listView.setVisibility(View.VISIBLE);
+                    //updProjects();
+                }
+            }
+        });
+
+
+        // устанавливаем провайдер фильтрации
+        userAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+
+                if (constraint == null || constraint.length() == 0) {
+                    return mDb.rawQuery("select * from Notes", null);
+                }
+                else {
+                    return mDb.rawQuery("select * from Notes" + " where " +
+                            "name" + " like ?", new String[]{"%" + constraint.toString() + "%"});
+                }
+            }
+        });
+
+        ListView standartList = findViewById(R.id.standartList);
+        ListView shopList = findViewById(R.id.shopList);
+        standartList.setAdapter(userAdapter);
+        //shopList.setAdapter(userAdapter);
+
     }
 }
 
