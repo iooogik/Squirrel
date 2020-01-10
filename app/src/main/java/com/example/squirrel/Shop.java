@@ -1,9 +1,14 @@
 package com.example.squirrel;
 
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -17,29 +22,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.example.squirrel.MainActivity.shopItems;
+import static android.content.Context.ALARM_SERVICE;
 
 
 /**
@@ -56,6 +57,8 @@ public class Shop extends Fragment implements View.OnClickListener {
     private View view;
     private ArrayList<String> Items = new ArrayList<>();
     private ArrayList<Boolean> Booleans = new ArrayList<>();
+    private Calendar calendar = Calendar.getInstance();
+    private EditText nameNote, shortNote;
     public Shop() {}
 
 
@@ -68,22 +71,19 @@ public class Shop extends Fragment implements View.OnClickListener {
         ImageButton addButton = view.findViewById(R.id.addItemCheck);
         addButton.setOnClickListener(this);
 
+        ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
+        buttonTimeSet.setOnClickListener(this);
+        getPoints();
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        getPoints();
-    }
-
-    public int getBtnID(){
+    private int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("buttonID");
     }
 
-    public String getBtnName(){
+    private String getBtnName(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
@@ -99,13 +99,15 @@ public class Shop extends Fragment implements View.OnClickListener {
         } catch (IOException mIOException) {
             throw new Error("UnableToUpdateDatabase");
         }
-        final TextView name = view.findViewById(R.id.editNameShopNote);
+        nameNote = view.findViewById(R.id.editNameShopNote);
+        shortNote = view.findViewById(R.id.shortShopNote);
 
         mDb = mDBHelper.getReadableDatabase();
 
         userCursor =  mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToPosition(getBtnID());
-        name.setText(getBtnName());
+        nameNote.setText(getBtnName());
+        shortNote.setText(userCursor.getString(2));
 
         final String temp = userCursor.getString(7);
         String tempBool = userCursor.getString(6);
@@ -161,7 +163,7 @@ public class Shop extends Fragment implements View.OnClickListener {
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "id =" + (getBtnID() + 1), null);
+        mDb.update(databaseName, cv, "_id=" + (getBtnID() + 1), null);
     }
 
 
@@ -218,7 +220,7 @@ public class Shop extends Fragment implements View.OnClickListener {
                             cv.put("isChecked", strBool.toString());
                             cv.put("points", strItems.toString());
                             //обновление базы данных
-                            mDb.update("Notes", cv, "id =" + (getBtnID() + 1),
+                            mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
                                     null);
                             addCheck(false, nameNote.getText().toString());
                         }
@@ -238,6 +240,64 @@ public class Shop extends Fragment implements View.OnClickListener {
                 }
             });
             dlg.show();
+        } else if(v.getId() == R.id.buttonShopAlarm){
+
+            alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
         }
+    }
+
+    private void alarmDialog(final String title, final String text){
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+
+
+        DatePickerDialog dialog;
+        final TimePickerDialog dialog2;
+
+        dialog2 = new TimePickerDialog(view.getContext(), new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+
+                Intent notificationIntent = new Intent(getContext(), NotificationReceiver.class);
+                notificationIntent.putExtra("title", title);
+                notificationIntent.putExtra("text", text);
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
+                        1, notificationIntent,
+                        0);
+
+                AlarmManager alarmManager = (AlarmManager) getContext().
+                        getSystemService(ALARM_SERVICE);
+
+
+
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                        calendar.getTimeInMillis(), pendingIntent);
+                Toast.makeText(getContext(), "Уведомление установлено",
+                        Toast.LENGTH_LONG).show();
+
+            }
+
+        }, hours, minutes, true);
+
+        dialog = new DatePickerDialog(
+                view.getContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        dialog2.show();
+                    }
+                },
+                year, month, day);
+        dialog.show();
     }
 }

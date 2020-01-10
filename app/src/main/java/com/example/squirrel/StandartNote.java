@@ -3,11 +3,18 @@ package com.example.squirrel;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,25 +22,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.zxing.WriterException;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,11 +62,13 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
     public StandartNote(){}
 
+    public static View view;
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
     private Calendar calendar = Calendar.getInstance();
-    private DatePickerDialog.OnDateSetListener DataListener;
-
+    private EditText name;
+    private EditText shortNote;
+    private EditText note;
 
     private Cursor userCursor;
 
@@ -62,7 +78,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final View view = inflater.inflate(R.layout.standart_note,
+        view = inflater.inflate(R.layout.standart_note,
                 container, false);
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
@@ -127,13 +143,8 @@ public class StandartNote extends Fragment implements View.OnClickListener {
                 }
             }
         });
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         updFragment();
+        return view;
     }
 
     private void updFragment(){
@@ -145,9 +156,9 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         } catch (IOException mIOException) {
             throw new Error("UnableToUpdateDatabase");
         }
-        TextView name = getActivity().findViewById(R.id.editName);
-        TextView note = getActivity().findViewById(R.id.editNote);
-        TextView shortNote = getActivity().findViewById(R.id.shortNote);
+        name = view.findViewById(R.id.editName);
+        note = view.findViewById(R.id.editNote);
+        shortNote = view.findViewById(R.id.shortNote);
 
         mDb = mDBHelper.getReadableDatabase();
 
@@ -159,8 +170,8 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         shortNote.setText(userCursor.getString(2));
         note.setText(userCursor.getString(3));
 
-        ImageView img = getActivity().findViewById(R.id.qr_view);
-        LinearLayout linearLayout = getActivity().findViewById(R.id.layout_img);
+        ImageView img = view.findViewById(R.id.qr_view);
+        LinearLayout linearLayout = view.findViewById(R.id.layout_img);
 
         if(!userCursor.isNull(5)){
             linearLayout.setVisibility(View.VISIBLE);
@@ -178,13 +189,13 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
     }
 
-    public int getBtnID(){
+    private int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("buttonID");
     }
 
-    public String getBtnName(){
+    private String getBtnName(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
@@ -206,7 +217,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "id =" + (getBtnID() + 1), null);
+        mDb.update(databaseName, cv, "_id =" + (getBtnID() + 1), null);
     }
 
     private void share(){
@@ -283,47 +294,66 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         dlg.show();
     }
 
-    private void alarmDialog(String title, String text){
+    private void alarmDialog(final String title, final String text){
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
 
-/*
+
         DatePickerDialog dialog;
+        final TimePickerDialog dialog2;
+
+        dialog2 = new TimePickerDialog(view.getContext(), new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+
+                Intent notificationIntent = new Intent(view.getContext(),
+                        NotificationReceiver.class);
+
+                Bundle args = new Bundle();
+                args.putInt("btnId", getBtnID());
+                args.putString("btnName", getBtnName());
+                args.putString("title", title);
+                args.putString("shortNote", text);
+
+                notificationIntent.putExtras(args);
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
+                        1, notificationIntent,
+                        0);
+
+                AlarmManager alarmManager = (AlarmManager) getContext().
+                        getSystemService(ALARM_SERVICE);
+
+
+
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                        calendar.getTimeInMillis(), pendingIntent);
+                Toast.makeText(getContext(), "Уведомление установлено",
+                        Toast.LENGTH_LONG).show();
+
+            }
+
+        }, hours, minutes, true);
+
         dialog = new DatePickerDialog(
-                getContext(),
-                Widget_Holo_ActionBar_Solid,
+                view.getContext(),
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, month);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        dialog2.show();
                     }
                 },
                 year, month, day);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();
-
-
- */
-
-        Intent notificationIntent = new Intent(getContext(), NotificationReceiver.class);
-        notificationIntent.putExtra("title", title);
-        notificationIntent.putExtra("text", text);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
-                1, notificationIntent,
-                0);
-
-        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
-
-
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), pendingIntent);
-        Toast.makeText(getContext(), "Уведомление установлено", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -340,8 +370,23 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         if(view.getId() == R.id.buttonSave){
 
             String dataName = "Notes";
-
             updDatabase(dataName, nameNote, Note, shortnote);
+
+            MainActivity.standartItems.set(getBtnID(), nameNote);
+            MainActivity.adapterStndrtList.notifyDataSetChanged();
+
+            // Скрываем клавиатуру при открытии Navigation Drawer
+            try {
+                InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
+                        getSystemService(Activity.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(Objects.
+                            requireNonNull(getActivity().getCurrentFocus()).
+                            getWindowToken(), 0);
+                }
+            } catch (Exception e){
+                System.out.println(e);
+            }
 
             Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
 

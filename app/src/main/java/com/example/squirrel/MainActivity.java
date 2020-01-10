@@ -57,6 +57,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static boolean isUpdated = false;
     //Переменная для работы с БД
     public static int id = 0;
     //Переменная для работы с БД
@@ -77,13 +78,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static ArrayList<String> standartItems = new ArrayList<>();
     public static ArrayList<String> shopItems = new ArrayList<>();
 
-    ArrayAdapter<String> adapterStndrtList;
-    ArrayAdapter<String> adapterShopList;
-
-
+    public static ArrayAdapter<String> adapterStndrtList;
+    public static ArrayAdapter<String> adapterShopList;
 
     ArrayList<String> dataProjects = new ArrayList<String>();
-
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +178,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         add.setOnClickListener(this);
+        //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
+        try {
+            standartItems.clear();
+            shopItems.clear();
+            dataProjects.clear();
+            adapterStndrtList.clear();
+            adapterShopList.clear();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
+
         updProjects();
 
         userFilter = findViewById(R.id.search);
@@ -261,7 +271,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             InputMethodManager inputMethodManager = (InputMethodManager) MainActivity.
                                     this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                             if (inputMethodManager != null) {
-                                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(MainActivity.
+                                inputMethodManager.hideSoftInputFromWindow(Objects.
+                                        requireNonNull(MainActivity.
                                         this.getCurrentFocus()).getWindowToken(), 0);
                             }
                         } catch (Exception e){
@@ -456,6 +467,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(getType(dataProjects.get(selected)).equals("standart")){
                 try {
                     standartItems.remove(selected);
+                    adapterStndrtList.notifyDataSetChanged();
                 } catch (Exception e){
                     Toast.makeText(getApplicationContext(), String.valueOf(e),
                             Toast.LENGTH_LONG).show();
@@ -464,6 +476,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else {
                 try {
                     shopItems.remove(selected);
+                    adapterShopList.notifyDataSetChanged();
                 } catch (Exception e){
                     Toast.makeText(getApplicationContext(), String.valueOf(e),
                             Toast.LENGTH_LONG).show();
@@ -484,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //обновление проектов на активити
-    public  void updProjects(){
+    public void updProjects(){
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Notes", null);
@@ -558,6 +571,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void onItemListClicked(int position){
+
+
         FrameLayout frameLayout = findViewById(R.id.frame);
         frameLayout.setVisibility(View.VISIBLE);
         Bundle args = new Bundle();
@@ -566,16 +581,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         args.putInt("buttonID", dataProjects.indexOf(name));
         Toolbar toolbar = findViewById(R.id.toolbar);
         if(getType(name).equals("standart")) {
+            /*
+            Intent temp = new Intent(this, standartNoteNewDesign.class);
+            temp.putExtra("button name", name);
+            temp.putExtra("buttonID", dataProjects.indexOf(name));
+            startActivity(temp);
 
+
+             */
             standartNote.setArguments(args);
             showFragment(standartNote);
-            toolbar.setSubtitle("Заметка: " + name);
+            toolbar.setSubtitle(name);
 
         } else if(getType(name).equals("shop")){
 
             shopActivity.setArguments(args);
             showFragment(shopActivity);
-            toolbar.setSubtitle("Заметка: " + name);
+            toolbar.setSubtitle(name);
 
         }
     }
@@ -657,6 +679,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             frameLayout.setVisibility(View.GONE);
             Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setSubtitle(R.string.textNotes);
+
         }
     }
 
@@ -715,5 +738,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //shopList.setAdapter(userAdapter);
 
     }
+
 }
 

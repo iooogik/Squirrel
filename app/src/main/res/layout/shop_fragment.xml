@@ -31,7 +31,7 @@
             app:srcCompat="@android:drawable/ic_menu_share" />
 
         <ImageButton
-            android:id="@+id/buttonAlarm"
+            android:id="@+id/buttonShopAlarm"
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:layout_margin="5dp"
@@ -50,6 +50,19 @@
         android:ems="10"
         android:fontFamily="@font/rostelekom"
         android:hint="@string/name"
+        android:inputType="textPersonName"
+        android:textColor="@color/colorFont"
+        android:textColorHint="#AFADAD"
+        android:textCursorDrawable="@drawable/color_cursor" />
+
+    <EditText
+        android:id="@+id/shortShopNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:ems="10"
+        android:fontFamily="@font/rostelekom"
+        android:hint="@string/short_note"
         android:inputType="textPersonName"
         android:textColor="@color/colorFont"
         android:textColorHint="#AFADAD"

@@ -18,6 +18,14 @@
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar" />
 
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" >
+
+    </FrameLayout>
+
     <EditText
         android:id="@+id/search"
         android:layout_width="match_parent"
@@ -32,20 +40,6 @@
         android:textColorHint="#ADAFAF"
         android:textCursorDrawable="@drawable/color_cursor" />
 
-
-    <FrameLayout
-        android:id="@+id/attentionframe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|center_vertical">
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"></FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -90,7 +84,6 @@
                     android:id="@+id/standartList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorWhite"
                     android:dividerHeight="12dp" />
 
                 <TextView
@@ -106,7 +99,6 @@
                     android:id="@+id/shopList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/colorWhite"
                     android:dividerHeight="12dp" />
 
             </LinearLayout>
