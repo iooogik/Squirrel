@@ -58,7 +58,7 @@ import java.util.Objects;
 import static android.content.Context.ALARM_SERVICE;
 
 
-public class StandartNote extends Fragment implements View.OnClickListener {
+public class StandartNote extends Fragment implements View.OnClickListener, NoteInterface {
 
     public StandartNote(){}
 
@@ -143,11 +143,12 @@ public class StandartNote extends Fragment implements View.OnClickListener {
                 }
             }
         });
-        updFragment();
+
         return view;
     }
 
-    private void updFragment(){
+    @Override
+    public void updFragment(){
         /* БД ************************ */
         mDBHelper = new DatabaseHelper(getActivity());
         mDBHelper.openDataBase();
@@ -166,6 +167,8 @@ public class StandartNote extends Fragment implements View.OnClickListener {
 
         userCursor.moveToPosition(getBtnID());
 
+
+
         name.setText(getBtnName());
         shortNote.setText(userCursor.getString(2));
         note.setText(userCursor.getString(3));
@@ -180,6 +183,9 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void updShopNotes(String databaseName, String name, String booleans) {}
+
     private Bitmap setImage(){
         mDb = mDBHelper.getWritableDatabase();
         userCursor = mDb.rawQuery("Select * from Notes", null);
@@ -189,19 +195,21 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
     }
 
-    private int getBtnID(){
+    @Override
+    public int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("buttonID");
     }
-
-    private String getBtnName(){
+    @Override
+    public String getBtnName(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
     }
 
-    private void updDatabase(String databaseName, String name, String note, String shortNote){
+    @Override
+    public void updData(String databaseName, String name, String note, String shortNote){
         mDb = mDBHelper.getWritableDatabase();
 
         //код сохранения в бд
@@ -294,7 +302,8 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         dlg.show();
     }
 
-    private void alarmDialog(final String title, final String text){
+    @Override
+    public void alarmDialog(final String title, final String text){
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -322,10 +331,11 @@ public class StandartNote extends Fragment implements View.OnClickListener {
                 args.putString("shortNote", text);
 
                 notificationIntent.putExtras(args);
+                notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
                         1, notificationIntent,
-                        0);
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
                 AlarmManager alarmManager = (AlarmManager) getContext().
                         getSystemService(ALARM_SERVICE);
@@ -370,7 +380,7 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         if(view.getId() == R.id.buttonSave){
 
             String dataName = "Notes";
-            updDatabase(dataName, nameNote, Note, shortnote);
+            updData(dataName, nameNote, Note, shortnote);
 
             MainActivity.standartItems.set(getBtnID(), nameNote);
             MainActivity.adapterStndrtList.notifyDataSetChanged();
@@ -426,6 +436,12 @@ public class StandartNote extends Fragment implements View.OnClickListener {
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortnote);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updFragment();
     }
 }
 

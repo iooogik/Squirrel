@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static ArrayAdapter<String> adapterStndrtList;
     public static ArrayAdapter<String> adapterShopList;
 
-    ArrayList<String> dataProjects = new ArrayList<String>();
+    public static ArrayList<String> dataProjects = new ArrayList<String>();
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,23 +290,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onItemClick(AdapterView<?> parent, View view, int position,
                                             long id, IDrawerItem drawerItem) {
 
-                        if(position == 1){
+                        if(position == 0){
                             if(currFragment != null) {
                                 closeFragment(currFragment);
                             }
-                        } else if(position == 2){}
-                        else if (position == 3) {
+                        } else if(position == 1){
+
+                        }
+                        else if (position == 2) {
                             qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                             qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
                             startActivity(qrReader);
+                        }
+                        else if(position == 3){
+
                         }
                         else if(position == 4){
 
                         }
                         else if(position == 5){
-
-                        }
-                        else if(position == 6){
 
                         }
 
@@ -390,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             //addProject(nameNote.getText().toString(), true);
                             //добавление в бд и запись в строчки
                             ContentValues cv = new ContentValues();
-                            cv.put("id", id);
+                            cv.put("_id", id);
                             cv.put("name", nameNote.getText().toString());
                             cv.put("shortName", "короткое описание");
                             cv.put("text", "hello, it's the best note ever");
@@ -428,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             getButton(DialogInterface.BUTTON_POSITIVE);
                     posButton.setTypeface(tpf);
                     posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                    posButton.setTextColor(Color.BLACK);
+                    posButton.setTextColor(R.color.colorFont);
                 }
             });
 
@@ -533,14 +535,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemListClicked(position + standartItems.size());
+                onItemListClicked(position, "shop");
             }
         });
 
         standartList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemListClicked(position);
+                onItemListClicked(position, "standart");
             }
         });
 
@@ -570,35 +572,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {id = dataProjects.size() + 1;}
     }
 
-    private void onItemListClicked(int position){
 
+    private void onItemListClicked(int position, String type){
 
         FrameLayout frameLayout = findViewById(R.id.frame);
         frameLayout.setVisibility(View.VISIBLE);
         Bundle args = new Bundle();
-        String name = dataProjects.get(position);
-        args.putString("button name", name);
-        args.putInt("buttonID", dataProjects.indexOf(name));
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if(getType(name).equals("standart")) {
-            /*
-            Intent temp = new Intent(this, standartNoteNewDesign.class);
-            temp.putExtra("button name", name);
-            temp.putExtra("buttonID", dataProjects.indexOf(name));
-            startActivity(temp);
+        String name = null;
+        if(type.equals("standart")){
+            name = standartItems.get(position);
+        }
+        else if(type.equals("shop")){
+            name = shopItems.get(position);
+        }
 
+        if(name != null) {
 
-             */
-            standartNote.setArguments(args);
-            showFragment(standartNote);
+            args.putString("button name", name);
+
+            Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setSubtitle(name);
+            if(getType(name).equals("standart")) {
 
-        } else if(getType(name).equals("shop")){
+                args.putInt("buttonID", dataProjects.indexOf(name));
+                standartNote.setArguments(args);
+                showFragment(standartNote);
+            } else if(getType(name).equals("shop")){
 
-            shopActivity.setArguments(args);
-            showFragment(shopActivity);
-            toolbar.setSubtitle(name);
-
+                args.putInt("buttonID", dataProjects.indexOf(name));
+                shopActivity.setArguments(args);
+                showFragment(shopActivity);
+            }
         }
     }
 
@@ -675,7 +679,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FragmentTransaction ft = fm.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
             ft.remove(fragment).commit();
-            //frameLayout.removeAllViews();
+            frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
             Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setSubtitle(R.string.textNotes);

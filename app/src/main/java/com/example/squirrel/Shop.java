@@ -43,10 +43,8 @@ import java.util.Locale;
 import static android.content.Context.ALARM_SERVICE;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class Shop extends Fragment implements View.OnClickListener {
+
+public class Shop extends Fragment implements View.OnClickListener, NoteInterface {
 
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
@@ -77,13 +75,23 @@ public class Shop extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    private int getBtnID(){
+    @Override
+    public int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("buttonID");
     }
 
-    private String getBtnName(){
+    @Override
+    public void updFragment() {
+
+    }
+
+    @Override
+    public void updData(String databaseName, String name, String note, String shortNote) {}
+
+    @Override
+    public String getBtnName(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
@@ -111,18 +119,21 @@ public class Shop extends Fragment implements View.OnClickListener {
 
         final String temp = userCursor.getString(7);
         String tempBool = userCursor.getString(6);
-        tempArr = temp.split("\r\n|\r|\n");
-        tempArrBool = tempBool.split("\r\n|\r|\n");
-        booleans = new boolean[tempArrBool.length];
+        if (temp != null && tempBool != null) {
 
-        for (int i = 0; i < tempArrBool.length; i++) {
-            booleans[i] = Boolean.valueOf(tempArrBool[i]);
-            Booleans.add(booleans[i]);
-        }
+            tempArr = temp.split("\r\n|\r|\n");
+            tempArrBool = tempBool.split("\r\n|\r|\n");
+            booleans = new boolean[tempArrBool.length];
 
-        for(int i = 0; i < tempArr.length; i++){
-            Items.add(tempArr[i]);
-            addCheck(booleans[i], tempArr[i]);
+            for (int i = 0; i < tempArrBool.length; i++) {
+                booleans[i] = Boolean.valueOf(tempArrBool[i]);
+                Booleans.add(booleans[i]);
+            }
+
+            for (int i = 0; i < tempArr.length; i++) {
+                Items.add(tempArr[i]);
+                addCheck(booleans[i], tempArr[i]);
+            }
         }
     }
 
@@ -144,13 +155,14 @@ public class Shop extends Fragment implements View.OnClickListener {
                 for (boolean aBoolean : Booleans) {
                     sendBool.append(String.valueOf(aBoolean) + "\n");
                 }
-                updDatabase("Notes", tv.getText().toString(), sendBool.toString());
+                updShopNotes("Notes", tv.getText().toString(), sendBool.toString());
             }
         });
         linear.addView(view2);
     }
 
-    private void updDatabase(String databaseName, String name, String booleans){
+    @Override
+    public void updShopNotes(String databaseName, String name, String booleans){
         mDb = mDBHelper.getWritableDatabase();
         //код сохранения в бд
         ContentValues cv = new ContentValues();
@@ -236,7 +248,7 @@ public class Shop extends Fragment implements View.OnClickListener {
                             getButton(DialogInterface.BUTTON_POSITIVE);
                     posButton.setTypeface(tpf);
                     posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                    posButton.setTextColor(Color.WHITE);
+                    posButton.setTextColor(R.color.colorFont);
                 }
             });
             dlg.show();
@@ -246,7 +258,8 @@ public class Shop extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void alarmDialog(final String title, final String text){
+    @Override
+    public void alarmDialog(final String title, final String text) {
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -264,17 +277,24 @@ public class Shop extends Fragment implements View.OnClickListener {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 calendar.set(Calendar.MINUTE, minute);
 
-                Intent notificationIntent = new Intent(getContext(), NotificationReceiver.class);
-                notificationIntent.putExtra("title", title);
-                notificationIntent.putExtra("text", text);
+                Intent notificationIntent = new Intent(view.getContext(),
+                        NotificationReceiver.class);
+
+                Bundle args = new Bundle();
+                args.putInt("btnId", getBtnID());
+                args.putString("btnName", getBtnName());
+                args.putString("title", title);
+                args.putString("shortNote", text);
+
+                notificationIntent.putExtras(args);
+                notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
                         1, notificationIntent,
-                        0);
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
                 AlarmManager alarmManager = (AlarmManager) getContext().
                         getSystemService(ALARM_SERVICE);
-
 
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP,

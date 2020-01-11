@@ -22,6 +22,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/rostelekom"
         android:text="расшифрованный текст"
+        android:maxHeight="80dp"
         android:textColor="@color/colorFont"
         android:textSize="24sp" />
 
@@ -34,7 +35,7 @@
         android:layout_marginRight="30dp"
         android:background="@drawable/projectframe"
         android:fontFamily="@font/rostelekom"
-        android:text="Сохранить в 'Заметки' текст и QR"
+        android:text="@string/saveQRbtn"
         android:textColor="@color/colorFont" />
 
 </LinearLayout>

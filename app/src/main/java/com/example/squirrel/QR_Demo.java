@@ -2,16 +2,19 @@ package com.example.squirrel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -74,7 +77,7 @@ public class QR_Demo extends AppCompatActivity {
                     final EditText name = new EditText(getApplicationContext());
                     name.setHint("Введите имя");
 
-                    Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+                    final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
 
                     name.setTypeface(tpf);
                     name.setTextSize(18);
@@ -106,6 +109,22 @@ public class QR_Demo extends AppCompatActivity {
                     builder.setCancelable(true);
 
                     AlertDialog dlg = builder.create();
+
+                    dlg.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void onShow(DialogInterface dialog) {
+                            Window v = ((AlertDialog)dialog).getWindow();
+                            v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
+                            Button posButton = ((AlertDialog)dialog).
+                                    getButton(DialogInterface.BUTTON_POSITIVE);
+                            posButton.setTypeface(tpf);
+                            posButton.setTypeface(Typeface.DEFAULT_BOLD);
+                            posButton.setTextColor(R.color.colorFont);
+                        }
+                    });
+
+
 
                     dlg.show();
 
@@ -168,11 +187,16 @@ public class QR_Demo extends AppCompatActivity {
 
         ContentValues cv = new ContentValues();
 
-        cv.put("id", MainActivity.id);
-        cv.put("name", "QR " + name);
+        String type = "standart";
+
+        String fullName = "QR " + name;
+
+        cv.put("_id", MainActivity.id);
+        cv.put("name", fullName);
         cv.put("shortName", tv.getText().toString());
         cv.put("text", " ");
         cv.put("image", image);
+        cv.put("type", type);
 
         //получение даты
         Date currentDate = new Date();
@@ -184,6 +208,9 @@ public class QR_Demo extends AppCompatActivity {
         mDb.insert("Notes", null, cv);
         mDb.close();
         MainActivity.id++;
+        MainActivity.dataProjects.add(fullName);
+        MainActivity.standartItems.add(fullName);
+        MainActivity.adapterStndrtList.notifyDataSetChanged();
     }
 
     @Override
