@@ -14,7 +14,7 @@ import java.io.OutputStream;
 class DatabaseHelper extends SQLiteOpenHelper {
     private static String DB_NAME = "squirrel.db";
     private static String DB_PATH;
-    private static final int DB_VERSION = 10;
+    private static final int DB_VERSION = 11;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;

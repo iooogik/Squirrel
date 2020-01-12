@@ -1,6 +1,7 @@
 package com.example.squirrel;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -71,8 +72,13 @@ public class Shop extends Fragment implements View.OnClickListener, NoteInterfac
 
         ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
         buttonTimeSet.setOnClickListener(this);
-        getPoints();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getPoints();
     }
 
     @Override
@@ -240,6 +246,7 @@ public class Shop extends Fragment implements View.OnClickListener, NoteInterfac
 
             AlertDialog dlg = builder.create();
             dlg.setOnShowListener(new DialogInterface.OnShowListener() {
+                @SuppressLint("ResourceAsColor")
                 @Override
                 public void onShow(DialogInterface dialog) {
                     Window v = ((AlertDialog)dialog).getWindow();

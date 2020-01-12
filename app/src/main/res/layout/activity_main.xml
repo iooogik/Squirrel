@@ -75,9 +75,9 @@
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
+                    android:layout_margin="8dp"
                     android:fontFamily="@font/rostelekom"
-                    android:text="Заметки"
+                    android:text="@string/strNameStandartNotes"
                     android:textColor="@color/colorFont" />
 
                 <ListView
@@ -90,13 +90,28 @@
                     android:id="@+id/textView5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
+                    android:layout_margin="8dp"
                     android:fontFamily="@font/rostelekom"
-                    android:text="Списки"
+                    android:text="@string/strNameShopNotes"
                     android:textColor="@color/colorFont" />
 
                 <ListView
                     android:id="@+id/shopList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:dividerHeight="12dp" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:fontFamily="@font/rostelekom"
+                    android:textColor="@color/colorFont"
+                    android:text="@string/books" />
+
+                <ListView
+                    android:id="@+id/booksList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:dividerHeight="12dp" />

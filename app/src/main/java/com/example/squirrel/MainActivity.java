@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -178,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         add.setOnClickListener(this);
+
         //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
         try {
             standartItems.clear();
@@ -245,12 +247,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
                                 withIcon(FontAwesome.Icon.faw_home).withIdentifier(identifier),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(identifier++),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).withIdentifier(identifier++),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName("Стандартные заметки").withIdentifier(identifier++),
-                        new SecondaryDrawerItem().withName("Покупки").withIdentifier(identifier++),
-                        new SecondaryDrawerItem().withName("Карточки").withIdentifier(identifier++)
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).
+                                withIdentifier(identifier++),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).
+                                withIdentifier(identifier++)
+
 
                         /*запятая после прдыдущего!
                         new SecondaryDrawerItem().withName(R.string.drawer_item_help).
@@ -302,15 +303,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
                             startActivity(qrReader);
                         }
-                        else if(position == 3){
-
-                        }
-                        else if(position == 4){
-
-                        }
-                        else if(position == 5){
-
-                        }
 
                     }
                 })
@@ -352,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tv.setVisibility(View.GONE);
             layout1.addView(tv);
 
-            final String[] types = new String[]{"standart", "shop"};
+            final String[] types = new String[]{"Стандартная заметка", "Список покупок"};
             //выбор типа
             final Spinner spinner = new Spinner(getApplicationContext());
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -422,6 +414,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             AlertDialog dlg = builder.create();
 
             dlg.setOnShowListener(new DialogInterface.OnShowListener() {
+                @SuppressLint("ResourceAsColor")
                 @Override
                 public void onShow(DialogInterface dialog) {
                     Window v = ((AlertDialog)dialog).getWindow();
@@ -508,6 +501,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final ListView standartList = findViewById(R.id.standartList);
         final ListView shopList = findViewById(R.id.shopList);
+        final ListView bookList = findViewById(R.id.booksList);
 
         while (!userCursor.isAfterLast()) {
             item = userCursor.getString(1); //колонки считаются с 0
@@ -523,11 +517,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         userCursor.close();
 
+        final ArrayList<String> booksItems = new ArrayList<>();
+        booksItems.add("Математические формулы");
+
+        ArrayAdapter<String> adapterBookList = new ArrayAdapter<>(this,
+                R.layout.item_project, booksItems);
+
+        bookList.setAdapter(adapterBookList);
+
         adapterShopList = new ArrayAdapter<>(this,
                 R.layout.item_project, shopItems);
 
         adapterStndrtList = new ArrayAdapter<>(this,
                 R.layout.item_project, standartItems);
+
+        bookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Book book = new Book();
+                FrameLayout frameLayout = findViewById(R.id.frame);
+                frameLayout.setVisibility(View.VISIBLE);
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                toolbar.setSubtitle(booksItems.get(position));
+                showFragment(book);
+            }
+        });
 
         standartList.setAdapter(adapterStndrtList);
         shopList.setAdapter(adapterShopList);
