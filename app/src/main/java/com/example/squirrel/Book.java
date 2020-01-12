@@ -71,7 +71,7 @@ public class Book extends Fragment {
     }
 
     private void getInformation(){
-        for (int i = 0; i < 36; i++) {
+        for (int i = 0; i < 99; i++) {
             getImagesAndDescriptions(i);
             setInformation(i);
         }
@@ -83,9 +83,10 @@ public class Book extends Fragment {
         userCursor = mDb.rawQuery("Select * from Formulaes", null);
         userCursor.moveToPosition(position);
         try {
-            DESCRIPTION.add(userCursor.getString(2));
             if(userCursor.getString(2) == null){
                 DESCRIPTION.add("");
+            } else {
+                DESCRIPTION.add(userCursor.getString(2));
             }
         }catch (Exception e){
             System.out.println(e);
