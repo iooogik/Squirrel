@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.squirrel;
+package my.iooogik.Book;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -40,9 +40,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.squirrel.camera.CameraSource;
-import com.example.squirrel.camera.CameraSourcePreview;
-import com.example.squirrel.camera.GraphicOverlay;
+import my.iooogik.Book.camera.CameraSource;
+import my.iooogik.Book.camera.CameraSourcePreview;
+import my.iooogik.Book.camera.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 

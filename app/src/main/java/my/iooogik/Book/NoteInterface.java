@@ -1,4 +1,4 @@
-package com.example.squirrel;
+package my.iooogik.Book;
 
 interface NoteInterface {
     void updData(String databaseName, String name, String note, String shortNote);

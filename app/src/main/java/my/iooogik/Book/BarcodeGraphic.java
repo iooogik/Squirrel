@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.squirrel;
+package my.iooogik.Book;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-import com.example.squirrel.camera.GraphicOverlay;
+import my.iooogik.Book.camera.GraphicOverlay;
 import com.google.android.gms.vision.barcode.Barcode;
 
 /**

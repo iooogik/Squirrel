@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.squirrel.camera;
+package my.iooogik.Book.camera;
 
 import android.Manifest;
 import android.content.Context;

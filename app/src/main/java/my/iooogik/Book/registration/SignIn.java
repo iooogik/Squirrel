@@ -1,4 +1,4 @@
-package com.example.squirrel.registration;
+package my.iooogik.Book.registration;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,21 +7,22 @@ import android.widget.*;
 
 import androidx.annotation.NonNull;
 
-import com.example.squirrel.MainActivity;
-import com.example.squirrel.R;
+import my.iooogik.Book.MainActivity;
+import my.iooogik.Book.R;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 
-public class Registration extends android.app.Activity implements View.OnClickListener {
+public class SignIn extends android.app.Activity implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.registration);
+        setContentView(R.layout.sign_in);
         final Intent signin = new Intent(this, SignIn.class);
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -34,25 +35,32 @@ public class Registration extends android.app.Activity implements View.OnClickLi
         findViewById(R.id.btn_signIn).setOnClickListener(this);
     }
 
-    public void registration(String em, String pass){
+    public void signIn(String em, String pass){
         final Intent intentMain = new Intent(this, MainActivity.class);
-
-        mAuth.createUserWithEmailAndPassword(em, pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.signInWithEmailAndPassword(em, pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull com.google.android.gms.tasks.Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Toast.makeText(Registration.this, "Регистрация прошла успешно!", Toast.LENGTH_SHORT).show();
                     startActivity(intentMain);
-                } else {
-                    Toast.makeText(Registration.this, "Что-то пошло не так!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    @Override
     public void onClick(View view) {
         EditText email = findViewById(R.id.email);
         EditText password = findViewById(R.id.password);
-        registration(email.getText().toString(), password.getText().toString());
+        signIn(email.getText().toString(), password.getText().toString());
+    }
+
+    public void onRegClick(View view){
+        Intent intent = new Intent(this, Registration.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

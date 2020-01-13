@@ -1,4 +1,4 @@
-package com.example.squirrel;
+package my.iooogik.Book;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.squirrel", appContext.getPackageName());
+        assertEquals("com.iooogik.Book", appContext.getPackageName());
     }
 }

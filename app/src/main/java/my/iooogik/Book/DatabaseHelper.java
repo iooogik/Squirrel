@@ -1,4 +1,4 @@
-package com.example.squirrel;
+package my.iooogik.Book;
 
 import android.database.SQLException;
 import android.database.sqlite.SQLiteOpenHelper;

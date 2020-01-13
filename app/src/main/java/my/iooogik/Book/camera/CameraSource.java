@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.squirrel.camera;
+package my.iooogik.Book.camera;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -853,7 +853,7 @@ public class CameraSource {
 
         // The method for selecting the best range is to minimize the sum of the differences between
         // the desired value and the upper and lower bounds of the range.  This may select a range
-        // that the desired value is outside of, but this is often preferred.  For example, if the
+        // that the desired value is outside of, but this is often preferred.  For iooogik, if the
         // desired frame rate is 29.97, the range (30, 30) is probably more desirable than the
         // range (15, 30).
         int[] selectedFpsRange = null;

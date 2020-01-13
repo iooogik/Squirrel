@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.squirrel;
+package my.iooogik.Book;
 
 import android.content.Context;
 
-import com.example.squirrel.camera.GraphicOverlay;
+import my.iooogik.Book.camera.GraphicOverlay;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
