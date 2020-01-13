@@ -343,8 +343,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tv.setMinimumWidth(1500);
             tv.setVisibility(View.GONE);
             layout1.addView(tv);
-
-            final String[] types = new String[]{"Стандартная заметка", "Список покупок"};
+            final String stndrtTextNote = "Стандартная заметка";
+            final String marckedList = "Маркированный список";
+            final String[] types = new String[]{stndrtTextNote, marckedList};
             //выбор типа
             final Spinner spinner = new Spinner(getApplicationContext());
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -375,12 +376,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mainLayout.addView(layout1);
             builder.setView(mainLayout);
 
+            final String DB_TYPE_STNDRT = "standart";
+            final String DB_TYPE_SHOP = "shop";
+
             builder.setPositiveButton("Добавить",
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mDb = mDBHelper.getWritableDatabase();
-                            String type = spinner.getSelectedItem().toString();
+
                             //addProject(nameNote.getText().toString(), true);
                             //добавление в бд и запись в строчки
                             ContentValues cv = new ContentValues();
@@ -388,8 +392,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             cv.put("name", nameNote.getText().toString());
                             cv.put("shortName", "короткое описание");
                             cv.put("text", "hello, it's the best note ever");
-                            cv.put("type", spinner.getSelectedItem().toString());
-                            //получение даты
+                            if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
+                                cv.put("type", DB_TYPE_STNDRT);
+                            }
+                            else if(spinner.getSelectedItem().toString().equals(marckedList)){
+                                cv.put("type", DB_TYPE_SHOP);
+                            }
+                                //получение даты
                             Date currentDate = new Date();
                             DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
                                     Locale.getDefault());
@@ -401,10 +410,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             mDb.close();
                             id++;
 
-                            if(type.equals("standart")){
+                            if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
+                                dataProjects.add(nameNote.getText().toString());
                                 standartItems.add(nameNote.getText().toString());
                                 adapterStndrtList.notifyDataSetChanged();
-                            }else if(type.equals("shop")){
+                            }else if(spinner.getSelectedItem().toString().equals(marckedList)){
+                                dataProjects.add(nameNote.getText().toString());
                                 shopItems.add(nameNote.getText().toString());
                                 adapterShopList.notifyDataSetChanged();
                             }
@@ -624,8 +635,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final ListView standartList = findViewById(R.id.standartList);
         final ListView shopList = findViewById(R.id.shopList);
+        final String name;
+        if(type.equals("shop")){
+            position = position + standartItems.size();
+            name = String.valueOf(shopList.getItemAtPosition(position));
+        }else {
+            name = String.valueOf(standartList.getItemAtPosition(position));
+        }
 
-        final String name = String.valueOf(standartList.getItemAtPosition(position));
+
         mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Notes", null);
 
@@ -652,9 +670,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainLayout.addView(layout1);
         builder.setView(mainLayout);
 
-        if(type.equals("shop")){
-            position = position + standartItems.size();
-        }
+
 
         userCursor.moveToPosition(position);
         String message = userCursor.getString(2);
