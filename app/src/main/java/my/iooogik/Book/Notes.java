@@ -227,7 +227,7 @@ public class Notes extends AppCompatActivity implements View.OnClickListener {
     }
 
     public void createToolbar(){
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
 
@@ -598,7 +598,7 @@ public class Notes extends AppCompatActivity implements View.OnClickListener {
 
             args.putString("button name", name);
 
-            Toolbar toolbar = findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar_main);
             toolbar.setSubtitle(name);
             if(getType(name).equals("standart")) {
 
@@ -693,7 +693,7 @@ public class Notes extends AppCompatActivity implements View.OnClickListener {
             ft.remove(fragment).commit();
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
-            Toolbar toolbar = findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar_main);
             toolbar.setSubtitle(R.string.textNotes);
 
         }

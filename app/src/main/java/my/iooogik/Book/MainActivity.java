@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.graphics.fonts.Font;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,8 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
     Cursor userCursor;
     private DatabaseHelper mDBHelper;
-    public static Typeface standartFont;
     private SQLiteDatabase mDb;
+    public static Typeface standartFont;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,16 +58,17 @@ public class MainActivity extends AppCompatActivity {
         try {
             getPlanets();
         } catch (Exception e){
-            Log.i("MainActivity", "no items");
-            Toast.makeText(this, String.valueOf(e), Toast.LENGTH_LONG).show();
+            Log.i("MainActivity", String.valueOf(e));
+            //Toast.makeText(this, String.valueOf(e), Toast.LENGTH_LONG).show();
         }
+
 
 
     }
 
 
     private void createToolbar(){
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
         toolbar.setSubtitle("Планеты и Звёзды");
@@ -158,12 +158,12 @@ public class MainActivity extends AppCompatActivity {
             description = userCursor.getString(userCursor.getColumnIndex("description"));
             byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
             bitmap =  BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
-            setInformation(name, description, bitmap);
+            setInformation(name, description, bitmap, i);
             userCursor.moveToNext();
         }
     }
 
-    private void setInformation(String name, String description, Bitmap bitmap){
+    private void setInformation(String name, String description, Bitmap bitmap, int id){
         LinearLayout linearLayout = findViewById(R.id.linear);
         View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
@@ -175,6 +175,15 @@ public class MainActivity extends AppCompatActivity {
         int height = 300;
         imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
         desc.setText(description);
+
+        view1.setOnClickListener(v -> {
+            Intent scrollView = new Intent(getApplicationContext(), ScrollingArticle.class);
+            Bundle args = new Bundle();
+            args.putInt("_id", id);
+            scrollView.putExtras(args);
+            startActivity(scrollView);
+        });
+
         linearLayout.addView(view1);
     }
 
