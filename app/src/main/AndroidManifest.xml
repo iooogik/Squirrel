@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="my.iooogik.Book">
 
-    <uses-feature android:name="android.hardware.camera" />
-
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
     <application
         android:allowBackup="true"
@@ -17,9 +17,12 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <receiver android:name="my.iooogik.Book.NotificationReceiver" />
-
+        <meta-data android:name="com.google.ar.core" android:value="required"/>
         <activity android:name="my.iooogik.Book.StandartNote" />
         <activity android:name="my.iooogik.Book.QR_Demo" />
+        <activity android:name="my.iooogik.Book.ARcamera" />
+        <activity android:name="my.iooogik.Book.Notes" />
+
         <activity android:name="my.iooogik.Book.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,8 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="my.iooogik.Book.registration.Registration" />
-        <activity android:name="my.iooogik.Book.registration.SignIn" />
+
         <activity
             android:name="my.iooogik.Book.BarcodeCaptureActivity"
             android:label="Read Barcode" />

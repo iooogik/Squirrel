@@ -1,12 +1,10 @@
 <resources>
-    <string name="app_name">Iooogik Book</string>
+    <string name="app_name">3D Planet Models</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
+    <string name="menu_home">Домой</string>
+    <string name="menu_slideshow">Слайд-шоу</string>
+    <string name="menu_share">Поделиться</string>
+    <string name="menu_send">Отправить</string>
     <string name="textNotes">Текстовые заметки</string>
 
     <string name="drawer_item_home">Домой</string>
@@ -51,13 +49,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="largeText">
-        В годы Великой Отечественной войны предприятия города производили для фронта боеприпасы и снаряды для «Катюш». Было изготовлено 240 миллионов снарядов (из них 15 миллионов кумулятивных противотанковых), мин и бомб. Богородский снаряжательный завод участвовал в создании атомного оружия, а после войны занял достойное место в атомной отрасли страны. Завод был перепрофилирован на выпуск топлива для различных транспортных средств и атомных станций в 1954 году. В 1942 году в городе начинается сооружение Ново-Краматорского завода, который в послевоенные годы был перестроен в завод тяжёлого машиностроения.
 
-Более 11 тысяч жителей Электростали участвовали в боевых действиях на фронте, около 4 тысяч погибли. 13 электростальцев удостоены звания Героя Советского Союза.
-
-Почётное звание «Город Трудовой Доблести и Славы» присвоено Электростали 7 апреля 2015 года постановлением президиума Межгосударственного Союза Городов-Героев. Этого звания город удостоен за выдающиеся заслуги перед Отечеством, мужество, массовой трудовой героизм, проявленный жителями города Электросталь в борьбе с фашистскими захватчиками и в ознаменование 70-летия окончания Второй мировой войны.
-    </string>
     <string name="saveQRbtn">Сохранить в \'Заметки\' текст и QR</string>
     <string name="strNameStandartNotes">Стандартные заметки</string>
     <string name="strNameShopNotes">Маркированные списки</string>

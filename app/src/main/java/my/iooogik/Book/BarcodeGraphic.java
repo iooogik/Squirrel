@@ -81,7 +81,7 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
     }
 
     /**
-     * Draws the barcode annotations for position, size, and raw value on the supplied canvas.
+     * Draws the barcode annotations for position, size, and 3d_models value on the supplied canvas.
      */
     @Override
     public void draw(Canvas canvas) {

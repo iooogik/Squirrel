@@ -45,7 +45,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         Bundle newArgs = intent.getExtras();
 
-        Intent resultIntent = new Intent(StandartNote.view.getContext(), MainActivity.class);
+        Intent resultIntent = new Intent(StandartNote.view.getContext(), Notes.class);
         /*
         Bundle args = new Bundle();
         args.putInt("buttonID", newArgs.getInt("btnID"));
@@ -53,7 +53,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         resultIntent.putExtras(args);
         */
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(StandartNote.view.getContext());
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(Notes.class);
         stackBuilder.addNextIntent(resultIntent);
 
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,

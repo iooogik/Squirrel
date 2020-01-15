@@ -54,7 +54,7 @@ public class QR_Demo extends AppCompatActivity {
 
         final LinearLayout mainLayout  = new LinearLayout(this);
         final LinearLayout layout1 = new LinearLayout(this);
-        final Intent intent = new Intent(this, MainActivity.class);
+        final Intent intent = new Intent(this, Notes.class);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,7 +190,7 @@ public class QR_Demo extends AppCompatActivity {
 
         String fullName = "QR " + name;
 
-        cv.put("_id", MainActivity.id);
+        cv.put("_id", Notes.id);
         cv.put("name", fullName);
         cv.put("shortName", tv.getText().toString());
         cv.put("text", " ");
@@ -206,10 +206,10 @@ public class QR_Demo extends AppCompatActivity {
         //запись
         mDb.insert("Notes", null, cv);
         mDb.close();
-        MainActivity.id++;
-        MainActivity.dataProjects.add(fullName);
-        MainActivity.standartItems.add(fullName);
-        MainActivity.adapterStndrtList.notifyDataSetChanged();
+        Notes.id++;
+        Notes.dataProjects.add(fullName);
+        Notes.standartItems.add(fullName);
+        Notes.adapterStndrtList.notifyDataSetChanged();
     }
 
     @Override

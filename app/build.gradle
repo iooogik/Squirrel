@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.ar.sceneform.plugin'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "my.iooogik.Book"
-        minSdkVersion 24
+        minSdkVersion 25
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -18,28 +19,48 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.firebase:firebase-core:16.0.4'
-    implementation 'com.google.firebase:firebase-auth:16.0.5'
-    implementation 'com.google.firebase:firebase-database:16.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.zxing:core:3.2.1'
-    implementation 'androidx.navigation:navigation-fragment:2.0.0'
-    implementation 'androidx.navigation:navigation-ui:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.1.0'
+    implementation 'androidx.navigation:navigation-ui:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+
+    implementation 'com.google.ar:core:1.14.0'
+    implementation "com.google.ar.sceneform.ux:sceneform-ux:1.14.0"
+    implementation 'com.google.ar.sceneform:core:1.14.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
 
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
     implementation('com.mikepenz.materialdrawer:library:0.9.5@aar') {
         transitive = true
     }
 }
+
+
+sceneform.asset('sampledata/models/solar.fbx',
+        'default',
+        'sampledata/models/solar.sfa',
+        'src/main/assets/solar')
+
+sceneform.asset('sampledata/models/solar.fbx',
+        'default',
+        'sampledata/models/solar.sfa',
+        'src/main/res/raw/solar')
