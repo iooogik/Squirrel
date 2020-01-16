@@ -95,7 +95,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             @Override
             public void afterTextChanged(Editable s) {
                 TextView tv = view.findViewById(R.id.nameWarn);
-                if(name.getText().toString().length() > 30){
+                if(name.getText().toString().length() > 40){
                     if(tv.getVisibility() != View.VISIBLE) {
                         tv.setVisibility(View.VISIBLE);
                     }

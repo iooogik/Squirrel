@@ -41,7 +41,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="deleteButton">Удалить выбранную запись</string>
     <string name="shortNoteWarning">Количество символов в кратком описании должно быть не более 100</string>
-    <string name="nameWarning">Количество символов в названии должно быть не более 30</string>
+    <string name="nameWarning">Количество символов в названии должно быть не более 40</string>
     <string name="noteWarning">Количество символов в заметке должно быть не более 300</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

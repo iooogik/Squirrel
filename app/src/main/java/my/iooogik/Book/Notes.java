@@ -268,62 +268,55 @@ public class Notes extends Fragment implements View.OnClickListener {
             final String DB_TYPE_SHOP = "shop";
 
             builder.setPositiveButton("Добавить",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mDb = mDBHelper.getWritableDatabase();
+                    (dialog, which) -> {
+                        mDb = mDBHelper.getWritableDatabase();
 
-                            //addProject(nameNote.getText().toString(), true);
-                            //добавление в бд и запись в строчки
-                            ContentValues cv = new ContentValues();
-                            cv.put("_id", id);
-                            cv.put("name", nameNote.getText().toString());
-                            cv.put("shortName", "короткое описание");
-                            cv.put("text", "hello, it's the best note ever");
-                            if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
-                                cv.put("type", DB_TYPE_STNDRT);
-                            }
-                            else if(spinner.getSelectedItem().toString().equals(marckedList)){
-                                cv.put("type", DB_TYPE_SHOP);
-                            }
-                                //получение даты
-                            Date currentDate = new Date();
-                            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                                    Locale.getDefault());
-                            String dateText = dateFormat.format(currentDate);
-                            cv.put("date", dateText);
-                            //запись
+                        //addProject(nameNote.getText().toString(), true);
+                        //добавление в бд и запись в строчки
+                        ContentValues cv = new ContentValues();
+                        cv.put("_id", id);
+                        cv.put("name", nameNote.getText().toString());
+                        cv.put("shortName", "короткое описание");
+                        cv.put("text", "hello, it's the best note ever");
+                        if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
+                            cv.put("type", DB_TYPE_STNDRT);
+                        }
+                        else if(spinner.getSelectedItem().toString().equals(marckedList)){
+                            cv.put("type", DB_TYPE_SHOP);
+                        }
+                            //получение даты
+                        Date currentDate = new Date();
+                        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                                Locale.getDefault());
+                        String dateText = dateFormat.format(currentDate);
+                        cv.put("date", dateText);
+                        //запись
+                        dataProjects.add(nameNote.getText().toString());
+                        mDb.insert("Notes", null, cv);
+                        mDb.close();
+                        id++;
+
+                        if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
                             dataProjects.add(nameNote.getText().toString());
-                            mDb.insert("Notes", null, cv);
-                            mDb.close();
-                            id++;
-
-                            if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
-                                dataProjects.add(nameNote.getText().toString());
-                                standartItems.add(nameNote.getText().toString());
-                                adapterStndrtList.notifyDataSetChanged();
-                            }else if(spinner.getSelectedItem().toString().equals(marckedList)){
-                                dataProjects.add(nameNote.getText().toString());
-                                shopItems.add(nameNote.getText().toString());
-                                adapterShopList.notifyDataSetChanged();
-                            }
+                            standartItems.add(nameNote.getText().toString());
+                            adapterStndrtList.notifyDataSetChanged();
+                        }else if(spinner.getSelectedItem().toString().equals(marckedList)){
+                            dataProjects.add(nameNote.getText().toString());
+                            shopItems.add(nameNote.getText().toString());
+                            adapterShopList.notifyDataSetChanged();
                         }
                     });
 
             AlertDialog dlg = builder.create();
 
-            dlg.setOnShowListener(new DialogInterface.OnShowListener() {
-                @SuppressLint("ResourceAsColor")
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    Window v = ((AlertDialog)dialog).getWindow();
-                    v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
-                    Button posButton = ((AlertDialog)dialog).
-                            getButton(DialogInterface.BUTTON_POSITIVE);
-                    posButton.setTypeface(MainActivity.standartFont);
-                    posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                    posButton.setTextColor(R.color.colorFont);
-                }
+            dlg.setOnShowListener(dialog -> {
+                Window v = ((AlertDialog)dialog).getWindow();
+                v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
+                Button posButton = ((AlertDialog)dialog).
+                        getButton(DialogInterface.BUTTON_POSITIVE);
+                posButton.setTypeface(MainActivity.standartFont);
+                posButton.setTypeface(Typeface.DEFAULT_BOLD);
+                posButton.setTextColor(R.color.colorFont);
             });
 
             dlg.show();
