@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -104,17 +103,27 @@ public class MainActivity extends AppCompatActivity {
                         new PrimaryDrawerItem().withName(R.string.drawer_item_settings).
                                 withIdentifier(identifier++),
 
+
+                        //3
                         new DividerDrawerItem(),
 
 
-                        //3
+                        //4
                         new SecondaryDrawerItem().withName(R.string.drawer_item_qr).
                                 withIdentifier(identifier++),
 
-                        //4
+                        //5
 
                         new SecondaryDrawerItem().withName(R.string.contacts).
-                                withIdentifier(identifier++)
+                                withIdentifier(identifier++),
+
+                        //6
+                        new DividerDrawerItem(),
+
+                        //7
+
+                        new SecondaryDrawerItem().withName("Игра от разработчика")
+                                .withIdentifier(identifier++)
 
                         /*запятая после прдыдущего!
                         new SecondaryDrawerItem().withName(R.string.drawer_item_help).
@@ -179,6 +188,14 @@ public class MainActivity extends AppCompatActivity {
                         Contacts contacts = new Contacts();
                         showFragment(contacts);
                         toolbar.setSubtitle(R.string.contacts);
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    else if(position == 7){
+                        LifeAtSpace lifeAtSpace = new LifeAtSpace();
+                        showFragment(lifeAtSpace);
+                        toolbar.setSubtitle("Игра от издателя");
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         frameLayout.setVisibility(View.VISIBLE);
                     }

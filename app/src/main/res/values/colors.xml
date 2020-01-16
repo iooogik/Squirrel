@@ -10,5 +10,6 @@
     <color name="colorIcons">#000000</color>
     <color name="colorSmallButtons">#FFFFFF</color>
     <color name="colorFont">#000000</color>
+    <color name="colorLightFont">#FFFFFF</color>
     <color name="colorWarning">#FF0000</color>
 </resources>
