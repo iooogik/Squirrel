@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //7
 
-                        new SecondaryDrawerItem().withName("Игра от разработчика")
+                        new SecondaryDrawerItem().withName("Игра от издателя")
                                 .withIdentifier(identifier++)
 
                         /*запятая после прдыдущего!
