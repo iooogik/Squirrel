@@ -316,7 +316,6 @@ public class Notes extends Fragment implements View.OnClickListener {
                         getButton(DialogInterface.BUTTON_POSITIVE);
                 posButton.setTypeface(MainActivity.standartFont);
                 posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                posButton.setTextColor(R.color.colorFont);
             });
 
             dlg.show();
@@ -587,6 +586,8 @@ public class Notes extends Fragment implements View.OnClickListener {
                 android.R.layout.simple_list_item_activated_1,
                 userCursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
 
+
+
         if(!userFilter.getText().toString().isEmpty())
             userAdapter.getFilter().filter(userFilter.getText().toString());
 
@@ -598,15 +599,22 @@ public class Notes extends Fragment implements View.OnClickListener {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             // при изменении текста выполняем фильтрацию
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                TextView tv2 = view.findViewById(R.id.textView2);
+                tv2.setText("Найдено");
                 TextView tv5 = view.findViewById(R.id.textView5);
-                ListView listView = view.findViewById(R.id.shopList);
+                ListView shopList = view.findViewById(R.id.shopList);
+                ListView standartList = view.findViewById(R.id.standartList);
                 if(!s.toString().isEmpty()) {
                     userAdapter.getFilter().filter(s.toString());
+                    standartList.setAdapter(userAdapter);
                     tv5.setVisibility(View.GONE);
-                    listView.setVisibility(View.GONE);
+                    shopList.setVisibility(View.GONE);
                 }else {
+                    tv2.setText(R.string.strNameStandartNotes);
                     tv5.setVisibility(View.VISIBLE);
-                    listView.setVisibility(View.VISIBLE);
+                    shopList.setVisibility(View.VISIBLE);
+                    standartList.setAdapter(adapterStndrtList);
+
                     //updProjects();
                 }
             }
@@ -614,25 +622,16 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
         // устанавливаем провайдер фильтрации
-        userAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            @Override
-            public Cursor runQuery(CharSequence constraint) {
+        userAdapter.setFilterQueryProvider(constraint -> {
 
-                if (constraint == null || constraint.length() == 0) {
-                    return mDb.rawQuery("select * from Notes", null);
-                }
-                else {
-                    return mDb.rawQuery("select * from Notes" + " where " +
-                            "name" + " like ?", new String[]{"%" + constraint.toString() + "%"});
-                }
+            if (constraint == null || constraint.length() == 0) {
+                return mDb.rawQuery("select * from Notes", null);
+            }
+            else {
+                return mDb.rawQuery("select * from Notes" + " where " +
+                        "name" + " like ?", new String[]{"%" + constraint.toString() + "%"});
             }
         });
-
-        ListView standartList = view.findViewById(R.id.standartList);
-        ListView shopList = view.findViewById(R.id.shopList);
-        standartList.setAdapter(userAdapter);
-        //shopList.setAdapter(userAdapter);
-
     }
 
 }
