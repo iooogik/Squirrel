@@ -53,13 +53,11 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     public StandartNote(){}
 
+    @SuppressLint("StaticFieldLeak")
     public static View view;
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
     private Calendar calendar = Calendar.getInstance();
-    private EditText name;
-    private EditText shortNote;
-    private EditText note;
 
     private Cursor userCursor;
 
@@ -148,9 +146,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         } catch (IOException mIOException) {
             throw new Error("UnableToUpdateDatabase");
         }
-        name = view.findViewById(R.id.editName);
-        note = view.findViewById(R.id.editNote);
-        shortNote = view.findViewById(R.id.shortNote);
+        EditText name = view.findViewById(R.id.editName);
+        EditText note = view.findViewById(R.id.editNote);
+        EditText shortNote = view.findViewById(R.id.shortNote);
 
         mDb = mDBHelper.getReadableDatabase();
 
@@ -220,7 +218,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     private void share(){
-        TextView name = getView().findViewById(R.id.editName);
+        TextView name = Objects.requireNonNull(getView()).findViewById(R.id.editName);
         TextView note = getView().findViewById(R.id.editNote);
         TextView shortNote = getView().findViewById(R.id.shortNote);
 
@@ -284,12 +282,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         builder.setCancelable(true);
         builder.setPositiveButton(Html.fromHtml
                         ("<font color='" + R.color.colorCursor + "'>Готово</font>"),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                (dialog, which) -> dialog.cancel());
         AlertDialog dlg = builder.create();
         dlg.show();
     }
@@ -307,52 +300,45 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         DatePickerDialog dialog;
         final TimePickerDialog dialog2;
 
-        dialog2 = new TimePickerDialog(view.getContext(), new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
+        dialog2 = new TimePickerDialog(view.getContext(), (timePicker, hourOfDay, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
 
-                Intent notificationIntent = new Intent(view.getContext(),
-                        NotificationReceiver.class);
+            Intent notificationIntent = new Intent(view.getContext(),
+                    NotificationReceiver.class);
 
-                Bundle args = new Bundle();
-                args.putInt("btnId", getBtnID());
-                args.putString("btnName", getBtnName());
-                args.putString("title", title);
-                args.putString("shortNote", text);
+            Bundle args = new Bundle();
+            args.putInt("btnId", getBtnID());
+            args.putString("btnName", getBtnName());
+            args.putString("title", title);
+            args.putString("shortNote", text);
 
-                notificationIntent.putExtras(args);
-                notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            notificationIntent.putExtras(args);
+            notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
-                        1, notificationIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
+                    1, notificationIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
 
-                AlarmManager alarmManager = (AlarmManager) getContext().
-                        getSystemService(ALARM_SERVICE);
+            AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).
+                    getSystemService(ALARM_SERVICE);
 
 
-
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP,
-                        calendar.getTimeInMillis(), pendingIntent);
-                Toast.makeText(getContext(), "Уведомление установлено",
-                        Toast.LENGTH_LONG).show();
-
-            }
+            assert alarmManager != null;
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis(), pendingIntent);
+            Toast.makeText(getContext(), "Уведомление установлено",
+                    Toast.LENGTH_LONG).show();
 
         }, hours, minutes, true);
 
         dialog = new DatePickerDialog(
                 view.getContext(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, month);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        dialog2.show();
-                    }
+                (view, year1, month1, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year1);
+                    calendar.set(Calendar.MONTH, month1);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    dialog2.show();
                 },
                 year, month, day);
         dialog.show();
@@ -367,12 +353,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         String nameNote = name.getText().toString();
         String Note = note.getText().toString();
-        String shortnote = shortNote.getText().toString();
+        String shortText = shortNote.getText().toString();
 
         if(view.getId() == R.id.buttonSave){
 
             String dataName = "Notes";
-            updData(dataName, nameNote, Note, shortnote);
+            updData(dataName, nameNote, Note, shortText);
 
             Notes.standartItems.set(getBtnID(), nameNote);
             Notes.adapterStndrtList.notifyDataSetChanged();
@@ -426,7 +412,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
             }
         } else if (view.getId() == R.id.buttonAlarm){
-            alarmDialog(nameNote, shortnote);
+            alarmDialog(nameNote, shortText);
         }
     }
 

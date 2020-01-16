@@ -1,5 +1,6 @@
 package my.iooogik.Book;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,12 +21,15 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -36,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
     public static Typeface standartFont;
+    public static Fragment currFragment;
+    @SuppressLint("StaticFieldLeak")
+    public static Toolbar toolbar;
 
 
     @Override
@@ -47,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         createToolbar();
+
+        toolbar = findViewById(R.id.toolbar_main);
 
         mDBHelper = new DatabaseHelper(this);
         mDBHelper.openDataBase();
@@ -74,20 +83,36 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitle("Планеты и Звёзды");
 
         final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
-        int identifier = 1;
+        int identifier = 0;
 
         new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggle(true)
                 .addDrawerItems(
+
+                        //0
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
                                 withIcon(FontAwesome.Icon.faw_home).withIdentifier(identifier),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).
+                        //1
+                        new PrimaryDrawerItem().withName(R.string.textNotes).
                                 withIdentifier(identifier++),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).
-                                withIdentifier(identifier++)
 
+                        //2
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_settings).
+                                withIdentifier(identifier++),
+
+                        new DividerDrawerItem(),
+
+
+                        //3
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).
+                                withIdentifier(identifier++),
+
+                        //4
+
+                        new SecondaryDrawerItem().withName(R.string.contacts).
+                                withIdentifier(identifier++)
 
                         /*запятая после прдыдущего!
                         new SecondaryDrawerItem().withName(R.string.drawer_item_help).
@@ -122,26 +147,74 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDrawerClosed(View drawerView) {}
                 })
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position,
-                                            long id, IDrawerItem drawerItem) {
+                .withOnDrawerItemClickListener((parent, view, position, id, drawerItem) -> {
 
-                        if(position == 0){
-
-                        } else if(position == 1){
-
+                    if(position == 0){
+                        if(currFragment != null) {
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
                         }
-                        else if (position == 2) {
-                            qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
-                            qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
-                            startActivity(qrReader);
-                        }
+
+                    } else if(position == 1){
+                        Notes notes = new Notes();
+                        showFragment(notes);
+                        toolbar.setSubtitle(R.string.textNotes);
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    else if(position == 2){
 
                     }
+
+                    else if (position == 4) {
+                        qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                        qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
+                        startActivity(qrReader);
+                    }
+
+                    else if(position == 5){
+                        Contacts contacts = new Contacts();
+                        showFragment(contacts);
+                        toolbar.setSubtitle(R.string.contacts);
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
                 })
                 .build();
 
+    }
+
+    private void showFragment(Fragment fragment){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        currFragment = fragment;
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.replace(R.id.Mainframe, fragment);
+        ft.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(currFragment != null) {
+            closeFragment(currFragment);
+        }
+    }
+
+    private void closeFragment(Fragment fragment){
+        final FrameLayout frameLayout = findViewById(R.id.Mainframe);
+        if(frameLayout.getVisibility() == View.VISIBLE){
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+            ft.remove(fragment).commit();
+            frameLayout.removeAllViews();
+            frameLayout.setVisibility(View.GONE);
+            Toolbar toolbar = findViewById(R.id.toolbar_main);
+            toolbar.setSubtitle(R.string.textNotes);
+
+        }
     }
 
     private void getPlanets(){

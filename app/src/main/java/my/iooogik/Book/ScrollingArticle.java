@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,7 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 
-public class ScrollingArticle extends AppCompatActivity {
+public class ScrollingArticle extends AppCompatActivity  implements View.OnClickListener{
 
     Cursor userCursor;
     private DatabaseHelper mDBHelper;
@@ -28,6 +29,12 @@ public class ScrollingArticle extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling_article);
+
+        FloatingActionButton back = findViewById(R.id.back);
+        Button showAR = findViewById(R.id.openAr);
+
+        back.setOnClickListener(this);
+        showAR.setOnClickListener(this);
 
 
         Bundle args = getIntent().getExtras();
@@ -60,15 +67,16 @@ public class ScrollingArticle extends AppCompatActivity {
 
         imageView.setImageBitmap(bitmap);
 
+    }
 
-        FloatingActionButton back = findViewById(R.id.back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.back){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        } else if(v.getId() == R.id.openAr){
+            Intent intent = new Intent(getApplicationContext(), ARcamera.class);
+            startActivity(intent);
+        }
     }
 }

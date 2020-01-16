@@ -1,12 +1,15 @@
 package my.iooogik.Book;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
@@ -15,7 +18,7 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
-public class ARcamera extends FragmentActivity {
+public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
     ArFragment arFragment;
     private ModelRenderable solarSystem;
@@ -23,11 +26,13 @@ public class ARcamera extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.notes);
+        setContentView(R.layout.planets_show);
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
         setupModel();
-
         createModel();
+
+        FloatingActionButton back = findViewById(R.id.back);
+        back.setOnClickListener(this);
 
     }
 
@@ -62,5 +67,13 @@ public class ARcamera extends FragmentActivity {
                 }
         );
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.back){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
     }
 }

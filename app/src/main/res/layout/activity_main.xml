@@ -13,6 +13,14 @@
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar" />
 
+    <FrameLayout
+        android:id="@+id/Mainframe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+    </FrameLayout>
+
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"

@@ -6,6 +6,7 @@
     <string name="menu_share">Поделиться</string>
     <string name="menu_send">Отправить</string>
     <string name="textNotes">Текстовые заметки</string>
+    <string name="contacts">Контакты</string>
 
     <string name="drawer_item_home">Домой</string>
     <string name="drawer_item_free_play">Free Play</string>
@@ -144,5 +145,6 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="showAR">Показать планету в AR</string>
 
 </resources>

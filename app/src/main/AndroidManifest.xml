@@ -18,10 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Contacts"></activity>
         <activity
             android:name=".ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver android:name=".NotificationReceiver" />
 

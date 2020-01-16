@@ -60,7 +60,7 @@ sceneform.asset('sampledata/models/solar.fbx',
         'sampledata/models/solar.sfa',
         'src/main/assets/solar')
 
-sceneform.asset('sampledata/models/solar.fbx',
+sceneform.asset('sampledata/models/moon.fbx',
         'default',
-        'sampledata/models/solar.sfa',
-        'src/main/res/raw/solar')
+        'sampledata/models/moon.sfa',
+        'src/main/res/raw/moon')
