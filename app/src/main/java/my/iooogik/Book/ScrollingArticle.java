@@ -10,6 +10,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -57,7 +59,7 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
 
         TextView textView = findViewById(R.id.article_text);
 
-        textView.setText(userCursor.getString(userCursor.getColumnIndex("article")));
+        textView.setText(Html.fromHtml(getEditedText()));
         ImageView imageView = findViewById(R.id.sc_back);
 
         Bitmap bitmap;
@@ -67,6 +69,21 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
 
         imageView.setImageBitmap(bitmap);
 
+    }
+
+    private String getEditedText(){
+        String tempText = userCursor.getString(userCursor.getColumnIndex("article"));
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            for (int i = 0; i < tempText.length(); i++) {
+                stringBuilder.append(tempText.charAt(i));
+            }
+        }catch (Exception e){
+            Log.i("scrollingArticle", String.valueOf(e));
+        }
+
+
+        return stringBuilder.toString();
     }
 
     @Override

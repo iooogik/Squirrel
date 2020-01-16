@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class Contacts extends Fragment {
+public class Contacts extends Fragment implements View.OnClickListener {
 
     View view;
 
@@ -27,27 +27,41 @@ public class Contacts extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_contacts, container, false);
+
+        ImageButton telegram = view.findViewById(R.id.telegram);
+        ImageButton gmail = view.findViewById(R.id.gmail);
+        ImageButton discord = view.findViewById(R.id.discord);
+
+        telegram.setOnClickListener(this);
+        gmail.setOnClickListener(this);
+        discord.setOnClickListener(this);
+
         return view;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        ImageButton telegram = view.findViewById(R.id.telegram);
-        telegram.setOnClickListener(v -> {
+    public void onClick(View v) {
+        if(v.getId() == R.id.telegram){
+
             Uri address = Uri.parse("https://t.me/iooogik");
             Intent openlink = new Intent(Intent.ACTION_VIEW, address);
             startActivity(openlink);
-        });
 
-        ImageButton gmail = view.findViewById(R.id.gmail);
-        gmail.setOnClickListener(v -> {
+        } else if(v.getId() == R.id.gmail){
+
             ClipboardManager clipboard = (ClipboardManager)
                     getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("", "iooogikdev@gmail.com");
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Адрес электронной почты был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
-        });
+        } else if(v.getId() == R.id.discord){
+            ClipboardManager clipboard = (ClipboardManager)
+                    getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("", "Стасян#6249");
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getContext(), "Тег дискорда был " +
+                    "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
+        }
     }
 }

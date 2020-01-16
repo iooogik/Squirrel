@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:backgroundTint="#80D8FF"
+        android:backgroundTint="@color/colorFrame"
         android:fontFamily="@font/rostelekom"
         android:hint="@string/search"
         android:inputType="textPersonName"

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6495ED</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">#FFFFFF</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorFrame">#C0C0C0</color>
     <color name="colorItems">#FFFFFF</color>
-    <color name="colorCursor">#6495ED</color>
-    <color name="colorSmallButtons">#8DBDC4</color>
+    <color name="colorCursor">#FFFFFF</color>
+    <color name="colorIcons">#000000</color>
+    <color name="colorSmallButtons">#FFFFFF</color>
     <color name="colorFont">#000000</color>
     <color name="colorWarning">#FF0000</color>
 </resources>
