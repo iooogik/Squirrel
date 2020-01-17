@@ -421,6 +421,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         super.onStart();
         updFragment();
     }
+
 }
 
 

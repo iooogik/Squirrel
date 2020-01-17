@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static Fragment currFragment;
     @SuppressLint("StaticFieldLeak")
     public static Toolbar toolbar;
+    public static Notes notes = new Notes();
 
 
     @Override
@@ -167,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     } else if(position == 1){
-                        Notes notes = new Notes();
                         showFragment(notes);
                         toolbar.setSubtitle(R.string.textNotes);
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
@@ -220,20 +220,25 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(currFragment != null) {
             closeFragment(currFragment);
+        } else {
+            super.onBackPressed();
         }
     }
 
     private void closeFragment(Fragment fragment){
-        final FrameLayout frameLayout = findViewById(R.id.Mainframe);
-        if(frameLayout.getVisibility() == View.VISIBLE){
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-            ft.remove(fragment).commit();
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
+        final FrameLayout SecondaryFrame = findViewById(R.id.SecondaryFrame);
+        final FrameLayout frame = findViewById(R.id.Mainframe);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.remove(fragment).commit();
+        if(SecondaryFrame.getVisibility() == View.VISIBLE){
+
+            SecondaryFrame.removeAllViews();
+            SecondaryFrame.setVisibility(View.GONE);
             Toolbar toolbar = findViewById(R.id.toolbar_main);
             toolbar.setSubtitle(R.string.textNotes);
+            currFragment = notes;
 
         }
     }

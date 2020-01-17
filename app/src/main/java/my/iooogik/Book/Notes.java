@@ -64,6 +64,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     static ArrayAdapter<String> adapterStndrtList;
     private static ArrayAdapter<String> adapterShopList;
+    ArrayList<String> booksItems;
 
     static ArrayList<String> dataProjects = new ArrayList<String>();
 
@@ -73,9 +74,11 @@ public class Notes extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.notes, container, false);
+        view = inflater.inflate(R.layout.notes, container ,false);
         return view;
     }
+
+
 
     @Override
     public void onStart() {
@@ -332,13 +335,13 @@ public class Notes extends Fragment implements View.OnClickListener {
     }
 
     private void showFragment(Fragment fragment){
-        FragmentManager fm = getFragmentManager();
-        assert fm != null;
+        FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
+        frameLayout.setVisibility(View.VISIBLE);
 
+        FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        MainActivity.currFragment = fragment;
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.replace(R.id.frame, fragment);
+        ft.replace(R.id.SecondaryFrame, fragment);
         ft.commit();
     }
 
@@ -385,7 +388,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     }
 
     //обновление проектов на активити
-    public void updProjects(){
+    private void updProjects(){
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Notes", null);
@@ -410,7 +413,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         }
         userCursor.close();
 
-        final ArrayList<String> booksItems = new ArrayList<>();
+        booksItems = new ArrayList<>();
         booksItems.add("Математические формулы");
 
         ArrayAdapter<String> adapterBookList = new ArrayAdapter<>(getContext(),
@@ -426,6 +429,13 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         standartList.setAdapter(adapterStndrtList);
         shopList.setAdapter(adapterShopList);
+
+        bookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onItemListClicked(position, "book");
+            }
+        });
 
         shopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -470,34 +480,35 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     private void onItemListClicked(int position, String type){
 
-        FrameLayout frameLayout = view.findViewById(R.id.frame);
-        frameLayout.setVisibility(View.VISIBLE);
         Bundle args = new Bundle();
         String name = null;
-        if(type.equals("standart")){
-            name = standartItems.get(position);
-        }
-        else if(type.equals("shop")){
-            name = shopItems.get(position);
-        }
 
-        if(name != null) {
-
-            args.putString("button name", name);
-
-            MainActivity.toolbar.setSubtitle(name);
-            if(getType(name).equals("standart")) {
-
+        switch (type) {
+            case "standart":
+                name = standartItems.get(position);
+                args.putString("button name", name);
                 args.putInt("buttonID", dataProjects.indexOf(name));
+                MainActivity.currFragment = standartNote;
                 standartNote.setArguments(args);
                 showFragment(standartNote);
-            } else if(getType(name).equals("shop")){
+
+                break;
+            case "shop":
+                name = shopItems.get(position);
+                args.putString("button name", name);
 
                 args.putInt("buttonID", dataProjects.indexOf(name));
                 checkListActivity.setArguments(args);
+                MainActivity.currFragment = checkListActivity;
                 showFragment(checkListActivity);
-            }
+
+                break;
+            case "book":
+                Book book = new Book();
+                showFragment(book);
+                break;
         }
+
     }
 
     private void onItemLongListClicked(int position, String type){
