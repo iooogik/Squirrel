@@ -21,7 +21,7 @@
             android:layout_height="46dp"
             android:layout_margin="5dp"
             android:background="@drawable/small_buttons"
-            android:foreground="@android:drawable/ic_menu_save"
+            app:srcCompat="@drawable/save"
             android:text="Button" />
 
         <ImageButton
@@ -30,7 +30,7 @@
             android:layout_height="46dp"
             android:layout_margin="5dp"
             android:background="@drawable/small_buttons"
-            app:srcCompat="@android:drawable/ic_menu_share" />
+            app:srcCompat="@drawable/share_all" />
 
         <ImageButton
             android:id="@+id/buttonAlarm"
@@ -38,7 +38,7 @@
             android:layout_height="46dp"
             android:layout_margin="5dp"
             android:background="@drawable/small_buttons"
-            android:src="@android:drawable/ic_lock_idle_alarm"
+            android:src="@drawable/alarm_plus"
             />
 
     </LinearLayout>

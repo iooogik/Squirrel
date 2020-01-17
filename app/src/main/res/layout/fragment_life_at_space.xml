@@ -45,33 +45,29 @@
                 android:textAlignment="center"
                 android:textColor="@color/colorLightFont" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_margin="30dp"
+                android:text="Скачать можно, отсканировав QR-код или нажав кнопку ниже"
+                android:textAlignment="center"
+                android:fontFamily="@font/rostelekom"
+                android:textColor="@color/colorLightFont" />
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Скачать можно, отсканировав QR-код или нажав кнопку ниже"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorLightFont" />
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/las_qr" />
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/las_qr" />
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
+                android:layout_gravity="center"
                 android:text="Скачать" />
 
         </LinearLayout>

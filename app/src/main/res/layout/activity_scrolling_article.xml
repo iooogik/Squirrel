@@ -62,10 +62,12 @@
                 android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:backgroundTint="@color/colorPrimary"
-                android:layout_margin="@dimen/fab_margin"
-                app:srcCompat="@android:drawable/arrow_down_float" />
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:maxImageSize="25dp"
+                app:srcCompat="@drawable/arrow_left"
+                />
 
             <Button
                 android:id="@+id/openAr"
@@ -73,6 +75,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorPrimary"
                 android:layout_gravity="bottom|start"
+                android:textColor="@color/colorFont"
                 android:layout_marginBottom="10dp"
                 android:text="@string/showAR" />
 

@@ -63,8 +63,8 @@
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
                 app:backgroundTint="@color/colorPrimary"
-                app:maxImageSize="76dp"
-                app:srcCompat="@android:drawable/ic_menu_add" />
+                app:maxImageSize="40dp"
+                app:srcCompat="@drawable/plus" />
 
             <LinearLayout
                 android:layout_width="match_parent"
