@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="my.iooogik.Book.CheckList">
+    tools:context="iooogik.app.modelling.CheckList">
 
     <LinearLayout
         android:layout_width="match_parent"

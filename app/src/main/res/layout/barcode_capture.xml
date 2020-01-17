@@ -31,17 +31,17 @@
           android:textColor="@color/colorFont" />
     </FrameLayout>
 
-    <my.iooogik.Book.camera.CameraSourcePreview
+    <iooogik.app.modelling.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-      <my.iooogik.Book.camera.GraphicOverlay
+      <iooogik.app.modelling.camera.GraphicOverlay
           android:id="@+id/graphicOverlay"
           android:layout_width="match_parent"
           android:layout_height="match_parent" />
 
-    </my.iooogik.Book.camera.CameraSourcePreview>
+    </iooogik.app.modelling.camera.CameraSourcePreview>
 
   </FrameLayout>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="my.iooogik.Book">
+    package="iooogik.app.modelling">
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -18,23 +18,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Contacts"></activity>
+        <activity android:name="iooogik.app.modelling.Contacts"></activity>
         <activity
-            android:name=".ScrollingArticle"
+            android:name="iooogik.app.modelling.ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".NotificationReceiver" />
+        <receiver android:name="iooogik.app.modelling.NotificationReceiver" />
 
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <activity android:name=".StandartNote" />
-        <activity android:name=".QR_Demo" />
-        <activity android:name=".ARcamera" />
-        <activity android:name=".Notes" />
-        <activity android:name=".MainActivity">
+        <activity android:name="iooogik.app.modelling.StandartNote" />
+        <activity android:name="iooogik.app.modelling.QR_Demo" />
+        <activity android:name="iooogik.app.modelling.ARcamera" />
+        <activity android:name="iooogik.app.modelling.Notes" />
+        <activity android:name="iooogik.app.modelling.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BarcodeCaptureActivity"
+            android:name="iooogik.app.modelling.BarcodeCaptureActivity"
             android:label="Read Barcode" />
 
         <meta-data
