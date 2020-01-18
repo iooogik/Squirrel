@@ -34,7 +34,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,7 +83,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         SHOP_LIST = view.findViewById(R.id.shopList);
         BOOK_LIST = view.findViewById(R.id.booksList);
         FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(this::onClick);
+        back.setOnClickListener(this);
         return view;
     }
 
@@ -96,11 +95,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         mDBHelper = new DatabaseHelper(getContext());
         mDBHelper.openDataBase();
-        try {
-            mDBHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
+        mDBHelper.updateDataBase();
 
 
         FloatingActionButton add = view.findViewById(R.id.addProject);
@@ -484,8 +479,6 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         Bundle args = new Bundle();
         String name;
-
-        FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
 
         switch (type) {
             case "standart":

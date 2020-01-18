@@ -1,13 +1,11 @@
 package iooogik.app.modelling;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,19 +15,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
+import java.util.Objects;
 
 public class ScrollingArticle extends Fragment implements View.OnClickListener{
 
-    Cursor userCursor;
+    private Cursor userCursor;
     View view;
 
     public ScrollingArticle(){}
@@ -52,11 +47,7 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
         DatabaseHelper mDBHelper = new DatabaseHelper(getContext());
         mDBHelper.openDataBase();
 
-        try {
-            mDBHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
+        mDBHelper.updateDataBase();
 
         SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Planets", null);
@@ -119,7 +110,7 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
         addTransaction.add(R.id.Mainframe, fragment,
                 "mainFrame").commitAllowingStateLoss();
 
-        getView().setVisibility(View.GONE);
+        Objects.requireNonNull(getView()).setVisibility(View.GONE);
     }
 
 }

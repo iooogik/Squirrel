@@ -30,6 +30,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,6 +68,10 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
         buttonTimeSet.setOnClickListener(this);
+
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this);
+
         return view;
     }
 
@@ -102,11 +108,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         /* БД ************************ */
         mDBHelper = new DatabaseHelper(getActivity());
         mDBHelper.openDataBase();
-        try {
-            mDBHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
+        mDBHelper.updateDataBase();
         nameNote = view.findViewById(R.id.editNameShopNote);
         shortNote = view.findViewById(R.id.shortShopNote);
 
@@ -251,6 +253,9 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         } else if(v.getId() == R.id.buttonShopAlarm){
 
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
+        } else if(v.getId() == R.id.back){
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
         }
     }
 

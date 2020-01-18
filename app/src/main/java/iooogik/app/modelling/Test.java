@@ -26,7 +26,7 @@ public class Test extends Fragment implements View.OnClickListener{
 
 
     public Test() {
-        testTitles = new ArrayList<String>();
+        testTitles = new ArrayList<>();
     }
 
 

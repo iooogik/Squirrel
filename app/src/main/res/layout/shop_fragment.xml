@@ -7,99 +7,122 @@
     android:orientation="vertical"
     tools:context="iooogik.app.modelling.CheckList">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="16dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:maxImageSize="25dp"
+            app:srcCompat="@drawable/arrow_left"
+            />
 
-        <ImageButton
-            android:id="@+id/buttonSave"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            app:srcCompat="@drawable/save"
-            android:text="Button" />
-
-        <ImageButton
-            android:id="@+id/buttonShare"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            app:srcCompat="@drawable/share_all" />
-
-        <ImageButton
-            android:id="@+id/buttonShopAlarm"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            android:src="@drawable/alarm_plus" />
-
-    </LinearLayout>
-
-    <EditText
-        android:id="@+id/editNameShopNote"
-        style="@android:style/Widget.DeviceDefault.Light.EditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="#00FFFFFF"
-        android:ems="10"
-        android:fontFamily="@font/rostelekom"
-        android:hint="@string/name"
-        android:inputType="textPersonName"
-        android:textColor="@color/colorFont"
-        android:textColorHint="#AFADAD"
-        android:textCursorDrawable="@drawable/color_cursor" />
-
-    <EditText
-        android:id="@+id/shortShopNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:ems="10"
-        android:fontFamily="@font/rostelekom"
-        android:hint="@string/short_note"
-        android:inputType="textPersonName"
-        android:textColor="@color/colorFont"
-        android:textColorHint="#AFADAD"
-        android:textCursorDrawable="@drawable/color_cursor" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addItemCheck"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
-                app:backgroundTint="@color/colorPrimary"
-                app:maxImageSize="40dp"
-                app:srcCompat="@drawable/plus" />
-
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/shopScroll"
+
+                <ImageButton
+                    android:id="@+id/buttonSave"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/small_buttons"
+                    android:text="Button"
+                    app:srcCompat="@drawable/save" />
+
+                <ImageButton
+                    android:id="@+id/buttonShare"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/small_buttons"
+                    app:srcCompat="@drawable/share_all" />
+
+                <ImageButton
+                    android:id="@+id/buttonShopAlarm"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/small_buttons"
+                    android:src="@drawable/alarm_plus" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/shortShopNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:ems="10"
+                android:fontFamily="@font/rostelekom"
+                android:hint="@string/short_note"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorFont"
+                android:textColorHint="#AFADAD"
+                android:textCursorDrawable="@drawable/color_cursor" />
+
+            <EditText
+                android:id="@+id/editNameShopNote"
+                style="@android:style/Widget.DeviceDefault.Light.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="#00FFFFFF"
+                android:ems="10"
+                android:fontFamily="@font/rostelekom"
+                android:hint="@string/name"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorFont"
+                android:textColorHint="#AFADAD"
+                android:textCursorDrawable="@drawable/color_cursor" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </ScrollView>
+                    android:layout_height="match_parent">
 
-        </FrameLayout>
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/addItemCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="16dp"
+                        app:backgroundTint="@color/colorPrimary"
+                        app:maxImageSize="40dp"
+                        app:srcCompat="@drawable/plus" />
 
-    </LinearLayout>
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:id="@+id/shopScroll"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+                    </ScrollView>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

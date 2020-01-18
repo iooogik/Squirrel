@@ -34,9 +34,9 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.WriterException;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -71,6 +71,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
         ImageButton btnShare = view.findViewById(R.id.buttonShare);
         ImageButton btnAlarm = view.findViewById(R.id.buttonAlarm);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this);
         btnSave.setOnClickListener(this);
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
@@ -139,11 +141,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         /* БД ************************ */
         mDBHelper = new DatabaseHelper(getActivity());
         mDBHelper.openDataBase();
-        try {
-            mDBHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
+        mDBHelper.updateDataBase();
         EditText name = view.findViewById(R.id.editName);
         EditText note = view.findViewById(R.id.editNote);
         EditText shortNote = view.findViewById(R.id.shortNote);
@@ -411,6 +409,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             }
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
+        }else if (view.getId() == R.id.back){
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
         }
     }
 

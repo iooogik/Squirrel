@@ -9,144 +9,168 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-
-        <ImageButton
-            android:id="@+id/buttonSave"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            app:srcCompat="@drawable/save"
-            android:text="Button" />
-
-        <ImageButton
-            android:id="@+id/buttonShare"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            app:srcCompat="@drawable/share_all" />
-
-        <ImageButton
-            android:id="@+id/buttonAlarm"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            android:src="@drawable/alarm_plus"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="16dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:maxImageSize="25dp"
+            app:srcCompat="@drawable/arrow_left"
             />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/editName"
-            style="@android:style/Widget.DeviceDefault.Light.EditText"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="#00FFFFFF"
-            android:textCursorDrawable="@drawable/color_cursor"
-            android:ems="10"
-            android:fontFamily="@font/rostelekom"
-            android:hint="@string/name"
-            android:textColorHint="#AFADAD"
-            android:inputType="textPersonName"
-            android:textColor="@color/colorFont" />
-
-        <TextView
-            android:id="@+id/nameWarn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:fontFamily="@font/rostelekom"
-            android:text="@string/nameWarning"
-            android:textColor="@color/colorWarning"
-            android:visibility="gone" />
-
-        <EditText
-            android:id="@+id/shortNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:ems="10"
-            android:fontFamily="@font/rostelekom"
-            android:textCursorDrawable="@drawable/color_cursor"
-            android:inputType="textPersonName"
-            android:hint="@string/short_note"
-            android:textColorHint="#AFADAD"
-            android:textColor="@color/colorFont" />
-
-        <TextView
-            android:id="@+id/shortNoteWarn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:fontFamily="@font/rostelekom"
-            android:text="@string/shortNoteWarning"
-            android:textColor="@color/colorWarning"
-            android:visibility="gone" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/shop"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
+                android:orientation="horizontal">
+
+
+                <ImageButton
+                    android:id="@+id/buttonSave"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/small_buttons"
+                    android:text="Button"
+                    app:srcCompat="@drawable/save" />
+
+                <ImageButton
+                    android:id="@+id/buttonShare"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/small_buttons"
+                    app:srcCompat="@drawable/share_all" />
+
+                <ImageButton
+                    android:id="@+id/buttonAlarm"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/small_buttons"
+                    android:src="@drawable/alarm_plus" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/layout_img"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/qr_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:minWidth="200dp"
-                        android:minHeight="200dp"
-                        tools:src="@tools:sample/avatars" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/noteWarn"
+                <EditText
+                    android:id="@+id/editName"
+                    style="@android:style/Widget.DeviceDefault.Light.EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:fontFamily="@font/rostelekom"
-                    android:text="@string/noteWarning"
-                    android:textColor="@color/colorWarning"
-                    android:visibility="gone" />
-
-                <MultiAutoCompleteTextView
-                    android:id="@+id/editNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
                     android:layout_margin="8dp"
+                    android:background="#00FFFFFF"
+                    android:ems="10"
                     android:fontFamily="@font/rostelekom"
-                    android:hint="@string/note"
-                    android:textAlignment="viewStart"
+                    android:hint="@string/name"
+                    android:inputType="textPersonName"
                     android:textColor="@color/colorFont"
                     android:textColorHint="#AFADAD"
                     android:textCursorDrawable="@drawable/color_cursor" />
 
-            </LinearLayout>
-        </ScrollView>
+                <TextView
+                    android:id="@+id/nameWarn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:fontFamily="@font/rostelekom"
+                    android:text="@string/nameWarning"
+                    android:textColor="@color/colorWarning"
+                    android:visibility="gone" />
 
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/shortNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:ems="10"
+                    android:fontFamily="@font/rostelekom"
+                    android:hint="@string/short_note"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/colorFont"
+                    android:textColorHint="#AFADAD"
+                    android:textCursorDrawable="@drawable/color_cursor" />
+
+                <TextView
+                    android:id="@+id/shortNoteWarn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:fontFamily="@font/rostelekom"
+                    android:text="@string/shortNoteWarning"
+                    android:textColor="@color/colorWarning"
+                    android:visibility="gone" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/shop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/layout_img"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/qr_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:minWidth="200dp"
+                                android:minHeight="200dp"
+                                tools:src="@tools:sample/avatars" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/noteWarn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="3dp"
+                            android:fontFamily="@font/rostelekom"
+                            android:text="@string/noteWarning"
+                            android:textColor="@color/colorWarning"
+                            android:visibility="gone" />
+
+                        <MultiAutoCompleteTextView
+                            android:id="@+id/editNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="8dp"
+                            android:fontFamily="@font/rostelekom"
+                            android:hint="@string/note"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/colorFont"
+                            android:textColorHint="#AFADAD"
+                            android:textCursorDrawable="@drawable/color_cursor" />
+
+                    </LinearLayout>
+                </ScrollView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
 </LinearLayout>

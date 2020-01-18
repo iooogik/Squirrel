@@ -1,53 +1,37 @@
 package iooogik.app.modelling;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.mikepenz.iconics.typeface.FontAwesome;
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class Planets extends Fragment implements View.OnClickListener {
 
-    Cursor userCursor;
     View view;
     private DatabaseHelper mDBHelper;
     static Typeface standartFont;
 
-    @SuppressLint("StaticFieldLeak")
-    public static Toolbar toolbar;
 
     public Planets(){}
 
@@ -57,23 +41,20 @@ public class Planets extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.planets, container ,false);
         Button showAR = view.findViewById(R.id.openAr);
         showAR.setOnClickListener(this);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        standartFont = Typeface.createFromAsset(getContext().getAssets(), "rostelekom.otf");
-
-        toolbar = view.findViewById(R.id.toolbar_main);
+        standartFont = Typeface.createFromAsset
+                (Objects.requireNonNull(getContext()).getAssets(), "rostelekom.otf");
 
         mDBHelper = new DatabaseHelper(getContext());
         mDBHelper.openDataBase();
-        try {
-            mDBHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
+        mDBHelper.updateDataBase();
         try {
             getPlanets();
         } catch (Exception e){
@@ -87,20 +68,21 @@ public class Planets extends Fragment implements View.OnClickListener {
 
     private void getPlanets(){
         SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Planets", null);
-        userCursor.moveToLast();
-        String name, description;
-        Bitmap bitmap;
-        int max = userCursor.getInt(userCursor.getColumnIndex("_id"));
-        userCursor.moveToFirst();
-        for (int i = 0; i < max; i++) {
+        try (Cursor userCursor = mDb.rawQuery("Select * from Planets", null)) {
+            userCursor.moveToLast();
+            String name, description;
+            Bitmap bitmap;
+            int max = userCursor.getInt(userCursor.getColumnIndex("_id"));
+            userCursor.moveToFirst();
+            for (int i = 0; i < max; i++) {
 
-            name = userCursor.getString(userCursor.getColumnIndex("name"));
-            description = userCursor.getString(userCursor.getColumnIndex("description"));
-            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
-            bitmap =  BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
-            setInformation(name, description, bitmap, i);
-            userCursor.moveToNext();
+                name = userCursor.getString(userCursor.getColumnIndex("name"));
+                description = userCursor.getString(userCursor.getColumnIndex("description"));
+                byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
+                bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
+                setInformation(name, description, bitmap, i);
+                userCursor.moveToNext();
+            }
         }
     }
 
@@ -156,6 +138,9 @@ public class Planets extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if(v.getId() == R.id.openAr){
             Intent intent = new Intent(getContext(), ARcamera.class);
+            startActivity(intent);
+        } else if(v.getId() == R.id.back){
+            Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
         }
     }

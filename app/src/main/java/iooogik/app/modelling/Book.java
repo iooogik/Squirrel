@@ -2,6 +2,7 @@ package iooogik.app.modelling;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -26,7 +29,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Book extends Fragment {
+public class Book extends Fragment implements View.OnClickListener {
 
 
     public Book() {}
@@ -42,6 +45,8 @@ public class Book extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         linear = view.findViewById(R.id.scroll);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this);
         return view;
     }
 
@@ -51,11 +56,7 @@ public class Book extends Fragment {
 
         mDBHelper = new DatabaseHelper(getActivity());
         mDBHelper.openDataBase();
-        try {
-            mDBHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
+        mDBHelper.updateDataBase();
 
         IMAGES = new ArrayList<>();
         DESCRIPTION = new ArrayList<>();
@@ -74,7 +75,7 @@ public class Book extends Fragment {
     private void getImagesAndDescriptions(int position){
         SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
         @SuppressLint("Recycle")
-        Cursor userCursor = mDb.rawQuery("Select * from Notes",
+        Cursor userCursor = mDb.rawQuery("Select * from Formulaes",
                 null);
         userCursor.moveToPosition(position);
         try {
@@ -107,4 +108,11 @@ public class Book extends Fragment {
         linear.addView(view1);
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.back){
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
+        }
+    }
 }
