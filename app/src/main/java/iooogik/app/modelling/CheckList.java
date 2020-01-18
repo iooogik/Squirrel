@@ -113,7 +113,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         mDb = mDBHelper.getReadableDatabase();
 
         @SuppressLint("Recycle")
-        Cursor userCursor = mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES),
+        Cursor userCursor = mDb.rawQuery("Select * from Notes",
                 null);
         userCursor.moveToPosition(getBtnID());
         nameNote.setText(getBtnName());

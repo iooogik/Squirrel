@@ -1,6 +1,7 @@
 package iooogik.app.modelling;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,9 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
-public class Test extends Fragment {
+public class Test extends Fragment implements View.OnClickListener{
 
     View view;
     private ArrayList<String> testTitles;
@@ -31,6 +34,8 @@ public class Test extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_test, container, false);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this);
         setTestTitles();
         return view;
     }
@@ -55,7 +60,7 @@ public class Test extends Fragment {
     private void showFragment(Fragment fragment){
         FrameLayout frameLayout = view.findViewById(R.id.test_frame);
         frameLayout.setVisibility(View.VISIBLE);
-        MainActivity.currFragmeLayout = frameLayout;
+
 
         FragmentManager fm = getFragmentManager();
         assert fm != null;
@@ -72,5 +77,13 @@ public class Test extends Fragment {
         assert fragment != null;
         addTransaction.add(R.id.test_frame, fragment,
                 "testFrame").commitAllowingStateLoss();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.back){
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
+        }
     }
 }

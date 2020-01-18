@@ -1,5 +1,12 @@
 package iooogik.app.modelling;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -8,7 +15,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,14 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
@@ -38,28 +36,20 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     Cursor userCursor;
+
     private DatabaseHelper mDBHelper;
-    public static Typeface standartFont;
+
     public static Fragment currFragment;
-    @SuppressLint("StaticFieldLeak")
-    public static Toolbar toolbar;
+
     @SuppressLint("StaticFieldLeak")
     public static Notes notes = new Notes();
-    @SuppressLint("StaticFieldLeak")
-    public static FrameLayout currFragmeLayout;
+
 
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        standartFont = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
-
-
-        createToolbar();
-
-        toolbar = findViewById(R.id.toolbar_main);
 
         mDBHelper = new DatabaseHelper(this);
         mDBHelper.openDataBase();
@@ -68,19 +58,37 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException mIOException) {
             throw new Error("UnableToUpdateDatabase");
         }
-        try {
-            getPlanets();
-        } catch (Exception e){
-            Log.i("MainActivity", String.valueOf(e));
-            //Toast.makeText(this, String.valueOf(e), Toast.LENGTH_LONG).show();
-        }
 
+        createToolbar();
+        updateList();
+    }
 
+    private void updateList(){
+        LinearLayout linearLayout = findViewById(R.id.items_linear);
+
+        @SuppressLint("InflateParams")
+        View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
+        FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
+        ImageView imageView = frameLayout.findViewById(R.id.formulae);
+        TextView desc = frameLayout.findViewById(R.id.description);
+        TextView nameTv = frameLayout.findViewById(R.id.namePlanet);
+        nameTv.setText("Астрономия");
+        int width = 300;
+        int height = 300;
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+        imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
+        desc.setText("");
+
+        view1.setOnClickListener(v -> {
+            Planets planets = new Planets();
+            FrameLayout frameLayout1 = findViewById(R.id.Mainframe);
+            showFragment(planets, frameLayout1);
+        });
+
+        linearLayout.addView(view1);
 
     }
 
-
-    @SuppressWarnings("UnusedAssignment")
     private void createToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -141,15 +149,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onDrawerOpened(View drawerView) {
                         // Скрываем клавиатуру при открытии Navigation Drawer
                         try {
-                            InputMethodManager inputMethodManager = (InputMethodManager) MainActivity.
-                                    this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            InputMethodManager inputMethodManager = (InputMethodManager)
+                                    getSystemService(Activity.INPUT_METHOD_SERVICE);
                             if (inputMethodManager != null) {
                                 inputMethodManager.hideSoftInputFromWindow(Objects.
-                                        requireNonNull(MainActivity.
-                                                this.getCurrentFocus()).getWindowToken(), 0);
+                                        requireNonNull(
+                                                getCurrentFocus()).getWindowToken(), 0);
                             }
                         } catch (Exception e){
-                            Log.i("MainActivity", String.valueOf(e));
+                            Log.i("Planets", String.valueOf(e));
                         }
 
                     }
@@ -161,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
                 .withOnDrawerItemClickListener((parent, view, position, id, drawerItem) -> {
 
                     if(position == 0){
-                        if(currFragment != null) {
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        if(frameLayout.getVisibility() != View.GONE) {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                         }
@@ -212,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showFragment(Fragment fragment, FrameLayout frameLayout){
+    public void showFragment(Fragment fragment, FrameLayout frameLayout){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
@@ -220,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             FrameLayout main = findViewById(R.id.Mainframe);
             main.removeAllViews();
         } catch (Exception e){
-            Log.i("MainActivity", "fail");
+            Log.i("Planets", "fail");
         }
 
         frameLayout.setVisibility(View.VISIBLE);
@@ -229,9 +238,6 @@ public class MainActivity extends AppCompatActivity {
             ft.remove(fragment).commitAllowingStateLoss();
         }
 
-
-        currFragment = fragment;
-        currFragmeLayout = frameLayout;
 
         FragmentTransaction addTransaction = fm.beginTransaction();
         addTransaction.setCustomAnimations
@@ -244,66 +250,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if(currFragment != null) {
-            closeFragment(currFragment);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    private void closeFragment(Fragment fragment){
-
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        ft.remove(fragment).commit();
-        currFragmeLayout.removeAllViews();
-        currFragmeLayout.setVisibility(View.GONE);
-    }
-
-    private void getPlanets(){
-        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery(getString(R.string.SELECT_FROM_PLANETS), null);
-        userCursor.moveToLast();
-        String name, description;
-        Bitmap bitmap;
-        int max = userCursor.getInt(userCursor.getColumnIndex("_id"));
-        userCursor.moveToFirst();
-        for (int i = 0; i < max; i++) {
-
-            name = userCursor.getString(userCursor.getColumnIndex("name"));
-            description = userCursor.getString(userCursor.getColumnIndex("description"));
-            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
-            bitmap =  BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
-            setInformation(name, description, bitmap, i);
-            userCursor.moveToNext();
-        }
-    }
-
-    private void setInformation(String name, String description, Bitmap bitmap, int id){
-        LinearLayout linearLayout = findViewById(R.id.linear);
-        @SuppressLint("InflateParams")
-        View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
-        FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
-        ImageView imageView = frameLayout.findViewById(R.id.formulae);
-        TextView desc = frameLayout.findViewById(R.id.description);
-        TextView nameTv = frameLayout.findViewById(R.id.namePlanet);
-        nameTv.setText(name);
-        int width = 300;
-        int height = 300;
-        imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
-        desc.setText(description);
-
-        view1.setOnClickListener(v -> {
-            Intent scrollView = new Intent(getApplicationContext(), ScrollingArticle.class);
-            Bundle args = new Bundle();
-            args.putInt("_id", id);
-            scrollView.putExtras(args);
-            startActivity(scrollView);
-        });
-
-        linearLayout.addView(view1);
-    }
-
+    public void onBackPressed() {}
 }

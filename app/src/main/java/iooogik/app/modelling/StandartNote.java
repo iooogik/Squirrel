@@ -264,7 +264,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         TextView tv = new TextView(getContext());
         tv.setMinHeight(25);
-        tv.setTypeface(MainActivity.standartFont);
+        tv.setTypeface(Planets.standartFont);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
         tv.setText("Наведите второй телефон на QR-код, чтобы считать данные.");
         tv.setTextColor(Color.BLACK);

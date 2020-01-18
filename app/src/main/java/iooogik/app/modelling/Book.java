@@ -74,7 +74,7 @@ public class Book extends Fragment {
     private void getImagesAndDescriptions(int position){
         SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
         @SuppressLint("Recycle")
-        Cursor userCursor = mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES),
+        Cursor userCursor = mDb.rawQuery("Select * from Notes",
                 null);
         userCursor.moveToPosition(position);
         try {

@@ -18,23 +18,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="iooogik.app.modelling.Contacts"></activity>
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Contacts" />
         <activity
-            android:name="iooogik.app.modelling.ScrollingArticle"
+            android:name=".ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name="iooogik.app.modelling.NotificationReceiver" />
+        <receiver android:name=".NotificationReceiver" />
 
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <activity android:name="iooogik.app.modelling.StandartNote" />
-        <activity android:name="iooogik.app.modelling.QR_Demo" />
-        <activity android:name="iooogik.app.modelling.ARcamera" />
-        <activity android:name="iooogik.app.modelling.Notes" />
-        <activity android:name="iooogik.app.modelling.MainActivity">
+        <activity android:name=".StandartNote" />
+        <activity android:name=".QR_Demo" />
+        <activity android:name=".ARcamera" />
+        <activity android:name=".Notes" />
+        <activity android:name=".Planets">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="iooogik.app.modelling.BarcodeCaptureActivity"
+            android:name=".BarcodeCaptureActivity"
             android:label="Read Barcode" />
 
         <meta-data

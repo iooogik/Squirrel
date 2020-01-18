@@ -8,39 +8,49 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 
-public class ScrollingArticle extends AppCompatActivity  implements View.OnClickListener{
+public class ScrollingArticle extends Fragment implements View.OnClickListener{
 
     Cursor userCursor;
+    View view;
+
+    public ScrollingArticle(){}
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrolling_article);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_scrolling_article, container ,false);
 
-        FloatingActionButton back = findViewById(R.id.back);
-        Button showAR = findViewById(R.id.openAr);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        Button showAR = view.findViewById(R.id.openAr);
 
         back.setOnClickListener(this);
         showAR.setOnClickListener(this);
 
 
-        Bundle args = getIntent().getExtras();
+        Bundle args = this.getArguments();
         assert args != null;
         int id = args.getInt("_id");
 
-        DatabaseHelper mDBHelper = new DatabaseHelper(this);
+        DatabaseHelper mDBHelper = new DatabaseHelper(getContext());
         mDBHelper.openDataBase();
 
         try {
@@ -54,10 +64,10 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
 
         userCursor.moveToPosition(id);
 
-        TextView textView = findViewById(R.id.article_text);
+        TextView textView = view.findViewById(R.id.article_text);
 
         textView.setText(Html.fromHtml(getEditedText()));
-        ImageView imageView = findViewById(R.id.sc_back);
+        ImageView imageView = view.findViewById(R.id.sc_back);
 
         Bitmap bitmap;
 
@@ -66,6 +76,7 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
 
         imageView.setImageBitmap(bitmap);
 
+        return view;
     }
 
     private String getEditedText(){
@@ -86,11 +97,33 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.back){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
+            showPlanetInfo(new Planets());
         } else if(v.getId() == R.id.openAr){
-            Intent intent = new Intent(getApplicationContext(), ARcamera.class);
+            Intent intent = new Intent(getContext(), ARcamera.class);
             startActivity(intent);
         }
     }
+
+    private void showPlanetInfo(Fragment fragment){
+
+
+        FragmentManager fm = getFragmentManager();
+        assert fm != null;
+        FragmentTransaction ft = fm.beginTransaction();
+
+        if (fragment != null) {
+            ft.remove(fragment).commitAllowingStateLoss();
+        }
+
+        FragmentTransaction addTransaction = fm.beginTransaction();
+        addTransaction.setCustomAnimations
+                (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
+        addTransaction.addToBackStack(null);
+        assert fragment != null;
+        addTransaction.add(R.id.Mainframe, fragment,
+                "mainFrame").commitAllowingStateLoss();
+
+        getView().setVisibility(View.GONE);
+    }
+
 }

@@ -49,6 +49,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
@@ -112,6 +113,15 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 GraphicOverlay graphicOverlay = findViewById(R.id.graphicOverlay);
                 onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
+            }
+        });
+
+        FloatingActionButton back = findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(main);
             }
         });
 

@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.Objects;
 
 public class Contacts extends Fragment implements View.OnClickListener {
@@ -33,10 +35,12 @@ public class Contacts extends Fragment implements View.OnClickListener {
         ImageButton telegram = view.findViewById(R.id.telegram);
         ImageButton gmail = view.findViewById(R.id.gmail);
         ImageButton discord = view.findViewById(R.id.discord);
+        FloatingActionButton back = view.findViewById(R.id.back);
 
         telegram.setOnClickListener(this);
         gmail.setOnClickListener(this);
         discord.setOnClickListener(this);
+        back.setOnClickListener(this);
 
         return view;
     }
@@ -68,6 +72,11 @@ public class Contacts extends Fragment implements View.OnClickListener {
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Тег дискорда был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
+        }
+        else if(v.getId() == R.id.back){
+
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
         }
     }
 }

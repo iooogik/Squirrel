@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 
 public class LifeAtSpace extends Fragment implements View.OnClickListener {
 
@@ -27,6 +29,8 @@ public class LifeAtSpace extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_life_at_space, container, false);
         Button openGP = view.findViewById(R.id.button2);
         openGP.setOnClickListener(this);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this);
         return view;
     }
 
@@ -37,6 +41,9 @@ public class LifeAtSpace extends Fragment implements View.OnClickListener {
                     Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://play.google.com/store/apps/details?id=lifeatspace.company"));
             startActivity(browserIntent);
+        } else if(v.getId() == R.id.back){
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
         }
     }
 }

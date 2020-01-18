@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -82,6 +83,8 @@ public class Notes extends Fragment implements View.OnClickListener {
         STANDART_LIST = view.findViewById(R.id.standartList);
         SHOP_LIST = view.findViewById(R.id.shopList);
         BOOK_LIST = view.findViewById(R.id.booksList);
+        FloatingActionButton back = view.findViewById(R.id.back);
+        back.setOnClickListener(this::onClick);
         return view;
     }
 
@@ -110,7 +113,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             final EditText name = new EditText(getContext());
             name.setHint("Введите имя");
-            name.setTypeface(MainActivity.standartFont);
+            name.setTypeface(Planets.standartFont);
             name.setTextSize(18);
             name.setMinimumWidth(1500);
 
@@ -223,7 +226,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             nameNote.setTextColor(Color.BLACK);
             nameNote.setHint("Введите название");
-            nameNote.setTypeface(MainActivity.standartFont);
+            nameNote.setTypeface(Planets.standartFont);
             nameNote.setTextSize(18);
             nameNote.setMinimumWidth(1500);
             layout1.addView(nameNote);
@@ -233,7 +236,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             tv.setText("    Пожалуйста, введите название!");
             tv.setTextColor(Color.RED);
             tv.setTextSize(13);
-            tv.setTypeface(MainActivity.standartFont);
+            tv.setTypeface(Planets.standartFont);
             tv.setMinimumWidth(1500);
             tv.setVisibility(View.GONE);
             layout1.addView(tv);
@@ -255,7 +258,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
                     ((TextView) parent.getChildAt(0)).setTextSize(18);
-                    ((TextView) parent.getChildAt(0)).setTypeface(MainActivity.standartFont);
+                    ((TextView) parent.getChildAt(0)).setTypeface(Planets.standartFont);
 
                 }
                 public void onNothingSelected(AdapterView<?> parent) {
@@ -322,33 +325,31 @@ public class Notes extends Fragment implements View.OnClickListener {
                 v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
                 Button posButton = ((AlertDialog)dialog).
                         getButton(DialogInterface.BUTTON_POSITIVE);
-                posButton.setTypeface(MainActivity.standartFont);
+                posButton.setTypeface(Planets.standartFont);
                 posButton.setTypeface(Typeface.DEFAULT_BOLD);
             });
 
             dlg.show();
         }
+        else if(view.getId() == R.id.back){
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
+        }
     }
 
     private String getType(String name){
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery(getString(R.string.SELECT_FROM_NOTES), null);
+        userCursor =  mDb.rawQuery("Select * from Notes", null);
         final int BTN_ID = dataProjects.indexOf(name);
         userCursor.moveToPosition(BTN_ID);
 
         return userCursor.getString(8);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        MainActivity.currFragmeLayout = view.findViewById(R.id.Mainframe);
-    }
-
     private void showFragment(Fragment fragment){
         FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
         frameLayout.setVisibility(View.VISIBLE);
-        MainActivity.currFragmeLayout = frameLayout;
+
 
         FragmentManager fm = getFragmentManager();
         assert fm != null;
@@ -413,7 +414,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     private void updProjects(){
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES), null);
+        userCursor =  mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
         String item;
 
@@ -494,7 +495,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 MainActivity.currFragment = standartNote;
                 standartNote.setArguments(args);
                 showFragment(standartNote);
-                MainActivity.currFragmeLayout = frameLayout;
+
                 break;
             case "shop":
                 name = shopItems.get(position);
@@ -503,14 +504,14 @@ public class Notes extends Fragment implements View.OnClickListener {
                 args.putInt("buttonID", dataProjects.indexOf(name));
                 checkListActivity.setArguments(args);
                 MainActivity.currFragment = checkListActivity;
-                MainActivity.currFragmeLayout =frameLayout;
+
                 showFragment(checkListActivity);
 
                 break;
             case "book":
                 Book book = new Book();
                 showFragment(book);
-                MainActivity.currFragmeLayout =frameLayout;
+
                 break;
         }
 
@@ -525,7 +526,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES), null);
+        userCursor =  mDb.rawQuery("Select * from Notes", null);
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -540,7 +541,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
 
         tv.setTextColor(Color.BLACK);
-        tv.setTypeface(MainActivity.standartFont);
+        tv.setTypeface(Planets.standartFont);
         tv.setTextSize(18);
         tv.setMinHeight(15);
 
