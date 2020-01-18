@@ -10,28 +10,21 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import java.util.ArrayList;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Test extends Fragment {
 
     View view;
-    private ArrayList<String> testTitles = new ArrayList<String>();
+    private ArrayList<String> testTitles;
 
 
-    public Test() {}
+    public Test() {
+        testTitles = new ArrayList<String>();
+    }
 
 
     @Override
@@ -55,9 +48,8 @@ public class Test extends Fragment {
         ListView listView = view.findViewById(R.id.testThemes);
         listView.setAdapter(adapterThemes);
         TestFrame testFrame = new TestFrame();
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            showFragment(testFrame);
-        });
+        listView.setOnItemClickListener((parent, view, position, id) ->
+                showFragment(testFrame));
     }
 
     private void showFragment(Fragment fragment){
@@ -66,6 +58,7 @@ public class Test extends Fragment {
         MainActivity.currFragmeLayout = frameLayout;
 
         FragmentManager fm = getFragmentManager();
+        assert fm != null;
         FragmentTransaction ft = fm.beginTransaction();
 
         if (fragment != null) {
@@ -76,6 +69,7 @@ public class Test extends Fragment {
         addTransaction.setCustomAnimations
                 (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
         addTransaction.addToBackStack(null);
+        assert fragment != null;
         addTransaction.add(R.id.test_frame, fragment,
                 "testFrame").commitAllowingStateLoss();
     }

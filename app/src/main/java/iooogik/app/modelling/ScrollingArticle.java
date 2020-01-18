@@ -23,8 +23,6 @@ import java.io.IOException;
 public class ScrollingArticle extends AppCompatActivity  implements View.OnClickListener{
 
     Cursor userCursor;
-    private DatabaseHelper mDBHelper;
-    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +40,7 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
         assert args != null;
         int id = args.getInt("_id");
 
-        mDBHelper = new DatabaseHelper(this);
+        DatabaseHelper mDBHelper = new DatabaseHelper(this);
         mDBHelper.openDataBase();
 
         try {
@@ -51,7 +49,7 @@ public class ScrollingArticle extends AppCompatActivity  implements View.OnClick
             throw new Error("UnableToUpdateDatabase");
         }
 
-        mDb = mDBHelper.getReadableDatabase();
+        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
         userCursor =  mDb.rawQuery("Select * from Planets", null);
 
         userCursor.moveToPosition(id);

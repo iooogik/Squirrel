@@ -13,9 +13,6 @@ import android.view.ViewGroup;
 import com.google.android.material.tabs.TabLayout;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class TestFrame extends Fragment {
 
     View view;
@@ -31,7 +28,7 @@ public class TestFrame extends Fragment {
         // Получаем ViewPager и устанавливаем в него адаптер
         ViewPager viewPager = view.findViewById(R.id.viewpager);
         viewPager.setAdapter(
-                new SampleFragmentPagerAdapter(getFragmentManager(), getActivity()));
+                new SampleFragmentPagerAdapter(getFragmentManager()));
 
         // Передаём ViewPager в TabLayout
         TabLayout tabLayout = view.findViewById(R.id.sliding_tabs);

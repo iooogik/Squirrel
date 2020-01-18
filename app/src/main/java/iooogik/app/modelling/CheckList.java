@@ -25,12 +25,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -40,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import static android.content.Context.ALARM_SERVICE;
 
@@ -49,10 +47,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
-    private Cursor userCursor;
-    private String[] tempArrBool;
-    private boolean[] booleans;
-    private String[] tempArr;
     private View view;
     private ArrayList<String> Items = new ArrayList<>();
     private ArrayList<Boolean> Booleans = new ArrayList<>();
@@ -118,18 +112,20 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         mDb = mDBHelper.getReadableDatabase();
 
-        userCursor =  mDb.rawQuery("Select * from Notes", null);
+        @SuppressLint("Recycle")
+        Cursor userCursor = mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES),
+                null);
         userCursor.moveToPosition(getBtnID());
         nameNote.setText(getBtnName());
         shortNote.setText(userCursor.getString(2));
 
-        final String temp = userCursor.getString(7);
+        final String TEMP = userCursor.getString(7);
         String tempBool = userCursor.getString(6);
-        if (temp != null && tempBool != null) {
+        if (TEMP != null && tempBool != null) {
 
-            tempArr = temp.split("\r\n|\r|\n");
-            tempArrBool = tempBool.split("\r\n|\r|\n");
-            booleans = new boolean[tempArrBool.length];
+            String[] tempArr = TEMP.split("\r\n|\r|\n");
+            String[] tempArrBool = tempBool.split("\r\n|\r|\n");
+            boolean[] booleans = new boolean[tempArrBool.length];
 
             for (int i = 0; i < tempArrBool.length; i++) {
                 booleans[i] = Boolean.valueOf(tempArrBool[i]);
@@ -146,23 +142,22 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     private void addCheck(boolean state, String nameCheck){
 
         LinearLayout linear = view.findViewById(R.id.shopScroll);
+        @SuppressLint("InflateParams")
         View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
-        final CheckBox check = view2.findViewById(R.id.checkBox);
-        final EditText tv = view.findViewById(R.id.editNameShopNote);
-        check.setChecked(state);
-        check.setText(nameCheck);
+        final CheckBox CHECK = view2.findViewById(R.id.checkBox);
+        final EditText EDIT_SHOP_NAME = view.findViewById(R.id.editNameShopNote);
+        CHECK.setChecked(state);
+        CHECK.setText(nameCheck);
 
-        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                int index = Items.indexOf(check.getText().toString());
-                Booleans.set(index, isChecked);
-                StringBuilder sendBool = new StringBuilder();
-                for (boolean aBoolean : Booleans) {
-                    sendBool.append(String.valueOf(aBoolean) + "\n");
-                }
-                updShopNotes("Notes", tv.getText().toString(), sendBool.toString());
+        CHECK.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int index = Items.indexOf(CHECK.getText().toString());
+            Booleans.set(index, isChecked);
+            StringBuilder sendBool = new StringBuilder();
+            for (boolean aBoolean : Booleans) {
+                sendBool.append(aBoolean).append("\n");
             }
+            updShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
+                    sendBool.toString());
         });
         linear.addView(view2);
     }
@@ -185,78 +180,72 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.addItemCheck){
-            final LinearLayout mainLayout  = new LinearLayout(view.getContext());
-            final LinearLayout layout1 = new LinearLayout(view.getContext());
-            mainLayout.setOrientation(LinearLayout.VERTICAL);
-            layout1.setOrientation(LinearLayout.VERTICAL);
+            final LinearLayout MAIN_LAYOUT  = new LinearLayout(view.getContext());
+            final LinearLayout LAYOUT_1 = new LinearLayout(view.getContext());
+            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
+            LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
-            final EditText nameNote = new EditText(view.getContext());
 
             int padding = 70;
 
-            mainLayout.setPadding(padding, padding, padding, padding);
+            MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
 
             nameNote.setTextColor(Color.BLACK);
-            final Typeface tpf = Typeface.createFromAsset(view.getContext().getAssets(),
+            final Typeface TPF = Typeface.createFromAsset(view.getContext().getAssets(),
                     "rostelekom.otf");
             nameNote.setHint("Введите текст пункта");
-            nameNote.setTypeface(tpf);
+            nameNote.setTypeface(TPF);
             nameNote.setTextSize(18);
             nameNote.setMinimumWidth(1500);
             nameNote.setTextColor(Color.WHITE);
-            layout1.addView(nameNote);
+            LAYOUT_1.addView(nameNote);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-            mainLayout.addView(layout1);
-            builder.setView(mainLayout);
+            MAIN_LAYOUT.addView(LAYOUT_1);
+            builder.setView(MAIN_LAYOUT);
 
             builder.setPositiveButton(Html.fromHtml
                             ("<font color='#7AB5FD'>Добавить</font>"),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mDb = mDBHelper.getWritableDatabase();
-                            ContentValues cv = new ContentValues();
+                    (dialog, which) -> {
+                        mDb = mDBHelper.getWritableDatabase();
+                        ContentValues cv = new ContentValues();
 
-                            Booleans.add(false);
-                            Items.add(nameNote.getText().toString());
+                        Booleans.add(false);
+                        Items.add(nameNote.getText().toString());
 
-                            StringBuilder strBool = new StringBuilder();
-                            StringBuilder strItems = new StringBuilder();
+                        StringBuilder strBool = new StringBuilder();
+                        StringBuilder strItems = new StringBuilder();
 
-                            for (int i = 0; i < Booleans.size(); i++) {
-                                strBool.append(Booleans.get(i)).append("\n");
-                            }
-                            for (int i = 0; i < Items.size(); i++) {
-                                strItems.append(Items.get(i)).append("\n");
-                            }
-
-                            cv.put("isChecked", strBool.toString());
-                            cv.put("points", strItems.toString());
-                            //обновление базы данных
-                            mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
-                                    null);
-                            addCheck(false, nameNote.getText().toString());
+                        for (int i = 0; i < Booleans.size(); i++) {
+                            strBool.append(Booleans.get(i)).append("\n");
                         }
+                        for (int i = 0; i < Items.size(); i++) {
+                            strItems.append(Items.get(i)).append("\n");
+                        }
+
+                        cv.put("isChecked", strBool.toString());
+                        cv.put("points", strItems.toString());
+                        //обновление базы данных
+                        mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
+                                null);
+                        addCheck(false, nameNote.getText().toString());
                     });
 
             AlertDialog dlg = builder.create();
-            dlg.setOnShowListener(new DialogInterface.OnShowListener() {
-                @SuppressLint("ResourceAsColor")
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    Window v = ((AlertDialog)dialog).getWindow();
-                    v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
-                    Button posButton = ((AlertDialog)dialog).
-                            getButton(DialogInterface.BUTTON_POSITIVE);
-                    posButton.setTypeface(tpf);
-                    posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                    posButton.setTextColor(R.color.colorFont);
-                }
+            dlg.setOnShowListener(dialog -> {
+                Window v1 = ((AlertDialog)dialog).getWindow();
+                assert v1 != null;
+                v1.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
+                Button posButton = ((AlertDialog)dialog).
+                        getButton(DialogInterface.BUTTON_POSITIVE);
+                posButton.setTypeface(TPF);
+                posButton.setTypeface(Typeface.DEFAULT_BOLD);
+                posButton.setTextColor(R.color.colorFont);
             });
             dlg.show();
         } else if(v.getId() == R.id.buttonShopAlarm){
@@ -266,7 +255,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
     @Override
-    public void alarmDialog(final String title, final String text) {
+    public void alarmDialog(final String TITLE, final String TEXT) {
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -276,53 +265,47 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
 
         DatePickerDialog dialog;
-        final TimePickerDialog dialog2;
+        final TimePickerDialog DIALOG_2;
 
-        dialog2 = new TimePickerDialog(view.getContext(), new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
+        DIALOG_2 = new TimePickerDialog(view.getContext(), (timePicker, hourOfDay, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
 
-                Intent notificationIntent = new Intent(view.getContext(),
-                        NotificationReceiver.class);
+            Intent notificationIntent = new Intent(view.getContext(),
+                    NotificationReceiver.class);
 
-                Bundle args = new Bundle();
-                args.putInt("btnId", getBtnID());
-                args.putString("btnName", getBtnName());
-                args.putString("title", title);
-                args.putString("shortNote", text);
+            Bundle args = new Bundle();
+            args.putInt("btnId", getBtnID());
+            args.putString("btnName", getBtnName());
+            args.putString("title", TITLE);
+            args.putString("shortNote", TEXT);
 
-                notificationIntent.putExtras(args);
-                notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            notificationIntent.putExtras(args);
+            notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
-                        1, notificationIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
+                    1, notificationIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
 
-                AlarmManager alarmManager = (AlarmManager) getContext().
-                        getSystemService(ALARM_SERVICE);
+            AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).
+                    getSystemService(ALARM_SERVICE);
 
 
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP,
-                        calendar.getTimeInMillis(), pendingIntent);
-                Toast.makeText(getContext(), "Уведомление установлено",
-                        Toast.LENGTH_LONG).show();
-
-            }
+            assert alarmManager != null;
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis(), pendingIntent);
+            Toast.makeText(getContext(), "Уведомление установлено",
+                    Toast.LENGTH_LONG).show();
 
         }, hours, minutes, true);
 
         dialog = new DatePickerDialog(
                 view.getContext(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, month);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        dialog2.show();
-                    }
+                (view, year1, month1, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year1);
+                    calendar.set(Calendar.MONTH, month1);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    DIALOG_2.show();
                 },
                 year, month, day);
         dialog.show();

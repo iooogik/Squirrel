@@ -1,6 +1,7 @@
 package iooogik.app.modelling;
 
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,21 +31,16 @@ public class Book extends Fragment {
 
     public Book() {}
 
-    private View view;
     private DatabaseHelper mDBHelper;
-    private SQLiteDatabase mDb;
-    private Cursor userCursor;
-    LinearLayout linear;
-    ArrayList<Bitmap> IMAGES;
-    ArrayList<String> DESCRIPTION;
-    LayoutInflater layoutInflater;
+    private LinearLayout linear;
+    private ArrayList<Bitmap> IMAGES;
+    private ArrayList<String> DESCRIPTION;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view  = inflater.inflate(R.layout.fragment_book, container, false);
-        layoutInflater = inflater;
+        View view = inflater.inflate(R.layout.fragment_book, container, false);
         linear = view.findViewById(R.id.scroll);
         return view;
     }
@@ -75,8 +72,10 @@ public class Book extends Fragment {
     }
 
     private void getImagesAndDescriptions(int position){
-        mDb = mDBHelper.getWritableDatabase();
-        userCursor = mDb.rawQuery("Select * from Formulaes", null);
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
+        @SuppressLint("Recycle")
+        Cursor userCursor = mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES),
+                null);
         userCursor.moveToPosition(position);
         try {
             DESCRIPTION.add(userCursor.getString(2));
@@ -84,7 +83,7 @@ public class Book extends Fragment {
                 DESCRIPTION.add("");
             }
         }catch (Exception e){
-            System.out.println(e);
+            Log.i("Book", String.valueOf(e));
         }
         byte[] bytesImg = userCursor.getBlob(3);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
@@ -94,6 +93,7 @@ public class Book extends Fragment {
     }
 
     private void setInformation(int pos){
+        @SuppressLint("InflateParams")
         View view1 = getLayoutInflater().inflate(R.layout.book_item, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);

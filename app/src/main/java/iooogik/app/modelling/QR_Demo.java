@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,8 +37,8 @@ import static android.graphics.Color.WHITE;
 public class QR_Demo extends AppCompatActivity {
 
     private DatabaseHelper mDBHelper;
-    private SQLiteDatabase mDb;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,84 +54,75 @@ public class QR_Demo extends AppCompatActivity {
         final LinearLayout mainLayout  = new LinearLayout(this);
         final LinearLayout layout1 = new LinearLayout(this);
         final Intent intent = new Intent(this, Notes.class);
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bitmap bitmap = null;
-                try {
-                    bitmap = encodeAsBitmap(getQr());
-                } catch (WriterException e) {
-                    e.printStackTrace();
-                }
-                if(bitmap != null){
-                    final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 2, stream);
-
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-
-                    mainLayout.setOrientation(LinearLayout.VERTICAL);
-                    layout1.setOrientation(LinearLayout.HORIZONTAL);
-                    final EditText name = new EditText(getApplicationContext());
-                    name.setHint("Введите имя");
-
-                    final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
-
-                    name.setTypeface(tpf);
-                    name.setTextSize(18);
-                    name.setMinHeight(15);
-
-                    layout1.addView(name);
-                    mainLayout.addView(layout1);
-                    builder.setView(mainLayout);
-
-                    builder.setPositiveButton(Html.fromHtml
-                                    ("<font color='#7AB5FD'>Добавить запись</font>"),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    try {
-                                        saveQRandText(name.getText().toString(),
-                                                stream.toByteArray());
-                                        startActivity(intent);
-                                        finish();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        Toast.makeText(getApplicationContext(),
-                                                "Что-то пошло не так" + String.valueOf(e),
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-
-                    builder.setCancelable(true);
-
-                    AlertDialog dlg = builder.create();
-
-                    dlg.setOnShowListener(new DialogInterface.OnShowListener() {
-                        @SuppressLint("ResourceAsColor")
-                        @Override
-                        public void onShow(DialogInterface dialog) {
-                            Window v = ((AlertDialog)dialog).getWindow();
-                            v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
-                            Button posButton = ((AlertDialog)dialog).
-                                    getButton(DialogInterface.BUTTON_POSITIVE);
-                            posButton.setTypeface(tpf);
-                            posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                            posButton.setTextColor(R.color.colorFont);
-                        }
-                    });
-
-
-
-                    dlg.show();
-
-                }else {
-                    Toast.makeText(getApplicationContext(), "Что-то пошло не так",
-                            Toast.LENGTH_LONG).show();
-                }
-
+        saveBtn.setOnClickListener(v -> {
+            Bitmap bitmap = null;
+            try {
+                bitmap = encodeAsBitmap(getQr());
+            } catch (WriterException e) {
+                e.printStackTrace();
             }
+            if(bitmap != null){
+                final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 2, stream);
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+                mainLayout.setOrientation(LinearLayout.VERTICAL);
+                layout1.setOrientation(LinearLayout.HORIZONTAL);
+                final EditText name = new EditText(getApplicationContext());
+                name.setHint("Введите имя");
+
+                final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
+
+                name.setTypeface(tpf);
+                name.setTextSize(18);
+                name.setMinHeight(15);
+
+                layout1.addView(name);
+                mainLayout.addView(layout1);
+                builder.setView(mainLayout);
+
+                builder.setPositiveButton(Html.fromHtml
+                                ("<font color='#7AB5FD'>Добавить запись</font>"),
+                        (dialog, which) -> {
+                            try {
+                                saveQRandText(name.getText().toString(),
+                                        stream.toByteArray());
+                                startActivity(intent);
+                                finish();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(),
+                                        "Что-то пошло не так" + e,
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                builder.setCancelable(true);
+
+                AlertDialog dlg = builder.create();
+
+                dlg.setOnShowListener(dialog -> {
+                    Window v1 = ((AlertDialog)dialog).getWindow();
+                    assert v1 != null;
+                    v1.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
+                    Button posButton = ((AlertDialog)dialog).
+                            getButton(DialogInterface.BUTTON_POSITIVE);
+                    posButton.setTypeface(tpf);
+                    posButton.setTypeface(Typeface.DEFAULT_BOLD);
+                    posButton.setTextColor(R.color.colorFont);
+                });
+
+
+
+                dlg.show();
+
+            }else {
+                Toast.makeText(getApplicationContext(), "Что-то пошло не так",
+                        Toast.LENGTH_LONG).show();
+            }
+
         });
 
 
@@ -182,7 +172,7 @@ public class QR_Demo extends AppCompatActivity {
     protected void saveQRandText(String name, byte[] image){
         TextView tv = findViewById(R.id.encodedText);
 
-        mDb = mDBHelper.getWritableDatabase();
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
 
@@ -209,7 +199,7 @@ public class QR_Demo extends AppCompatActivity {
         Notes.id++;
         Notes.dataProjects.add(fullName);
         Notes.standartItems.add(fullName);
-        Notes.adapterStndrtList.notifyDataSetChanged();
+        Notes.adapterStandartList.notifyDataSetChanged();
     }
 
     @Override

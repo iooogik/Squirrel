@@ -1,5 +1,6 @@
 package iooogik.app.modelling;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,12 @@ public class PageFragment extends Fragment {
         return fragment;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page, container, false);
-        TextView textView = (TextView) view.findViewById(R.id.quest);
+        TextView textView = view.findViewById(R.id.quest);
         textView.setText("Fragment #" + currentPage);
         return view;
     }

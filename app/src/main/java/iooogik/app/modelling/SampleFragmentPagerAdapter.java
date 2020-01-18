@@ -2,15 +2,16 @@ package iooogik.app.modelling;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
-    int PAGE_COUNT;
-    private String tabTitles[] = new String[] { "1", "2", "3", "4", "5", "6" };
+    private int PAGE_COUNT;
+    private String[] tabTitles = new String[]{"1", "2", "3", "4", "5", "6"};
 
-    public SampleFragmentPagerAdapter(FragmentManager fm, Context context) {
+    SampleFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
         PAGE_COUNT = tabTitles.length;
     }
@@ -19,6 +20,7 @@ public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
         return PAGE_COUNT;
     }
 
+    @NonNull
     @Override public Fragment getItem(int position) {
         return PageFragment.newInstance(position + 1);
     }

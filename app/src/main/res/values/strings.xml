@@ -73,5 +73,7 @@
 - атакуй других жителей, за победу получая искромётные значки и продвигаясь вверх по ТОПу жителей: в атаке учитывается уровень базы, количество завершённых исследований и собранные коллекционные карточки</string>
     <string name="quest_num">Номер вопроса:</string>
     <string name="answ_var">Варианты ответа:</string>
+    <string name="SELECT_FROM_NOTES">Select * from Notes</string>
+    <string name="SELECT_FROM_PLANETS">Select * from Planets</string>
 
 </resources>

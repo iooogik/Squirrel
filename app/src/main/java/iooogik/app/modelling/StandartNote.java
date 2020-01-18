@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -358,7 +359,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             updData(dataName, nameNote, Note, shortText);
 
             Notes.standartItems.set(getBtnID(), nameNote);
-            Notes.adapterStndrtList.notifyDataSetChanged();
+            Notes.adapterStandartList.notifyDataSetChanged();
 
             // Скрываем клавиатуру при открытии Navigation Drawer
             try {
@@ -370,7 +371,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                             getWindowToken(), 0);
                 }
             } catch (Exception e){
-                System.out.println(e);
+                Log.i("StandartNotes", String.valueOf(e));
             }
 
             Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();

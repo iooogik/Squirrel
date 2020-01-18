@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,11 +29,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Lifecycle;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -62,11 +61,15 @@ public class Notes extends Fragment implements View.OnClickListener {
     static ArrayList<String> standartItems = new ArrayList<>();
     private static ArrayList<String> shopItems = new ArrayList<>();
 
-    static ArrayAdapter<String> adapterStndrtList;
+    static ArrayAdapter<String> adapterStandartList;
     private static ArrayAdapter<String> adapterShopList;
-    ArrayList<String> booksItems;
 
-    static ArrayList<String> dataProjects = new ArrayList<String>();
+    private LinearLayout MAIN_LAYOUT;
+    private ListView STANDART_LIST;
+    private ListView SHOP_LIST;
+    private ListView BOOK_LIST;
+
+    static ArrayList<String> dataProjects = new ArrayList<>();
 
 
     public Notes(){}
@@ -75,6 +78,10 @@ public class Notes extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.notes, container ,false);
+        MAIN_LAYOUT  = new LinearLayout(getContext());
+        STANDART_LIST = view.findViewById(R.id.standartList);
+        SHOP_LIST = view.findViewById(R.id.shopList);
+        BOOK_LIST = view.findViewById(R.id.booksList);
         return view;
     }
 
@@ -95,13 +102,11 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         FloatingActionButton add = view.findViewById(R.id.addProject);
 
-        final LinearLayout mainLayout  = new LinearLayout(getContext());
-
         add.setOnLongClickListener(v -> {
 
-            mainLayout.setOrientation(LinearLayout.VERTICAL);
+            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
             int padding = 30;
-            mainLayout.setPadding(padding, padding, padding, padding);
+            MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
 
             final EditText name = new EditText(getContext());
             name.setHint("Введите имя");
@@ -109,12 +114,12 @@ public class Notes extends Fragment implements View.OnClickListener {
             name.setTextSize(18);
             name.setMinimumWidth(1500);
 
-            mainLayout.addView(name);
+            MAIN_LAYOUT.addView(name);
 
 
-            final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-            builder.setView(mainLayout);
-            builder.setPositiveButton(Html.fromHtml
+            final AlertDialog.Builder BUILDER = new AlertDialog.Builder(v.getContext());
+            BUILDER.setView(MAIN_LAYOUT);
+            BUILDER.setPositiveButton(Html.fromHtml
                             ("<font color='#7AB5FD'>Добавить запись</font>"),
                     (dialog, which) -> {
                         mDb = mDBHelper.getWritableDatabase();
@@ -135,12 +140,12 @@ public class Notes extends Fragment implements View.OnClickListener {
                         mDb.insert("Notes", null, cv);
                         mDb.close();
                     });
-            builder.setNegativeButton(Html.fromHtml
+            BUILDER.setNegativeButton(Html.fromHtml
                     ("<font color='#7AB5FD'>Закрыть</font>"), (dialog, which) -> {
 
                     });
 
-            AlertDialog dlg = builder.create();
+            AlertDialog dlg = BUILDER.create();
             dlg.show();
 
 
@@ -155,10 +160,10 @@ public class Notes extends Fragment implements View.OnClickListener {
             standartItems.clear();
             shopItems.clear();
             dataProjects.clear();
-            adapterStndrtList.clear();
+            adapterStandartList.clear();
             adapterShopList.clear();
         } catch (Exception e){
-            System.out.println(e);
+            Log.i("Notes", String.valueOf(e));
         }
 
 
@@ -188,7 +193,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                                 Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    listView.setAdapter(adapterStndrtList);
+                    listView.setAdapter(adapterStandartList);
                     listView2.setAdapter(adapterShopList);
                 }
             }
@@ -206,16 +211,15 @@ public class Notes extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         if(view.getId() == R.id.addProject){
             //кнопка "Добавить проект"
-            final LinearLayout mainLayout  = new LinearLayout(getContext());
             final LinearLayout layout1 = new LinearLayout(getContext());
-            mainLayout.setOrientation(LinearLayout.VERTICAL);
+            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
             layout1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
             final EditText nameNote = new EditText(getContext());
 
             int padding = 70;
 
-            mainLayout.setPadding(padding, padding, padding, padding);
+            MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
 
             nameNote.setTextColor(Color.BLACK);
             nameNote.setHint("Введите название");
@@ -233,12 +237,12 @@ public class Notes extends Fragment implements View.OnClickListener {
             tv.setMinimumWidth(1500);
             tv.setVisibility(View.GONE);
             layout1.addView(tv);
-            final String stndrtTextNote = "Стандартная заметка";
+            final String standartTextNote = "Стандартная заметка";
             final String marckedList = "Маркированный список";
-            final String[] types = new String[]{stndrtTextNote, marckedList};
+            final String[] types = new String[]{standartTextNote, marckedList};
             //выбор типа
             final Spinner spinner = new Spinner(getContext());
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(Objects.requireNonNull(getContext()),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
                     android.R.layout.simple_spinner_dropdown_item, types);
 
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -264,8 +268,8 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
             layout1.addView(spinner);
-            mainLayout.addView(layout1);
-            builder.setView(mainLayout);
+            MAIN_LAYOUT.addView(layout1);
+            builder.setView(MAIN_LAYOUT);
 
             final String DB_TYPE_STNDRT = "standart";
             final String DB_TYPE_SHOP = "shop";
@@ -281,7 +285,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                         cv.put("name", nameNote.getText().toString());
                         cv.put("shortName", "короткое описание");
                         cv.put("text", "hello, it's the best note ever");
-                        if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
+                        if(spinner.getSelectedItem().toString().equals(standartTextNote)){
                             cv.put("type", DB_TYPE_STNDRT);
                         }
                         else if(spinner.getSelectedItem().toString().equals(marckedList)){
@@ -299,10 +303,10 @@ public class Notes extends Fragment implements View.OnClickListener {
                         mDb.close();
                         id++;
 
-                        if(spinner.getSelectedItem().toString().equals(stndrtTextNote)){
+                        if(spinner.getSelectedItem().toString().equals(standartTextNote)){
                             dataProjects.add(nameNote.getText().toString());
                             standartItems.add(nameNote.getText().toString());
-                            adapterStndrtList.notifyDataSetChanged();
+                            adapterStandartList.notifyDataSetChanged();
                         }else if(spinner.getSelectedItem().toString().equals(marckedList)){
                             dataProjects.add(nameNote.getText().toString());
                             shopItems.add(nameNote.getText().toString());
@@ -314,6 +318,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             dlg.setOnShowListener(dialog -> {
                 Window v = ((AlertDialog)dialog).getWindow();
+                assert v != null;
                 v.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
                 Button posButton = ((AlertDialog)dialog).
                         getButton(DialogInterface.BUTTON_POSITIVE);
@@ -327,9 +332,9 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     private String getType(String name){
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Notes", null);
-        final int btnID = dataProjects.indexOf(name);
-        userCursor.moveToPosition(btnID);
+        userCursor =  mDb.rawQuery(getString(R.string.SELECT_FROM_NOTES), null);
+        final int BTN_ID = dataProjects.indexOf(name);
+        userCursor.moveToPosition(BTN_ID);
 
         return userCursor.getString(8);
     }
@@ -337,8 +342,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        FrameLayout main = view.findViewById(R.id.Mainframe);
-        MainActivity.currFragmeLayout = main;
+        MainActivity.currFragmeLayout = view.findViewById(R.id.Mainframe);
     }
 
     private void showFragment(Fragment fragment){
@@ -347,6 +351,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         MainActivity.currFragmeLayout = frameLayout;
 
         FragmentManager fm = getFragmentManager();
+        assert fm != null;
         FragmentTransaction ft = fm.beginTransaction();
 
         if (fragment != null) {
@@ -357,12 +362,13 @@ public class Notes extends Fragment implements View.OnClickListener {
         addTransaction.setCustomAnimations
                 (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
         addTransaction.addToBackStack(null);
+        assert fragment != null;
         addTransaction.add(R.id.SecondaryFrame, fragment,
                 "secondFrame").commitAllowingStateLoss();
     }
 
     //удаление проекта из активити и удаление его из бд
-    private void delete(int selected, String name){
+    private void delete(int selected){
         if(id >= 0) {
             //Toast.makeText(getApplicationContext(), getType(standartItems.get(selected - 1)),
               //      Toast.LENGTH_LONG).show();
@@ -374,7 +380,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             if(getType(dataProjects.get(selected)).equals("standart")){
                 try {
                     standartItems.remove(selected);
-                    adapterStndrtList.notifyDataSetChanged();
+                    adapterStandartList.notifyDataSetChanged();
                 } catch (Exception e){
                     Toast.makeText(getContext(), String.valueOf(e),
                             Toast.LENGTH_LONG).show();
@@ -407,13 +413,9 @@ public class Notes extends Fragment implements View.OnClickListener {
     private void updProjects(){
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Notes", null);
+        userCursor =  mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES), null);
         userCursor.moveToFirst();
-        String item = "";
-
-        final ListView standartList = view.findViewById(R.id.standartList);
-        final ListView shopList = view.findViewById(R.id.shopList);
-        final ListView bookList = view.findViewById(R.id.booksList);
+        String item;
 
         while (!userCursor.isAfterLast()) {
             item = userCursor.getString(1); //колонки считаются с 0
@@ -429,64 +431,47 @@ public class Notes extends Fragment implements View.OnClickListener {
         }
         userCursor.close();
 
-        booksItems = new ArrayList<>();
+        ArrayList<String> booksItems = new ArrayList<>();
         booksItems.add("Математические формулы");
 
-        ArrayAdapter<String> adapterBookList = new ArrayAdapter<>(getContext(),
+        ArrayAdapter<String> adapterBookList = new ArrayAdapter<>
+                (Objects.requireNonNull(getContext()),
                 R.layout.item_project, booksItems);
 
-        bookList.setAdapter(adapterBookList);
+        BOOK_LIST.setAdapter(adapterBookList);
 
         adapterShopList = new ArrayAdapter<>(getContext(),
                 R.layout.item_project, shopItems);
 
-        adapterStndrtList = new ArrayAdapter<>(getContext(),
+        adapterStandartList = new ArrayAdapter<>(getContext(),
                 R.layout.item_project, standartItems);
 
-        standartList.setAdapter(adapterStndrtList);
-        shopList.setAdapter(adapterShopList);
+        STANDART_LIST.setAdapter(adapterStandartList);
+        SHOP_LIST.setAdapter(adapterShopList);
 
-        bookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemListClicked(position, "book");
-            }
+        BOOK_LIST.setOnItemClickListener((parent, view, position, id)
+                -> onItemListClicked(position, "book"));
+
+        SHOP_LIST.setOnItemClickListener((parent, view, position, id)
+                -> onItemListClicked(position, "shop"));
+
+        STANDART_LIST.setOnItemClickListener((parent, view, position, id)
+                -> onItemListClicked(position, "standart"));
+
+        STANDART_LIST.setOnItemLongClickListener((parent, view, position, id)
+                -> {
+            STANDART_LIST.setEnabled(false);
+            onItemLongListClicked(position, "standart");
+            STANDART_LIST.setEnabled(true);
+            return false;
         });
 
-        shopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemListClicked(position, "shop");
-            }
-        });
-
-        standartList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemListClicked(position, "standart");
-            }
-        });
-
-        standartList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position,
-                                           long id) {
-                standartList.setEnabled(false);
-                onItemLongListClicked(position, "standart");
-                standartList.setEnabled(true);
-                return false;
-            }
-        });
-
-        shopList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position,
-                                           long id) {
-                shopList.setEnabled(false);
-                onItemLongListClicked(position, "shop");
-                shopList.setEnabled(true);
-                return false;
-            }
+        SHOP_LIST.setOnItemLongClickListener((parent, view, position, id)
+                -> {
+            SHOP_LIST.setEnabled(false);
+            onItemLongListClicked(position, "shop");
+            SHOP_LIST.setEnabled(true);
+            return false;
         });
 
         if(dataProjects.size() == 0){id = 0;}
@@ -497,7 +482,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     private void onItemListClicked(int position, String type){
 
         Bundle args = new Bundle();
-        String name = null;
+        String name;
 
         FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
 
@@ -534,19 +519,13 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     private void onItemLongListClicked(int position, String type){
 
-        final ListView standartList = view.findViewById(R.id.standartList);
-        final ListView shopList = view.findViewById(R.id.shopList);
-        final String name;
         if(type.equals("shop")){
             position = position + standartItems.size();
-            name = String.valueOf(shopList.getItemAtPosition(position));
-        }else {
-            name = String.valueOf(standartList.getItemAtPosition(position));
         }
 
 
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Notes", null);
+        userCursor =  mDb.rawQuery(String.valueOf(R.string.SELECT_FROM_NOTES), null);
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -574,19 +553,16 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         userCursor.moveToPosition(position);
         String message = userCursor.getString(2);
-        tv.setText("\n  " + message);
+        tv.setText(message);
 
         builder.setCancelable(true);
         final int finalPosition = position;
         builder.setPositiveButton(Html.fromHtml
                         ("<font color='#7AB5FD'>Удалить выбранную запись</font>"),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), String.valueOf(finalPosition),
-                         Toast.LENGTH_LONG).show();
-                        delete(finalPosition, name);
-                    }
+                (dialog, which) -> {
+                    Toast.makeText(getContext(), String.valueOf(finalPosition),
+                     Toast.LENGTH_LONG).show();
+                    delete(finalPosition);
                 });
         AlertDialog dlg = builder.create();
         LinearLayout main = view.findViewById(R.id.main);
@@ -630,7 +606,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                     tv2.setText(R.string.strNameStandartNotes);
                     tv5.setVisibility(View.VISIBLE);
                     shopList.setVisibility(View.VISIBLE);
-                    standartList.setAdapter(adapterStndrtList);
+                    standartList.setAdapter(adapterStandartList);
 
                     //updProjects();
                 }

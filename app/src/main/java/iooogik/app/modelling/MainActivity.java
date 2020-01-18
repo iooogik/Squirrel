@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
     Cursor userCursor;
     private DatabaseHelper mDBHelper;
-    private SQLiteDatabase mDb;
     public static Typeface standartFont;
     public static Fragment currFragment;
     @SuppressLint("StaticFieldLeak")
     public static Toolbar toolbar;
+    @SuppressLint("StaticFieldLeak")
     public static Notes notes = new Notes();
+    @SuppressLint("StaticFieldLeak")
     public static FrameLayout currFragmeLayout;
 
 
@@ -79,13 +80,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @SuppressWarnings("UnusedAssignment")
     private void createToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
         toolbar.setSubtitle("Планеты и Звёзды");
 
-        final Intent qrReader = new Intent(this, BarcodeCaptureActivity.class);
+        final Intent QR_READER = new Intent(this, BarcodeCaptureActivity.class);
         int identifier = 0;
 
         Drawer drawer = new Drawer()
@@ -133,17 +135,6 @@ public class MainActivity extends AppCompatActivity {
                         //9
                         new PrimaryDrawerItem().withName("Тесты")
                                 .withIdentifier(identifier++)
-
-                        /*запятая после прдыдущего!
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).
-                                withIcon(FontAwesome.Icon.faw_cog),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).
-                                withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).
-                                withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(1)
-
-                         */
                 )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -158,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                                                 this.getCurrentFocus()).getWindowToken(), 0);
                             }
                         } catch (Exception e){
-                            System.out.println(e);
+                            Log.i("MainActivity", String.valueOf(e));
                         }
 
                     }
@@ -182,14 +173,10 @@ public class MainActivity extends AppCompatActivity {
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
-                    else if(position == 2){
-
-                    }
-
                     else if (position == 4) {
-                        qrReader.putExtra(BarcodeCaptureActivity.AutoFocus, true);
-                        qrReader.putExtra(BarcodeCaptureActivity.UseFlash, false);
-                        startActivity(qrReader);
+                        QR_READER.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                        QR_READER.putExtra(BarcodeCaptureActivity.UseFlash, false);
+                        startActivity(QR_READER);
                     }
 
                     else if(position == 5){
@@ -250,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         addTransaction.setCustomAnimations
                 (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
         addTransaction.addToBackStack(null);
+        assert fragment != null;
         addTransaction.add(R.id.Mainframe, fragment,
                 "mainFrame").commitAllowingStateLoss();
 
@@ -275,10 +263,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPlanets(){
-        mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Planets", null);
+        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
+        userCursor =  mDb.rawQuery(getString(R.string.SELECT_FROM_PLANETS), null);
         userCursor.moveToLast();
-        String name = "", description = "";
+        String name, description;
         Bitmap bitmap;
         int max = userCursor.getInt(userCursor.getColumnIndex("_id"));
         userCursor.moveToFirst();
@@ -295,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setInformation(String name, String description, Bitmap bitmap, int id){
         LinearLayout linearLayout = findViewById(R.id.linear);
+        @SuppressLint("InflateParams")
         View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);

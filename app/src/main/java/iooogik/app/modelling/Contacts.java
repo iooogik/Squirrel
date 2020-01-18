@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 public class Contacts extends Fragment implements View.OnClickListener {
 
     View view;
@@ -50,15 +52,19 @@ public class Contacts extends Fragment implements View.OnClickListener {
         } else if(v.getId() == R.id.gmail){
 
             ClipboardManager clipboard = (ClipboardManager)
-                    getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    Objects.requireNonNull(getContext()).
+                            getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("", "iooogikdev@gmail.com");
+            assert clipboard != null;
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Адрес электронной почты был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
         } else if(v.getId() == R.id.discord){
             ClipboardManager clipboard = (ClipboardManager)
-                    getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    Objects.requireNonNull(getContext()).
+                            getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("", "Стасян#6249");
+            assert clipboard != null;
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Тег дискорда был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();

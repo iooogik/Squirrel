@@ -20,8 +20,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     // Идентификатор уведомления
     private static final int NOTIFY_ID = 101;
-    // Идентификатор канала
-    private static String CHANNEL_ID = "Уведомления";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -31,6 +29,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         assert notificationManager != null;
 
+        // Идентификатор канала
+        String CHANNEL_ID = "Уведомления";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
                     "Уведомление",
@@ -59,6 +59,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
+        assert newArgs != null;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(StandartNote.view.getContext(), CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher_round)
