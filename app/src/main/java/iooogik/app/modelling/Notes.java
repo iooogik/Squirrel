@@ -32,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -333,15 +334,31 @@ public class Notes extends Fragment implements View.OnClickListener {
         return userCursor.getString(8);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        FrameLayout main = view.findViewById(R.id.Mainframe);
+        MainActivity.currFragmeLayout = main;
+    }
+
     private void showFragment(Fragment fragment){
         FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
         frameLayout.setVisibility(View.VISIBLE);
+        MainActivity.currFragmeLayout = frameLayout;
 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.replace(R.id.SecondaryFrame, fragment);
-        ft.commit();
+
+        if (fragment != null) {
+            ft.remove(fragment).commitAllowingStateLoss();
+        }
+
+        FragmentTransaction addTransaction = fm.beginTransaction();
+        addTransaction.setCustomAnimations
+                (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
+        addTransaction.addToBackStack(null);
+        addTransaction.add(R.id.SecondaryFrame, fragment,
+                "secondFrame").commitAllowingStateLoss();
     }
 
     //удаление проекта из активити и удаление его из бд
@@ -482,6 +499,8 @@ public class Notes extends Fragment implements View.OnClickListener {
         Bundle args = new Bundle();
         String name = null;
 
+        FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
+
         switch (type) {
             case "standart":
                 name = standartItems.get(position);
@@ -490,7 +509,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 MainActivity.currFragment = standartNote;
                 standartNote.setArguments(args);
                 showFragment(standartNote);
-
+                MainActivity.currFragmeLayout = frameLayout;
                 break;
             case "shop":
                 name = shopItems.get(position);
@@ -499,16 +518,19 @@ public class Notes extends Fragment implements View.OnClickListener {
                 args.putInt("buttonID", dataProjects.indexOf(name));
                 checkListActivity.setArguments(args);
                 MainActivity.currFragment = checkListActivity;
+                MainActivity.currFragmeLayout =frameLayout;
                 showFragment(checkListActivity);
 
                 break;
             case "book":
                 Book book = new Book();
                 showFragment(book);
+                MainActivity.currFragmeLayout =frameLayout;
                 break;
         }
 
     }
+
 
     private void onItemLongListClicked(int position, String type){
 
@@ -571,21 +593,6 @@ public class Notes extends Fragment implements View.OnClickListener {
         main.setEnabled(false);
         dlg.show();
 
-    }
-
-    private void closeFragment(Fragment fragment){
-        final FrameLayout frameLayout = view.findViewById(R.id.frame);
-        if(frameLayout.getVisibility() == View.VISIBLE){
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-            ft.remove(fragment).commit();
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
-            Toolbar toolbar = view.findViewById(R.id.toolbar_main);
-            toolbar.setSubtitle(R.string.textNotes);
-
-        }
     }
 
     private void search(){

@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     public static Toolbar toolbar;
     public static Notes notes = new Notes();
+    public static FrameLayout currFragmeLayout;
 
 
     @Override
@@ -123,7 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
                         //7
 
-                        new SecondaryDrawerItem().withName("Игра от издателя")
+                        new PrimaryDrawerItem().withName("Игра от издателя")
+                                .withIdentifier(identifier++),
+
+                        //8
+                        new DividerDrawerItem(),
+
+                        //9
+                        new PrimaryDrawerItem().withName("Тесты")
                                 .withIdentifier(identifier++)
 
                         /*запятая после прдыдущего!
@@ -168,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     } else if(position == 1){
-                        showFragment(notes);
-                        toolbar.setSubtitle(R.string.textNotes);
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        showFragment(notes, frameLayout);
+                        toolbar.setSubtitle(R.string.textNotes);
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
@@ -185,35 +193,66 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     else if(position == 5){
-                        Contacts contacts = new Contacts();
-                        showFragment(contacts);
-                        toolbar.setSubtitle(R.string.contacts);
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        Contacts contacts = new Contacts();
+                        showFragment(contacts, frameLayout);
+                        toolbar.setSubtitle(R.string.contacts);
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
                     else if(position == 7){
-                        LifeAtSpace lifeAtSpace = new LifeAtSpace();
-                        showFragment(lifeAtSpace);
-                        toolbar.setSubtitle("Игра от издателя");
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        LifeAtSpace lifeAtSpace = new LifeAtSpace();
+                        showFragment(lifeAtSpace, frameLayout);
+                        toolbar.setSubtitle("Игра от издателя");
+
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    else if(position == 9){
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        Test test = new Test();
+                        showFragment(test, frameLayout);
+                        toolbar.setSubtitle("Тесты");
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
                 });
         drawer.build();
         Objects.requireNonNull(toolbar.getNavigationIcon()).
-                setColorFilter(ContextCompat.getColor(this, R.color.colorIcons), PorterDuff.Mode.SRC_ATOP);
+                setColorFilter(ContextCompat.getColor(this, R.color.colorIcons),
+                        PorterDuff.Mode.SRC_ATOP);
 
     }
 
-    private void showFragment(Fragment fragment){
+    private void showFragment(Fragment fragment, FrameLayout frameLayout){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+
+        try{
+            FrameLayout main = findViewById(R.id.Mainframe);
+            main.removeAllViews();
+        } catch (Exception e){
+            Log.i("MainActivity", "fail");
+        }
+
+        frameLayout.setVisibility(View.VISIBLE);
+
+        if (fragment != null) {
+            ft.remove(fragment).commitAllowingStateLoss();
+        }
+
+
         currFragment = fragment;
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.replace(R.id.Mainframe, fragment);
-        ft.commit();
+        currFragmeLayout = frameLayout;
+
+        FragmentTransaction addTransaction = fm.beginTransaction();
+        addTransaction.setCustomAnimations
+                (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
+        addTransaction.addToBackStack(null);
+        addTransaction.add(R.id.Mainframe, fragment,
+                "mainFrame").commitAllowingStateLoss();
+
     }
 
     @Override
@@ -226,21 +265,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void closeFragment(Fragment fragment){
-        final FrameLayout SecondaryFrame = findViewById(R.id.SecondaryFrame);
-        final FrameLayout frame = findViewById(R.id.Mainframe);
+
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         ft.remove(fragment).commit();
-        if(SecondaryFrame.getVisibility() == View.VISIBLE){
-
-            SecondaryFrame.removeAllViews();
-            SecondaryFrame.setVisibility(View.GONE);
-            Toolbar toolbar = findViewById(R.id.toolbar_main);
-            toolbar.setSubtitle(R.string.textNotes);
-            currFragment = notes;
-
-        }
+        currFragmeLayout.removeAllViews();
+        currFragmeLayout.setVisibility(View.GONE);
     }
 
     private void getPlanets(){
