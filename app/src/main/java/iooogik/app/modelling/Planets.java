@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,7 +39,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import java.io.IOException;
 import java.util.Objects;
 
-public class Planets extends Fragment {
+public class Planets extends Fragment implements View.OnClickListener {
 
     Cursor userCursor;
     View view;
@@ -54,6 +55,8 @@ public class Planets extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.planets, container ,false);
+        Button showAR = view.findViewById(R.id.openAr);
+        showAR.setOnClickListener(this);
         return view;
     }
 
@@ -149,4 +152,11 @@ public class Planets extends Fragment {
                 "planets_frame").commitAllowingStateLoss();
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.openAr){
+            Intent intent = new Intent(getContext(), ARcamera.class);
+            startActivity(intent);
+        }
+    }
 }

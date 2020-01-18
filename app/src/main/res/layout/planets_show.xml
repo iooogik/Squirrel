@@ -10,12 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment
-            android:id="@+id/ar_fragment"
-            android:name="com.google.ar.sceneform.ux.ArFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/back"
             android:layout_width="wrap_content"
@@ -26,6 +20,12 @@
             app:maxImageSize="25dp"
             app:srcCompat="@drawable/arrow_left"
             android:layout_margin="@dimen/fab_margin" />
+
+        <fragment
+            android:id="@+id/ar_fragment"
+            android:name="com.google.ar.sceneform.ux.ArFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 

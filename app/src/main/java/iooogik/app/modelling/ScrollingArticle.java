@@ -40,10 +40,9 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.activity_scrolling_article, container ,false);
 
         FloatingActionButton back = view.findViewById(R.id.back);
-        Button showAR = view.findViewById(R.id.openAr);
 
         back.setOnClickListener(this);
-        showAR.setOnClickListener(this);
+
 
 
         Bundle args = this.getArguments();
@@ -98,9 +97,6 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         if(v.getId() == R.id.back){
             showPlanetInfo(new Planets());
-        } else if(v.getId() == R.id.openAr){
-            Intent intent = new Intent(getContext(), ARcamera.class);
-            startActivity(intent);
         }
     }
 

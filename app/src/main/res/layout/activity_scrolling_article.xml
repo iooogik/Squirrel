@@ -68,15 +68,6 @@
                 app:srcCompat="@drawable/arrow_left"
                 />
 
-            <Button
-                android:id="@+id/openAr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:layout_gravity="bottom|start"
-                android:textColor="@color/colorFont"
-                android:layout_marginBottom="10dp"
-                android:text="@string/showAR" />
 
         </LinearLayout>
 

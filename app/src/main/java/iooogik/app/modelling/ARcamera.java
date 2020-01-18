@@ -73,7 +73,7 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.back){
-            Intent intent = new Intent(getApplicationContext(), Planets.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
     }
