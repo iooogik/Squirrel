@@ -26,6 +26,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -254,8 +255,9 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
         } else if(v.getId() == R.id.back){
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
+            FrameLayout frameLayout = Notes.view.findViewById(R.id.SecondaryFrame);
+            frameLayout.removeAllViews();
+            frameLayout.setVisibility(View.GONE);
         }
     }
 

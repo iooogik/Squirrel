@@ -34,10 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static Fragment currFragment;
 
-    @SuppressLint("StaticFieldLeak")
-    public static Notes notes = new Notes();
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
                     } else if(position == 1){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        Notes notes = new Notes();
                         showFragment(notes, frameLayout);
                         toolbar.setSubtitle(R.string.textNotes);
                         frameLayout.setVisibility(View.VISIBLE);

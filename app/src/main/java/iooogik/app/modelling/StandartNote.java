@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -410,8 +411,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
         }else if (view.getId() == R.id.back){
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
+            FrameLayout frameLayout = Notes.view.findViewById(R.id.SecondaryFrame);
+            frameLayout.removeAllViews();
+            frameLayout.setVisibility(View.GONE);
         }
     }
 

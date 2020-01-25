@@ -56,7 +56,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     private Cursor userCursor;
     private SimpleCursorAdapter userAdapter;
     private EditText userFilter;
-    View view;
+    protected static View view;
 
     static ArrayList<String> standartItems = new ArrayList<>();
     private static ArrayList<String> shopItems = new ArrayList<>();
@@ -86,8 +86,6 @@ public class Notes extends Fragment implements View.OnClickListener {
         back.setOnClickListener(this);
         return view;
     }
-
-
 
     @Override
     public void onStart() {
@@ -435,6 +433,8 @@ public class Notes extends Fragment implements View.OnClickListener {
                 R.layout.item_project, booksItems);
 
         BOOK_LIST.setAdapter(adapterBookList);
+
+
 
         adapterShopList = new ArrayAdapter<>(getContext(),
                 R.layout.item_project, shopItems);
