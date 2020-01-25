@@ -87,10 +87,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
+    private void startProcedures(){
         mDBHelper = new DatabaseHelper(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
@@ -139,7 +136,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             BUILDER.setNegativeButton(Html.fromHtml
                     ("<font color='#7AB5FD'>Закрыть</font>"), (dialog, which) -> {
 
-                    });
+            });
 
             AlertDialog dlg = BUILDER.create();
             dlg.show();
@@ -200,6 +197,15 @@ public class Notes extends Fragment implements View.OnClickListener {
             }
         });
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Thread myThread = new Thread(() -> startProcedures());
+
+        myThread.start();
     }
 
     @SuppressLint("SetTextI18n")
