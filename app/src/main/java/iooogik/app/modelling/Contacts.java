@@ -50,8 +50,8 @@ public class Contacts extends Fragment implements View.OnClickListener {
         if(v.getId() == R.id.telegram){
 
             Uri address = Uri.parse("https://t.me/iooogik");
-            Intent openlink = new Intent(Intent.ACTION_VIEW, address);
-            startActivity(openlink);
+            Intent openLink = new Intent(Intent.ACTION_VIEW, address);
+            startActivity(openLink);
 
         } else if(v.getId() == R.id.gmail){
 
@@ -72,9 +72,15 @@ public class Contacts extends Fragment implements View.OnClickListener {
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Тег дискорда был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
-        }
-        else if(v.getId() == R.id.back){
-
+        } else if(v.getId() == R.id.vk){
+            Uri address = Uri.parse("https://vk.com/iooogikdev");
+            Intent openLink = new Intent(Intent.ACTION_VIEW, address);
+            startActivity(openLink);
+        } else if(v.getId() == R.id.instagram){
+            Uri address = Uri.parse("https://www.instagram.com/iooogik/?r=nametag");
+            Intent openLink = new Intent(Intent.ACTION_VIEW, address);
+            startActivity(openLink);
+        } else if(v.getId() == R.id.back){
             Intent main = new Intent(getContext(), MainActivity.class);
             startActivity(main);
         }
