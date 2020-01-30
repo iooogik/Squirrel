@@ -200,12 +200,9 @@ public class Notes extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        Thread myThread = new Thread(() -> startProcedures());
-
-        myThread.start();
+    public void onResume() {
+        super.onResume();
+        startProcedures();
     }
 
     @SuppressLint("SetTextI18n")
