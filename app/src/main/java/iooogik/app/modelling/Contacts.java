@@ -35,12 +35,16 @@ public class Contacts extends Fragment implements View.OnClickListener {
         ImageButton telegram = view.findViewById(R.id.telegram);
         ImageButton gmail = view.findViewById(R.id.gmail);
         ImageButton discord = view.findViewById(R.id.discord);
+        ImageButton vk = view.findViewById(R.id.vk);
+        ImageButton instagram = view.findViewById(R.id.instagram);
         FloatingActionButton back = view.findViewById(R.id.back);
 
         telegram.setOnClickListener(this);
         gmail.setOnClickListener(this);
         discord.setOnClickListener(this);
         back.setOnClickListener(this);
+        vk.setOnClickListener(this);
+        instagram.setOnClickListener(this);
 
         return view;
     }
