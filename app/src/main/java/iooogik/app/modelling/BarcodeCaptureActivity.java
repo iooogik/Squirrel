@@ -39,6 +39,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import iooogik.app.modelling.camera.CameraSource;
 import iooogik.app.modelling.camera.CameraSourcePreview;
@@ -125,8 +126,44 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             }
         });
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // разрешение не предоставлено
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
+                builder.setTitle("Важное сообщение!")
+                        .setMessage("Необходимо разрешение на использование камеры!")
+                        .setIcon(R.drawable.ic_launcher)
+                        .setCancelable(true)
+                        .setNegativeButton("Не давать разрешение",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setPositiveButton("Запросить ещё раз", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                reqPermission();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            } else {
+                // не требуется показывать объяснение. запрашиваем разрешение
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA}, 100);
+            }
+        }
     }
 
+    protected void reqPermission(){
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA}, 100);
+    }
 
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");

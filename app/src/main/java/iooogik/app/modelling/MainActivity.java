@@ -58,11 +58,12 @@ public class MainActivity extends AppCompatActivity {
         TextView desc = frameLayout.findViewById(R.id.description);
         TextView nameTv = frameLayout.findViewById(R.id.namePlanet);
         nameTv.setText("Астрономия");
+
         int width = 300;
         int height = 300;
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.astronomy_logo);
         imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
-        desc.setText("");
+        desc.setText(R.string.astronomyTerm);
 
         view1.setOnClickListener(v -> {
             Planets planets = new Planets();
@@ -92,41 +93,40 @@ public class MainActivity extends AppCompatActivity {
                         //0
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
                                 withIcon(FontAwesome.Icon.faw_home).withIdentifier(identifier),
+
                         //1
+                        new DividerDrawerItem(),
+
+                        //2
                         new PrimaryDrawerItem().withName(R.string.textNotes).
                                 withIdentifier(identifier++),
 
-                        //2
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_settings).
-                                withIdentifier(identifier++),
-
-
                         //3
+
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_qr).
+                                withIdentifier(identifier++),
+                        //4
                         new DividerDrawerItem(),
 
-
-                        //4
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_qr).
-                                withIdentifier(identifier++),
-
                         //5
-
-                        new SecondaryDrawerItem().withName(R.string.contacts).
-                                withIdentifier(identifier++),
+                        new PrimaryDrawerItem().withName("Тесты")
+                                .withIdentifier(identifier++),
 
                         //6
                         new DividerDrawerItem(),
-
                         //7
-
-                        new PrimaryDrawerItem().withName("Игра от издателя")
-                                .withIdentifier(identifier++),
-
+                        new PrimaryDrawerItem().withName(R.string.contacts).
+                                withIdentifier(identifier++),
                         //8
+                        //настройки
+                        new PrimaryDrawerItem().withName("Настройки (в разработке)").
+                                withIdentifier(identifier++).setEnabled(false),
+                        //9
                         new DividerDrawerItem(),
 
-                        //9
-                        new PrimaryDrawerItem().withName("Тесты")
+                        //10
+
+                        new SecondaryDrawerItem().withName("Игра от издателя")
                                 .withIdentifier(identifier++)
                 )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
 
-                    } else if(position == 1){
+                    } else if(position == 2){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         Notes notes = new Notes();
                         showFragment(notes, frameLayout);
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
-                    else if (position == 4) {
+                    else if (position == 3) {
                         QR_READER.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                         QR_READER.putExtra(BarcodeCaptureActivity.UseFlash, false);
                         startActivity(QR_READER);
@@ -176,26 +176,26 @@ public class MainActivity extends AppCompatActivity {
 
                     else if(position == 5){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        Test test = new Test();
+                        showFragment(test, frameLayout);
+                        toolbar.setSubtitle("Тесты");
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    else if(position == 7){
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         Contacts contacts = new Contacts();
                         showFragment(contacts, frameLayout);
                         toolbar.setSubtitle(R.string.contacts);
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
-                    else if(position == 7){
+                    else if(position == 10){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         LifeAtSpace lifeAtSpace = new LifeAtSpace();
                         showFragment(lifeAtSpace, frameLayout);
                         toolbar.setSubtitle("Игра от издателя");
 
-                        frameLayout.setVisibility(View.VISIBLE);
-                    }
-
-                    else if(position == 9){
-                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
-                        Test test = new Test();
-                        showFragment(test, frameLayout);
-                        toolbar.setSubtitle("Тесты");
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 

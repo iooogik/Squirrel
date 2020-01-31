@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,9 +82,16 @@ public class Test extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.back){
+        FrameLayout frameLayout = view.findViewById(R.id.test_frame);
+        if(v.getId() == R.id.back && frameLayout.getVisibility() != View.VISIBLE){
             Intent main = new Intent(getContext(), MainActivity.class);
             startActivity(main);
+        }else {
+            try {
+            frameLayout.setVisibility(View.GONE);
+        } catch (Exception e){
+                Log.i("Test", String.valueOf(e));
+            }
         }
     }
 }

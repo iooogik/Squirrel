@@ -32,12 +32,12 @@
 
       <Button
           android:id="@+id/saveQR"
+          style="@style/ButtonsCustom"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity=""
           android:layout_margin="30dp"
           android:background="@drawable/projectframe"
-          android:fontFamily="@font/rostelekom"
           android:text="@string/СохранитьQR"
           android:textColor="@color/colorFont" />
     </FrameLayout>

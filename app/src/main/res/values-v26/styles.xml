@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:font">@font/rostelekom</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorFont</item>
+        <item name="colorAccent">@color/colorFont</item>
+        <item name="android:textColor">@color/colorFont</item>
+        <item name="android:textColorPrimary">@color/colorFont</item>
+        <item name="textColorAlertDialogListItem">@color/colorFont</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogCustom</item>
+    </style>
+</resources>
