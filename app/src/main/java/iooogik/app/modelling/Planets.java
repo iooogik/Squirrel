@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,6 +32,8 @@ public class Planets extends Fragment implements View.OnClickListener {
     View view;
     private DatabaseHelper mDBHelper;
     static Typeface standartFont;
+    private Cursor userCursor;
+    private SQLiteDatabase mDb;
 
 
     public Planets(){}
@@ -55,34 +58,28 @@ public class Planets extends Fragment implements View.OnClickListener {
         mDBHelper = new DatabaseHelper(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-        try {
-            getPlanets();
-        } catch (Exception e){
-            Log.i("Planets", String.valueOf(e));
-            //Toast.makeText(this, String.valueOf(e), Toast.LENGTH_LONG).show();
-        }
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor = mDb.rawQuery("Select * from Planets", null);
+        getPlanets();
 
     }
 
 
 
     private void getPlanets(){
-        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
-        try (Cursor userCursor = mDb.rawQuery("Select * from Planets", null)) {
-            userCursor.moveToLast();
-            String name, description;
-            Bitmap bitmap;
-            int max = userCursor.getInt(userCursor.getColumnIndex("_id"));
-            userCursor.moveToFirst();
-            for (int i = 0; i < max; i++) {
-
-                name = userCursor.getString(userCursor.getColumnIndex("name"));
-                description = userCursor.getString(userCursor.getColumnIndex("description"));
-                byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
-                bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
-                setInformation(name, description, bitmap, i);
-                userCursor.moveToNext();
-            }
+        userCursor.moveToLast();
+        String name, description;
+        Bitmap bitmap = null;
+        int max = userCursor.getInt(userCursor.getColumnIndex("_id"));
+        userCursor.moveToFirst();
+        for (int i = 0; i < max; i++) {
+            name = userCursor.getString(userCursor.getColumnIndex("name"));
+            description = userCursor.getString(userCursor.getColumnIndex("description"));
+            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
+            if(bytesImg!=null)
+            bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
+            setInformation(name, description, bitmap, i);
+            userCursor.moveToNext();
         }
     }
 
@@ -97,7 +94,9 @@ public class Planets extends Fragment implements View.OnClickListener {
         nameTv.setText(name);
         int width = 300;
         int height = 300;
+        if(bitmap != null)
         imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
+
         desc.setText(description);
 
         view1.setOnClickListener(v -> {
@@ -110,6 +109,7 @@ public class Planets extends Fragment implements View.OnClickListener {
         });
 
         linearLayout.addView(view1);
+
     }
 
     private void showPlanetInfo(Fragment fragment){
