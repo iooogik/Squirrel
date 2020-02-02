@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
@@ -33,12 +32,12 @@ public class NotificationReceiver extends BroadcastReceiver {
         String CHANNEL_ID = "Уведомления";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "Уведомление",
+                    "Уведомления",
                     NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Уведомление заметок");
+            channel.setDescription("Уведомления заметок");
             channel.enableLights(true);
             channel.setLightColor(Color.BLUE);
-            channel.enableVibration(false);
+            channel.enableVibration(true);
 
             notificationManager.createNotificationChannel(channel);
         }
@@ -46,12 +45,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Bundle newArgs = intent.getExtras();
 
         Intent resultIntent = new Intent(StandartNote.view.getContext(), Notes.class);
-        /*
-        Bundle args = new Bundle();
-        args.putInt("buttonID", newArgs.getInt("btnID"));
-        args.putString("button name", newArgs.getString("btnName"));
-        resultIntent.putExtras(args);
-        */
+
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(StandartNote.view.getContext());
         stackBuilder.addParentStack(Notes.class);
         stackBuilder.addNextIntent(resultIntent);
@@ -67,10 +61,9 @@ public class NotificationReceiver extends BroadcastReceiver {
                         .setContentText(newArgs.getString("shortNote"))
                         .setShowWhen(true)
                         .setAutoCancel(true)
-                        .setContentIntent(pendingIntent);
+                        .setContentIntent(pendingIntent)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         notificationManager.notify(NOTIFY_ID, builder.build());
-        Toast.makeText(StandartNote.view.getContext(), "notification", Toast.LENGTH_LONG).show();
-
-    }
+        }
 }

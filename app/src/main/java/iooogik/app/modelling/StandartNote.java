@@ -314,16 +314,19 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
-                    1, notificationIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    0, notificationIntent,
+                    0);
 
             AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).
                     getSystemService(ALARM_SERVICE);
 
-
             assert alarmManager != null;
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                    10000, pendingIntent);
+
             alarmManager.setExact(AlarmManager.RTC_WAKEUP,
                     calendar.getTimeInMillis(), pendingIntent);
+
             Toast.makeText(getContext(), "Уведомление установлено",
                     Toast.LENGTH_LONG).show();
 

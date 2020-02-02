@@ -31,7 +31,7 @@
             android:label="@string/title_activity_scrolling_article"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".NotificationReceiver" />
+        <receiver android:name=".NotificationReceiver" android:enabled="true"/>
 
         <meta-data
             android:name="com.google.ar.core"
