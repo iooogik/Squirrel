@@ -5,42 +5,44 @@
     android:id="@+id/topLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:keepScreenOn="true">
+
 
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:maxImageSize="25dp"
-        app:srcCompat="@drawable/arrow_left"
-        />
 
-    <FrameLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="60dp"
-        >
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+      <com.google.android.material.floatingactionbutton.FloatingActionButton
+          android:id="@+id/back"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom|start"
+          android:layout_margin="16dp"
+          app:backgroundTint="@color/colorPrimary"
+          app:maxImageSize="25dp"
+          app:srcCompat="@drawable/arrow_left" />
 
       <Button
           android:id="@+id/saveQR"
           style="@style/ButtonsCustom"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_gravity=""
-          android:layout_margin="30dp"
+          android:layout_gravity="bottom"
+          android:layout_marginEnd="30dp"
+          android:layout_marginStart="30dp"
+          android:layout_marginBottom="10dp"
           android:background="@drawable/projectframe"
           android:text="@string/СохранитьQR"
           android:textColor="@color/colorFont" />
-    </FrameLayout>
+    </LinearLayout>
 
     <iooogik.app.modelling.camera.CameraSourcePreview
         android:id="@+id/preview"
@@ -55,5 +57,7 @@
     </iooogik.app.modelling.camera.CameraSourcePreview>
 
   </FrameLayout>
+
+
 
 </LinearLayout>

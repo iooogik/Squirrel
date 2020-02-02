@@ -370,9 +370,6 @@ public class Notes extends Fragment implements View.OnClickListener {
             //Toast.makeText(getApplicationContext(), getType(standartItems.get(selected - 1)),
               //      Toast.LENGTH_LONG).show();
 
-            mDb = mDBHelper.getWritableDatabase();
-            mDb.delete("Notes", "_id=" + (selected + 1), null);
-
 
             if(getType(dataProjects.get(selected)).equals("standart")){
                 try {
@@ -399,6 +396,9 @@ public class Notes extends Fragment implements View.OnClickListener {
             } else {
                 id = 0;
             }
+
+            mDb = mDBHelper.getWritableDatabase();
+            mDb.delete("Notes", "_id=" + (selected + 1), null);
 
             LinearLayout main = view.findViewById(R.id.main);
             main.setEnabled(true);

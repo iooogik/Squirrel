@@ -14,7 +14,7 @@ import java.io.OutputStream;
 class DatabaseHelper extends SQLiteOpenHelper {
     private static String DB_NAME = "planetsDB.db";
     private static String DB_PATH;
-    private static final int DB_VERSION = 23;
+    private static final int DB_VERSION = 26;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;
