@@ -95,57 +95,6 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         FloatingActionButton add = view.findViewById(R.id.addProject);
 
-        add.setOnLongClickListener(v -> {
-
-            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
-            int padding = 30;
-            MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
-
-            final EditText name = new EditText(getContext());
-            name.setHint("Введите имя");
-            name.setTypeface(Planets.standartFont);
-            name.setTextSize(18);
-            name.setMinimumWidth(1500);
-
-            MAIN_LAYOUT.addView(name);
-
-
-            final AlertDialog.Builder BUILDER = new AlertDialog.Builder(v.getContext());
-            BUILDER.setView(MAIN_LAYOUT);
-            BUILDER.setPositiveButton(Html.fromHtml
-                            ("<font color='#7AB5FD'>Добавить запись</font>"),
-                    (dialog, which) -> {
-                        mDb = mDBHelper.getWritableDatabase();
-                        ContentValues cv = new ContentValues();
-                        id++;
-                        cv.put("id", id);
-                        cv.put("name", name.getText().toString());
-                        cv.put("shortName", "короткое описание");
-                        cv.put("text", "hello, it's the best note ever");
-                        //получение даты
-                        Date currentDate = new Date();
-                        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                                Locale.getDefault());
-                        String dateText = dateFormat.format(currentDate);
-                        cv.put("date", dateText);
-                        //запись
-                        dataProjects.add(String.valueOf(id));
-                        mDb.insert("Notes", null, cv);
-                        mDb.close();
-                    });
-            BUILDER.setNegativeButton(Html.fromHtml
-                    ("<font color='#7AB5FD'>Закрыть</font>"), (dialog, which) -> {
-
-            });
-
-            AlertDialog dlg = BUILDER.create();
-            dlg.show();
-
-
-
-            return true;
-        });
-
         add.setOnClickListener(this);
 
         //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
@@ -208,17 +157,18 @@ public class Notes extends Fragment implements View.OnClickListener {
     @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View view) {
+        //кнопка "Добавить проект"
         if(view.getId() == R.id.addProject){
-            //кнопка "Добавить проект"
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
             final LinearLayout layout1 = new LinearLayout(getContext());
-            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
             layout1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
             final EditText nameNote = new EditText(getContext());
 
             int padding = 70;
 
-            MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
 
             nameNote.setTextColor(Color.BLACK);
             nameNote.setHint("Введите название");
@@ -236,6 +186,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             tv.setMinimumWidth(1500);
             tv.setVisibility(View.GONE);
             layout1.addView(tv);
+
             final String standartTextNote = "Стандартная заметка";
             final String marckedList = "Маркированный список";
             final String[] types = new String[]{standartTextNote, marckedList};
@@ -263,12 +214,10 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
 
             layout1.addView(spinner);
-            MAIN_LAYOUT.addView(layout1);
-            builder.setView(MAIN_LAYOUT);
+            builder.setView(layout1);
 
             final String DB_TYPE_STNDRT = "standart";
             final String DB_TYPE_SHOP = "shop";
@@ -323,6 +272,9 @@ public class Notes extends Fragment implements View.OnClickListener {
                         getButton(DialogInterface.BUTTON_POSITIVE);
                 posButton.setTypeface(Planets.standartFont);
                 posButton.setTypeface(Typeface.DEFAULT_BOLD);
+
+
+
             });
 
             dlg.show();
@@ -482,6 +434,9 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         Bundle args = new Bundle();
         String name;
+        //очистка строки поиска
+        EditText search = view.findViewById(R.id.search);
+        search.setText("");
 
         switch (type) {
             case "standart":
@@ -515,7 +470,6 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
     private void onItemLongListClicked(int position, String type){
-
         if(type.equals("shop")){
             position = position + standartItems.size();
         }
@@ -562,10 +516,8 @@ public class Notes extends Fragment implements View.OnClickListener {
                     delete(finalPosition);
                 });
         AlertDialog dlg = builder.create();
-        LinearLayout main = view.findViewById(R.id.main);
-        main.setEnabled(false);
-        dlg.show();
 
+        dlg.show();
     }
 
     private void search(){

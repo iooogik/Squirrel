@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         @SuppressLint("InflateParams")
         View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
+        //астрономия
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView desc = frameLayout.findViewById(R.id.description);
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
         int width = 300;
         int height = 300;
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.astronomy_logo);
-        imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
+        Bitmap bitmapAstro = BitmapFactory.decodeResource(getResources(), R.drawable.astronomy_logo);
+        imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmapAstro, width, height, false));
         desc.setText(R.string.astronomyTerm);
 
         view1.setOnClickListener(v -> {
@@ -70,8 +71,24 @@ public class MainActivity extends AppCompatActivity {
             FrameLayout frameLayout1 = findViewById(R.id.Mainframe);
             showFragment(planets, frameLayout1);
         });
-
         linearLayout.addView(view1);
+        //геометрия
+        View view2 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
+        FrameLayout frameLayout2 = view2.findViewById(R.id.frame_formulae);
+
+        ImageView imageView2 = frameLayout2.findViewById(R.id.formulae);
+        TextView desc2 = frameLayout2.findViewById(R.id.description);
+        TextView nameTv2 = frameLayout2.findViewById(R.id.namePlanet);
+
+        nameTv2.setText("Геометрия");
+        Bitmap bitmapGeo = BitmapFactory.decodeResource(getResources(), R.drawable.geometry);
+        imageView2.setImageBitmap(Bitmap.createScaledBitmap(bitmapGeo, width, height, false));
+        desc2.setText(R.string.geometryTerm);
+
+        view1.setOnClickListener(v -> {
+            //открытие фрагмента с фигурами
+        });
+        linearLayout.addView(view2);
 
     }
 
