@@ -1,10 +1,13 @@
 package iooogik.app.modelling;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.opengl.GLES20;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
@@ -14,9 +17,14 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
@@ -28,17 +36,21 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.planets_show);
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
-        setupModel();
+        loadModel();
         createModel();
 
         FloatingActionButton back = findViewById(R.id.back);
         back.setOnClickListener(this);
+        TextView findSurface = findViewById(R.id.findARsurf);
+        findSurface.setOnClickListener(this);
 
     }
 
-    private void setupModel() {
+    private void loadModel() {
+
+
         ModelRenderable.builder()
-                .setSource(this, R.raw.solar).build()
+                .setSource(this, R.raw.sphere).build()
                 .thenAccept(renderable -> solarSystem = renderable)
                 .exceptionally(throwable -> {
                     Toast toast =
@@ -48,6 +60,12 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
                     toast.show();
                     return null;
                 });
+
+
+
+
+
+
     }
 
     private void createModel(){
@@ -75,6 +93,8 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
         if(v.getId() == R.id.back){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
+        } else if(v.getId() == R.id.findARsurf){
+
         }
     }
 }

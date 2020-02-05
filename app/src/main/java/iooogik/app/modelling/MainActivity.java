@@ -71,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
             FrameLayout frameLayout1 = findViewById(R.id.Mainframe);
             showFragment(planets, frameLayout1);
         });
+
         linearLayout.addView(view1);
+
         //геометрия
         View view2 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
         FrameLayout frameLayout2 = view2.findViewById(R.id.frame_formulae);
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         imageView2.setImageBitmap(Bitmap.createScaledBitmap(bitmapGeo, width, height, false));
         desc2.setText(R.string.geometryTerm);
 
-        view1.setOnClickListener(v -> {
+        view2.setOnClickListener(v -> {
             //открытие фрагмента с фигурами
         });
         linearLayout.addView(view2);

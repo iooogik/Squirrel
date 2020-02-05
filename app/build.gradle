@@ -54,13 +54,7 @@ dependencies {
     }
 }
 
-
-sceneform.asset('sampledata/models/solar.fbx',
+sceneform.asset('sampledata/GEOmodels/sphere.fbx',
         'default',
-        'sampledata/models/solar.sfa',
-        'src/main/assets/solar')
-
-sceneform.asset('sampledata/models/moon.fbx',
-        'default',
-        'sampledata/models/moon.sfa',
-        'src/main/res/raw/moon')
+        'sampledata/GEOmodels/sphere.sfa',
+        'src/main/assets/sphere')
