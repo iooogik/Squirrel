@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
-        toolbar.setSubtitle("Планеты и Звёзды");
 
         final Intent QR_READER = new Intent(this, BarcodeCaptureActivity.class);
         int identifier = 0;

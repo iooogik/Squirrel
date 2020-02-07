@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AR Models</string>
+    <string name="app_name">AR модели</string>
 
     <string name="menu_home">Домой</string>
     <string name="menu_slideshow">Слайд-шоу</string>
@@ -78,4 +78,5 @@
     <string name="astronomyTerm">Астроно́мия (от др.-греч. ἄστρον «звезда» и νόμος «закон») — наука о Вселенной, изучающая расположение, движение, структуру, происхождение и развитие небесных тел и систем.</string>
     <string name="geometryTerm">Геоме́трия — раздел математики, изучающий пространственные структуры и отношения, а также их обобщения. Геометрия как систематическая наука появилась в Древней Греции, её аксиоматические построения описаны в «Началах» Евклида.</string>
     <string name="findARSurface">Заново найти поверхность</string>
+    <string name="onFigureClick">При нажатии на фигуру вы сразу же сможете увидеть её в AR</string>
 </resources>
