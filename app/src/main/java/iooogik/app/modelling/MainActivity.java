@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
 
         view2.setOnClickListener(v -> {
             //открытие фрагмента с фигурами
+            GeometricFigure figures = new GeometricFigure();
+            FrameLayout frameLayout1 = findViewById(R.id.Mainframe);
+            showFragment(figures, frameLayout1);
         });
         linearLayout.addView(view2);
 

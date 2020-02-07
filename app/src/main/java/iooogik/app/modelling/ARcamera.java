@@ -30,10 +30,13 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
     ArFragment arFragment;
     private ModelRenderable solarSystem;
+    public static String TYPE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getIntent().getExtras() != null)
+        TYPE = getIntent().getExtras().getString("TYPE");
         setContentView(R.layout.planets_show);
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
         loadModel();
@@ -47,10 +50,24 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     }
 
     private void loadModel() {
+        int res = -1;
+
+        switch (TYPE){
+            case ("SolarSystem"):
+                 res = R.raw.solar_system;
+                 break;
+            case ("Sphere"):
+                res = R.raw.sphere;
+                break;
+            case ("Cube"):
+                res = R.raw.cube;
+                break;
+
+        }
 
 
         ModelRenderable.builder()
-                .setSource(this, R.raw.sphere).build()
+                .setSource(this, res).build()
                 .thenAccept(renderable -> solarSystem = renderable)
                 .exceptionally(throwable -> {
                     Toast toast =
@@ -60,7 +77,6 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
                     toast.show();
                     return null;
                 });
-
 
 
 
@@ -94,7 +110,7 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         } else if(v.getId() == R.id.findARsurf){
-
+            recreate();
         }
     }
 }

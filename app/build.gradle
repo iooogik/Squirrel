@@ -58,3 +58,13 @@ sceneform.asset('sampledata/GEOmodels/sphere.fbx',
         'default',
         'sampledata/GEOmodels/sphere.sfa',
         'src/main/assets/sphere')
+
+sceneform.asset('sampledata/ASTROmodels/solar_system.fbx',
+        'default',
+        'sampledata/ASTROmodels/solar_system.sfa',
+        'src/main/assets/solar_system')
+
+sceneform.asset('sampledata/GEOmodels/cube.fbx',
+        'default',
+        'sampledata/GEOmodels/cube.sfa',
+        'src/main/assets/Cube')
