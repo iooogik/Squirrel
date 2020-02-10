@@ -38,7 +38,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -69,7 +72,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     private ListView SHOP_LIST;
     private ListView BOOK_LIST;
 
-    static ArrayList<String> dataProjects = new ArrayList<>();
+    static List<String> dataProjects = new ArrayList<String>();
 
 
     public Notes(){}
@@ -260,6 +263,9 @@ public class Notes extends Fragment implements View.OnClickListener {
                             shopItems.add(nameNote.getText().toString());
                             adapterShopList.notifyDataSetChanged();
                         }
+
+
+                        Toast.makeText(getContext(), String.valueOf(standartItems.size()), Toast.LENGTH_SHORT).show();
                     });
 
             AlertDialog dlg = builder.create();
@@ -326,7 +332,6 @@ public class Notes extends Fragment implements View.OnClickListener {
             if(getType(dataProjects.get(selected)).equals("standart")){
                 try {
                     standartItems.remove(selected);
-                    adapterStandartList.notifyDataSetChanged();
                 } catch (Exception e){
                     Toast.makeText(getContext(), String.valueOf(e),
                             Toast.LENGTH_LONG).show();
@@ -335,14 +340,15 @@ public class Notes extends Fragment implements View.OnClickListener {
             }else {
                 try {
                     shopItems.remove(selected);
-                    adapterShopList.notifyDataSetChanged();
+
                 } catch (Exception e){
                     Toast.makeText(getContext(), String.valueOf(e),
                             Toast.LENGTH_LONG).show();
                 }
             }
             dataProjects.remove(selected);
-
+            adapterShopList.notifyDataSetChanged();
+            adapterStandartList.notifyDataSetChanged();
             if(id - 1 >=0){
                 id--;
             } else {
@@ -368,7 +374,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         while (!userCursor.isAfterLast()) {
             item = userCursor.getString(1); //колонки считаются с 0
-            dataProjects.add(String.valueOf(item));
+            dataProjects.add(item);
 
             if(getType(String.valueOf(item)).equals("standart")) {
                 standartItems.add(String.valueOf(item));
@@ -398,6 +404,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 R.layout.item_project, standartItems);
 
         STANDART_LIST.setAdapter(adapterStandartList);
+        SHOP_LIST.setAdapter(adapterShopList);
         SHOP_LIST.setAdapter(adapterShopList);
 
         BOOK_LIST.setOnItemClickListener((parent, view, position, id)
