@@ -182,7 +182,9 @@ public class MainActivity extends AppCompatActivity {
 
                     if(position == 0){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
-                        if(frameLayout.getVisibility() != View.GONE) {
+                        if(frameLayout.getVisibility() == View.VISIBLE) {
+                            frameLayout.setVisibility(View.GONE);
+                        } else {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                         }
