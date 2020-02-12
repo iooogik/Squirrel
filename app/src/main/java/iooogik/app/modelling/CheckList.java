@@ -178,8 +178,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.addItemCheck){
-            final LinearLayout MAIN_LAYOUT  = new LinearLayout(view.getContext());
-            final LinearLayout LAYOUT_1 = new LinearLayout(view.getContext());
+            final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
+            final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
             MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
             LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
@@ -187,18 +187,17 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             int padding = 70;
 
             MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
-
-            nameNote.setTextColor(Color.BLACK);
-            final Typeface TPF = Typeface.createFromAsset(view.getContext().getAssets(),
+            EditText namePoint = new EditText(getContext());
+            namePoint.setTextColor(Color.BLACK);
+            final Typeface TPF = Typeface.createFromAsset(getContext().getAssets(),
                     "rostelekom.otf");
-            nameNote.setHint("Введите текст пункта");
-            nameNote.setTypeface(TPF);
-            nameNote.setTextSize(18);
-            nameNote.setMinimumWidth(1500);
-            nameNote.setTextColor(Color.WHITE);
-            LAYOUT_1.addView(nameNote);
+            namePoint.setHint("Введите текст пункта");
+            namePoint.setTypeface(TPF);
+            namePoint.setTextSize(18);
+            namePoint.setMinimumWidth(1500);
+            LAYOUT_1.addView(namePoint);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
             MAIN_LAYOUT.addView(LAYOUT_1);
             builder.setView(MAIN_LAYOUT);
@@ -210,7 +209,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                         ContentValues cv = new ContentValues();
 
                         Booleans.add(false);
-                        Items.add(nameNote.getText().toString());
+                        Items.add(namePoint.getText().toString());
 
                         StringBuilder strBool = new StringBuilder();
                         StringBuilder strItems = new StringBuilder();
@@ -227,24 +226,17 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                         //обновление базы данных
                         mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
                                 null);
-                        addCheck(false, nameNote.getText().toString());
+                        addCheck(false, namePoint.getText().toString());
                     });
 
             AlertDialog dlg = builder.create();
-            dlg.setOnShowListener(dialog -> {
-                Window v1 = ((AlertDialog)dialog).getWindow();
-                assert v1 != null;
-                v1.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
-                Button posButton = ((AlertDialog)dialog).
-                        getButton(DialogInterface.BUTTON_POSITIVE);
-                posButton.setTypeface(TPF);
-                posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                posButton.setTextColor(R.color.colorFont);
-            });
+
             dlg.show();
+
         } else if(v.getId() == R.id.buttonShopAlarm){
 
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
+
         } else if(v.getId() == R.id.back){
             FrameLayout frameLayout = Notes.view.findViewById(R.id.SecondaryFrame);
             frameLayout.removeAllViews();

@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         Drawer drawer = new Drawer()
                 .withActivity(this)
+
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggle(true)
                 .addDrawerItems(
