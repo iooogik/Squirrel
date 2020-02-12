@@ -197,9 +197,7 @@ public class QR_Demo extends AppCompatActivity {
         mDb.insert("Notes", null, cv);
         mDb.close();
         Notes.id++;
-        Notes.dataProjects.add(fullName);
-        Notes.standartItems.add(fullName);
-        Notes.adapterStandartList.notifyDataSetChanged();
+        Notes.items.add(fullName);
     }
 
     @Override

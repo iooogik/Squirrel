@@ -185,7 +185,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     public int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
-        return arguments.getInt("buttonID");
+        return arguments.getInt("button ID");
     }
     @Override
     public String getBtnName(){
@@ -360,8 +360,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             String dataName = "Notes";
             updData(dataName, nameNote, Note, shortText);
 
-            Notes.standartItems.set(getBtnID(), nameNote);
-            Notes.adapterStandartList.notifyDataSetChanged();
 
             // Скрываем клавиатуру при открытии Navigation Drawer
             try {

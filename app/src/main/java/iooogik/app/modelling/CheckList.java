@@ -33,7 +33,6 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.shop_fragment,
+        view = inflater.inflate(R.layout.fragment_check,
                 container, false);
 
         ImageButton addButton = view.findViewById(R.id.addItemCheck);
@@ -73,29 +72,18 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(this);
 
+        getPoints();
+
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        getPoints();
-    }
 
     @Override
     public int getBtnID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
-        return arguments.getInt("buttonID");
+        return arguments.getInt("button ID");
     }
-
-    @Override
-    public void updFragment() {
-
-    }
-
-    @Override
-    public void updData(String databaseName, String name, String note, String shortNote) {}
 
     @Override
     public String getBtnName(){
@@ -103,6 +91,12 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         assert arguments != null;
         return arguments.getString("button name");
     }
+
+    @Override
+    public void updFragment() {}
+
+    @Override
+    public void updData(String databaseName, String name, String note, String shortNote) {}
 
 
     private void getPoints(){
@@ -116,14 +110,13 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         mDb = mDBHelper.getReadableDatabase();
 
         @SuppressLint("Recycle")
-        Cursor userCursor = mDb.rawQuery("Select * from Notes",
-                null);
+        Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToPosition(getBtnID());
         nameNote.setText(getBtnName());
         shortNote.setText(userCursor.getString(2));
-
         final String TEMP = userCursor.getString(7);
         String tempBool = userCursor.getString(6);
+
         if (TEMP != null && tempBool != null) {
 
             String[] tempArr = TEMP.split("\r\n|\r|\n");
@@ -133,9 +126,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             for (int i = 0; i < tempArrBool.length; i++) {
                 booleans[i] = Boolean.valueOf(tempArrBool[i]);
                 Booleans.add(booleans[i]);
-            }
 
-            for (int i = 0; i < tempArr.length; i++) {
                 Items.add(tempArr[i]);
                 addCheck(booleans[i], tempArr[i]);
             }
@@ -144,7 +135,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
     private void addCheck(boolean state, String nameCheck){
 
-        LinearLayout linear = view.findViewById(R.id.shopScroll);
+        LinearLayout linear = view.findViewById(R.id.markedScroll);
         @SuppressLint("InflateParams")
         View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
         final CheckBox CHECK = view2.findViewById(R.id.checkBox);

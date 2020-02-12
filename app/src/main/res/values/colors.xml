@@ -2,8 +2,6 @@
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
-    <color name="colorAccent">#FFFFFF</color>
-    <color name="colorWhite">#FFFFFF</color>
     <color name="colorFrame">#C0C0C0</color>
     <color name="colorItems">#FFFFFF</color>
     <color name="colorCursor">#FFFFFF</color>
@@ -12,4 +10,9 @@
     <color name="colorFont">#000000</color>
     <color name="colorLightFont">#FFFFFF</color>
     <color name="colorWarning">#FF0000</color>
+    <color name="colorButton">#5ba543</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGreen">#219254</color>
+    <color name="colorSalmon">#FA8072</color>
+    <color name="colorBrick">#ff607d</color>
 </resources>
