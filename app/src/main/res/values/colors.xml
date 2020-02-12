@@ -15,4 +15,6 @@
     <color name="colorGreen">#219254</color>
     <color name="colorSalmon">#FA8072</color>
     <color name="colorBrick">#ff607d</color>
+    <color name="colorSky">#87CEEB</color>
+    <color name="colorDodger">#1E90FF</color>
 </resources>

@@ -81,7 +81,7 @@ public class Book extends Fragment implements View.OnClickListener {
         try {
             DESCRIPTION.add(userCursor.getString(2));
             if(userCursor.getString(2) == null){
-                DESCRIPTION.add("");
+                DESCRIPTION.add(null);
             }
         }catch (Exception e){
             Log.i("Book", String.valueOf(e));
@@ -99,12 +99,19 @@ public class Book extends Fragment implements View.OnClickListener {
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView tv = frameLayout.findViewById(R.id.description);
+        if(tv.getVisibility() == View.GONE){
+            tv.setVisibility(View.VISIBLE);
+        }
         Bitmap bitmap = IMAGES.get(pos);
         int width = bitmap.getWidth() * 3;
         int height = bitmap.getHeight() * 3;
 
         imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
-        tv.setText(DESCRIPTION.get(pos));
+        if (DESCRIPTION.get(pos) == null){
+            tv.setVisibility(View.GONE);
+        }else {
+            tv.setText(DESCRIPTION.get(pos));
+        }
         linear.addView(view1);
     }
 

@@ -120,27 +120,32 @@ public class MainActivity extends AppCompatActivity {
 
                         //2
                         new PrimaryDrawerItem().withName(R.string.textNotes).
+                                withIcon(FontAwesome.Icon.faw_file_text).
                                 withIdentifier(identifier++),
 
                         //3
 
                         new PrimaryDrawerItem().withName(R.string.drawer_item_qr).
+                                withIcon(FontAwesome.Icon.faw_qrcode).
                                 withIdentifier(identifier++),
                         //4
                         new DividerDrawerItem(),
 
                         //5
                         new PrimaryDrawerItem().withName("Тесты")
+                                .withIcon(FontAwesome.Icon.faw_tasks)
                                 .withIdentifier(identifier++),
 
                         //6
                         new DividerDrawerItem(),
                         //7
-                        new PrimaryDrawerItem().withName(R.string.contacts).
+                        new PrimaryDrawerItem().withName(R.string.contacts)
+                                .withIcon(FontAwesome.Icon.faw_phone_square).
                                 withIdentifier(identifier++),
                         //8
                         //настройки
-                        new PrimaryDrawerItem().withName("Настройки (в разработке)").
+                        new PrimaryDrawerItem().withName("Настройки (в разработке)")
+                                .withIcon(FontAwesome.Icon.faw_wrench).
                                 withIdentifier(identifier++).setEnabled(false),
                         //9
                         new DividerDrawerItem(),
@@ -148,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                         //10
 
                         new SecondaryDrawerItem().withName("Игра от издателя")
+                                .withIcon(FontAwesome.Icon.faw_rocket)
                                 .withIdentifier(identifier++)
                 )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {

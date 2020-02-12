@@ -3,33 +3,25 @@ package iooogik.app.modelling;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Html;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -39,10 +31,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -56,7 +45,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     private SQLiteDatabase mDb;
 
     Bundle bundle = new Bundle();
-
+    Cursor userCursor;
     public static View view;
 
     public static ArrayList<String> items = new ArrayList<>();
@@ -66,9 +55,10 @@ public class Notes extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.notes, container ,false);
+        view = inflater.inflate(R.layout.fragment_notes, container ,false);
         FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(this);
+        startProcedures();
         return view;
     }
 
@@ -86,16 +76,8 @@ public class Notes extends Fragment implements View.OnClickListener {
         } catch (Exception e){
             Log.i("Notes", String.valueOf(e));
         }
-
-
         updProjects();
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        startProcedures();
     }
 
     @SuppressLint("SetTextI18n")
@@ -190,7 +172,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 String dateText = dateFormat.format(currentDate);
                         cv.put("date", dateText);
                 //запись
-                addToScroll(type, name, shortNote, id);
+                addToScroll(type, name, shortNote, id, null);
                 mDb.insert("Notes", null, cv);
                 mDb.close();
                 id++;
@@ -230,19 +212,16 @@ public class Notes extends Fragment implements View.OnClickListener {
                 "secondFrame").commitAllowingStateLoss();
     }
 
-
-
     //обновление проектов на активити
     private void updProjects(){
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
-        Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
+        userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
-        String item;
 
-        int identificator;
+        int identificator = 0;
         String name, desc, type;
-
+        Bitmap bitmap = null;
         while (!userCursor.isAfterLast()) {
 
             name = String.valueOf(userCursor.getString(1)); //колонки считаются с 0
@@ -253,18 +232,28 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             identificator = items.size() - 1;
 
-            userCursor.moveToNext();
+
+            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
+            if(bytesImg != null){
+                bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
+            }
+
             if(name != null || type != null)
-            addToScroll(type, name, desc, identificator);
+            addToScroll(type, name, desc, identificator, bitmap);
+            userCursor.moveToNext();
+            bitmap = null;
         }
         userCursor.close();
-
-        ArrayList<String> booksItems = new ArrayList<>();
-        booksItems.add("Математические формулы");
+        identificator++;
+        addToScroll("book", "Математические формулы", "Математическая формула — " +
+                "в математике, а также физике и прикладных науках, символическая запись " +
+                "высказывания (которое выражает логическое суждение), либо формы высказывания.",
+                identificator, bitmap);
 
     }
 
-    private void addToScroll(String type, String name, String desc, int identificator){
+    private void addToScroll(String type, String name, String desc, int identificator,
+                             Bitmap bitmap){
         View view1 = getLayoutInflater().inflate(R.layout.note, null, false);
         //изменяем задний фон в зависимости от типа заметок
         LinearLayout back = view1.findViewById(R.id.background);
@@ -272,6 +261,15 @@ public class Notes extends Fragment implements View.OnClickListener {
             back.setBackgroundResource(R.drawable.red_custom_button);
         } else if (type.equals("standart")){
             back.setBackgroundResource(R.drawable.green_custom_button);
+        } else if (type.equals("book")){
+            back.setBackgroundResource(R.drawable.blue_custom_button);
+        }
+        //проверка на наличие картинок и/или установка картинки
+        if (bitmap != null) {
+            ImageView img = view1.findViewById(R.id.subImg);
+            img.setMinimumHeight(150);
+            img.setMinimumWidth(150);
+            img.setImageBitmap(bitmap);
         }
         //заголовок
         TextView nameNote = view1.findViewById(R.id.name);
@@ -292,6 +290,9 @@ public class Notes extends Fragment implements View.OnClickListener {
                 } else if (type.equals("standart")){
                     StandartNote standartNote = new StandartNote();
                     showFragment(standartNote);
+                } else if (type.equals("book")){
+                    Book book = new Book();
+                    showFragment(book);
                 }
             }
         });
