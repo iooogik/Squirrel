@@ -20,8 +20,9 @@
             android:textStyle="bold"  />
 
         <RadioGroup
+            android:id="@+id/answ_group"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <RadioButton
                 android:id="@+id/radioButton1"
@@ -29,10 +30,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:fontFamily="@font/rostelekom"
+                android:text="RadioButton"
                 android:textColor="@color/colorFont"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="RadioButton" />
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/radioButton2"
@@ -40,10 +41,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:fontFamily="@font/rostelekom"
+                android:text="RadioButton"
                 android:textColor="@color/colorFont"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="RadioButton" />
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/radioButton3"
@@ -51,10 +52,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:fontFamily="@font/rostelekom"
+                android:text="RadioButton"
                 android:textColor="@color/colorFont"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="RadioButton" />
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/radioButton4"
@@ -62,10 +63,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:fontFamily="@font/rostelekom"
+                android:text="RadioButton"
                 android:textColor="@color/colorFont"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="RadioButton" />
+                android:textStyle="bold" />
         </RadioGroup>
     </LinearLayout>
 </FrameLayout>

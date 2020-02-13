@@ -61,12 +61,6 @@ public class Test extends Fragment implements View.OnClickListener{
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        testTitles.add("Тест по Солнечной системе");
-    }
-
     private void loadAndSetThemes(){
         mDb = mDBHelper.getReadableDatabase();
         userCursor = mDb.rawQuery("Select * from Tests", null);

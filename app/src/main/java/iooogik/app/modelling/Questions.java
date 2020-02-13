@@ -10,9 +10,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +38,9 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private List<String> questions = new ArrayList<>();
     private List<String> answers = new ArrayList<>();
-    private List<Boolean> isTrue = new ArrayList<>();
+    private List<String> isTrue = new ArrayList<>();
+    private int rightScore = 0;
+    private int wrongScore = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,33 +51,69 @@ public class Questions extends Fragment implements View.OnClickListener{
         mDBHelper.updateDataBase();
         getQuestions();
         getAnswers();
-
         setTest();
-
+        wrongScore = questions.size();
+        Button btn = view.findViewById(R.id.button);
+        btn.setOnClickListener(this);
         return view;
     }
 
     private void setTest(){
         List<String> temp = new ArrayList<>(answers);
-        for (int i = 0; i < (isTrue.size()/questions.size()); i++) {
+        for (int i = 0; i < (answers.size()/questions.size()); i++) {
 
             View view1 = getLayoutInflater().inflate(R.layout.question, null, false);
 
             //вопрос
             TextView nameNote = view1.findViewById(R.id.task);
             nameNote.setText(questions.get(i));
-            RadioButton radioButton1 = view1.findViewById(R.id.radioButton1);
 
+
+
+            RadioButton radioButton1 = view1.findViewById(R.id.radioButton1);
             radioButton1.setText(temp.get(0));
+
+            radioButton1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked && isTrue.contains(radioButton1.getText().toString())){
+                    rightScore++;
+                }else if (!isChecked && isTrue.contains(radioButton1.getText().toString())){
+                    rightScore--;
+                }
+            });
 
             RadioButton radioButton2 = view1.findViewById(R.id.radioButton2);
             radioButton2.setText(temp.get(1));
 
+            radioButton2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked && isTrue.contains(radioButton2.getText().toString())){
+                    rightScore++;
+                }else if (!isChecked && isTrue.contains(radioButton2.getText().toString())){
+                    rightScore--;
+                }
+            });
+
             RadioButton radioButton3 = view1.findViewById(R.id.radioButton3);
             radioButton3.setText(temp.get(2));
 
+            radioButton3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked && isTrue.contains(radioButton3.getText().toString())){
+                    rightScore++;
+                }else if (!isChecked && isTrue.contains(radioButton3.getText().toString())){
+                    rightScore--;
+                }
+            });
+
             RadioButton radioButton4 = view1.findViewById(R.id.radioButton4);
             radioButton4.setText(temp.get(3));
+
+            radioButton4.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked && isTrue.contains(radioButton4.getText().toString())){
+                    rightScore++;
+                }else if (!isChecked && isTrue.contains(radioButton4.getText().toString())){
+                    rightScore--;
+                }
+            });
+
             temp.subList(0, 4).clear();
 
             //установка на активити
@@ -106,13 +147,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         TEMPansws = userCursor.getString(userCursor.getColumnIndex("answers"));
         answ = TEMPansws.split("\n");
 
-        for (String s : answ) {
-            if (s.equals("0")) {
-                isTrue.add(false);
-            } else if (s.equals("1")) {
-                isTrue.add(true);
-            }
-        }
+        isTrue.addAll(Arrays.asList(answ));
     }
 
     private void getQuestions() {
@@ -126,6 +161,11 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-
+        if(v.getId() == R.id.button){
+            TextView tv1 = view.findViewById(R.id.textView);
+            tv1.setText(String.valueOf(rightScore));
+            TextView tv2 = view.findViewById(R.id.textView2);
+            tv2.setText(String.valueOf(wrongScore));
+        }
     }
 }
