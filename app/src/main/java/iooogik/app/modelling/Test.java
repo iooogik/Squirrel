@@ -2,6 +2,10 @@ package iooogik.app.modelling;
 
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,7 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -24,6 +32,13 @@ public class Test extends Fragment implements View.OnClickListener{
 
     View view;
     private ArrayList<String> testTitles;
+
+    //Переменная для работы с БД
+    private DatabaseHelper mDBHelper;
+    private SQLiteDatabase mDb;
+
+    Bundle bundle = new Bundle();
+    Cursor userCursor;
 
 
     public Test() {
@@ -37,7 +52,12 @@ public class Test extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_test, container, false);
         FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(this);
-        setTestTitles();
+
+
+        mDBHelper = new DatabaseHelper(getContext());
+        mDBHelper.openDataBase();
+        mDBHelper.updateDataBase();
+        loadAndSetThemes();
         return view;
     }
 
@@ -47,21 +67,58 @@ public class Test extends Fragment implements View.OnClickListener{
         testTitles.add("Тест по Солнечной системе");
     }
 
-    private void setTestTitles(){
-        ArrayAdapter<String> adapterThemes = new ArrayAdapter<>(view.getContext(),
-                R.layout.item_project, testTitles);
+    private void loadAndSetThemes(){
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor = mDb.rawQuery("Select * from Tests", null);
+        userCursor.moveToFirst();
+        String name, desc;
+        int identificator = 0;
+        while (!userCursor.isAfterLast()) {
 
-        ListView listView = view.findViewById(R.id.testThemes);
-        listView.setAdapter(adapterThemes);
-        TestFrame testFrame = new TestFrame();
-        listView.setOnItemClickListener((parent, view, position, id) ->
-                showFragment(testFrame));
+            name = String.valueOf(userCursor.getString(1)); //колонки считаются с 0
+            testTitles.add(name);
+            desc = String.valueOf(userCursor.getString(2));
+
+            identificator = testTitles.size() - 1;
+
+            if(name != null)
+                addToScroll(name, desc, identificator);
+            userCursor.moveToNext();
+        }
+    }
+
+    private void addToScroll(String name, String desc, int identificator){
+        View view1 = getLayoutInflater().inflate(R.layout.note, null, false);
+        //изменяем задний фон в зависимости от типа заметок
+        LinearLayout back = view1.findViewById(R.id.background);
+
+        back.setBackgroundResource(R.drawable.pink_custom_button);
+
+        ImageView img = view1.findViewById(R.id.subImg);
+        img.setVisibility(View.GONE);
+        //заголовок
+        TextView nameNote = view1.findViewById(R.id.name);
+        nameNote.setText(name);
+        //описание
+        TextView description = view1.findViewById(R.id.description);
+        description.setText(desc);
+        //обработка нажатия на view
+        view1.setOnClickListener(v -> {
+            bundle.putString("button name", name);
+            bundle.putInt("button ID", identificator);
+            Questions questions = new Questions();
+            showFragment(questions);
+        });
+        //установка на активити
+        LinearLayout linearLayout = view.findViewById(R.id.scrollTestThemes);
+        linearLayout.addView(view1);
     }
 
     private void showFragment(Fragment fragment){
         FrameLayout frameLayout = view.findViewById(R.id.test_frame);
         frameLayout.setVisibility(View.VISIBLE);
 
+        fragment.setArguments(bundle);
 
         FragmentManager fm = getFragmentManager();
         assert fm != null;
@@ -82,16 +139,9 @@ public class Test extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        FrameLayout frameLayout = view.findViewById(R.id.test_frame);
-        if(v.getId() == R.id.back && frameLayout.getVisibility() != View.VISIBLE){
+        if(v.getId() == R.id.back){
             Intent main = new Intent(getContext(), MainActivity.class);
             startActivity(main);
-        }else {
-            try {
-            frameLayout.setVisibility(View.GONE);
-        } catch (Exception e){
-                Log.i("Test", String.valueOf(e));
-            }
         }
     }
 }

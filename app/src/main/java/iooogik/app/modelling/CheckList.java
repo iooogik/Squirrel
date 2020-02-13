@@ -60,8 +60,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_check,
-                container, false);
+        view = inflater.inflate(R.layout.fragment_check, container, false);
 
         ImageButton addButton = view.findViewById(R.id.addItemCheck);
         addButton.setOnClickListener(this);

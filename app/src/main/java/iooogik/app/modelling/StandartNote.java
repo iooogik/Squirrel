@@ -56,9 +56,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     public static View view;
     private DatabaseHelper mDBHelper;
     private SQLiteDatabase mDb;
+    private Cursor userCursor;
     private Calendar calendar = Calendar.getInstance();
 
-    private Cursor userCursor;
 
     @SuppressLint("SetTextI18n")
     @Override

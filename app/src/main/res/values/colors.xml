@@ -17,4 +17,7 @@
     <color name="colorBrick">#ff607d</color>
     <color name="colorSky">#87CEEB</color>
     <color name="colorDodger">#1E90FF</color>
+    <color name="colorViolet">#EE82EE</color>
+    <color name="colorDarkMagenta">#8B008B</color>
+
 </resources>

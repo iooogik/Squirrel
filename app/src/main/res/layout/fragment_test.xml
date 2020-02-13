@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Test">
 
     <FrameLayout
+        android:id="@+id/test_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:tag="testFrame"
+        android:visibility="gone">
+
+    </FrameLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp">
+
+            <LinearLayout
+                android:id="@+id/scrollTestThemes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/back"
@@ -19,21 +41,6 @@
             app:backgroundTint="@color/colorPrimary"
             app:maxImageSize="25dp"
             app:srcCompat="@drawable/arrow_left" />
-
-        <ListView
-            android:id="@+id/testThemes"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="30dp"
-            android:dividerHeight="12dp" />
-
-        <FrameLayout
-            android:id="@+id/test_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:tag="testFrame"
-            android:visibility="visible" />
-
     </FrameLayout>
 
-</FrameLayout>
+</LinearLayout>
