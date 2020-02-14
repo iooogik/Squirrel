@@ -129,12 +129,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         return arguments.getInt("button ID");
     }
 
-    public String getBtnName(){
-        Bundle arguments = this.getArguments();
-        assert arguments != null;
-        return arguments.getString("button name");
-    }
-
     private void getAnswers(){
         mDb = mDBHelper.getReadableDatabase();
         userCursor = mDb.rawQuery("Select * from Tests", null);
@@ -162,10 +156,12 @@ public class Questions extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.button){
-            TextView tv1 = view.findViewById(R.id.textView);
-            tv1.setText(String.valueOf(rightScore));
-            TextView tv2 = view.findViewById(R.id.textView2);
-            tv2.setText(String.valueOf(wrongScore));
+            Bundle bundle = new Bundle();
+            bundle.putInt("Score", rightScore);
+            bundle.putInt("wrongScore", wrongScore);
+
+
+
         }
     }
 }
