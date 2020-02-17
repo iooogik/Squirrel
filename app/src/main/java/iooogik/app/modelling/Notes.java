@@ -22,15 +22,19 @@ import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -48,7 +52,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     Cursor userCursor;
     public static View view;
 
-    public static ArrayList<String> items = new ArrayList<>();
+    public static List<Note> items = new ArrayList<>();
 
     public Notes(){}
 
@@ -176,7 +180,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 mDb.insert("Notes", null, cv);
                 mDb.close();
                 id++;
-                items.add(nameNote.getText().toString());
+                items.add(new Note(name, shortNote, null, type, id));
             });
 
             AlertDialog dlg = builder.create();
@@ -189,7 +193,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void showFragment(Fragment fragment){
+    void showFragment(Fragment fragment){
         FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
         frameLayout.setVisibility(View.VISIBLE);
 
@@ -210,6 +214,8 @@ public class Notes extends Fragment implements View.OnClickListener {
         assert fragment != null;
         addTransaction.add(R.id.SecondaryFrame, fragment,
                 "secondFrame").commitAllowingStateLoss();
+
+
     }
 
     //обновление проектов на активити
@@ -225,7 +231,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         while (!userCursor.isAfterLast()) {
 
             name = String.valueOf(userCursor.getString(1)); //колонки считаются с 0
-            items.add(name);
+
             type = userCursor.getString(8);
 
             desc = String.valueOf(userCursor.getString(2));
@@ -239,16 +245,21 @@ public class Notes extends Fragment implements View.OnClickListener {
             }
 
             if(name != null || type != null)
-            addToScroll(type, name, desc, identificator, bitmap);
+                items.add(new Note(name, desc, bitmap, type, identificator));
             userCursor.moveToNext();
             bitmap = null;
         }
         userCursor.close();
-        identificator++;
-        addToScroll("book", "Математические формулы", "Математическая формула — " +
+        identificator ++;
+        items.add(new Note("Математические формулы", "Математическая формула — " +
                 "в математике, а также физике и прикладных науках, символическая запись " +
                 "высказывания (которое выражает логическое суждение), либо формы высказывания.",
-                identificator, bitmap);
+                bitmap, "book", identificator));
+
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        NotesAdapter notesAdapter = new NotesAdapter(getContext(), items);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(notesAdapter);
 
     }
 
@@ -257,12 +268,16 @@ public class Notes extends Fragment implements View.OnClickListener {
         View view1 = getLayoutInflater().inflate(R.layout.note, null, false);
         //изменяем задний фон в зависимости от типа заметок
         LinearLayout back = view1.findViewById(R.id.background);
-        if (type.equals("shop")) {
-            back.setBackgroundResource(R.drawable.red_custom_button);
-        } else if (type.equals("standart")){
-            back.setBackgroundResource(R.drawable.green_custom_button);
-        } else if (type.equals("book")){
-            back.setBackgroundResource(R.drawable.blue_custom_button);
+        switch (type) {
+            case "shop":
+                back.setBackgroundResource(R.drawable.red_custom_button);
+                break;
+            case "standart":
+                back.setBackgroundResource(R.drawable.green_custom_button);
+                break;
+            case "book":
+                back.setBackgroundResource(R.drawable.blue_custom_button);
+                break;
         }
         //проверка на наличие картинок и/или установка картинки
         if (bitmap != null) {
@@ -297,8 +312,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             }
         });
         //установка на активити
-        LinearLayout linearLayout = view.findViewById(R.id.scrollNotes);
-        linearLayout.addView(view1);
+
     }
 
 }

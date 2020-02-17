@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Html;
@@ -197,7 +198,9 @@ public class QR_Demo extends AppCompatActivity {
         mDb.insert("Notes", null, cv);
         mDb.close();
         Notes.id++;
-        Notes.items.add(fullName);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+        Notes.items.add(new Note(fullName, tv.getText().toString(), bitmap, type, Notes.id));
+        bitmap = null;
     }
 
     @Override

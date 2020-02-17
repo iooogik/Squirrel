@@ -306,7 +306,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
             Bundle args = new Bundle();
             args.putInt("btnId", getBtnID());
-            args.putString("btnName", getBtnName());
+            args.putString("btnName", title);
             args.putString("title", title);
             args.putString("shortNote", text);
 

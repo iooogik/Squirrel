@@ -63,16 +63,11 @@
                 app:maxImageSize="40dp"
                 app:srcCompat="@drawable/plus" />
 
-            <ScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:id="@+id/scrollNotes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </ScrollView>
+                android:layout_height="match_parent"
+                tools:itemCount="0" />
 
         </FrameLayout>
     </LinearLayout>

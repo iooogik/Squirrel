@@ -1,6 +1,7 @@
 package iooogik.app.modelling;
 
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -11,21 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import iooogik.app.modelling.DatabaseHelper;
-import iooogik.app.modelling.R;
 
 public class Questions extends Fragment implements View.OnClickListener{
 
@@ -148,19 +143,22 @@ public class Questions extends Fragment implements View.OnClickListener{
         mDb = mDBHelper.getReadableDatabase();
         userCursor = mDb.rawQuery("Select * from Tests", null);
         userCursor.moveToPosition(getBtnID());
-        String TEMPquests = userCursor.getString(userCursor.getColumnIndex("questions"));
-        String[] quests = TEMPquests.split("\n");
+        String TEMP_quests = userCursor.getString(userCursor.getColumnIndex("questions"));
+        String[] quests = TEMP_quests.split("\n");
         questions.addAll(Arrays.asList(quests));
     }
 
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.button){
-            Bundle bundle = new Bundle();
-            bundle.putInt("Score", rightScore);
-            bundle.putInt("wrongScore", wrongScore);
 
-
+            mDb = mDBHelper.getWritableDatabase();
+            userCursor = mDb.rawQuery("Select * from Tests", null);
+            userCursor.moveToPosition(getBtnID());
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("trueAnswers", rightScore);
+            contentValues.put("wrongAnswers", wrongScore);
+            mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
 
         }
     }
