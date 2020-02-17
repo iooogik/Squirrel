@@ -199,7 +199,8 @@ public class QR_Demo extends AppCompatActivity {
         mDb.close();
         Notes.id++;
         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-        Notes.items.add(new Note(fullName, tv.getText().toString(), bitmap, type, Notes.id));
+        Notes.ITEMS.add(new Note(fullName, tv.getText().toString(), bitmap, type, Notes.id));
+        Notes.NOTES_ADAPTER.notifyDataSetChanged();
         bitmap = null;
     }
 

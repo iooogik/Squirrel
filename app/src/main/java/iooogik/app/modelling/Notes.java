@@ -49,10 +49,11 @@ public class Notes extends Fragment implements View.OnClickListener {
     private SQLiteDatabase mDb;
 
     Bundle bundle = new Bundle();
-    Cursor userCursor;
+    private Cursor userCursor;
     public static View view;
+    static NotesAdapter NOTES_ADAPTER;
 
-    public static List<Note> items = new ArrayList<>();
+    static List<Note> ITEMS = new ArrayList<>();
 
     public Notes(){}
 
@@ -63,6 +64,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(this);
         startProcedures();
+
         return view;
     }
 
@@ -76,7 +78,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
         try {
-            items.clear();
+            ITEMS.clear();
         } catch (Exception e){
             Log.i("Notes", String.valueOf(e));
         }
@@ -180,7 +182,8 @@ public class Notes extends Fragment implements View.OnClickListener {
                 mDb.insert("Notes", null, cv);
                 mDb.close();
                 id++;
-                items.add(new Note(name, shortNote, null, type, id));
+                ITEMS.add(new Note(name, shortNote, null, type, id));
+                NOTES_ADAPTER.notifyDataSetChanged();
             });
 
             AlertDialog dlg = builder.create();
@@ -236,7 +239,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             desc = String.valueOf(userCursor.getString(2));
 
-            identificator = items.size() - 1;
+            identificator = ITEMS.size() - 1;
 
 
             byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
@@ -245,21 +248,21 @@ public class Notes extends Fragment implements View.OnClickListener {
             }
 
             if(name != null || type != null)
-                items.add(new Note(name, desc, bitmap, type, identificator));
+                ITEMS.add(new Note(name, desc, bitmap, type, identificator));
             userCursor.moveToNext();
             bitmap = null;
         }
         userCursor.close();
         identificator ++;
-        items.add(new Note("Математические формулы", "Математическая формула — " +
+        ITEMS.add(new Note("Математические формулы", "Математическая формула — " +
                 "в математике, а также физике и прикладных науках, символическая запись " +
                 "высказывания (которое выражает логическое суждение), либо формы высказывания.",
                 bitmap, "book", identificator));
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-        NotesAdapter notesAdapter = new NotesAdapter(getContext(), items);
+        NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(notesAdapter);
+        recyclerView.setAdapter(NOTES_ADAPTER);
 
     }
 
