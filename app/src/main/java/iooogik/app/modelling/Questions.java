@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -43,12 +44,12 @@ public class Questions extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_questions, container, false);
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
-        mDBHelper.updateDataBase();
+
         getQuestions();
         getAnswers();
         setTest();
         wrongScore = questions.size();
-        Button btn = view.findViewById(R.id.button);
+        Button btn = view.findViewById(R.id.send_answers);
         btn.setOnClickListener(this);
         return view;
     }
@@ -150,7 +151,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.button){
+        if(v.getId() == R.id.send_answers){
 
             mDb = mDBHelper.getWritableDatabase();
             userCursor = mDb.rawQuery("Select * from Tests", null);
@@ -158,8 +159,11 @@ public class Questions extends Fragment implements View.OnClickListener{
             ContentValues contentValues = new ContentValues();
             contentValues.put("trueAnswers", rightScore);
             contentValues.put("wrongAnswers", wrongScore);
+            contentValues.put("isPassed", 1);
             mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
-
+            FrameLayout frameLayout = Test.view.findViewById(R.id.test_frame);
+            frameLayout.removeAllViews();
+            frameLayout.setVisibility(View.GONE);
         }
     }
 }

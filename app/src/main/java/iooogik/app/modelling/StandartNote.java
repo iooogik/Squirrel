@@ -170,7 +170,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     @Override
-    public void updShopNotes(String databaseName, String name, String booleans) {}
+    public void updShopNotes(String databaseName, String name, String booleans) {
+
+    }
 
     private Bitmap setImage(){
         mDb = mDBHelper.getWritableDatabase();
