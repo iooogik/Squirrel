@@ -44,7 +44,7 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
         assert args != null;
         int id = args.getInt("_id");
 
-        DatabaseHelper mDBHelper = new DatabaseHelper(getContext());
+        Database mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
 
         mDBHelper.updateDataBase();

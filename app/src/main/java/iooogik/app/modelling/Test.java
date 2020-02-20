@@ -4,25 +4,19 @@ package iooogik.app.modelling;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -34,7 +28,7 @@ public class Test extends Fragment implements View.OnClickListener{
     private ArrayList<String> testTitles;
 
     //Переменная для работы с БД
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
     private SQLiteDatabase mDb;
 
     Bundle bundle = new Bundle();
@@ -54,7 +48,7 @@ public class Test extends Fragment implements View.OnClickListener{
         back.setOnClickListener(this);
 
 
-        mDBHelper = new DatabaseHelper(getContext());
+        mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         loadAndSetThemes();

@@ -16,18 +16,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,7 +40,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     //Переменная для работы с БД
     public static int id = 0;
     //Переменная для работы с БД
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
     private SQLiteDatabase mDb;
 
     Bundle bundle = new Bundle();
@@ -70,7 +64,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     }
 
     private void startProcedures(){
-        mDBHelper = new DatabaseHelper(getContext());
+        mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
 

@@ -35,10 +35,14 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //определение типа 3д объекта
         if (getIntent().getExtras() != null)
-        TYPE = getIntent().getExtras().getString("TYPE");
+            TYPE = getIntent().getExtras().getString("TYPE");
+
         setContentView(R.layout.planets_show);
+
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
+        //загрузка и установка модели на найденную плоскость
         loadModel();
         createModel();
 
@@ -51,21 +55,24 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
     private void loadModel() {
         int res = -1;
-
+        //получение файла-ресурса с 3д объектом
         switch (TYPE){
             case ("SolarSystem"):
+                //Солнечная система
                  res = R.raw.solar_system;
                  break;
             case ("Sphere"):
+                //Сфера
                 res = R.raw.sphere;
                 break;
             case ("Cube"):
+                //Куб
                 res = R.raw.cube;
                 break;
 
         }
 
-
+        //создание рендера модели
         ModelRenderable.builder()
                 .setSource(this, res).build()
                 .thenAccept(renderable -> solarSystem = renderable)
@@ -85,7 +92,7 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     }
 
     private void createModel(){
-
+        //установка модели на плоскость
         arFragment.setOnTapArPlaneListener(
                 (HitResult hitresult, Plane plane, MotionEvent motionevent) -> {
                     if (solarSystem == null){
@@ -107,9 +114,11 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.back){
+            //нажатие "Назад"
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         } else if(v.getId() == R.id.findARsurf){
+            //"заново найти поверхность
             recreate();
         }
     }

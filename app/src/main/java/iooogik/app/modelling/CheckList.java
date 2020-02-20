@@ -8,7 +8,6 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,8 +21,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -46,12 +43,15 @@ import static android.content.Context.ALARM_SERVICE;
 
 
 public class CheckList extends Fragment implements View.OnClickListener, NoteInterface {
-
-    private DatabaseHelper mDBHelper;
+    //переменная для работы с бд
+    private Database mDBHelper;
     private SQLiteDatabase mDb;
     private View view;
+    //список с элементами чек-листа
     private ArrayList<String> Items = new ArrayList<>();
+    //список со значениями чек-листа
     private ArrayList<Boolean> Booleans = new ArrayList<>();
+    //"Календарь" для получения даты от пользователя
     private Calendar calendar = Calendar.getInstance();
     private EditText nameNote, shortNote;
     public CheckList() {}
@@ -61,7 +61,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_check, container, false);
-
+        //инициализация кнопок
         ImageButton addButton = view.findViewById(R.id.addItemCheck);
         addButton.setOnClickListener(this);
 
@@ -70,7 +70,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(this);
-
+        //получение элементов чек-лсита
         getPoints();
 
         return view;
@@ -99,8 +99,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
 
     private void getPoints(){
-        /* БД ************************ */
-        mDBHelper = new DatabaseHelper(getActivity());
+        //"открытие" бд
+        mDBHelper = new Database(getActivity());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         nameNote = view.findViewById(R.id.editNameShopNote);
@@ -108,7 +108,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         mDb = mDBHelper.getReadableDatabase();
 
-        @SuppressLint("Recycle")
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToPosition(getBtnID());
         nameNote.setText(getBtnName());
@@ -117,7 +116,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         String tempBool = userCursor.getString(6);
 
         if (TEMP != null && tempBool != null) {
-
+            //"делим" полученный текст и добавляем в соответствующие списки
             String[] tempArr = TEMP.split("\r\n|\r|\n");
             String[] tempArrBool = tempBool.split("\r\n|\r|\n");
             boolean[] booleans = new boolean[tempArrBool.length];
@@ -133,7 +132,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
     private void addCheck(boolean state, String nameCheck){
-
+        //"слушатель" для нажатого элемента списка
         LinearLayout linear = view.findViewById(R.id.markedScroll);
         @SuppressLint("InflateParams")
         View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
@@ -173,10 +172,10 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
 
-    @SuppressLint("ResourceAsColor")
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.addItemCheck){
+            //добавление элемента
             final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
             final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
             MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
@@ -233,7 +232,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             dlg.show();
 
         } else if(v.getId() == R.id.buttonShopAlarm){
-
+            //добавление уведомления
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
 
         } else if(v.getId() == R.id.back){
@@ -245,7 +244,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
     @Override
     public void alarmDialog(final String TITLE, final String TEXT) {
-
+        //создание уведомления
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);

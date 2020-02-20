@@ -10,8 +10,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -33,7 +30,7 @@ public class GeometricFigure extends Fragment implements View.OnClickListener{
     public GeometricFigure() {}
 
     View view;
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
     private Cursor userCursor;
     private SQLiteDatabase mDb;
 
@@ -49,7 +46,7 @@ public class GeometricFigure extends Fragment implements View.OnClickListener{
     @Override
     public void onStart() {
         super.onStart();
-        mDBHelper = new DatabaseHelper(getContext());
+        mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         mDb = mDBHelper.getReadableDatabase();

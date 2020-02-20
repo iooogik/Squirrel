@@ -54,7 +54,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     @SuppressLint("StaticFieldLeak")
     public static View view;
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor userCursor;
     private Calendar calendar = Calendar.getInstance();
@@ -140,7 +140,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     @Override
     public void updFragment(){
         /* БД ************************ */
-        mDBHelper = new DatabaseHelper(getActivity());
+        mDBHelper = new Database(getActivity());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         EditText name = view.findViewById(R.id.editName);

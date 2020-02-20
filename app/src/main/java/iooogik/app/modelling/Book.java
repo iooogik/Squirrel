@@ -2,7 +2,6 @@ package iooogik.app.modelling;
 
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -22,22 +21,20 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Book extends Fragment implements View.OnClickListener {
 
 
     public Book() {}
-
-    private DatabaseHelper mDBHelper;
+    //перменная для работы с бд
+    private Database mDBHelper;
     private LinearLayout linear;
+    //список с картинками
     private ArrayList<Bitmap> IMAGES;
-    private ArrayList<String> DESCRIPTION;
+    //список с описаниями
+    private ArrayList<String> DESCRIPTIONS;
 
 
     @Override
@@ -53,39 +50,40 @@ public class Book extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-
-        mDBHelper = new DatabaseHelper(getActivity());
+        //"открытие" бд
+        mDBHelper = new Database(getActivity());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-
+        //инициализация списков
         IMAGES = new ArrayList<>();
-        DESCRIPTION = new ArrayList<>();
-
+        DESCRIPTIONS = new ArrayList<>();
+        //получение информации
         getInformation();
     }
 
     private void getInformation(){
         for (int i = 0; i < 36; i++) {
             getImagesAndDescriptions(i);
+            //установка полученной информации
             setInformation(i);
         }
-
     }
 
     private void getImagesAndDescriptions(int position){
         SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
-        @SuppressLint("Recycle")
         Cursor userCursor = mDb.rawQuery("Select * from Formulaes",
                 null);
         userCursor.moveToPosition(position);
         try {
-            DESCRIPTION.add(userCursor.getString(2));
+            //получение описания
+            DESCRIPTIONS.add(userCursor.getString(2));
             if(userCursor.getString(2) == null){
-                DESCRIPTION.add(null);
+                DESCRIPTIONS.add(null);
             }
         }catch (Exception e){
             Log.i("Book", String.valueOf(e));
         }
+        //получение картинок
         byte[] bytesImg = userCursor.getBlob(3);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
         if(bitmap != null) {
@@ -94,7 +92,6 @@ public class Book extends Fragment implements View.OnClickListener {
     }
 
     private void setInformation(int pos){
-        @SuppressLint("InflateParams")
         View view1 = getLayoutInflater().inflate(R.layout.book_item, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
@@ -105,12 +102,13 @@ public class Book extends Fragment implements View.OnClickListener {
         Bitmap bitmap = IMAGES.get(pos);
         int width = bitmap.getWidth() * 3;
         int height = bitmap.getHeight() * 3;
-
+        //установка картинки
         imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false));
-        if (DESCRIPTION.get(pos) == null){
+        //проверка на наличие описания и установка описания
+        if (DESCRIPTIONS.get(pos) == null){
             tv.setVisibility(View.GONE);
         }else {
-            tv.setText(DESCRIPTION.get(pos));
+            tv.setText(DESCRIPTIONS.get(pos));
         }
         linear.addView(view1);
     }
@@ -118,6 +116,7 @@ public class Book extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.back){
+            //кнопка "Назад"
             FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);

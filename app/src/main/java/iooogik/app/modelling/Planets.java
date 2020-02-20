@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -30,7 +28,7 @@ import java.util.Objects;
 public class Planets extends Fragment implements View.OnClickListener {
 
     View view;
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
     static Typeface standartFont;
     private Cursor userCursor;
     private SQLiteDatabase mDb;
@@ -55,7 +53,7 @@ public class Planets extends Fragment implements View.OnClickListener {
         standartFont = Typeface.createFromAsset
                 (Objects.requireNonNull(getContext()).getAssets(), "rostelekom.otf");
 
-        mDBHelper = new DatabaseHelper(getContext());
+        mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         mDb = mDBHelper.getReadableDatabase();

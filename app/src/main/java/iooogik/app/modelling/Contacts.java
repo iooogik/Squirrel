@@ -67,7 +67,9 @@ public class Contacts extends Fragment implements View.OnClickListener {
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Адрес электронной почты был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
+
         } else if(v.getId() == R.id.discord){
+
             ClipboardManager clipboard = (ClipboardManager)
                     Objects.requireNonNull(getContext()).
                             getSystemService(Context.CLIPBOARD_SERVICE);
@@ -76,17 +78,24 @@ public class Contacts extends Fragment implements View.OnClickListener {
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "Тег дискорда был " +
                     "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
+
         } else if(v.getId() == R.id.vk){
+
             Uri address = Uri.parse("https://vk.com/iooogikdev");
             Intent openLink = new Intent(Intent.ACTION_VIEW, address);
             startActivity(openLink);
+
         } else if(v.getId() == R.id.instagram){
+
             Uri address = Uri.parse("https://www.instagram.com/iooogik/?r=nametag");
             Intent openLink = new Intent(Intent.ACTION_VIEW, address);
             startActivity(openLink);
+
         } else if(v.getId() == R.id.back){
+
             Intent main = new Intent(getContext(), MainActivity.class);
             startActivity(main);
+
         }
     }
 }

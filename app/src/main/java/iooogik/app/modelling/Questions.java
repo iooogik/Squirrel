@@ -27,7 +27,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     public Questions() {}
 
     View view;
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor userCursor;
 
@@ -41,7 +41,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_questions, container, false);
-        mDBHelper = new DatabaseHelper(getContext());
+        mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         getQuestions();

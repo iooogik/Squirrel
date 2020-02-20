@@ -1,6 +1,5 @@
 package iooogik.app.modelling;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -34,12 +33,13 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     @NonNull
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.note, parent, false);
+        View view = inflater.inflate(R.layout.note, parent, false);//поиск элемента списка
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NotesAdapter.ViewHolder holder, int position) {
+        //получение и установка данных в элемент
         Note note = notes.get(position);
         holder.name.setText(note.getName());
         holder.desc.setText(note.getDescription());
@@ -53,7 +53,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             img.setImageBitmap(bitmap);
         }
 
-
+        //выбор типа
         switch (note.getType()) {
             case "shop":
                 holder.back.setBackgroundResource(R.drawable.red_custom_button);
@@ -65,60 +65,57 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 holder.back.setBackgroundResource(R.drawable.blue_custom_button);
                 break;
         }
+        //слушатель для открытия фрагмента с заметкой
+        holder.frameLayout.setOnClickListener(v -> {
+            bundle.putString("button name", note.getName());
+            bundle.putInt("button ID", note.getId());
 
-        holder.frameLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bundle.putString("button name", note.getName());
-                bundle.putInt("button ID", note.getId());
+            AppCompatActivity activity = (AppCompatActivity) v.getContext();
 
-                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+            FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
+            frameLayout.setVisibility(View.VISIBLE);
 
-                FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
-                frameLayout.setVisibility(View.VISIBLE);
+            switch (note.getType()) {
+                case "shop":
+                    CheckList checkList = new CheckList();
+                    checkList.setArguments(bundle);
+                    activity.getSupportFragmentManager().beginTransaction()
 
-                switch (note.getType()) {
-                    case "shop":
-                        CheckList checkList = new CheckList();
-                        checkList.setArguments(bundle);
-                        activity.getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                    R.anim.nav_default_exit_anim).
 
-                                .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                        R.anim.nav_default_exit_anim).
+                            replace(R.id.SecondaryFrame, checkList,
+                                    "secondFrame").commitAllowingStateLoss();
+                    break;
+                case "standart":
+                    StandartNote standartNote = new StandartNote();
+                    standartNote.setArguments(bundle);
+                    activity.getSupportFragmentManager().beginTransaction()
 
-                                replace(R.id.SecondaryFrame, checkList,
-                                        "secondFrame").commitAllowingStateLoss();
-                        break;
-                    case "standart":
-                        StandartNote standartNote = new StandartNote();
-                        standartNote.setArguments(bundle);
-                        activity.getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                    R.anim.nav_default_exit_anim).
 
-                                .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                        R.anim.nav_default_exit_anim).
+                            replace(R.id.SecondaryFrame, standartNote,
+                                    "secondFrame").commitAllowingStateLoss();
+                    break;
+                case "book":
+                    Book book = new Book();
+                    book.setArguments(bundle);
+                    activity.getSupportFragmentManager().beginTransaction()
 
-                                replace(R.id.SecondaryFrame, standartNote,
-                                        "secondFrame").commitAllowingStateLoss();
-                        break;
-                    case "book":
-                        Book book = new Book();
-                        book.setArguments(bundle);
-                        activity.getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                    R.anim.nav_default_exit_anim).
 
-                                .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                        R.anim.nav_default_exit_anim).
-
-                                replace(R.id.SecondaryFrame, book,
-                                        "secondFrame").commitAllowingStateLoss();
-                        break;
-                    default:
-                        Toast.makeText(v.getContext(), "Error",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                }
-
-
+                            replace(R.id.SecondaryFrame, book,
+                                    "secondFrame").commitAllowingStateLoss();
+                    break;
+                default:
+                    Toast.makeText(v.getContext(), "Error",
+                            Toast.LENGTH_SHORT).show();
+                    break;
             }
+
+
         });
     }
 
@@ -127,7 +124,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return notes.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder{
         final ImageView imageView;
         final TextView name, desc;
         final LinearLayout back;
@@ -139,11 +136,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             name = view.findViewById(R.id.name);
             desc = view.findViewById(R.id.description);
             back = view.findViewById(R.id.background);
-        }
-
-        @Override
-        public void onClick(View v) {
-
         }
     }
 }

@@ -37,7 +37,7 @@ import static android.graphics.Color.WHITE;
 
 public class QR_Demo extends AppCompatActivity {
 
-    private DatabaseHelper mDBHelper;
+    private Database mDBHelper;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -45,7 +45,7 @@ public class QR_Demo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.qr__demo);
 
-        mDBHelper = new DatabaseHelper(this);
+        mDBHelper = new Database(this);
         mDBHelper.openDataBase();
 
         final ImageView imageView = findViewById(R.id.imageView);

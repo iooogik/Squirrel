@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DatabaseHelper mDBHelper = new DatabaseHelper(this);
+        Database mDBHelper = new Database(this);
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
 

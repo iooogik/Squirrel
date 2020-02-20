@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class DatabaseHelper extends SQLiteOpenHelper {
+class Database extends SQLiteOpenHelper {
+    //класс для работы с файлом бд
     private static String DB_NAME = "planetsDB.db";
     private static String DB_PATH;
     private static final int DB_VERSION = 33;
@@ -20,7 +21,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private final Context mContext;
     private boolean mNeedUpdate = false;
 
-    DatabaseHelper(Context context) {
+    Database(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
         this.mContext = context;
