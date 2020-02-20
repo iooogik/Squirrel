@@ -267,7 +267,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     /*
     private void addToScroll(String type, String name, String desc, int identificator,
                              Bitmap bitmap){
-        View view1 = getLayoutInflater().inflate(R.layout.note, null, false);
+        View view1 = getLayoutInflater().inflate(R.layout.item_note, null, false);
         //изменяем задний фон в зависимости от типа заметок
         LinearLayout back = view1.findViewById(R.id.background);
         switch (type) {

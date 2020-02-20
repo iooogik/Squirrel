@@ -223,12 +223,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         String sendText;
         if(linearLayout.getVisibility() == View.VISIBLE){
             sendText = name.getText().toString() + "[/name]" +
-                    note.getText().toString() + "[/note]" +
+                    note.getText().toString() + "[/item_note]" +
                     shortNote.getText().toString() + "[/shortNote]"
                     + shortNote.getText().toString() + "[/QR]";
         } else {
             sendText = name.getText().toString() + "[/name]" +
-                    note.getText().toString() + "[/note]" +
+                    note.getText().toString() + "[/item_note]" +
                     shortNote.getText().toString() + "[/shortNote]";
         }
 

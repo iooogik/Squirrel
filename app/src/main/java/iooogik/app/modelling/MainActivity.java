@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout linearLayout = findViewById(R.id.items_linear);
 
         @SuppressLint("InflateParams")
-        View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
+        View view1 = getLayoutInflater().inflate(R.layout.item_planet, null, false);
         //астрономия
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(view1);
 
         //геометрия
-        View view2 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
+        View view2 = getLayoutInflater().inflate(R.layout.item_planet, null, false);
         FrameLayout frameLayout2 = view2.findViewById(R.id.frame_formulae);
 
         ImageView imageView2 = frameLayout2.findViewById(R.id.formulae);

@@ -39,7 +39,7 @@ public class Planets extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.planets, container ,false);
+        view = inflater.inflate(R.layout.fragment_planets, container ,false);
         Button showAR = view.findViewById(R.id.openAr);
         showAR.setOnClickListener(this);
         FloatingActionButton back = view.findViewById(R.id.back);
@@ -84,7 +84,7 @@ public class Planets extends Fragment implements View.OnClickListener {
     private void setInformation(String name, String description, Bitmap bitmap, int id){
         LinearLayout linearLayout = view.findViewById(R.id.linear);
         @SuppressLint("InflateParams")
-        View view1 = getLayoutInflater().inflate(R.layout.planet_item, null, false);
+        View view1 = getLayoutInflater().inflate(R.layout.item_planet, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView desc = frameLayout.findViewById(R.id.description);

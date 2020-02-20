@@ -14,10 +14,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:fontFamily="@font/rostelekom"
+            android:text="question"
             android:textColor="@color/colorFont"
             android:textSize="20sp"
-            android:text="11111"
-            android:textStyle="bold"  />
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/answ_group"

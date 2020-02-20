@@ -1,8 +1,6 @@
 package iooogik.app.modelling;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.opengl.GLES20;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -17,14 +15,9 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
@@ -39,7 +32,7 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
         if (getIntent().getExtras() != null)
             TYPE = getIntent().getExtras().getString("TYPE");
 
-        setContentView(R.layout.planets_show);
+        setContentView(R.layout.ar_camera_activity);
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
         //загрузка и установка модели на найденную плоскость
