@@ -118,7 +118,7 @@ public class Book extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.back){
-            FrameLayout frameLayout = Notes.view.findViewById(R.id.SecondaryFrame);
+            FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
         }

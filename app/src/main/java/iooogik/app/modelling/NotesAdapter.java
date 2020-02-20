@@ -1,5 +1,6 @@
 package iooogik.app.modelling;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,8 +11,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -62,27 +65,59 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 holder.back.setBackgroundResource(R.drawable.blue_custom_button);
                 break;
         }
-        Notes notes = new Notes();
+
         holder.frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bundle.putString("button name", note.getName());
                 bundle.putInt("button ID", note.getId());
 
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+
+                FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
+                frameLayout.setVisibility(View.VISIBLE);
+
                 switch (note.getType()) {
                     case "shop":
                         CheckList checkList = new CheckList();
-                        notes.showFragment(checkList);
+                        checkList.setArguments(bundle);
+                        activity.getSupportFragmentManager().beginTransaction()
+
+                                .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                        R.anim.nav_default_exit_anim).
+
+                                replace(R.id.SecondaryFrame, checkList,
+                                        "secondFrame").commitAllowingStateLoss();
                         break;
                     case "standart":
                         StandartNote standartNote = new StandartNote();
-                        notes.showFragment(standartNote);
+                        standartNote.setArguments(bundle);
+                        activity.getSupportFragmentManager().beginTransaction()
+
+                                .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                        R.anim.nav_default_exit_anim).
+
+                                replace(R.id.SecondaryFrame, standartNote,
+                                        "secondFrame").commitAllowingStateLoss();
                         break;
                     case "book":
                         Book book = new Book();
-                        notes.showFragment(book);
+                        book.setArguments(bundle);
+                        activity.getSupportFragmentManager().beginTransaction()
+
+                                .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                        R.anim.nav_default_exit_anim).
+
+                                replace(R.id.SecondaryFrame, book,
+                                        "secondFrame").commitAllowingStateLoss();
+                        break;
+                    default:
+                        Toast.makeText(v.getContext(), "Error",
+                                Toast.LENGTH_SHORT).show();
                         break;
                 }
+
+
             }
         });
     }

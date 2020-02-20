@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -50,7 +51,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     Bundle bundle = new Bundle();
     private Cursor userCursor;
-    public static View view;
+    public static View VIEW;
     static NotesAdapter NOTES_ADAPTER;
 
     static List<Note> ITEMS = new ArrayList<>();
@@ -60,12 +61,12 @@ public class Notes extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_notes, container ,false);
-        FloatingActionButton back = view.findViewById(R.id.back);
+        VIEW = inflater.inflate(R.layout.fragment_notes, container ,false);
+        FloatingActionButton back = VIEW.findViewById(R.id.back);
         back.setOnClickListener(this);
         startProcedures();
 
-        return view;
+        return VIEW;
     }
 
     private void startProcedures(){
@@ -73,7 +74,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
 
-        FloatingActionButton add = view.findViewById(R.id.addProject);
+        FloatingActionButton add = VIEW.findViewById(R.id.addProject);
         add.setOnClickListener(this);
 
         //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
@@ -178,7 +179,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 String dateText = dateFormat.format(currentDate);
                         cv.put("date", dateText);
                 //запись
-                addToScroll(type, name, shortNote, id, null);
+                //addToScroll(type, name, shortNote, id, null);
                 mDb.insert("Notes", null, cv);
                 mDb.close();
                 id++;
@@ -195,8 +196,8 @@ public class Notes extends Fragment implements View.OnClickListener {
             startActivity(main);
         }
     }
-
-    void showFragment(Fragment fragment){
+/*
+    private void showFragment(Fragment fragment){
         FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
         frameLayout.setVisibility(View.VISIBLE);
 
@@ -221,6 +222,8 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     }
 
+ */
+
     //обновление проектов на активити
     private void updProjects(){
         //добавление новых проектов
@@ -239,7 +242,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             desc = String.valueOf(userCursor.getString(2));
 
-            identificator = ITEMS.size() - 1;
+
 
 
             byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
@@ -250,22 +253,24 @@ public class Notes extends Fragment implements View.OnClickListener {
             if(name != null || type != null)
                 ITEMS.add(new Note(name, desc, bitmap, type, identificator));
             userCursor.moveToNext();
+            identificator++;
             bitmap = null;
         }
         userCursor.close();
-        identificator ++;
+
         ITEMS.add(new Note("Математические формулы", "Математическая формула — " +
                 "в математике, а также физике и прикладных науках, символическая запись " +
                 "высказывания (которое выражает логическое суждение), либо формы высказывания.",
                 bitmap, "book", identificator));
 
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = VIEW.findViewById(R.id.recycler_view);
         NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(NOTES_ADAPTER);
 
     }
 
+    /*
     private void addToScroll(String type, String name, String desc, int identificator,
                              Bitmap bitmap){
         View view1 = getLayoutInflater().inflate(R.layout.note, null, false);
@@ -317,6 +322,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         //установка на активити
 
     }
+    */
 
 }
 

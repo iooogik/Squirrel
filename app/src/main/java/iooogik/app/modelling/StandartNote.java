@@ -412,7 +412,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
         }else if (view.getId() == R.id.back){
-            FrameLayout frameLayout = Notes.view.findViewById(R.id.SecondaryFrame);
+
+            FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
         }

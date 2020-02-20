@@ -237,7 +237,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
 
         } else if(v.getId() == R.id.back){
-            FrameLayout frameLayout = Notes.view.findViewById(R.id.SecondaryFrame);
+            FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
         }
