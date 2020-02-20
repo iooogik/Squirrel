@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,6 +38,9 @@ import static android.graphics.Color.WHITE;
 
 public class QR_Demo extends AppCompatActivity {
 
+    //Переменная для работы с БД
+    private SQLiteDatabase mDb;
+    private Cursor userCursor;
     private Database mDBHelper;
 
     @SuppressLint("ResourceAsColor")
@@ -47,6 +51,9 @@ public class QR_Demo extends AppCompatActivity {
 
         mDBHelper = new Database(this);
         mDBHelper.openDataBase();
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor = mDb.rawQuery("Select * from Notes", null);
+        userCursor.moveToPosition(Notes.ITEMS.size());
 
         final ImageView imageView = findViewById(R.id.imageView);
 
@@ -181,7 +188,7 @@ public class QR_Demo extends AppCompatActivity {
 
         String fullName = "QR " + name;
 
-        cv.put("_id", Notes.id);
+        cv.put("_id", userCursor.getInt(userCursor.getColumnIndex("_id")) + 1);
         cv.put("name", fullName);
         cv.put("shortName", tv.getText().toString());
         cv.put("text", " ");
@@ -197,9 +204,10 @@ public class QR_Demo extends AppCompatActivity {
         //запись
         mDb.insert("Notes", null, cv);
         mDb.close();
-        Notes.id++;
+
         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-        Notes.ITEMS.add(new Note(fullName, tv.getText().toString(), bitmap, type, Notes.id));
+        Notes.ITEMS.add(new Note(fullName, tv.getText().toString(), bitmap, type,
+                userCursor.getInt(userCursor.getColumnIndex("_id")) + 1));
         Notes.NOTES_ADAPTER.notifyDataSetChanged();
         bitmap = null;
     }

@@ -38,13 +38,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class Notes extends Fragment implements View.OnClickListener {
 
     //Переменная для работы с БД
-    public static int id = 0;
-    //Переменная для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
-
-    Bundle bundle = new Bundle();
     private Cursor userCursor;
+    Bundle bundle = new Bundle();
+
     public static View VIEW;
     static NotesAdapter NOTES_ADAPTER;
 
@@ -161,7 +159,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                 }
                 //добавление в бд и запись в строчки
                 ContentValues cv = new ContentValues();
-                cv.put("_id", id);
+                cv.put("_id", userCursor.getInt(userCursor.getColumnIndex("_id")) + 1);
                 cv.put("name", name);
                 cv.put("shortName", shortNote);
                 cv.put("text", text);
@@ -173,11 +171,12 @@ public class Notes extends Fragment implements View.OnClickListener {
                 String dateText = dateFormat.format(currentDate);
                         cv.put("date", dateText);
                 //запись
-                //addToScroll(type, name, shortNote, id, null);
+
                 mDb.insert("Notes", null, cv);
                 mDb.close();
-                id++;
-                ITEMS.add(new Note(name, shortNote, null, type, id));
+
+                ITEMS.add(new Note(name, shortNote, null, type,
+                        userCursor.getInt(userCursor.getColumnIndex("_id")) + 1));
                 NOTES_ADAPTER.notifyDataSetChanged();
             });
 
@@ -190,33 +189,6 @@ public class Notes extends Fragment implements View.OnClickListener {
             startActivity(main);
         }
     }
-/*
-    private void showFragment(Fragment fragment){
-        FrameLayout frameLayout = view.findViewById(R.id.SecondaryFrame);
-        frameLayout.setVisibility(View.VISIBLE);
-
-        fragment.setArguments(bundle);
-
-        FragmentManager fm = getFragmentManager();
-        assert fm != null;
-        FragmentTransaction ft = fm.beginTransaction();
-
-        if (fragment != null) {
-            ft.remove(fragment).commitAllowingStateLoss();
-        }
-
-        FragmentTransaction addTransaction = fm.beginTransaction();
-        addTransaction.setCustomAnimations
-                (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
-        addTransaction.addToBackStack(null);
-        assert fragment != null;
-        addTransaction.add(R.id.SecondaryFrame, fragment,
-                "secondFrame").commitAllowingStateLoss();
-
-
-    }
-
- */
 
     //обновление проектов на активити
     private void updProjects(){
@@ -245,7 +217,9 @@ public class Notes extends Fragment implements View.OnClickListener {
             }
 
             if(name != null || type != null)
-                ITEMS.add(new Note(name, desc, bitmap, type, identificator));
+                ITEMS.add(new Note(name, desc, bitmap, type,
+                        userCursor.getInt(userCursor.getColumnIndex("_id"))));
+
             userCursor.moveToNext();
             identificator++;
             bitmap = null;
@@ -263,60 +237,5 @@ public class Notes extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(NOTES_ADAPTER);
 
     }
-
-    /*
-    private void addToScroll(String type, String name, String desc, int identificator,
-                             Bitmap bitmap){
-        View view1 = getLayoutInflater().inflate(R.layout.item_note, null, false);
-        //изменяем задний фон в зависимости от типа заметок
-        LinearLayout back = view1.findViewById(R.id.background);
-        switch (type) {
-            case "shop":
-                back.setBackgroundResource(R.drawable.red_custom_button);
-                break;
-            case "standart":
-                back.setBackgroundResource(R.drawable.green_custom_button);
-                break;
-            case "book":
-                back.setBackgroundResource(R.drawable.blue_custom_button);
-                break;
-        }
-        //проверка на наличие картинок и/или установка картинки
-        if (bitmap != null) {
-            ImageView img = view1.findViewById(R.id.subImg);
-            img.setMinimumHeight(150);
-            img.setMinimumWidth(150);
-            img.setImageBitmap(bitmap);
-        }
-        //заголовок
-        TextView nameNote = view1.findViewById(R.id.name);
-        nameNote.setText(name);
-        //описание
-        TextView description = view1.findViewById(R.id.description);
-        description.setText(desc);
-        //обработка нажатия на view
-        view1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bundle.putString("button name", name);
-                bundle.putInt("button ID", identificator);
-
-                if (type.equals("shop")) {
-                    CheckList checkList = new CheckList();
-                    showFragment(checkList);
-                } else if (type.equals("standart")){
-                    StandartNote standartNote = new StandartNote();
-                    showFragment(standartNote);
-                } else if (type.equals("book")){
-                    Book book = new Book();
-                    showFragment(book);
-                }
-            }
-        });
-        //установка на активити
-
-    }
-    */
-
 }
 

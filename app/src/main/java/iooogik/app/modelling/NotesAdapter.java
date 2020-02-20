@@ -1,6 +1,10 @@
 package iooogik.app.modelling;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,6 +26,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     private LayoutInflater inflater;
     private List<Note> notes;
+    //Переменные для работы с БД
+    private Database mDBHelper;
+    private SQLiteDatabase mDb;
+    private Cursor userCursor;
     Bundle bundle = new Bundle();
 
     NotesAdapter(Context context, List<Note> notes){
@@ -114,9 +122,35 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                             Toast.LENGTH_SHORT).show();
                     break;
             }
-
-
         });
+
+        holder.frameLayout.setOnLongClickListener(v -> {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("Важное сообщение!")
+                    .setMessage("Вы действительно хотите удалить заметку?")
+                    .setPositiveButton("Удалить", (dialog, id) -> {
+
+                        /*
+                        mDBHelper = new Database(v.getContext());
+                        mDBHelper.openDataBase();
+                        mDb = mDBHelper.getWritableDatabase();
+                        userCursor = mDb.rawQuery("Select * from Notes", null);
+
+                        userCursor.moveToPosition(note.getId());
+
+                        mDb.delete("Notes", "_id=" + note.getId(), null);
+                        */
+                        Notes.ITEMS.remove(note);
+                        Notes.NOTES_ADAPTER.notifyDataSetChanged();
+
+                        dialog.cancel();
+                    })
+                    .setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+            builder.show();
+            return true;
+        });
+
     }
 
     @Override
