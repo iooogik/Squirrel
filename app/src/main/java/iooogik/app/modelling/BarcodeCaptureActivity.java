@@ -132,7 +132,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.CAMERA)) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Важное сообщение!")
                         .setMessage("Необходимо разрешение на использование камеры!")
                         .setIcon(R.drawable.ic_launcher)

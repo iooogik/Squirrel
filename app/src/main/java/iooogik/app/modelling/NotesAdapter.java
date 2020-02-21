@@ -20,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
@@ -76,7 +78,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         //слушатель для открытия фрагмента с заметкой
         holder.frameLayout.setOnClickListener(v -> {
             bundle.putString("button name", note.getName());
-            bundle.putInt("button ID", note.getId());
+            bundle.putInt("button ID", note.getId() + 1);
 
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
 
@@ -126,28 +128,27 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
         holder.frameLayout.setOnLongClickListener(v -> {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext(),
+                    R.style.Theme_MaterialComponents_Light_Dialog);
+
             builder.setTitle("Важное сообщение!")
                     .setMessage("Вы действительно хотите удалить заметку?")
                     .setPositiveButton("Удалить", (dialog, id) -> {
 
-                        /*
+
                         mDBHelper = new Database(v.getContext());
                         mDBHelper.openDataBase();
                         mDb = mDBHelper.getWritableDatabase();
-                        userCursor = mDb.rawQuery("Select * from Notes", null);
 
-                        userCursor.moveToPosition(note.getId());
+                        mDb.delete("Notes", "_id=" + (note.getId() + 1), null);
 
-                        mDb.delete("Notes", "_id=" + note.getId(), null);
-                        */
                         Notes.ITEMS.remove(note);
                         Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
                         dialog.cancel();
                     })
-                    .setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
-            builder.show();
+                    .setNegativeButton("Нет", (dialog, which) -> dialog.cancel())
+                    .show();
             return true;
         });
 

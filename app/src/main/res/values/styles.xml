@@ -1,19 +1,17 @@
 <resources>
 
-    <style name="ButtonsCustom" parent="Widget.AppCompat.Button">
-        <item name="android:fontFamily">@font/rostelekom</item>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorFont</item>
-        <item name="colorAccent">@color/colorFont</item>
-        <item name="android:textColor">@color/colorFont</item>
-        <item name="android:textColorPrimary">@color/colorFont</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
-    </style>
-
-    <style name="AppTheme.NoActionBar">
+        <item name="colorSecondary">@color/colorSurface</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="radioButtonStyle">@style/Widget.MaterialComponents.CompoundButton.RadioButton</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
 
 
 </resources>

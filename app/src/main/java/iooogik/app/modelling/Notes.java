@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +35,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.ar.sceneform.rendering.Material;
 
 public class Notes extends Fragment implements View.OnClickListener {
 
@@ -85,7 +90,8 @@ public class Notes extends Fragment implements View.OnClickListener {
         //кнопка "Добавить проект"
         if(view.getId() == R.id.addProject){
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext(),
+                    R.style.Theme_MaterialComponents_Light_Dialog);
 
             final LinearLayout layout1 = new LinearLayout(getContext());
             layout1.setOrientation(LinearLayout.VERTICAL);
@@ -113,9 +119,12 @@ public class Notes extends Fragment implements View.OnClickListener {
             final String marckedList = "Маркированный список";
             final String[] types = new String[]{standartTextNote, marckedList};
             //выбор типа
-            final Spinner spinner = new Spinner(getContext());
             ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
-                    android.R.layout.simple_spinner_dropdown_item, types);
+                    R.layout.support_simple_spinner_dropdown_item, types);
+
+            final Spinner spinner = new Spinner(getContext());
+
+
 
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
@@ -139,6 +148,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
             layout1.addView(spinner);
+            
             builder.setView(layout1);
 
             final String DB_TYPE_STNDRT = "standart";
@@ -159,7 +169,9 @@ public class Notes extends Fragment implements View.OnClickListener {
                 }
                 //добавление в бд и запись в строчки
                 ContentValues cv = new ContentValues();
-                cv.put("_id", userCursor.getInt(userCursor.getColumnIndex("_id")) + 1);
+
+                Note note = ITEMS.get(ITEMS.size() - 2);
+                cv.put("_id", note.getId() + 2);
                 cv.put("name", name);
                 cv.put("shortName", shortNote);
                 cv.put("text", text);
@@ -171,18 +183,13 @@ public class Notes extends Fragment implements View.OnClickListener {
                 String dateText = dateFormat.format(currentDate);
                         cv.put("date", dateText);
                 //запись
-
                 mDb.insert("Notes", null, cv);
                 mDb.close();
 
                 ITEMS.add(new Note(name, shortNote, null, type,
-                        userCursor.getInt(userCursor.getColumnIndex("_id")) + 1));
+                        note.getId() + 1));
                 NOTES_ADAPTER.notifyDataSetChanged();
-            });
-
-            AlertDialog dlg = builder.create();
-
-            dlg.show();
+            }).show();
         }
         else if(view.getId() == R.id.back){
             Intent main = new Intent(getContext(), MainActivity.class);
@@ -197,7 +204,6 @@ public class Notes extends Fragment implements View.OnClickListener {
         userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
 
-        int identificator = 0;
         String name, desc, type;
         Bitmap bitmap = null;
         while (!userCursor.isAfterLast()) {
@@ -218,19 +224,18 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             if(name != null || type != null)
                 ITEMS.add(new Note(name, desc, bitmap, type,
-                        userCursor.getInt(userCursor.getColumnIndex("_id"))));
+                        userCursor.getInt(userCursor.getColumnIndex("_id")) - 1));
 
             userCursor.moveToNext();
-            identificator++;
+
             bitmap = null;
         }
-        userCursor.close();
 
         ITEMS.add(new Note("Математические формулы", "Математическая формула — " +
                 "в математике, а также физике и прикладных науках, символическая запись " +
                 "высказывания (которое выражает логическое суждение), либо формы высказывания.",
-                bitmap, "book", identificator));
-
+                bitmap, "book", -1));
+        userCursor.close();
         RecyclerView recyclerView = VIEW.findViewById(R.id.recycler_view);
         NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

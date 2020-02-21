@@ -2,6 +2,8 @@
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">#C0C0C0</color>
+    <color name="colorSurface">#C0C0C0</color>
     <color name="colorFrame">#C0C0C0</color>
     <color name="colorItems">#FFFFFF</color>
     <color name="colorCursor">#FFFFFF</color>

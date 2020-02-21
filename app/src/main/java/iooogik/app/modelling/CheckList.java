@@ -85,11 +85,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
     @Override
-    public String getBtnName(){
-        Bundle arguments = this.getArguments();
-        assert arguments != null;
-        return arguments.getString("button name");
-    }
+    public String getBtnName(){return null;}
 
     @Override
     public void updFragment() {}
@@ -107,13 +103,12 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         shortNote = view.findViewById(R.id.shortShopNote);
 
         mDb = mDBHelper.getReadableDatabase();
-
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToPosition(getBtnID());
-        nameNote.setText(getBtnName());
-        shortNote.setText(userCursor.getString(2));
-        final String TEMP = userCursor.getString(7);
-        String tempBool = userCursor.getString(6);
+        shortNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
+        nameNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
+        final String TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
+        String tempBool = userCursor.getString(userCursor.getColumnIndex("isChecked"));
 
         if (TEMP != null && tempBool != null) {
             //"делим" полученный текст и добавляем в соответствующие списки
