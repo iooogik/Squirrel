@@ -65,7 +65,6 @@ public class Notes extends Fragment implements View.OnClickListener {
         Thread startThread = new Thread(this::startProcedures);
         startThread.start();
 
-
         return VIEW;
     }
 

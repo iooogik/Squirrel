@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private void setTest(){
         List<String> temp = new ArrayList<>(answers);
-        for (int i = 0; i < (answers.size()/questions.size()); i++) {
+        for (int i = 0; i < (answers.size()/questions.size() + 1); i++) {
 
             View view1 = getLayoutInflater().inflate(R.layout.item_question, null, false);
 
@@ -72,6 +73,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton1.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton1.getText().toString())){
                     rightScore++;
+                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
                 }else if (!isChecked && isTrue.contains(radioButton1.getText().toString())){
                     rightScore--;
                 }
@@ -83,6 +85,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton2.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton2.getText().toString())){
                     rightScore++;
+                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
                 }else if (!isChecked && isTrue.contains(radioButton2.getText().toString())){
                     rightScore--;
                 }
@@ -94,6 +97,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton3.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton3.getText().toString())){
                     rightScore++;
+                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
                 }else if (!isChecked && isTrue.contains(radioButton3.getText().toString())){
                     rightScore--;
                 }
@@ -105,6 +109,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton4.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton4.getText().toString())){
                     rightScore++;
+                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
                 }else if (!isChecked && isTrue.contains(radioButton4.getText().toString())){
                     rightScore--;
                 }
@@ -131,13 +136,12 @@ public class Questions extends Fragment implements View.OnClickListener{
         userCursor.moveToPosition(getBtnID());
 
         String TEMPansws = userCursor.getString(userCursor.getColumnIndex("textAnswers"));
-        String[] answ = TEMPansws.split("\n");
-        answers.addAll(Arrays.asList(answ));
+
+        answers.addAll(Arrays.asList(TEMPansws.split("\r\n|\r|\n")));
 
         TEMPansws = userCursor.getString(userCursor.getColumnIndex("answers"));
-        answ = TEMPansws.split("\n");
 
-        isTrue.addAll(Arrays.asList(answ));
+        isTrue.addAll(Arrays.asList(TEMPansws.split("\r\n|\r|\n")));
     }
 
     private void getQuestions() {
@@ -145,7 +149,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         userCursor = mDb.rawQuery("Select * from Tests", null);
         userCursor.moveToPosition(getBtnID());
         String TEMP_quests = userCursor.getString(userCursor.getColumnIndex("questions"));
-        String[] quests = TEMP_quests.split("\n");
+        String[] quests = TEMP_quests.split("\r\n|\r|\n");
         questions.addAll(Arrays.asList(quests));
     }
 
@@ -161,9 +165,15 @@ public class Questions extends Fragment implements View.OnClickListener{
             contentValues.put("wrongAnswers", wrongScore);
             contentValues.put("isPassed", 1);
             mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
-            FrameLayout frameLayout = Test.view.findViewById(R.id.test_frame);
+            FrameLayout frameLayout = Test.VIEW.findViewById(R.id.test_frame);
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
+
+            TestTheme testTheme = Test.TEST_ITEMS.get(getBtnID());
+            testTheme.setRightAnswers(rightScore);
+            testTheme.setWrongAnswers(wrongScore);
+            testTheme.setPassed(true);
+            Test.TEST_ADAPTER.notifyDataSetChanged();
         }
     }
 }
