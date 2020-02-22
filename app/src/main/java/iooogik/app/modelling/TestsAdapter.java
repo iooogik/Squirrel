@@ -9,9 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,10 +30,6 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
     private LayoutInflater inflater;
     private List<TestTheme> tests;
-    //Переменные для работы с БД
-    private Database mDBHelper;
-    private SQLiteDatabase mDb;
-    private Cursor userCursor;
     Bundle bundle = new Bundle();
 
     TestsAdapter(Context context, List<TestTheme> tests){
@@ -104,7 +100,6 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             //обработка нажатия на view
             holder.frameLayout.setOnClickListener(v -> {
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                Toast.makeText(v.getContext(), String.valueOf(testTheme.isPassed()), Toast.LENGTH_SHORT).show();
                 FrameLayout quest_frame = activity.findViewById(R.id.test_frame);
                 quest_frame.setVisibility(View.VISIBLE);
 

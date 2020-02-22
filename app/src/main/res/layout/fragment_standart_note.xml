@@ -115,57 +115,55 @@
                     android:textColor="@color/colorWarning"
                     android:visibility="gone" />
 
-                <ScrollView
+                <LinearLayout
+                    android:id="@+id/shop"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/shop"
+                        android:id="@+id/layout_img"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/qr_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:minWidth="200dp"
+                            android:minHeight="200dp"
+                            tools:src="@tools:sample/avatars" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/noteWarn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/rostelekom"
+                        android:text="@string/noteWarning"
+                        android:textColor="@color/colorWarning"
+                        android:visibility="gone" />
 
-                        <LinearLayout
-                            android:id="@+id/layout_img"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:visibility="gone">
+                    <EditText
+                        android:id="@+id/editNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/rostelekom"
+                        android:hint="@string/note"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/colorFont"
+                        android:textColorHint="#AFADAD"
+                        android:inputType="textMultiLine">
+                        <requestFocus />
+                    </EditText>
 
-                            <ImageView
-                                android:id="@+id/qr_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal"
-                                android:minWidth="200dp"
-                                android:minHeight="200dp"
-                                tools:src="@tools:sample/avatars" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/noteWarn"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="3dp"
-                            android:fontFamily="@font/rostelekom"
-                            android:text="@string/noteWarning"
-                            android:textColor="@color/colorWarning"
-                            android:visibility="gone" />
-
-                        <MultiAutoCompleteTextView
-                            android:id="@+id/editNote"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="8dp"
-                            android:fontFamily="@font/rostelekom"
-                            android:hint="@string/note"
-                            android:textAlignment="viewStart"
-                            android:textColor="@color/colorFont"
-                            android:textColorHint="#AFADAD"
-                            android:textCursorDrawable="@drawable/color_cursor" />
-
-                    </LinearLayout>
-                </ScrollView>
+                </LinearLayout>
 
             </LinearLayout>
 

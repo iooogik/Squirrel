@@ -16,8 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +71,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton1.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton1.getText().toString())){
                     rightScore++;
-                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
+
                 }else if (!isChecked && isTrue.contains(radioButton1.getText().toString())){
                     rightScore--;
                 }
@@ -85,7 +83,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton2.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton2.getText().toString())){
                     rightScore++;
-                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
+
                 }else if (!isChecked && isTrue.contains(radioButton2.getText().toString())){
                     rightScore--;
                 }
@@ -97,7 +95,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton3.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton3.getText().toString())){
                     rightScore++;
-                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
+
                 }else if (!isChecked && isTrue.contains(radioButton3.getText().toString())){
                     rightScore--;
                 }
@@ -109,7 +107,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             radioButton4.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked && isTrue.contains(radioButton4.getText().toString())){
                     rightScore++;
-                    Toast.makeText(getContext(), "true", Toast.LENGTH_SHORT).show();
+
                 }else if (!isChecked && isTrue.contains(radioButton4.getText().toString())){
                     rightScore--;
                 }

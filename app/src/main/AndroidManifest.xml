@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -37,10 +38,12 @@
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <activity android:name=".StandartNote" />
+        <activity android:name=".StandartNote"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".QR_Demo" />
         <activity android:name=".ARcamera" />
         <activity android:name=".Notes" />
+
         <activity android:name=".Planets"/>
         <activity
             android:name=".BarcodeCaptureActivity"

@@ -66,7 +66,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        view = inflater.inflate(R.layout.standart_note,
+        view = inflater.inflate(R.layout.fragment_standart_note,
                 container, false);
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
