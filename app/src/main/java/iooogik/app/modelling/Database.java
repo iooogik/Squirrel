@@ -15,7 +15,7 @@ class Database extends SQLiteOpenHelper {
     //класс для работы с файлом бд
     private static String DB_NAME = "planetsDB.db";
     private static String DB_PATH;
-    private static final int DB_VERSION = 33;
+    private static final int DB_VERSION = 36;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;

@@ -375,7 +375,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             } catch (Exception e){
                 Log.i("StandartNotes", String.valueOf(e));
             }
-
+            Notes.NOTES_ADAPTER.notifyDataSetChanged();
             Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
 
         } else if(view.getId() == R.id.buttonShare){

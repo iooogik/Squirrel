@@ -78,7 +78,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         //слушатель для открытия фрагмента с заметкой
         holder.frameLayout.setOnClickListener(v -> {
             bundle.putString("button name", note.getName());
-            bundle.putInt("button ID", note.getId() + 1);
+            bundle.putInt("button ID", note.getId());
 
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
 

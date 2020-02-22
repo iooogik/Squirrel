@@ -61,7 +61,10 @@ public class Notes extends Fragment implements View.OnClickListener {
         VIEW = inflater.inflate(R.layout.fragment_notes, container ,false);
         FloatingActionButton back = VIEW.findViewById(R.id.back);
         back.setOnClickListener(this);
-        startProcedures();
+        // запускаем поток для обновления списка заметок
+        Thread startThread = new Thread(this::startProcedures);
+        startThread.start();
+
 
         return VIEW;
     }
@@ -231,10 +234,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             bitmap = null;
         }
 
-        ITEMS.add(new Note("Математические формулы", "Математическая формула — " +
-                "в математике, а также физике и прикладных науках, символическая запись " +
-                "высказывания (которое выражает логическое суждение), либо формы высказывания.",
-                bitmap, "book", -1));
+
         userCursor.close();
         RecyclerView recyclerView = VIEW.findViewById(R.id.recycler_view);
         NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS);
