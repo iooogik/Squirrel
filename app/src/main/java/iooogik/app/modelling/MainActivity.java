@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
@@ -101,9 +102,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
+        toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
+        toolbar.setSubtitleTextColor(Color.parseColor("#FFFFFF"));
 
         final Intent QR_READER = new Intent(this, BarcodeCaptureActivity.class);
         int identificator = 0;
+
 
         Drawer drawer = new Drawer()
                 .withActivity(this)

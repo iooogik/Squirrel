@@ -7,13 +7,17 @@
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/project_frame"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        >
 
         <LinearLayout
             android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/green_custom_button"
             android:orientation="vertical">
 
             <TextView
@@ -21,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorFont"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -35,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:layout_margin="10dp"
-                    android:textColor="@color/colorWhite" />
+                    android:textColor="@color/colorFont" />
 
                 <ImageView
                     android:id="@+id/subImg"

@@ -70,7 +70,7 @@
                 app:helperText="Максимальное количество символов"
                 app:counterEnabled="true"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                app:counterMaxLength="30">
+                app:counterMaxLength="40">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editNameShopNote"

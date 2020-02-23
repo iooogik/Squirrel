@@ -32,7 +32,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginTop="150dp"
         android:layout_marginRight="30dp"
-        android:background="@drawable/projectframe"
+        android:background="@drawable/project_frame"
         android:fontFamily="@font/rostelekom"
         android:text="@string/saveQRbtn"
         android:textColor="@color/colorFont" />

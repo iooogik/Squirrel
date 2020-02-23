@@ -1,11 +1,10 @@
 package iooogik.app.modelling;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,18 +62,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             img.setImageBitmap(bitmap);
         }
 
-        //выбор типа
-        switch (note.getType()) {
-            case "shop":
-                holder.back.setBackgroundResource(R.drawable.red_custom_button);
-                break;
-            case "standart":
-                holder.back.setBackgroundResource(R.drawable.green_custom_button);
-                break;
-            case "book":
-                holder.back.setBackgroundResource(R.drawable.blue_custom_button);
-                break;
-        }
         //слушатель для открытия фрагмента с заметкой
         holder.frameLayout.setOnClickListener(v -> {
             bundle.putString("button name", note.getName());

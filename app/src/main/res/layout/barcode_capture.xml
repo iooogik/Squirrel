@@ -38,7 +38,7 @@
           android:layout_marginEnd="30dp"
           android:layout_marginStart="30dp"
           android:layout_marginBottom="10dp"
-          android:background="@drawable/projectframe"
+          android:background="@drawable/project_frame"
           android:text="@string/СохранитьQR"
           android:textColor="@color/colorFont" />
     </LinearLayout>
