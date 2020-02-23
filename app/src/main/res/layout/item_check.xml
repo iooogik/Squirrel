@@ -5,13 +5,13 @@
 
     <CheckBox
         android:id="@+id/checkBox"
+        style="@style/Widget.MaterialComponents.CompoundButton.CheckBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/checkers"
         android:layout_margin="11dp"
         android:fontFamily="@font/rostelekom"
         android:text="CheckBox"
-        android:textColor="@color/colorFont"
         android:textSize="18sp"
         android:visibility="visible" />
 </LinearLayout>

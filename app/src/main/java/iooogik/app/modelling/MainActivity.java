@@ -103,18 +103,18 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
 
         final Intent QR_READER = new Intent(this, BarcodeCaptureActivity.class);
-        int identifier = 0;
+        int identificator = 0;
 
         Drawer drawer = new Drawer()
                 .withActivity(this)
-
                 .withToolbar(toolbar)
+                .withDisplayBelowToolbar(true)
                 .withActionBarDrawerToggle(true)
                 .addDrawerItems(
 
                         //0
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).
-                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(identifier),
+                                withIcon(FontAwesome.Icon.faw_home).withIdentifier(identificator),
 
                         //1
                         new DividerDrawerItem(),
@@ -122,32 +122,32 @@ public class MainActivity extends AppCompatActivity {
                         //2
                         new PrimaryDrawerItem().withName(R.string.textNotes).
                                 withIcon(FontAwesome.Icon.faw_file_text).
-                                withIdentifier(identifier++),
+                                withIdentifier(identificator++),
 
                         //3
 
                         new PrimaryDrawerItem().withName(R.string.drawer_item_qr).
                                 withIcon(FontAwesome.Icon.faw_qrcode).
-                                withIdentifier(identifier++),
+                                withIdentifier(identificator++),
                         //4
                         new DividerDrawerItem(),
 
                         //5
                         new PrimaryDrawerItem().withName("Тесты")
                                 .withIcon(FontAwesome.Icon.faw_tasks)
-                                .withIdentifier(identifier++),
+                                .withIdentifier(identificator++),
 
                         //6
                         new DividerDrawerItem(),
                         //7
                         new PrimaryDrawerItem().withName(R.string.contacts)
                                 .withIcon(FontAwesome.Icon.faw_phone_square).
-                                withIdentifier(identifier++),
+                                withIdentifier(identificator++),
                         //8
                         //настройки
                         new PrimaryDrawerItem().withName("Настройки (в разработке)")
                                 .withIcon(FontAwesome.Icon.faw_wrench).
-                                withIdentifier(identifier++).setEnabled(false),
+                                withIdentifier(identificator++).setEnabled(false),
                         //9
                         new DividerDrawerItem(),
 
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
                         new SecondaryDrawerItem().withName("Игра от издателя")
                                 .withIcon(FontAwesome.Icon.faw_rocket)
-                                .withIdentifier(identifier++)
+                                .withIdentifier(identificator++)
                 )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
                     else if(position == 5){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
-                        Test test = new Test();
+                        Tests test = new Tests();
                         showFragment(test, frameLayout);
                         toolbar.setSubtitle("Тесты");
                         frameLayout.setVisibility(View.VISIBLE);

@@ -37,6 +37,7 @@ import java.util.Objects;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.ar.sceneform.rendering.Material;
 
@@ -94,41 +95,29 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext(),
                     R.style.Theme_MaterialComponents_Light_Dialog);
-
+            //создаём "поверхность" на alertDialog
             final LinearLayout layout1 = new LinearLayout(getContext());
             layout1.setOrientation(LinearLayout.VERTICAL);
-            //ввод названия заметки
-            final EditText nameNote = new EditText(getContext());
 
-            nameNote.setTextColor(Color.BLACK);
-            nameNote.setHint("Введите название");
-            nameNote.setTypeface(Planets.standartFont);
-            nameNote.setTextSize(18);
-            nameNote.setMinimumWidth(1500);
-            layout1.addView(nameNote);
+            //получаем кастомную вьюшку и добаляем на alertDialog
+            View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
+            TextInputEditText nameNote = view1.findViewById(R.id.edit_text);
+            layout1.addView(view1);
+            //
 
-            final TextView tv = new TextView(getContext());
-            tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-            tv.setText("    Пожалуйста, введите название!");
-            tv.setTextColor(Color.RED);
-            tv.setTextSize(13);
-            tv.setTypeface(Planets.standartFont);
-            tv.setMinimumWidth(1500);
-            tv.setVisibility(View.GONE);
-            layout1.addView(tv);
-
+            //получаем второую кастомную вьюшку со списком с типом заметок, устанавливаем адаптер
+            //устанавливаем "слушатель" и ставим на alertDialog
             final String standartTextNote = "Стандартная заметка";
             final String marckedList = "Маркированный список";
             final String[] types = new String[]{standartTextNote, marckedList};
-            //выбор типа
             ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
                     R.layout.support_simple_spinner_dropdown_item, types);
 
-            final Spinner spinner = new Spinner(getContext());
+            View view2 = getLayoutInflater().inflate(R.layout.spinner_item, null, false);
 
+            AutoCompleteTextView spinner =
+                    view2.findViewById(R.id.filled_exposed_dropdown);
 
-
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
 
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -144,53 +133,58 @@ public class Notes extends Fragment implements View.OnClickListener {
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
+            layout1.addView(view2);
+            //
 
-
-
-
-
-            layout1.addView(spinner);
-            
+            //ставим разметку на alertDialog
             builder.setView(layout1);
 
             final String DB_TYPE_STNDRT = "standart";
             final String DB_TYPE_SHOP = "shop";
 
+            //обработка нажатия на кнопку
             builder.setPositiveButton("Добавить",
                     (dialog, which) -> {
                 String name = nameNote.getText().toString();
-                String shortNote = "короткое описание";
-                String text = "Новая заметка";
-                String type = "";
-                mDb = mDBHelper.getWritableDatabase();
+                //проверяем, не пустое ли название
+                if(!name.equals("")) {
+                    String shortNote = "короткое описание";
+                    String text = "Новая заметка";
+                    String type = "";
+                    mDb = mDBHelper.getWritableDatabase();
 
-                if(spinner.getSelectedItem().toString().equals(standartTextNote)){
-                    type = DB_TYPE_STNDRT;
-                } else if (spinner.getSelectedItem().toString().equals(marckedList)){
-                    type = DB_TYPE_SHOP;
+                    if (spinner.getText().toString().equals(standartTextNote)) {
+                        type = DB_TYPE_STNDRT;
+                    } else if (spinner.getText().toString().equals(marckedList)) {
+                        type = DB_TYPE_SHOP;
+                    }
+
+
+                    //добавление в бд и запись в строчки
+                    ContentValues cv = new ContentValues();
+
+                    Note note = ITEMS.get(ITEMS.size() - 1);
+                    cv.put("_id", note.getId() + 2);
+                    Toast.makeText(getContext(), String.valueOf(note.getId() + 2), Toast.LENGTH_SHORT).show();
+                    cv.put("name", name);
+                    cv.put("shortName", shortNote);
+                    cv.put("text", text);
+                    cv.put("type", type);
+                    //получение даты
+                    Date currentDate = new Date();
+                    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                            Locale.getDefault());
+                    String dateText = dateFormat.format(currentDate);
+                    cv.put("date", dateText);
+                    //запись
+                    mDb.insert("Notes", null, cv);
+                    mDb.close();
+
+                    ITEMS.add(new Note(name, shortNote, null, type,
+                            note.getId() + 2));
+
+                    NOTES_ADAPTER.notifyDataSetChanged();
                 }
-                //добавление в бд и запись в строчки
-                ContentValues cv = new ContentValues();
-
-                Note note = ITEMS.get(ITEMS.size() - 2);
-                cv.put("_id", note.getId() + 2);
-                cv.put("name", name);
-                cv.put("shortName", shortNote);
-                cv.put("text", text);
-                cv.put("type", type);
-                //получение даты
-                Date currentDate = new Date();
-                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                        Locale.getDefault());
-                String dateText = dateFormat.format(currentDate);
-                        cv.put("date", dateText);
-                //запись
-                mDb.insert("Notes", null, cv);
-                mDb.close();
-
-                ITEMS.add(new Note(name, shortNote, null, type,
-                        note.getId() + 1));
-                NOTES_ADAPTER.notifyDataSetChanged();
             }).show();
         }
         else if(view.getId() == R.id.back){
@@ -216,10 +210,8 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             desc = String.valueOf(userCursor.getString(2));
 
-
-
-
             byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
+
             if(bytesImg != null){
                 bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
             }

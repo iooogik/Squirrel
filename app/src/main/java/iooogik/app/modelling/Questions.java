@@ -163,15 +163,15 @@ public class Questions extends Fragment implements View.OnClickListener{
             contentValues.put("wrongAnswers", wrongScore);
             contentValues.put("isPassed", 1);
             mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
-            FrameLayout frameLayout = Test.VIEW.findViewById(R.id.test_frame);
+            FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
             frameLayout.removeAllViews();
             frameLayout.setVisibility(View.GONE);
 
-            TestTheme testTheme = Test.TEST_ITEMS.get(getBtnID());
+            TestTheme testTheme = Tests.TEST_ITEMS.get(getBtnID());
             testTheme.setRightAnswers(rightScore);
             testTheme.setWrongAnswers(wrongScore);
             testTheme.setPassed(true);
-            Test.TEST_ADAPTER.notifyDataSetChanged();
+            Tests.TEST_ADAPTER.notifyDataSetChanged();
         }
     }
 }

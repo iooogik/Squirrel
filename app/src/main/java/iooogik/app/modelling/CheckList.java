@@ -100,13 +100,13 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         nameNote = view.findViewById(R.id.editNameShopNote);
-        shortNote = view.findViewById(R.id.shortShopNote);
+        shortNote = view.findViewById(R.id.editNameShortShopNote);
 
         mDb = mDBHelper.getReadableDatabase();
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToPosition(getBtnID());
-        shortNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
-        nameNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
+        nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
+        shortNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
         final String TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
         String tempBool = userCursor.getString(userCursor.getColumnIndex("isChecked"));
 

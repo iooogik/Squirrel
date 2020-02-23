@@ -27,6 +27,8 @@
 
             <RadioButton
                 android:id="@+id/radioButton1"
+                app:useMaterialThemeColors="false"
+                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -39,6 +41,8 @@
 
             <RadioButton
                 android:id="@+id/radioButton2"
+                app:useMaterialThemeColors="false"
+                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -50,6 +54,8 @@
 
             <RadioButton
                 android:id="@+id/radioButton3"
+                app:useMaterialThemeColors="false"
+                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -61,6 +67,8 @@
 
             <RadioButton
                 android:id="@+id/radioButton4"
+                app:useMaterialThemeColors="false"
+                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"

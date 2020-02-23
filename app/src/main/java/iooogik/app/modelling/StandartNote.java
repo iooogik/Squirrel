@@ -78,62 +78,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
 
-
-        final EditText name = view.findViewById(R.id.editName);
-        final EditText shortNote = view.findViewById(R.id.shortNote);
-
-        name.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                TextView tv = view.findViewById(R.id.nameWarn);
-                if(name.getText().toString().length() > 40){
-                    if(tv.getVisibility() != View.VISIBLE) {
-                        tv.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if(tv.getVisibility() != View.GONE) {
-                        tv.setVisibility(View.GONE);
-                    }
-                }
-            }
-        });
-
-        shortNote.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                TextView tv = view.findViewById(R.id.shortNoteWarn);
-                if(shortNote.getText().toString().length() > 100){
-                    if(tv.getVisibility() != View.VISIBLE) {
-                        tv.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if(tv.getVisibility() != View.GONE) {
-                        tv.setVisibility(View.GONE);
-                    }
-                }
-            }
-        });
-
         return view;
     }
 
@@ -379,6 +323,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
 
         } else if(view.getId() == R.id.buttonShare){
+
             if(note.getText().toString().length() <= 300) {
                     share();
                 }

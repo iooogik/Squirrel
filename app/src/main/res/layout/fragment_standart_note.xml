@@ -67,53 +67,47 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/editName"
-                    style="@android:style/Widget.DeviceDefault.Light.EditText"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/name_note_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:background="#00FFFFFF"
-                    android:ems="10"
-                    android:fontFamily="@font/rostelekom"
-                    android:hint="@string/name"
-                    android:inputType="textPersonName"
-                    android:textColor="@color/colorFont"
-                    android:textColorHint="#AFADAD"
-                    android:textCursorDrawable="@drawable/color_cursor" />
+                    android:layout_margin="10dp"
+                    android:hint="Введите текст"
+                    app:helperTextEnabled="true"
+                    app:helperText="Максимальное количество символов"
+                    app:counterEnabled="true"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    app:counterMaxLength="30">
 
-                <TextView
-                    android:id="@+id/nameWarn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:fontFamily="@font/rostelekom"
-                    android:text="@string/nameWarning"
-                    android:textColor="@color/colorWarning"
-                    android:visibility="gone" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        />
 
-                <EditText
-                    android:id="@+id/shortNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:ems="10"
-                    android:fontFamily="@font/rostelekom"
-                    android:hint="@string/short_note"
-                    android:inputType="textPersonName"
-                    android:textColor="@color/colorFont"
-                    android:textColorHint="#AFADAD"
-                    android:textCursorDrawable="@drawable/color_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:id="@+id/shortNoteWarn"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/short_note_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:fontFamily="@font/rostelekom"
-                    android:text="@string/shortNoteWarning"
-                    android:textColor="@color/colorWarning"
-                    android:visibility="gone" />
+                    android:layout_margin="10dp"
+                    android:hint="Введите краткое описание"
+                    app:helperTextEnabled="true"
+                    app:helperText="Максимальное количество символов"
+                    app:counterEnabled="true"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    app:counterMaxLength="100">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/shortNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:id="@+id/shop"

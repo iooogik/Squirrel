@@ -94,11 +94,13 @@ public class QR_Demo extends AppCompatActivity {
                 builder.setPositiveButton(Html.fromHtml
                                 ("<font color='#7AB5FD'>Добавить запись</font>"),
                         (dialog, which) -> {
+                            saveQRandText(name.getText().toString(),
+                                    stream.toByteArray());
+                            startActivity(intent);
+                            finish();
+
                             try {
-                                saveQRandText(name.getText().toString(),
-                                        stream.toByteArray());
-                                startActivity(intent);
-                                finish();
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Toast.makeText(getApplicationContext(),
@@ -180,15 +182,16 @@ public class QR_Demo extends AppCompatActivity {
     protected void saveQRandText(String name, byte[] image){
         TextView tv = findViewById(R.id.encodedText);
 
-        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
-
+        mDb = mDBHelper.getWritableDatabase();
+        userCursor.moveToLast();
+        int lastID = userCursor.getInt(userCursor.getColumnIndex("_id"));
         ContentValues cv = new ContentValues();
 
         String type = "standart";
 
         String fullName = "QR " + name;
 
-        cv.put("_id", userCursor.getInt(userCursor.getColumnIndex("_id")) + 1);
+        cv.put("_id", lastID + 1);
         cv.put("name", fullName);
         cv.put("shortName", tv.getText().toString());
         cv.put("text", " ");
@@ -203,11 +206,11 @@ public class QR_Demo extends AppCompatActivity {
         cv.put("date", dateText);
         //запись
         mDb.insert("Notes", null, cv);
-        mDb.close();
+
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
         Notes.ITEMS.add(new Note(fullName, tv.getText().toString(), bitmap, type,
-                userCursor.getInt(userCursor.getColumnIndex("_id")) + 1));
+                lastID + 1));
         Notes.NOTES_ADAPTER.notifyDataSetChanged();
         bitmap = null;
     }

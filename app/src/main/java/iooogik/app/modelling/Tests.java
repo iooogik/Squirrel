@@ -34,7 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Test extends Fragment implements View.OnClickListener{
+public class Tests extends Fragment implements View.OnClickListener{
 
     static View VIEW;
 
@@ -48,7 +48,7 @@ public class Test extends Fragment implements View.OnClickListener{
     static List<TestTheme> TEST_ITEMS = new ArrayList<>();
 
 
-    public Test() {}
+    public Tests() {}
 
 
     @Override
@@ -97,7 +97,6 @@ public class Test extends Fragment implements View.OnClickListener{
                     getInt(userCursor.getColumnIndex("isPassed"));
             boolean isPassed = false;
             isPassed = isPassedDB == 1;
-            Toast.makeText(getContext(), String.valueOf(isPassed), Toast.LENGTH_SHORT).show();
 
             //добавляем тест в recyclerView
             TEST_ITEMS.add(new TestTheme(name, desc, rightScore, wrongScore, isPassed));

@@ -48,7 +48,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
 
-    implementation('com.mikepenz.materialdrawer:library:0.9.5@aar') {
+    implementation('com.mikepenz.materialdrawer:library:2.8.1@aar') {
         transitive = true
     }
 }
