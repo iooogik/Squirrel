@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -30,7 +31,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     //Переменные для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
-    private Cursor userCursor;
     Bundle bundle = new Bundle();
 
     NotesAdapter(Context context, List<Note> notes){
@@ -67,10 +67,22 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             bundle.putString("button name", note.getName());
             bundle.putInt("button ID", note.getId());
 
+
+
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
 
             FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
             frameLayout.setVisibility(View.VISIBLE);
+
+            MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(v.getContext(),
+                    R.drawable.baseline_arrow_back_white_24dp));
+
+            MainActivity.FAB.setOnClickListener(viewFAB -> {
+                frameLayout.setVisibility(View.GONE);
+                frameLayout.removeAllViews();
+                MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(v.getContext(),
+                        R.drawable.baseline_add_white_24dp));
+            });
 
             switch (note.getType()) {
                 case "shop":

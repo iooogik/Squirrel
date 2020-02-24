@@ -12,7 +12,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/myframe"
+            android:background="@drawable/frame"
             android:layout_margin="20dp"
             android:orientation="vertical">
 
@@ -21,8 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:fontFamily="@font/rostelekom"
-                android:textColor="@color/colorFont"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -44,8 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:fontFamily="@font/rostelekom"
-                    android:textColor="@color/colorFont" />
+                     />
             </LinearLayout>
 
         </LinearLayout>

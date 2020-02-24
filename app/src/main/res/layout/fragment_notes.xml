@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     tools:context=".Notes"
@@ -27,49 +26,14 @@
 
     </FrameLayout>
 
-
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="3dp"
         android:layout_marginTop="15dp"
         android:layout_marginRight="3dp"
         android:layout_marginBottom="3dp"
-        android:orientation="vertical">
-
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="16dp"
-                app:backgroundTint="@color/colorAccent"
-                app:maxImageSize="25dp"
-                app:srcCompat="@drawable/arrow_left"
-                />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addProject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
-                app:backgroundTint="@color/colorAccent"
-                app:maxImageSize="40dp"
-                app:srcCompat="@drawable/plus" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:itemCount="0" />
-
-        </FrameLayout>
-    </LinearLayout>
+        tools:itemCount="0" />
 
 </LinearLayout>

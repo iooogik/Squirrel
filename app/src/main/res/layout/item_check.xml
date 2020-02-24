@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:background="@drawable/checkers"
         android:layout_margin="11dp"
-        android:fontFamily="@font/rostelekom"
         android:text="CheckBox"
         android:textSize="18sp"
         android:visibility="visible" />

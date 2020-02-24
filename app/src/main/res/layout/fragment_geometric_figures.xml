@@ -9,8 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/onFigureClick"
-        android:fontFamily="@font/rostelekom"
-        android:textColor="@color/colorFont"
         android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="30dp"
@@ -28,17 +26,6 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:backgroundTint="@color/colorPrimary"
-            app:backgroundTint="@color/colorPrimary"
-            app:maxImageSize="25dp"
-            app:srcCompat="@drawable/arrow_left"
-            android:layout_margin="@dimen/fab_margin" />
 
         <ScrollView
             android:id="@+id/scroll"

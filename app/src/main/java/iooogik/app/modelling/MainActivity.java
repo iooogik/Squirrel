@@ -1,7 +1,6 @@
 package iooogik.app.modelling;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -9,32 +8,47 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static Fragment currFragment;
-
+    private Database mDBHelper;
+    private SQLiteDatabase mDb;
+    public static FloatingActionButton FAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +58,11 @@ public class MainActivity extends AppCompatActivity {
         Database mDBHelper = new Database(this);
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-
+        FAB = findViewById(R.id.fab);
         createToolbar();
         updateList();
+        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+        frameLayout.removeAllViews();
     }
 
     private void updateList(){
@@ -71,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             Planets planets = new Planets();
             FrameLayout frameLayout1 = findViewById(R.id.Mainframe);
             showFragment(planets, frameLayout1);
+            fabPlanets();
         });
 
         linearLayout.addView(view1);
@@ -90,20 +107,21 @@ public class MainActivity extends AppCompatActivity {
 
         view2.setOnClickListener(v -> {
             //открытие фрагмента с фигурами
-            GeometricFigure figures = new GeometricFigure();
+            GeometricFigures figures = new GeometricFigures();
             FrameLayout frameLayout1 = findViewById(R.id.Mainframe);
             showFragment(figures, frameLayout1);
+            fabPlanets();
         });
         linearLayout.addView(view2);
 
     }
 
     private void createToolbar(){
-        Toolbar toolbar = findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(R.string.app_name);
-        toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
-        toolbar.setSubtitleTextColor(Color.parseColor("#FFFFFF"));
+
+        BottomAppBar bottomAppBar = findViewById(R.id.bar);
+
+        setSupportActionBar(bottomAppBar);
+
 
         final Intent QR_READER = new Intent(this, BarcodeCaptureActivity.class);
         int identificator = 0;
@@ -111,8 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         Drawer drawer = new Drawer()
                 .withActivity(this)
-                .withToolbar(toolbar)
-                .withDisplayBelowToolbar(true)
+                .withToolbar(bottomAppBar)
                 .withActionBarDrawerToggle(true)
                 .addDrawerItems(
 
@@ -190,12 +207,15 @@ public class MainActivity extends AppCompatActivity {
                         if(frameLayout.getVisibility() == View.VISIBLE) {
                             frameLayout.setVisibility(View.GONE);
                         }
+                        fabMain();
+                        ScrollView scrollView = findViewById(R.id.scrollMain);
+                        scrollView.setVisibility(View.VISIBLE);
 
                     } else if(position == 2){
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         Notes notes = new Notes();
                         showFragment(notes, frameLayout);
-                        toolbar.setSubtitle(R.string.textNotes);
+                        fabNotes();
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
@@ -209,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         Tests test = new Tests();
                         showFragment(test, frameLayout);
-                        toolbar.setSubtitle("Тесты");
+                        fabTests();
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
@@ -217,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         Contacts contacts = new Contacts();
                         showFragment(contacts, frameLayout);
-                        toolbar.setSubtitle(R.string.contacts);
+                        fabContacts();
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
@@ -225,22 +245,154 @@ public class MainActivity extends AppCompatActivity {
                         FrameLayout frameLayout = findViewById(R.id.Mainframe);
                         LifeAtSpace lifeAtSpace = new LifeAtSpace();
                         showFragment(lifeAtSpace, frameLayout);
-                        toolbar.setSubtitle("Игра от издателя");
-
+                        fabLifeAtSpace();
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
                 });
         drawer.build();
-        Objects.requireNonNull(toolbar.getNavigationIcon()).
-                setColorFilter(ContextCompat.getColor(this, R.color.colorIcons),
-                        PorterDuff.Mode.SRC_ATOP);
+    }
 
+    private void fabNotes(){
+
+        FAB.setVisibility(View.VISIBLE);
+
+        FAB.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),
+                R.drawable.baseline_add_white_24dp));
+
+
+        FAB.setOnClickListener(v -> {
+
+            mDBHelper = new Database(Notes.VIEW.getContext());
+            mDBHelper.openDataBase();
+            mDBHelper.updateDataBase();
+
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext(),
+                    R.style.Theme_MaterialComponents_Light_Dialog);
+            //создаём "поверхность" на alertDialog
+            final LinearLayout layout1 = new LinearLayout(Notes.VIEW.getContext());
+            layout1.setOrientation(LinearLayout.VERTICAL);
+
+            //получаем кастомную вьюшку и добаляем на alertDialog
+            View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
+            TextInputEditText nameNote = view1.findViewById(R.id.edit_text);
+            layout1.addView(view1);
+            //
+
+            //получаем второую кастомную вьюшку со списком с типом заметок, устанавливаем адаптер
+            //устанавливаем "слушатель" и ставим на alertDialog
+            final String standartTextNote = "Стандартная заметка";
+            final String marckedList = "Маркированный список";
+            final String[] types = new String[]{standartTextNote, marckedList};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(Notes.VIEW.getContext()),
+                    R.layout.support_simple_spinner_dropdown_item, types);
+
+            View view2 = getLayoutInflater().inflate(R.layout.spinner_item, null, false);
+
+            AutoCompleteTextView spinner =
+                    view2.findViewById(R.id.filled_exposed_dropdown);
+
+            spinner.setAdapter(adapter);
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent,
+                                           View itemSelected, int selectedItemPosition,
+                                           long selectedId) {
+
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+                    ((TextView) parent.getChildAt(0)).setTextSize(18);
+                    ((TextView) parent.getChildAt(0)).setTypeface(Planets.standartFont);
+
+                }
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            layout1.addView(view2);
+            //
+
+            //ставим разметку на alertDialog
+            builder.setView(layout1);
+
+            final String DB_TYPE_STNDRT = "standart";
+            final String DB_TYPE_SHOP = "shop";
+
+            //обработка нажатия на кнопку
+            builder.setPositiveButton("Добавить",
+                    (dialog, which) -> {
+                        String name = nameNote.getText().toString();
+                        //проверяем, не пустое ли название
+                        if(!name.equals("")) {
+                            String shortNote = "короткое описание";
+                            String text = "Новая заметка";
+                            String type = "";
+                            mDb = mDBHelper.getWritableDatabase();
+
+                            if (spinner.getText().toString().equals(standartTextNote)) {
+                                type = DB_TYPE_STNDRT;
+                            } else if (spinner.getText().toString().equals(marckedList)) {
+                                type = DB_TYPE_SHOP;
+                            }
+
+
+                            //добавление в бд и запись в строчки
+                            ContentValues cv = new ContentValues();
+
+                            Note note = Notes.ITEMS.get(Notes.ITEMS.size() - 1);
+                            cv.put("_id", note.getId() + 2);
+                            cv.put("name", name);
+                            cv.put("shortName", shortNote);
+                            cv.put("text", text);
+                            cv.put("type", type);
+                            //получение даты
+                            Date currentDate = new Date();
+                            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                                    Locale.getDefault());
+                            String dateText = dateFormat.format(currentDate);
+                            cv.put("date", dateText);
+                            //запись
+                            mDb.insert("Notes", null, cv);
+                            mDb.close();
+
+                            Notes.ITEMS.add(new Note(name, shortNote, null, type,
+                                    note.getId() + 2));
+
+                            Notes.NOTES_ADAPTER.notifyDataSetChanged();
+                        }
+                    }).show();
+        });
+    }
+
+    private void fabTests(){
+        if(FAB.getVisibility() == View.VISIBLE)
+            FAB.setVisibility(View.GONE);
+    }
+
+    private void fabPlanets(){
+        if(FAB.getVisibility() == View.VISIBLE)
+            FAB.setVisibility(View.GONE);
+    }
+
+    private void fabContacts(){
+        if(FAB.getVisibility() == View.VISIBLE)
+            FAB.setVisibility(View.GONE);
+    }
+
+    private void fabLifeAtSpace(){
+        if(FAB.getVisibility() == View.VISIBLE)
+            FAB.setVisibility(View.GONE);
+    }
+
+    private void fabMain(){
+        if(FAB.getVisibility() == View.VISIBLE)
+            FAB.setVisibility(View.GONE);
     }
 
     public void showFragment(Fragment fragment, FrameLayout frameLayout){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+
+        ScrollView scrollView = findViewById(R.id.scrollMain);
+        scrollView.setVisibility(View.GONE);
 
         try{
             FrameLayout main = findViewById(R.id.Mainframe);

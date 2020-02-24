@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -12,8 +11,7 @@
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:backgroundTint="@color/colorPrimary"
-        android:text="@string/showAR"
-        android:textColor="@color/colorFont" />
+        android:text="@string/showAR" />
 
     <FrameLayout
         android:id="@+id/planets_frame"
@@ -27,17 +25,6 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:backgroundTint="@color/colorPrimary"
-            app:backgroundTint="@color/colorPrimary"
-            app:maxImageSize="25dp"
-            app:srcCompat="@drawable/arrow_left"
-            android:layout_margin="@dimen/fab_margin" />
 
         <ScrollView
             android:id="@+id/scroll"

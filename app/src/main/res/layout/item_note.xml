@@ -8,7 +8,7 @@
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/project_frame"
+        android:background="@drawable/frame"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
@@ -25,7 +25,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:textColor="@color/colorFont"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -39,7 +38,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:layout_margin="10dp"
-                    android:textColor="@color/colorFont" />
+                    />
 
                 <ImageView
                     android:id="@+id/subImg"

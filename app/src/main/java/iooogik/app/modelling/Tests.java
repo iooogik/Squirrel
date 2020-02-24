@@ -55,9 +55,6 @@ public class Tests extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         VIEW = inflater.inflate(R.layout.fragment_test, container, false);
-        FloatingActionButton back = VIEW.findViewById(R.id.back);
-        back.setOnClickListener(this);
-
 
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();

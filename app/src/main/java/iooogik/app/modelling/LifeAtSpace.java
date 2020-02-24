@@ -29,8 +29,6 @@ public class LifeAtSpace extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_life_at_space, container, false);
         Button openGP = view.findViewById(R.id.button2);
         openGP.setOnClickListener(this);
-        FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(this);
         return view;
     }
 

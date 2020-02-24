@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -42,8 +43,7 @@ public class Planets extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_planets, container ,false);
         Button showAR = view.findViewById(R.id.openAr);
         showAR.setOnClickListener(this);
-        FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(this);
+
         return view;
     }
 
@@ -61,8 +61,6 @@ public class Planets extends Fragment implements View.OnClickListener {
         getPlanets();
 
     }
-
-
 
     private void getPlanets(){
         userCursor.moveToLast();
@@ -100,10 +98,20 @@ public class Planets extends Fragment implements View.OnClickListener {
         view1.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putInt("_id", id);
-
             ScrollingArticle scrollingArticle = new ScrollingArticle();
             scrollingArticle.setArguments(args);
             showPlanetInfo(scrollingArticle);
+            MainActivity.FAB.setVisibility(View.VISIBLE);
+
+            MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                    R.drawable.baseline_arrow_back_white_24dp));
+
+            MainActivity.FAB.setOnClickListener(v1 -> {
+                FrameLayout frameLayout1 = view.findViewById(R.id.planets_frame);
+                frameLayout1.setVisibility(View.GONE);
+                frameLayout1.removeAllViews();
+                MainActivity.FAB.setVisibility(View.GONE);
+            });
         });
 
         linearLayout.addView(view1);
@@ -137,9 +145,6 @@ public class Planets extends Fragment implements View.OnClickListener {
         if(v.getId() == R.id.openAr){
             Intent intent = new Intent(getContext(), ARcamera.class);
             intent.putExtra("TYPE", "SolarSystem");
-            startActivity(intent);
-        } else if(v.getId() == R.id.back){
-            Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
         }
     }

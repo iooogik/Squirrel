@@ -9,16 +9,22 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/task"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:fontFamily="@font/rostelekom"
-            android:text="question"
-            android:textColor="@color/colorFont"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:background="@drawable/frame"
+            >
+
+            <TextView
+                android:id="@+id/task"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="question"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
         <RadioGroup
             android:id="@+id/answ_group"
@@ -32,11 +38,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:fontFamily="@font/rostelekom"
                 android:text="RadioButton"
-                android:textColor="@color/colorFont"
                 android:textSize="18sp"
-                android:textStyle="bold"
+
                 />
 
             <RadioButton
@@ -46,11 +50,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:fontFamily="@font/rostelekom"
                 android:text="RadioButton"
-                android:textColor="@color/colorFont"
+
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                />
 
             <RadioButton
                 android:id="@+id/radioButton3"
@@ -59,11 +62,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:fontFamily="@font/rostelekom"
                 android:text="RadioButton"
-                android:textColor="@color/colorFont"
+
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                />
 
             <RadioButton
                 android:id="@+id/radioButton4"
@@ -72,11 +74,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:fontFamily="@font/rostelekom"
                 android:text="RadioButton"
-                android:textColor="@color/colorFont"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                 />
         </RadioGroup>
     </LinearLayout>
 </FrameLayout>

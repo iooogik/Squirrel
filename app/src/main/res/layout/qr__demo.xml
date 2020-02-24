@@ -19,10 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/rostelekom"
         android:text="расшифрованный текст"
         android:maxHeight="80dp"
-        android:textColor="@color/colorFont"
         android:textSize="24sp" />
 
     <Button
@@ -32,9 +30,8 @@
         android:layout_marginLeft="30dp"
         android:layout_marginTop="150dp"
         android:layout_marginRight="30dp"
-        android:background="@drawable/project_frame"
-        android:fontFamily="@font/rostelekom"
+        android:background="@drawable/frame"
         android:text="@string/saveQRbtn"
-        android:textColor="@color/colorFont" />
+        />
 
 </LinearLayout>

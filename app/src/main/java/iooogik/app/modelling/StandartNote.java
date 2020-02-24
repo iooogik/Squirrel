@@ -72,11 +72,11 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
         ImageButton btnShare = view.findViewById(R.id.buttonShare);
         ImageButton btnAlarm = view.findViewById(R.id.buttonAlarm);
-        FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(this);
+
         btnSave.setOnClickListener(this);
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
+
 
         return view;
     }
@@ -358,11 +358,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             }
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
-        }else if (view.getId() == R.id.back){
-
-            FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
         }
     }
 

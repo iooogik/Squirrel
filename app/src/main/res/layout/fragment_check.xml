@@ -11,16 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_margin="16dp"
-            app:backgroundTint="@color/colorPrimary"
-            app:maxImageSize="25dp"
-            app:srcCompat="@drawable/arrow_left"
-            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -103,39 +93,16 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <LinearLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
-                <FrameLayout
+                <LinearLayout
+                    android:id="@+id/markedScroll"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/addItemCheck"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_margin="16dp"
-                        app:backgroundTint="@color/colorPrimary"
-                        app:maxImageSize="40dp"
-                        app:srcCompat="@drawable/plus" />
-
-                    <ScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <LinearLayout
-                            android:id="@+id/markedScroll"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" />
-                    </ScrollView>
-
-                </FrameLayout>
-
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
 
         </LinearLayout>
     </FrameLayout>

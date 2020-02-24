@@ -60,8 +60,6 @@ public class Notes extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         VIEW = inflater.inflate(R.layout.fragment_notes, container ,false);
-        FloatingActionButton back = VIEW.findViewById(R.id.back);
-        back.setOnClickListener(this);
         // запускаем поток для обновления списка заметок
         Thread startThread = new Thread(this::startProcedures);
         startThread.start();
@@ -74,9 +72,6 @@ public class Notes extends Fragment implements View.OnClickListener {
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
 
-        FloatingActionButton add = VIEW.findViewById(R.id.addProject);
-        add.setOnClickListener(this);
-
         //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
         try {
             ITEMS.clear();
@@ -87,111 +82,6 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onClick(View view) {
-        //кнопка "Добавить проект"
-        if(view.getId() == R.id.addProject){
-
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext(),
-                    R.style.Theme_MaterialComponents_Light_Dialog);
-            //создаём "поверхность" на alertDialog
-            final LinearLayout layout1 = new LinearLayout(getContext());
-            layout1.setOrientation(LinearLayout.VERTICAL);
-
-            //получаем кастомную вьюшку и добаляем на alertDialog
-            View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
-            TextInputEditText nameNote = view1.findViewById(R.id.edit_text);
-            layout1.addView(view1);
-            //
-
-            //получаем второую кастомную вьюшку со списком с типом заметок, устанавливаем адаптер
-            //устанавливаем "слушатель" и ставим на alertDialog
-            final String standartTextNote = "Стандартная заметка";
-            final String marckedList = "Маркированный список";
-            final String[] types = new String[]{standartTextNote, marckedList};
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
-                    R.layout.support_simple_spinner_dropdown_item, types);
-
-            View view2 = getLayoutInflater().inflate(R.layout.spinner_item, null, false);
-
-            AutoCompleteTextView spinner =
-                    view2.findViewById(R.id.filled_exposed_dropdown);
-
-            spinner.setAdapter(adapter);
-
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                public void onItemSelected(AdapterView<?> parent,
-                                           View itemSelected, int selectedItemPosition,
-                                           long selectedId) {
-
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
-                    ((TextView) parent.getChildAt(0)).setTextSize(18);
-                    ((TextView) parent.getChildAt(0)).setTypeface(Planets.standartFont);
-
-                }
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-            layout1.addView(view2);
-            //
-
-            //ставим разметку на alertDialog
-            builder.setView(layout1);
-
-            final String DB_TYPE_STNDRT = "standart";
-            final String DB_TYPE_SHOP = "shop";
-
-            //обработка нажатия на кнопку
-            builder.setPositiveButton("Добавить",
-                    (dialog, which) -> {
-                String name = nameNote.getText().toString();
-                //проверяем, не пустое ли название
-                if(!name.equals("")) {
-                    String shortNote = "короткое описание";
-                    String text = "Новая заметка";
-                    String type = "";
-                    mDb = mDBHelper.getWritableDatabase();
-
-                    if (spinner.getText().toString().equals(standartTextNote)) {
-                        type = DB_TYPE_STNDRT;
-                    } else if (spinner.getText().toString().equals(marckedList)) {
-                        type = DB_TYPE_SHOP;
-                    }
-
-
-                    //добавление в бд и запись в строчки
-                    ContentValues cv = new ContentValues();
-
-                    Note note = ITEMS.get(ITEMS.size() - 1);
-                    cv.put("_id", note.getId() + 2);
-                    Toast.makeText(getContext(), String.valueOf(note.getId() + 2), Toast.LENGTH_SHORT).show();
-                    cv.put("name", name);
-                    cv.put("shortName", shortNote);
-                    cv.put("text", text);
-                    cv.put("type", type);
-                    //получение даты
-                    Date currentDate = new Date();
-                    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                            Locale.getDefault());
-                    String dateText = dateFormat.format(currentDate);
-                    cv.put("date", dateText);
-                    //запись
-                    mDb.insert("Notes", null, cv);
-                    mDb.close();
-
-                    ITEMS.add(new Note(name, shortNote, null, type,
-                            note.getId() + 2));
-
-                    NOTES_ADAPTER.notifyDataSetChanged();
-                }
-            }).show();
-        }
-        else if(view.getId() == R.id.back){
-            Intent main = new Intent(getContext(), MainActivity.class);
-            startActivity(main);
-        }
-    }
 
     //обновление проектов на активити
     private void updProjects(){
@@ -231,6 +121,11 @@ public class Notes extends Fragment implements View.OnClickListener {
         NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(NOTES_ADAPTER);
+
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 }

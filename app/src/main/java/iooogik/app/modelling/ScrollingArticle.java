@@ -34,12 +34,6 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.activity_scrolling_article, container ,false);
 
-        FloatingActionButton back = view.findViewById(R.id.back);
-
-        back.setOnClickListener(this);
-
-
-
         Bundle args = this.getArguments();
         assert args != null;
         int id = args.getInt("_id");

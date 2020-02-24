@@ -62,14 +62,9 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_check, container, false);
         //инициализация кнопок
-        ImageButton addButton = view.findViewById(R.id.addItemCheck);
-        addButton.setOnClickListener(this);
-
         ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
         buttonTimeSet.setOnClickListener(this);
 
-        FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(this);
         //получение элементов чек-лсита
         getPoints();
 
@@ -124,52 +119,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                 addCheck(booleans[i], tempArr[i]);
             }
         }
-    }
 
-    private void addCheck(boolean state, String nameCheck){
-        //"слушатель" для нажатого элемента списка
-        LinearLayout linear = view.findViewById(R.id.markedScroll);
-        @SuppressLint("InflateParams")
-        View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
-        final CheckBox CHECK = view2.findViewById(R.id.checkBox);
-        final EditText EDIT_SHOP_NAME = view.findViewById(R.id.editNameShopNote);
-        CHECK.setChecked(state);
-        CHECK.setText(nameCheck);
-
-        CHECK.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int index = Items.indexOf(CHECK.getText().toString());
-            Booleans.set(index, isChecked);
-            StringBuilder sendBool = new StringBuilder();
-            for (boolean aBoolean : Booleans) {
-                sendBool.append(aBoolean).append("\n");
-            }
-            updShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
-                    sendBool.toString());
-        });
-        linear.addView(view2);
-    }
-
-    @Override
-    public void updShopNotes(String databaseName, String name, String booleans){
-        mDb = mDBHelper.getWritableDatabase();
-        //код сохранения в бд
-        ContentValues cv = new ContentValues();
-        cv.put("name", name);
-        cv.put("isChecked", booleans);
-        Date currentDate = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                Locale.getDefault());
-
-        cv.put("date", dateFormat.format(currentDate));
-
-        //обновление базы данных
-        mDb.update(databaseName, cv, "_id=" + (getBtnID() + 1), null);
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.addItemCheck){
+        MainActivity.FAB.setOnClickListener(v -> {
             //добавление элемента
             final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
             final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
@@ -226,7 +177,53 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
             dlg.show();
 
-        } else if(v.getId() == R.id.buttonShopAlarm){
+        });
+    }
+
+    private void addCheck(boolean state, String nameCheck){
+        //"слушатель" для нажатого элемента списка
+        LinearLayout linear = view.findViewById(R.id.markedScroll);
+        @SuppressLint("InflateParams")
+        View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
+        final CheckBox CHECK = view2.findViewById(R.id.checkBox);
+        final EditText EDIT_SHOP_NAME = view.findViewById(R.id.editNameShopNote);
+        CHECK.setChecked(state);
+        CHECK.setText(nameCheck);
+
+        CHECK.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int index = Items.indexOf(CHECK.getText().toString());
+            Booleans.set(index, isChecked);
+            StringBuilder sendBool = new StringBuilder();
+            for (boolean aBoolean : Booleans) {
+                sendBool.append(aBoolean).append("\n");
+            }
+            updShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
+                    sendBool.toString());
+        });
+        linear.addView(view2);
+    }
+
+    @Override
+    public void updShopNotes(String databaseName, String name, String booleans){
+        mDb = mDBHelper.getWritableDatabase();
+        //код сохранения в бд
+        ContentValues cv = new ContentValues();
+        cv.put("name", name);
+        cv.put("isChecked", booleans);
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                Locale.getDefault());
+
+        cv.put("date", dateFormat.format(currentDate));
+
+        //обновление базы данных
+        mDb.update(databaseName, cv, "_id=" + (getBtnID() + 1), null);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.buttonShopAlarm){
             //добавление уведомления
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
 
