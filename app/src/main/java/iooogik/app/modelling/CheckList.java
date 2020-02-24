@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.Html;
@@ -120,6 +121,10 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             }
         }
 
+
+        MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                R.drawable.baseline_add_white_24dp));
+
         MainActivity.FAB.setOnClickListener(v -> {
             //добавление элемента
             final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
@@ -128,9 +133,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
 
-            int padding = 70;
-
-            MAIN_LAYOUT.setPadding(padding, padding, padding, padding);
             EditText namePoint = new EditText(getContext());
             namePoint.setTextColor(Color.BLACK);
             final Typeface TPF = Typeface.createFromAsset(getContext().getAssets(),
@@ -227,10 +229,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             //добавление уведомления
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
 
-        } else if(v.getId() == R.id.back){
-            FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
         }
     }
 

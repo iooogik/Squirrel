@@ -29,6 +29,7 @@
                 android:layout_gravity="bottom|start"
                 android:layout_margin="@dimen/fab_margin"
                 app:backgroundTint="@color/colorAccent"
+                app:tint="@color/colorWhite"
                 app:borderWidth="0dp"
                 app:maxImageSize="25dp"
                 app:srcCompat="@drawable/baseline_arrow_back_white_24dp" />

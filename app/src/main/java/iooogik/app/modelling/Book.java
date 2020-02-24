@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -42,8 +43,16 @@ public class Book extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         linear = view.findViewById(R.id.scroll);
-        FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(this);
+        MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                R.drawable.baseline_arrow_back_white_24dp));
+        MainActivity.FAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
+                frameLayout.removeAllViews();
+                frameLayout.setVisibility(View.GONE);
+            }
+        });
         return view;
     }
 

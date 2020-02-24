@@ -61,8 +61,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         VIEW = inflater.inflate(R.layout.fragment_notes, container ,false);
         // запускаем поток для обновления списка заметок
-        Thread startThread = new Thread(this::startProcedures);
-        startThread.start();
+        startProcedures();
 
         return VIEW;
     }

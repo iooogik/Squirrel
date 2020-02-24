@@ -69,8 +69,8 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             pieDataSet.setSliceSpace(7);
             //устанавливаем цвета
             List<Integer> colors = new ArrayList<Integer>();
-            int green = Color.parseColor("#7CFC00");
-            int red = Color.parseColor("#FF0000");
+            int green = Color.parseColor("#77DD77");
+            int red = Color.parseColor("#CD4A4C");
             colors.add(green);
             colors.add(red);
 

@@ -50,107 +50,111 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull NotesAdapter.ViewHolder holder, int position) {
         //получение и установка данных в элемент
         Note note = notes.get(position);
-        holder.name.setText(note.getName());
-        holder.desc.setText(note.getDescription());
+        int val = MainActivity.Settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
 
-        Bitmap bitmap = note.getImage();
+        if (!(note.getName().equals("Математические формулы") && val == 1)) {
+            holder.name.setText(note.getName());
+            holder.desc.setText(note.getDescription());
 
-        if (bitmap != null) {
-            ImageView img = holder.imageView;
-            img.setMinimumHeight(150);
-            img.setMinimumWidth(150);
-            img.setImageBitmap(bitmap);
-        }
+            Bitmap bitmap = note.getImage();
 
-        //слушатель для открытия фрагмента с заметкой
-        holder.frameLayout.setOnClickListener(v -> {
-            bundle.putString("button name", note.getName());
-            bundle.putInt("button ID", note.getId());
+            if (bitmap != null) {
+                ImageView img = holder.imageView;
+                img.setMinimumHeight(150);
+                img.setMinimumWidth(150);
+                img.setImageBitmap(bitmap);
+            }
+
+            //слушатель для открытия фрагмента с заметкой
+            holder.frameLayout.setOnClickListener(v -> {
+                bundle.putString("button name", note.getName());
+                bundle.putInt("button ID", note.getId());
 
 
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
 
-            AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
+                frameLayout.setVisibility(View.VISIBLE);
 
-            FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
-            frameLayout.setVisibility(View.VISIBLE);
-
-            MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(v.getContext(),
-                    R.drawable.baseline_arrow_back_white_24dp));
-
-            MainActivity.FAB.setOnClickListener(viewFAB -> {
-                frameLayout.setVisibility(View.GONE);
-                frameLayout.removeAllViews();
                 MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(v.getContext(),
-                        R.drawable.baseline_add_white_24dp));
+                        R.drawable.baseline_arrow_back_white_24dp));
+
+                MainActivity.FAB.setOnClickListener(viewFAB -> {
+                    frameLayout.setVisibility(View.GONE);
+                    frameLayout.removeAllViews();
+                    MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(v.getContext(),
+                            R.drawable.baseline_add_white_24dp));
+                });
+
+                switch (note.getType()) {
+                    case "shop":
+                        CheckList checkList = new CheckList();
+                        checkList.setArguments(bundle);
+                        activity.getSupportFragmentManager().beginTransaction()
+
+                                .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                        R.anim.nav_default_exit_anim).
+
+                                replace(R.id.SecondaryFrame, checkList,
+                                        "secondFrame").commitAllowingStateLoss();
+                        break;
+                    case "standart":
+                        StandartNote standartNote = new StandartNote();
+                        standartNote.setArguments(bundle);
+                        activity.getSupportFragmentManager().beginTransaction()
+
+                                .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                        R.anim.nav_default_exit_anim).
+
+                                replace(R.id.SecondaryFrame, standartNote,
+                                        "secondFrame").commitAllowingStateLoss();
+                        break;
+                    case "book":
+                        Book book = new Book();
+                        book.setArguments(bundle);
+                        activity.getSupportFragmentManager().beginTransaction()
+
+                                .setCustomAnimations(R.anim.nav_default_enter_anim,
+                                        R.anim.nav_default_exit_anim).
+
+                                replace(R.id.SecondaryFrame, book,
+                                        "secondFrame").commitAllowingStateLoss();
+                        break;
+                    default:
+                        Toast.makeText(v.getContext(), "Error",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
             });
 
-            switch (note.getType()) {
-                case "shop":
-                    CheckList checkList = new CheckList();
-                    checkList.setArguments(bundle);
-                    activity.getSupportFragmentManager().beginTransaction()
+            holder.frameLayout.setOnLongClickListener(v -> {
 
-                            .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                    R.anim.nav_default_exit_anim).
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext(),
+                        R.style.Theme_MaterialComponents_Light_Dialog);
 
-                            replace(R.id.SecondaryFrame, checkList,
-                                    "secondFrame").commitAllowingStateLoss();
-                    break;
-                case "standart":
-                    StandartNote standartNote = new StandartNote();
-                    standartNote.setArguments(bundle);
-                    activity.getSupportFragmentManager().beginTransaction()
-
-                            .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                    R.anim.nav_default_exit_anim).
-
-                            replace(R.id.SecondaryFrame, standartNote,
-                                    "secondFrame").commitAllowingStateLoss();
-                    break;
-                case "book":
-                    Book book = new Book();
-                    book.setArguments(bundle);
-                    activity.getSupportFragmentManager().beginTransaction()
-
-                            .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                    R.anim.nav_default_exit_anim).
-
-                            replace(R.id.SecondaryFrame, book,
-                                    "secondFrame").commitAllowingStateLoss();
-                    break;
-                default:
-                    Toast.makeText(v.getContext(), "Error",
-                            Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        });
-
-        holder.frameLayout.setOnLongClickListener(v -> {
-
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext(),
-                    R.style.Theme_MaterialComponents_Light_Dialog);
-
-            builder.setTitle("Важное сообщение!")
-                    .setMessage("Вы действительно хотите удалить заметку?")
-                    .setPositiveButton("Удалить", (dialog, id) -> {
+                builder.setTitle("Важное сообщение!")
+                        .setMessage("Вы действительно хотите удалить заметку?")
+                        .setPositiveButton("Удалить", (dialog, id) -> {
 
 
-                        mDBHelper = new Database(v.getContext());
-                        mDBHelper.openDataBase();
-                        mDb = mDBHelper.getWritableDatabase();
+                            mDBHelper = new Database(v.getContext());
+                            mDBHelper.openDataBase();
+                            mDb = mDBHelper.getWritableDatabase();
 
-                        mDb.delete("Notes", "_id=" + (note.getId() + 1), null);
+                            mDb.delete("Notes", "_id=" + (note.getId() + 1), null);
 
-                        Notes.ITEMS.remove(note);
-                        Notes.NOTES_ADAPTER.notifyDataSetChanged();
+                            Notes.ITEMS.remove(note);
+                            Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
-                        dialog.cancel();
-                    })
-                    .setNegativeButton("Нет", (dialog, which) -> dialog.cancel())
-                    .show();
-            return true;
-        });
-
+                            dialog.cancel();
+                        })
+                        .setNegativeButton("Нет", (dialog, which) -> dialog.cancel())
+                        .show();
+                return true;
+            });
+        } else {
+            holder.frameLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override

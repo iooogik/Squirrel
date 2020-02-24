@@ -4,8 +4,7 @@
     <item>
         <shape>
             <gradient android:type="linear"
-                android:endColor="@color/colorSmallButtons"
-                android:startColor="#FFFFFF"
+
                 android:angle="90.0" />
             <corners android:radius="10dp" />
         </shape>

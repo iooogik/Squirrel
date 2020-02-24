@@ -4,9 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F3F3F3"
-    android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <FrameLayout
@@ -21,6 +18,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
 
@@ -51,100 +50,98 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/name_note_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="Введите текст"
-                    app:helperTextEnabled="true"
-                    app:helperText="Максимальное количество символов"
-                    app:counterEnabled="true"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    app:counterMaxLength="40">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/short_note_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="Введите краткое описание"
-                    app:helperTextEnabled="true"
-                    app:helperText="Максимальное количество символов"
-                    app:counterEnabled="true"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                    app:counterMaxLength="100">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/shortNote"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="match_parent">
 
                 <LinearLayout
-                    android:id="@+id/shop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/layout_img"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-
-                        <ImageView
-                            android:id="@+id/qr_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:minWidth="200dp"
-                            android:minHeight="200dp"
-                            tools:src="@tools:sample/avatars" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/noteWarn"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/name_note_input_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
-                        android:text="@string/noteWarning"
-                        android:visibility="gone" />
+                        android:layout_margin="10dp"
+                        android:hint="Введите текст"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="40"
+                        app:helperText="Максимальное количество символов"
+                        app:helperTextEnabled="true">
 
-                    <EditText
-                        android:id="@+id/editNote"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/short_note_input_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Введите краткое описание"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="100"
+                        app:helperText="Максимальное количество символов"
+                        app:helperTextEnabled="true">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/shortNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:id="@+id/shop"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="8dp"
-                        android:layout_weight="1"
-                        android:hint="@string/note"
-                        android:textAlignment="viewStart"
-                        android:textColorHint="#AFADAD"
-                        android:inputType="textMultiLine">
-                        <requestFocus />
-                    </EditText>
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/layout_img"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/qr_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:minWidth="200dp"
+                                android:minHeight="200dp"
+                                tools:src="@tools:sample/avatars" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/noteWarn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="3dp"
+                            android:text="@string/noteWarning"
+                            android:visibility="gone" />
+
+                        <EditText
+                            android:id="@+id/editNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="8dp"
+                            android:hint="@string/note"
+                            android:inputType="textMultiLine"
+                            android:textAlignment="viewStart"
+                            android:textColorHint="#AFADAD"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-            </LinearLayout>
+            </ScrollView>
 
         </LinearLayout>
 

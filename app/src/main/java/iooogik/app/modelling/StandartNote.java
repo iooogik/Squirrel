@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -77,6 +78,16 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
 
+        MainActivity.FAB.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                R.drawable.baseline_arrow_back_white_24dp));
+        MainActivity.FAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FrameLayout frameLayout = Notes.VIEW.findViewById(R.id.SecondaryFrame);
+                frameLayout.removeAllViews();
+                frameLayout.setVisibility(View.GONE);
+            }
+        });
 
         return view;
     }

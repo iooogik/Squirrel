@@ -79,4 +79,6 @@
     <string name="findARSurface">Заново найти поверхность</string>
     <string name="onFigureClick">При нажатии на фигуру вы сразу же сможете увидеть её в AR</string>
     <string name="saveAndContinue">Сохранить и продолжить</string>
+    <string name="turn_on_dark_theme">Включить тёмную тему</string>
+    <string name="show_book_materials">Не показывать справочные материалы в заметках</string>
 </resources>

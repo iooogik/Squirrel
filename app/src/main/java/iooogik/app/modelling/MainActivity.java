@@ -1,6 +1,7 @@
 package iooogik.app.modelling;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -9,7 +10,9 @@ import androidx.fragment.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -50,10 +53,35 @@ public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase mDb;
     public static FloatingActionButton FAB;
 
+    // имя настройки
+    public static final String APP_PREFERENCES = "Settings";
+    public static final String APP_PREFERENCES_THEME = "Theme";
+    public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Theme";
+    public static int theme;
+    public static SharedPreferences Settings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        if (Settings.contains(APP_PREFERENCES_THEME)) {
+            // Получаем число из настроек
+            theme = Settings.getInt(APP_PREFERENCES_THEME, 0);
+
+            if(theme == 1){
+                setTheme(R.style.AppThemeDark);
+            } else if (theme == 0){
+                setTheme(R.style.AppThemeLight);
+            }
+        }
+
         setContentView(R.layout.activity_main);
+         if(theme == 1){
+             CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
+             coordinatorLayout.setBackgroundColor(Color.parseColor("#212121"));
+         }
 
         Database mDBHelper = new Database(this);
         mDBHelper.openDataBase();
@@ -166,9 +194,9 @@ public class MainActivity extends AppCompatActivity {
                                 withIdentifier(identificator++),
                         //8
                         //настройки
-                        new PrimaryDrawerItem().withName("Настройки (в разработке)")
+                        new PrimaryDrawerItem().withName("Настройки")
                                 .withIcon(FontAwesome.Icon.faw_wrench).
-                                withIdentifier(identificator++).setEnabled(false),
+                                withIdentifier(identificator++),
                         //9
                         new DividerDrawerItem(),
 
@@ -238,6 +266,14 @@ public class MainActivity extends AppCompatActivity {
                         Contacts contacts = new Contacts();
                         showFragment(contacts, frameLayout);
                         fabContacts();
+                        frameLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    else if(position == 8){
+                        FrameLayout frameLayout = findViewById(R.id.Mainframe);
+                        Settings settings = new Settings();
+                        showFragment(settings, frameLayout);
+                        fabSettings();
                         frameLayout.setVisibility(View.VISIBLE);
                     }
 
@@ -373,6 +409,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fabContacts(){
+        if(FAB.getVisibility() == View.VISIBLE)
+            FAB.setVisibility(View.GONE);
+    }
+
+    private void fabSettings(){
         if(FAB.getVisibility() == View.VISIBLE)
             FAB.setVisibility(View.GONE);
     }

@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.Light"
+        android:theme="@style/AppThemeLight"
 
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
@@ -30,7 +30,7 @@
         <activity
             android:name=".ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
-            android:theme="@style/AppTheme.Light" />
+            android:theme="@style/AppThemeLight" />
 
         <receiver android:name=".NotificationReceiver" android:enabled="true"/>
 
@@ -38,8 +38,7 @@
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <activity android:name=".StandartNote"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".StandartNote" />
         <activity android:name=".QR_Demo" />
         <activity android:name=".ARcamera" />
         <activity android:name=".Notes" />
