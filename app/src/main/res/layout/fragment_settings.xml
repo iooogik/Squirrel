@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Settings">
+    tools:context=".settings.Settings">
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/dark_theme"
@@ -17,7 +17,17 @@
         android:id="@+id/book_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/show_book_materials" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="30dp"
+        android:text="Установленная версия приложения: " />
 
 </LinearLayout>

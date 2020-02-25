@@ -15,18 +15,11 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:imageButtonStyle">@style/SmallButtons</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="android:windowBackground">@color/darkBackground</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="SmallButtons" parent="@style/Widget.AppCompat.ImageButton">
-        <item name="background">@drawable/small_buttons</item>
-        <item name="android:tint">@color/colorWhite</item>
-    </style>
-
-
-
-
 
 </resources>

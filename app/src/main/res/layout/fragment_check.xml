@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="iooogik.app.modelling.CheckList">
+    tools:context="iooogik.app.modelling.notes.CheckList">
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="iooogik.app.modelling.home.HomeFragment"
+        android:label="Главная"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_notes"
+        android:name="iooogik.app.modelling.notes.Notes"
+        android:label="Заметки"
+        tools:layout="@layout/fragment_notes" />
+
+    <fragment
+        android:id="@+id/nav_tests"
+        android:name="iooogik.app.modelling.tests.Tests"
+        android:label="Тесты"
+        tools:layout="@layout/fragment_test" />
+
+    <fragment
+        android:id="@+id/nav_contacts"
+        android:name="iooogik.app.modelling.contacts.Contacts"
+        android:label="Контакты"
+        tools:layout="@layout/fragment_contacts" />
+
+    <fragment
+        android:id="@+id/nav_tools"
+        android:name="iooogik.app.modelling.settings.Settings"
+        android:label="Настройки"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_las"
+        android:name="iooogik.app.modelling.las.LifeAtSpace"
+        android:label="Игра от издателя"
+        tools:layout="@layout/fragment_test" />
+
+</navigation>

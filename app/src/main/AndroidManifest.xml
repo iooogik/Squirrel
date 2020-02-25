@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Contacts" />
+        <activity android:name=".contacts.Contacts" />
         <activity
             android:name=".ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
@@ -38,14 +38,14 @@
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <activity android:name=".StandartNote" />
-        <activity android:name=".QR_Demo" />
-        <activity android:name=".ARcamera" />
-        <activity android:name=".Notes" />
+        <activity android:name=".notes.StandartNote" />
+        <activity android:name=".qr.QR_Demo" />
+        <activity android:name=".ar.ARcamera" />
+        <activity android:name=".notes.Notes" />
 
-        <activity android:name=".Planets"/>
+        <activity android:name=".astonomy.Planets"/>
         <activity
-            android:name=".BarcodeCaptureActivity"
+            android:name=".qr.BarcodeCaptureActivity"
             android:label="Read Barcode" />
 
         <meta-data

@@ -49,8 +49,6 @@
                     android:layout_margin="10dp"
                     tools:srcCompat="@tools:sample/avatars" />
             </FrameLayout>
-
-
         </LinearLayout>
 
     </FrameLayout>

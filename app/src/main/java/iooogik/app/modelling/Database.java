@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class Database extends SQLiteOpenHelper {
+public class Database extends SQLiteOpenHelper {
     //класс для работы с файлом бд
     private static String DB_NAME = "planetsDB.db";
     private static String DB_PATH;
@@ -21,7 +21,7 @@ class Database extends SQLiteOpenHelper {
     private final Context mContext;
     private boolean mNeedUpdate = false;
 
-    Database(Context context) {
+    public Database(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
         this.mContext = context;
@@ -31,7 +31,7 @@ class Database extends SQLiteOpenHelper {
         this.getReadableDatabase();
     }
 
-    void updateDataBase() {
+    public void updateDataBase() {
         if (mNeedUpdate) {
             File dbFile = new File(DB_PATH + DB_NAME);
             if (dbFile.exists())
@@ -72,7 +72,7 @@ class Database extends SQLiteOpenHelper {
         mInput.close();
     }
 
-    void openDataBase() throws SQLException {
+    public void openDataBase() throws SQLException {
         mDataBase = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null,
                 SQLiteDatabase.CREATE_IF_NECESSARY);
     }

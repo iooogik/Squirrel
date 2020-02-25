@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back"
-    tools:context=".LifeAtSpace">
+    tools:context=".las.LifeAtSpace">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -42,6 +42,7 @@
                     android:id="@+id/textView8"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
                     android:text="@string/las_desc"
                     android:textAlignment="center"
                     android:textColor="@color/colorLightFont" />
@@ -50,8 +51,8 @@
                     android:id="@+id/textView9"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_margin="30dp"
-                    android:text="Скачать можно, отсканировав QR-код или нажав кнопку ниже"
+                    android:layout_margin="15dp"
+                    android:text="Скачать можно, отсканировав QR-код или нажав на него"
                     android:textAlignment="center"
                     android:textColor="@color/colorLightFont" />
 
@@ -61,14 +62,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/las_qr" />
-
-                <Button
-                    android:id="@+id/button2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="30dp"
-                    android:text="Скачать" />
 
             </LinearLayout>
         </ScrollView>

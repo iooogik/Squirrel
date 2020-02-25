@@ -1,0 +1,300 @@
+package iooogik.app.modelling.notes;
+
+
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
+import android.text.Html;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+
+import iooogik.app.modelling.Database;
+import iooogik.app.modelling.MainActivity;
+import iooogik.app.modelling.NotificationReceiver;
+import iooogik.app.modelling.R;
+import iooogik.app.modelling.notes.NoteInterface;
+
+import static android.content.Context.ALARM_SERVICE;
+
+
+
+public class CheckList extends Fragment implements View.OnClickListener, NoteInterface {
+    //переменная для работы с бд
+    private Database mDBHelper;
+    private SQLiteDatabase mDb;
+    private View view;
+    //список с элементами чек-листа
+    private ArrayList<String> Items = new ArrayList<>();
+    //список со значениями чек-листа
+    private ArrayList<Boolean> Booleans = new ArrayList<>();
+    //"Календарь" для получения даты от пользователя
+    private Calendar calendar = Calendar.getInstance();
+    private EditText nameNote, shortNote;
+
+    public CheckList() {}
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_check, container, false);
+        //инициализация кнопок
+        ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
+        buttonTimeSet.setOnClickListener(this);
+
+        //получение элементов чек-лсита
+        getPoints();
+        /*
+        FAB.setVisibility(View.VISIBLE);
+        FAB.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                R.drawable.baseline_add_white_24dp));
+
+        FAB.setOnClickListener(v -> {
+            //добавление элемента
+            final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
+            final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
+            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
+            LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
+            //ввод названия заметки
+
+            EditText namePoint = new EditText(getContext());
+            namePoint.setTextColor(Color.BLACK);
+            final Typeface TPF = Typeface.createFromAsset(getContext().getAssets(),
+                    "rostelekom.otf");
+            namePoint.setHint("Введите текст пункта");
+            namePoint.setTypeface(TPF);
+            namePoint.setTextSize(18);
+            namePoint.setMinimumWidth(1500);
+            LAYOUT_1.addView(namePoint);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+            MAIN_LAYOUT.addView(LAYOUT_1);
+            builder.setView(MAIN_LAYOUT);
+
+            builder.setPositiveButton(Html.fromHtml
+                            ("<font color='#7AB5FD'>Добавить</font>"),
+                    (dialog, which) -> {
+                        mDb = mDBHelper.getWritableDatabase();
+                        ContentValues cv = new ContentValues();
+
+                        Booleans.add(false);
+                        Items.add(namePoint.getText().toString());
+
+                        StringBuilder strBool = new StringBuilder();
+                        StringBuilder strItems = new StringBuilder();
+
+                        for (int i = 0; i < Booleans.size(); i++) {
+                            strBool.append(Booleans.get(i)).append("\n");
+                        }
+                        for (int i = 0; i < Items.size(); i++) {
+                            strItems.append(Items.get(i)).append("\n");
+                        }
+
+                        cv.put("isChecked", strBool.toString());
+                        cv.put("points", strItems.toString());
+                        //обновление базы данных
+                        mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
+                                null);
+                        addCheck(false, namePoint.getText().toString());
+                    });
+
+            AlertDialog dlg = builder.create();
+
+            dlg.show();
+
+        });
+
+         */
+
+        return view;
+    }
+
+
+    @Override
+    public int getBtnID(){
+        Bundle arguments = this.getArguments();
+        assert arguments != null;
+        return arguments.getInt("button ID");
+    }
+
+    @Override
+    public String getBtnName(){return null;}
+
+    @Override
+    public void updFragment() {}
+
+    @Override
+    public void updData(String databaseName, String name, String note, String shortNote) {}
+
+
+    private void getPoints(){
+        //"открытие" бд
+        mDBHelper = new Database(getActivity());
+        mDBHelper.openDataBase();
+        mDBHelper.updateDataBase();
+        nameNote = view.findViewById(R.id.editNameShopNote);
+        shortNote = view.findViewById(R.id.editNameShortShopNote);
+
+        mDb = mDBHelper.getReadableDatabase();
+        Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
+        userCursor.moveToPosition(getBtnID());
+        nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
+        shortNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
+        final String TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
+        String tempBool = userCursor.getString(userCursor.getColumnIndex("isChecked"));
+
+        if (TEMP != null && tempBool != null) {
+            //"делим" полученный текст и добавляем в соответствующие списки
+            String[] tempArr = TEMP.split("\r\n|\r|\n");
+            String[] tempArrBool = tempBool.split("\r\n|\r|\n");
+            boolean[] booleans = new boolean[tempArrBool.length];
+
+            for (int i = 0; i < tempArrBool.length; i++) {
+                booleans[i] = Boolean.valueOf(tempArrBool[i]);
+                Booleans.add(booleans[i]);
+
+                Items.add(tempArr[i]);
+                addCheck(booleans[i], tempArr[i]);
+            }
+        }
+    }
+
+    private void addCheck(boolean state, String nameCheck){
+        //"слушатель" для нажатого элемента списка
+        LinearLayout linear = view.findViewById(R.id.markedScroll);
+        @SuppressLint("InflateParams")
+        View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
+        final CheckBox CHECK = view2.findViewById(R.id.checkBox);
+        final EditText EDIT_SHOP_NAME = view.findViewById(R.id.editNameShopNote);
+        CHECK.setChecked(state);
+        CHECK.setText(nameCheck);
+
+        CHECK.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int index = Items.indexOf(CHECK.getText().toString());
+            Booleans.set(index, isChecked);
+            StringBuilder sendBool = new StringBuilder();
+            for (boolean aBoolean : Booleans) {
+                sendBool.append(aBoolean).append("\n");
+            }
+            updShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
+                    sendBool.toString());
+        });
+        linear.addView(view2);
+    }
+
+    @Override
+    public void updShopNotes(String databaseName, String name, String booleans){
+        mDb = mDBHelper.getWritableDatabase();
+        //код сохранения в бд
+        ContentValues cv = new ContentValues();
+        cv.put("name", name);
+        cv.put("isChecked", booleans);
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                Locale.getDefault());
+
+        cv.put("date", dateFormat.format(currentDate));
+
+        //обновление базы данных
+        mDb.update(databaseName, cv, "_id=" + (getBtnID() + 1), null);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.buttonShopAlarm){
+            //добавление уведомления
+            alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
+
+        }
+    }
+
+    @Override
+    public void alarmDialog(final String TITLE, final String TEXT) {
+        //создание уведомления
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+
+
+        DatePickerDialog dialog;
+        final TimePickerDialog DIALOG_2;
+
+        DIALOG_2 = new TimePickerDialog(view.getContext(), (timePicker, hourOfDay, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+
+            Intent notificationIntent = new Intent(view.getContext(),
+                    NotificationReceiver.class);
+
+            Bundle args = new Bundle();
+            args.putInt("btnId", getBtnID());
+            args.putString("btnName", getBtnName());
+            args.putString("title", TITLE);
+            args.putString("shortNote", TEXT);
+
+            notificationIntent.putExtras(args);
+            notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
+                    1, notificationIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).
+                    getSystemService(ALARM_SERVICE);
+
+
+            assert alarmManager != null;
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis(), pendingIntent);
+            Toast.makeText(getContext(), "Уведомление установлено",
+                    Toast.LENGTH_LONG).show();
+
+        }, hours, minutes, true);
+
+        dialog = new DatePickerDialog(
+                view.getContext(),
+                (view, year1, month1, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year1);
+                    calendar.set(Calendar.MONTH, month1);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    DIALOG_2.show();
+                },
+                year, month, day);
+        dialog.show();
+    }
+}

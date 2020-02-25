@@ -18,9 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.Objects;
+
+import iooogik.app.modelling.astonomy.Planets;
 
 public class ScrollingArticle extends Fragment implements View.OnClickListener{
 

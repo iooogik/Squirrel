@@ -15,6 +15,9 @@ import androidx.core.app.NotificationCompat;
 
 import java.util.Objects;
 
+import iooogik.app.modelling.notes.Notes;
+import iooogik.app.modelling.notes.StandartNote;
+
 public class NotificationReceiver extends BroadcastReceiver {
 
     // Идентификатор уведомления
