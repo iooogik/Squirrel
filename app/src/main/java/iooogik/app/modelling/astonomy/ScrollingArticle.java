@@ -1,4 +1,4 @@
-package iooogik.app.modelling;
+package iooogik.app.modelling.astonomy;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,12 +20,14 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
+import iooogik.app.modelling.Database;
+import iooogik.app.modelling.R;
 import iooogik.app.modelling.astonomy.Planets;
 
 public class ScrollingArticle extends Fragment implements View.OnClickListener{
 
     private Cursor userCursor;
-    View view;
+    private View view;
 
     public ScrollingArticle(){}
 

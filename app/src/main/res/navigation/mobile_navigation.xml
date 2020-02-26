@@ -9,13 +9,45 @@
         android:id="@+id/nav_home"
         android:name="iooogik.app.modelling.home.HomeFragment"
         android:label="Главная"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_planets_list"
+            app:destination="@id/nav_planets_list" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_geometry_list"
+            app:destination="@id/nav_geometry_list" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_tools"
+            app:destination="@id/nav_tools" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_las"
+            app:destination="@id/nav_las" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_notes"
+            app:destination="@id/nav_notes" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_contacts"
+            app:destination="@id/nav_contacts" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_tests"
+            app:destination="@id/nav_tests" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_notes"
         android:name="iooogik.app.modelling.notes.Notes"
         android:label="Заметки"
-        tools:layout="@layout/fragment_notes" />
+        tools:layout="@layout/fragment_notes" >
+        <action
+            android:id="@+id/action_nav_notes_to_nav_book"
+            app:destination="@id/nav_book" />
+        <action
+            android:id="@+id/action_nav_notes_to_nav_standart_note"
+            app:destination="@id/nav_standart_note" />
+        <action
+            android:id="@+id/action_nav_notes_to_nav_checkList"
+            app:destination="@id/nav_checkList" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_tests"
@@ -40,5 +72,45 @@
         android:name="iooogik.app.modelling.las.LifeAtSpace"
         android:label="Игра от издателя"
         tools:layout="@layout/fragment_test" />
+
+    <fragment
+        android:id="@+id/nav_planets_list"
+        android:name="iooogik.app.modelling.astonomy.Planets"
+        android:label="Планеты"
+        tools:layout="@layout/fragment_planets"  >
+        <action
+            android:id="@+id/action_nav_planets_list_to_nav_planets_article"
+            app:destination="@id/nav_planets_article" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_planets_article"
+        android:name="iooogik.app.modelling.astonomy.ScrollingArticle"
+        android:label="Планеты. Статья."
+        tools:layout="@layout/activity_scrolling_article"  />
+
+    <fragment
+        android:id="@+id/nav_geometry_list"
+        android:name="iooogik.app.modelling.geometry.GeometricFigures"
+        android:label="Геометрические фигуры"
+        tools:layout="@layout/fragment_geometric_figures" />
+
+    <fragment
+        android:id="@+id/nav_standart_note"
+        android:name="iooogik.app.modelling.notes.StandartNote"
+        android:label="Геометрические фигуры"
+        tools:layout="@layout/fragment_standart_note" />
+
+    <fragment
+        android:id="@+id/nav_checkList"
+        android:name="iooogik.app.modelling.notes.CheckList"
+        android:label="Геометрические фигуры"
+        tools:layout="@layout/fragment_check" />
+
+    <fragment
+        android:id="@+id/nav_book"
+        android:name="iooogik.app.modelling.notes.Book"
+        android:label="Геометрические фигуры"
+        tools:layout="@layout/fragment_book" />
 
 </navigation>

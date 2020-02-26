@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -25,9 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 import java.util.Objects;
 
 import iooogik.app.modelling.Database;
-import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
-import iooogik.app.modelling.ScrollingArticle;
 import iooogik.app.modelling.ar.ARcamera;
 
 public class Planets extends Fragment implements View.OnClickListener {
