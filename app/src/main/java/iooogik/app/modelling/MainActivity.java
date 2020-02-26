@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     // имя настройки
     public static final String APP_PREFERENCES = "Settings";
     public static final String APP_PREFERENCES_THEME = "Theme";
-    public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Theme";
+    public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Show Book Materials";
     public static int theme;
     public static SharedPreferences Settings;
 
@@ -75,8 +75,4 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-
-    @Override
-    public void onBackPressed() {}
 }

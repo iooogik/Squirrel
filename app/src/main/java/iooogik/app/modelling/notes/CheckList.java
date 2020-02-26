@@ -72,75 +72,12 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         //инициализация кнопок
         ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
         buttonTimeSet.setOnClickListener(this);
-
+        Notes.fab.setOnClickListener(this);
         //получение элементов чек-лсита
         getPoints();
-        /*
-        FAB.setVisibility(View.VISIBLE);
-        FAB.setImageDrawable(ContextCompat.getDrawable(getContext(),
-                R.drawable.baseline_add_white_24dp));
-
-        FAB.setOnClickListener(v -> {
-            //добавление элемента
-            final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
-            final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
-            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
-            LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
-            //ввод названия заметки
-
-            EditText namePoint = new EditText(getContext());
-            namePoint.setTextColor(Color.BLACK);
-            final Typeface TPF = Typeface.createFromAsset(getContext().getAssets(),
-                    "rostelekom.otf");
-            namePoint.setHint("Введите текст пункта");
-            namePoint.setTypeface(TPF);
-            namePoint.setTextSize(18);
-            namePoint.setMinimumWidth(1500);
-            LAYOUT_1.addView(namePoint);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-            MAIN_LAYOUT.addView(LAYOUT_1);
-            builder.setView(MAIN_LAYOUT);
-
-            builder.setPositiveButton(Html.fromHtml
-                            ("<font color='#7AB5FD'>Добавить</font>"),
-                    (dialog, which) -> {
-                        mDb = mDBHelper.getWritableDatabase();
-                        ContentValues cv = new ContentValues();
-
-                        Booleans.add(false);
-                        Items.add(namePoint.getText().toString());
-
-                        StringBuilder strBool = new StringBuilder();
-                        StringBuilder strItems = new StringBuilder();
-
-                        for (int i = 0; i < Booleans.size(); i++) {
-                            strBool.append(Booleans.get(i)).append("\n");
-                        }
-                        for (int i = 0; i < Items.size(); i++) {
-                            strItems.append(Items.get(i)).append("\n");
-                        }
-
-                        cv.put("isChecked", strBool.toString());
-                        cv.put("points", strItems.toString());
-                        //обновление базы данных
-                        mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
-                                null);
-                        addCheck(false, namePoint.getText().toString());
-                    });
-
-            AlertDialog dlg = builder.create();
-
-            dlg.show();
-
-        });
-
-         */
 
         return view;
     }
-
 
     @Override
     public int getBtnID(){
@@ -231,16 +168,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         mDb.update(databaseName, cv, "_id=" + (getBtnID() + 1), null);
     }
 
-
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.buttonShopAlarm){
-            //добавление уведомления
-            alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
-
-        }
-    }
-
     @Override
     public void alarmDialog(final String TITLE, final String TEXT) {
         //создание уведомления
@@ -296,5 +223,67 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                 },
                 year, month, day);
         dialog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.buttonShopAlarm){
+            //добавление уведомления
+            alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
+        } else if (v.getId() == R.id.fab){
+            //добавление элемента
+            final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
+            final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
+            MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
+            LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
+            //ввод названия заметки
+
+            EditText namePoint = new EditText(getContext());
+            namePoint.setTextColor(Color.BLACK);
+            final Typeface TPF = Typeface.createFromAsset(getContext().getAssets(),
+                    "rostelekom.otf");
+            namePoint.setHint("Введите текст пункта");
+            namePoint.setTypeface(TPF);
+            namePoint.setTextSize(18);
+            namePoint.setMinimumWidth(1500);
+            LAYOUT_1.addView(namePoint);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+            MAIN_LAYOUT.addView(LAYOUT_1);
+            builder.setView(MAIN_LAYOUT);
+
+            builder.setPositiveButton(Html.fromHtml
+                            ("<font color='#7AB5FD'>Добавить</font>"),
+                    (dialog, which) -> {
+                        mDb = mDBHelper.getWritableDatabase();
+                        ContentValues cv = new ContentValues();
+
+                        Booleans.add(false);
+                        Items.add(namePoint.getText().toString());
+
+                        StringBuilder strBool = new StringBuilder();
+                        StringBuilder strItems = new StringBuilder();
+
+                        for (int i = 0; i < Booleans.size(); i++) {
+                            strBool.append(Booleans.get(i)).append("\n");
+                        }
+                        for (int i = 0; i < Items.size(); i++) {
+                            strItems.append(Items.get(i)).append("\n");
+                        }
+
+                        cv.put("isChecked", strBool.toString());
+                        cv.put("points", strItems.toString());
+                        //обновление базы данных
+                        mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
+                                null);
+                        addCheck(false, namePoint.getText().toString());
+                    });
+
+            AlertDialog dlg = builder.create();
+
+            dlg.show();
+
+        }
     }
 }

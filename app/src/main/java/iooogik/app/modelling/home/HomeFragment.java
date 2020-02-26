@@ -25,6 +25,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -118,11 +120,16 @@ public class HomeFragment extends Fragment {
         Bitmap bitmapAstro = BitmapFactory.decodeResource(getResources(), R.drawable.astronomy_logo);
         imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmapAstro, width, height, false));
         desc.setText(R.string.astronomyTerm);
+        NavController navHostFragment = NavHostFragment.findNavController(this);
 
         view1.setOnClickListener(v -> {
+            navHostFragment.navigate(R.id.nav_planets_list);
+            /*
             Planets planets = new Planets();
             FrameLayout frameLayout1 = view.findViewById(R.id.Mainframe);
             showFragment(planets, frameLayout1);
+
+             */
         });
 
         linearLayout.addView(view1);
@@ -142,9 +149,13 @@ public class HomeFragment extends Fragment {
 
         view2.setOnClickListener(v -> {
             //открытие фрагмента с фигурами
+            navHostFragment.navigate(R.id.nav_geometry_list);
+            /*
             GeometricFigures figures = new GeometricFigures();
             FrameLayout frameLayout1 = view.findViewById(R.id.Mainframe);
             showFragment(figures, frameLayout1);
+
+             */
         });
         linearLayout.addView(view2);
 

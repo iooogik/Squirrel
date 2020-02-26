@@ -82,6 +82,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                     case "shop":
                         CheckList checkList = new CheckList();
                         checkList.setArguments(bundle);
+
                         activity.getSupportFragmentManager().beginTransaction()
 
                                 .setCustomAnimations(R.anim.nav_default_enter_anim,

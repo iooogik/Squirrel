@@ -26,14 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.zxing.WriterException;
@@ -46,7 +44,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import iooogik.app.modelling.Database;
-import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.NotificationReceiver;
 import iooogik.app.modelling.qr.QR_Demo;
 import iooogik.app.modelling.R;

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingBottom="@dimen/bottom_view"
     tools:context=".settings.Settings">
 
     <com.google.android.material.switchmaterial.SwitchMaterial

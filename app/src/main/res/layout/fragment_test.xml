@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/bottom_view"
     tools:context=".tests.Tests">
 
     <FrameLayout

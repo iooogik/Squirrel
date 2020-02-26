@@ -67,7 +67,6 @@ public class Settings extends Fragment {
                 SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
                 SettingsEditor.apply();
                 try {
-                    Notes.ITEMS.remove(4);
                     Notes.NOTES_ADAPTER.notifyDataSetChanged();
                 } catch (Exception e){
                     Log.i("Settings Show_Materials", String.valueOf(e));
