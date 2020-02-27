@@ -47,7 +47,7 @@
                     android:layout_height="46dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/small_buttons"
-                    android:src="@drawable/alarm_plus" />
+                    android:src="@drawable/baseline_date_range_black_18dp" />
 
             </LinearLayout>
 

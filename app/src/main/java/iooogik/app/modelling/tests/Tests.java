@@ -28,10 +28,8 @@ public class Tests extends Fragment implements View.OnClickListener{
 
     //Переменная для работы с БД
     private Database mDBHelper;
-    private SQLiteDatabase mDb;
 
-    Bundle bundle = new Bundle();
-    Cursor userCursor;
+    private Cursor userCursor;
     static TestsAdapter TEST_ADAPTER;
     static List<TestTheme> TEST_ITEMS = new ArrayList<>();
 
@@ -53,7 +51,7 @@ public class Tests extends Fragment implements View.OnClickListener{
     }
 
     private void loadAndSetThemes(){
-        mDb = mDBHelper.getReadableDatabase();
+        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
         userCursor = mDb.rawQuery("Select * from Tests", null);
         userCursor.moveToFirst();
         String name, desc;

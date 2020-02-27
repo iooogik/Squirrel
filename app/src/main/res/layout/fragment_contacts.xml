@@ -40,9 +40,8 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="30dp">
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/telegram"
-                            style="@android:style/Widget.ImageButton"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="15dp"
@@ -50,7 +49,7 @@
                             android:scaleType="fitXY"
                             android:src="@drawable/telegram_icon" />
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/gmail"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
@@ -59,7 +58,7 @@
                             android:scaleType="fitCenter"
                             android:src="@drawable/gmail" />
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/discord"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
@@ -105,9 +104,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/vk"
-                            style="@android:style/Widget.ImageButton"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="15dp"
@@ -115,9 +113,8 @@
                             android:scaleType="fitXY"
                             android:src="@drawable/vk_logo" />
 
-                        <ImageButton
+                        <ImageView
                             android:id="@+id/instagram"
-                            style="@android:style/Widget.ImageButton"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="15dp"

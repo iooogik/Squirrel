@@ -122,7 +122,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             if(name != null || type != null)
                 ITEMS.add(new Note(name, desc, bitmap, type,
-                        userCursor.getInt(userCursor.getColumnIndex("_id")) - 1));
+                        userCursor.getInt(userCursor.getColumnIndex("_id"))));
 
             userCursor.moveToNext();
 
@@ -132,10 +132,9 @@ public class Notes extends Fragment implements View.OnClickListener {
 
         userCursor.close();
         RecyclerView recyclerView = VIEW.findViewById(R.id.recycler_view);
-        NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS);
+        NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(NOTES_ADAPTER);
-
     }
 
     @Override
@@ -172,8 +171,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             final String DB_TYPE_STNDRT = "standart";
             final String DB_TYPE_SHOP = "shop";
             Note note = ITEMS.get(ITEMS.size() - 1);
-            int id = note.getId() + 2;
-            Toast.makeText(getContext(), String.valueOf(id), Toast.LENGTH_SHORT).show();
+            int id = note.getId() + 1;
 
             builder.setPositiveButton("Добавить",
                     (dialog, which) -> {
@@ -206,7 +204,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
                         mDb.insert("Notes", null, cv);
 
-                        ITEMS.add(new Note(name, shortNote, null, type, id - 1));
+                        ITEMS.add(new Note(name, shortNote, null, type, id));
                         NOTES_ADAPTER.notifyDataSetChanged();
                     });
             builder.create().show();

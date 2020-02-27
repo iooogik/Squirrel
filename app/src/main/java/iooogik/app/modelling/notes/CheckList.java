@@ -31,10 +31,13 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.sql.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -106,7 +109,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         mDb = mDBHelper.getReadableDatabase();
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
-        userCursor.moveToPosition(getBtnID());
+        userCursor.moveToPosition(getBtnID() - 1);
         nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
         shortNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
         final String TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
@@ -125,7 +128,22 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                 Items.add(tempArr[i]);
                 addCheck(booleans[i], tempArr[i]);
             }
+            isCompleted(!Booleans.contains(false));
         }
+    }
+
+    private void isCompleted(Boolean bool){
+        ContentValues cv = new ContentValues();
+        if(bool){
+            cv.put("isCompleted", 1);
+        }else {
+            cv.put("isCompleted", 0);
+        }
+
+        //обновление базы данных
+        mDb.update("Notes", cv, "_id=" + (getBtnID()), null);
+
+        Notes.NOTES_ADAPTER.notifyDataSetChanged();
     }
 
     private void addCheck(boolean state, String nameCheck){
@@ -147,6 +165,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             }
             updShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
                     sendBool.toString());
+            isCompleted(!Booleans.contains(false));
         });
         linear.addView(view2);
     }
@@ -165,7 +184,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id=" + (getBtnID() + 1), null);
+        mDb.update(databaseName, cv, "_id=" + (getBtnID()), null);
     }
 
     @Override
@@ -240,12 +259,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
             EditText namePoint = new EditText(getContext());
             namePoint.setTextColor(Color.BLACK);
-            final Typeface TPF = Typeface.createFromAsset(getContext().getAssets(),
-                    "rostelekom.otf");
+
             namePoint.setHint("Введите текст пункта");
-            namePoint.setTypeface(TPF);
-            namePoint.setTextSize(18);
-            namePoint.setMinimumWidth(1500);
             LAYOUT_1.addView(namePoint);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -275,7 +290,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                         cv.put("isChecked", strBool.toString());
                         cv.put("points", strItems.toString());
                         //обновление базы данных
-                        mDb.update("Notes", cv, "_id=" + (getBtnID() + 1),
+                        mDb.update("Notes", cv, "_id=" + (getBtnID()),
                                 null);
                         addCheck(false, namePoint.getText().toString());
                     });

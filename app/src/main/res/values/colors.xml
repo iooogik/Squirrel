@@ -9,24 +9,8 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
     <color name="darkBackground">#212121</color>
-
-
-    <color name="colorFrame">#C0C0C0</color>
-    <color name="colorItems">#FFFFFF</color>
-    <color name="colorCursor">#FFFFFF</color>
-    <color name="colorIcons">#000000</color>
-    <color name="colorSmallButtons">#FFFFFF</color>
-    <color name="colorFont">#000000</color>
-    <color name="colorLightFont">#FFFFFF</color>
-    <color name="colorWarning">#FF0000</color>
-    <color name="colorButton">#5ba543</color>
+    <color name="notCompleted">#FF7A7A</color>
+    <color name="Completed">#ADFA6E</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorGreen">#219254</color>
-    <color name="colorSalmon">#FA8072</color>
-    <color name="colorBrick">#ff607d</color>
-    <color name="colorSky">#87CEEB</color>
-    <color name="colorDodger">#1E90FF</color>
-    <color name="colorViolet">#EE82EE</color>
-    <color name="colorDarkMagenta">#8B008B</color>
 
 </resources>

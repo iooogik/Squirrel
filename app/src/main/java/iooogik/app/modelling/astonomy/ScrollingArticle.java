@@ -27,14 +27,13 @@ import iooogik.app.modelling.astonomy.Planets;
 public class ScrollingArticle extends Fragment implements View.OnClickListener{
 
     private Cursor userCursor;
-    private View view;
 
     public ScrollingArticle(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_scrolling_article, container ,false);
+        View view = inflater.inflate(R.layout.activity_scrolling_article, container, false);
 
         Bundle args = this.getArguments();
         assert args != null;
@@ -82,31 +81,6 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.back){
-            showPlanetInfo(new Planets());
-        }
+
     }
-
-    private void showPlanetInfo(Fragment fragment){
-
-
-        FragmentManager fm = getFragmentManager();
-        assert fm != null;
-        FragmentTransaction ft = fm.beginTransaction();
-
-        if (fragment != null) {
-            ft.remove(fragment).commitAllowingStateLoss();
-        }
-
-        FragmentTransaction addTransaction = fm.beginTransaction();
-        addTransaction.setCustomAnimations
-                (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
-        addTransaction.addToBackStack(null);
-        assert fragment != null;
-        addTransaction.add(R.id.Mainframe, fragment,
-                "mainFrame").commitAllowingStateLoss();
-
-        Objects.requireNonNull(getView()).setVisibility(View.GONE);
-    }
-
 }

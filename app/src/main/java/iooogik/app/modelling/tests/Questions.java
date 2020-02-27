@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -51,7 +52,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         getAnswers();
         setTest();
         wrongScore = questions.size();
-        Button btn = view.findViewById(R.id.send_answers);
+        ImageView btn = view.findViewById(R.id.send_answers);
         btn.setOnClickListener(this);
         return view;
     }

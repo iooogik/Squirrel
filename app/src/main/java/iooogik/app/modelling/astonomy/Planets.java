@@ -20,6 +20,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.Objects;
 
@@ -31,7 +33,6 @@ public class Planets extends Fragment implements View.OnClickListener {
 
     View view;
     private Database mDBHelper;
-    static Typeface standartFont;
     private Cursor userCursor;
     private SQLiteDatabase mDb;
 
@@ -51,8 +52,6 @@ public class Planets extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        standartFont = Typeface.createFromAsset
-                (Objects.requireNonNull(getContext()).getAssets(), "rostelekom.otf");
 
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
@@ -99,36 +98,12 @@ public class Planets extends Fragment implements View.OnClickListener {
         view1.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putInt("_id", id);
-            ScrollingArticle scrollingArticle = new ScrollingArticle();
-            scrollingArticle.setArguments(args);
-            showPlanetInfo(scrollingArticle);
-
+            NavController navHostFragment = NavHostFragment.findNavController(this);
+            navHostFragment.navigate(R.id.nav_planets_article, args);
         });
 
         linearLayout.addView(view1);
 
-    }
-
-    private void showPlanetInfo(Fragment fragment){
-        FrameLayout frameLayout = view.findViewById(R.id.planets_frame);
-        frameLayout.setVisibility(View.VISIBLE);
-
-
-        FragmentManager fm = getFragmentManager();
-        assert fm != null;
-        FragmentTransaction ft = fm.beginTransaction();
-
-        if (fragment != null) {
-            ft.remove(fragment).commitAllowingStateLoss();
-        }
-
-        FragmentTransaction addTransaction = fm.beginTransaction();
-        addTransaction.setCustomAnimations
-                (R.anim.nav_default_enter_anim, R.anim.nav_default_exit_anim);
-        addTransaction.addToBackStack(null);
-        assert fragment != null;
-        addTransaction.add(R.id.planets_frame, fragment,
-                "planets_frame").commitAllowingStateLoss();
     }
 
     @Override

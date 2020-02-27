@@ -1,6 +1,7 @@
 package iooogik.app.modelling.notes;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,6 +17,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -33,11 +37,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     //Переменные для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
-    Bundle bundle = new Bundle();
+    private Bundle bundle = new Bundle();
+    private Fragment fragment;
+    private Context context;
+    private Cursor userCursor;
 
-    NotesAdapter(Context context, List<Note> notes){
+    NotesAdapter(Context context, List<Note> notes, Fragment fragment){
         this.notes = notes;
         this.inflater = LayoutInflater.from(context);
+        this.fragment = fragment;
+        this.context = context;
     }
 
 
@@ -50,9 +59,13 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull NotesAdapter.ViewHolder holder, int position) {
+        mDBHelper = new Database(context);
+        mDBHelper.openDataBase();
         //получение и установка данных в элемент
         Note note = notes.get(position);
         int val = MainActivity.Settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+
+        NavController navHostFragment = NavHostFragment.findNavController(fragment);
 
         if (!(note.getName().equals("Математические формулы") && val == 1)) {
             holder.name.setText(note.getName());
@@ -67,79 +80,57 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 img.setImageBitmap(bitmap);
             }
 
+            if (note.getType().equals("shop")){
+                mDb = mDBHelper.getReadableDatabase();
+                userCursor = mDb.rawQuery("Select * from Notes", null);
+                userCursor.moveToPosition(position);
+
+                if(userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1){
+                    holder.completed.setVisibility(View.VISIBLE);
+                }else if(userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 0){
+                    holder.completed.setVisibility(View.GONE);
+                }
+            }
+
             //слушатель для открытия фрагмента с заметкой
             holder.frameLayout.setOnClickListener(v -> {
                 bundle.putString("button name", note.getName());
                 bundle.putInt("button ID", note.getId());
 
-
-                AppCompatActivity activity = (AppCompatActivity) v.getContext();
-
-                FrameLayout frameLayout = activity.findViewById(R.id.SecondaryFrame);
-                frameLayout.setVisibility(View.VISIBLE);
-
                 switch (note.getType()) {
                     case "shop":
-                        CheckList checkList = new CheckList();
-                        checkList.setArguments(bundle);
-
-                        activity.getSupportFragmentManager().beginTransaction()
-
-                                .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                        R.anim.nav_default_exit_anim).
-
-                                replace(R.id.SecondaryFrame, checkList,
-                                        "secondFrame").commitAllowingStateLoss();
+                        navHostFragment.navigate(R.id.nav_checkList, bundle);
                         break;
                     case "standart":
-                        StandartNote standartNote = new StandartNote();
-                        standartNote.setArguments(bundle);
-                        activity.getSupportFragmentManager().beginTransaction()
-
-                                .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                        R.anim.nav_default_exit_anim).
-
-                                replace(R.id.SecondaryFrame, standartNote,
-                                        "secondFrame").commitAllowingStateLoss();
+                        navHostFragment.navigate(R.id.nav_standart_note, bundle);
                         break;
                     case "book":
-                        Book book = new Book();
-                        book.setArguments(bundle);
-                        activity.getSupportFragmentManager().beginTransaction()
-
-                                .setCustomAnimations(R.anim.nav_default_enter_anim,
-                                        R.anim.nav_default_exit_anim).
-
-                                replace(R.id.SecondaryFrame, book,
-                                        "secondFrame").commitAllowingStateLoss();
+                        navHostFragment.navigate(R.id.nav_book, bundle);
                         break;
                     default:
                         Toast.makeText(v.getContext(), "Error",
                                 Toast.LENGTH_SHORT).show();
                         break;
                 }
+
             });
 
             holder.frameLayout.setOnLongClickListener(v -> {
 
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext(),
-                        R.style.Theme_MaterialComponents_Light_Dialog);
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext());
 
                 builder.setTitle("Важное сообщение!")
                         .setMessage("Вы действительно хотите удалить заметку?")
                         .setPositiveButton("Удалить", (dialog, id) -> {
 
-
-                            mDBHelper = new Database(v.getContext());
-                            mDBHelper.openDataBase();
                             mDb = mDBHelper.getWritableDatabase();
 
-                            mDb.delete("Notes", "_id=" + (note.getId() + 1), null);
+                            mDb.delete("Notes", "_id=" + (note.getId()), null);
 
                             Notes.ITEMS.remove(note);
-                            Notes.NOTES_ADAPTER.notifyDataSetChanged();
+                            Notes.NOTES_ADAPTER.notifyItemRemoved(position);
 
-                            dialog.cancel();
+
                         })
                         .setNegativeButton("Нет", (dialog, which) -> dialog.cancel())
                         .show();
@@ -156,7 +147,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        final ImageView imageView;
+        final ImageView imageView, completed;
         final TextView name, desc;
         final LinearLayout back;
         final FrameLayout frameLayout;
@@ -167,6 +158,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             name = view.findViewById(R.id.name);
             desc = view.findViewById(R.id.description);
             back = view.findViewById(R.id.background);
+            completed = view.findViewById(R.id.completed);
         }
     }
 }

@@ -23,9 +23,9 @@
           android:layout_height="wrap_content"
           android:layout_gravity="bottom|start"
           android:layout_margin="16dp"
-          app:backgroundTint="@color/colorPrimary"
+          app:backgroundTint="@color/colorWhite"
           app:maxImageSize="25dp"
-          app:srcCompat="@drawable/arrow_left" />
+          app:srcCompat="@drawable/baseline_arrow_back_white_24dp" />
 
       <Button
           android:id="@+id/saveQR"

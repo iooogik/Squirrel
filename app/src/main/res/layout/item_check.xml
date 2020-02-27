@@ -8,7 +8,6 @@
         style="@style/Widget.MaterialComponents.CompoundButton.CheckBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/checkers"
         android:layout_margin="11dp"
         android:text="CheckBox"
         android:textSize="18sp"

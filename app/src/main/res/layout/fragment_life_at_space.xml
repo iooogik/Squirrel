@@ -26,7 +26,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/LifeAtSpace"
                     android:textAlignment="center"
-                    android:textColor="@color/colorLightFont"
+                    android:textColor="@color/colorWhite"
                     android:textSize="36sp"
                     android:textStyle="bold" />
 
@@ -46,7 +46,7 @@
                     android:layout_margin="15dp"
                     android:text="@string/las_desc"
                     android:textAlignment="center"
-                    android:textColor="@color/colorLightFont" />
+                    android:textColor="@color/colorWhite" />
 
                 <TextView
                     android:id="@+id/textView9"
@@ -55,7 +55,7 @@
                     android:layout_margin="15dp"
                     android:text="Скачать можно, отсканировав QR-код или нажав на него"
                     android:textAlignment="center"
-                    android:textColor="@color/colorLightFont" />
+                    android:textColor="@color/colorWhite" />
 
                 <ImageView
                     android:id="@+id/imageView2"

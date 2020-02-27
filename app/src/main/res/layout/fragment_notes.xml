@@ -10,23 +10,6 @@
     android:paddingBottom="@dimen/bottom_view"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/SecondaryFrame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="secondFrame"
-        android:visibility="gone">
-
-    </FrameLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"

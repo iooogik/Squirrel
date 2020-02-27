@@ -31,6 +31,15 @@
         <action
             android:id="@+id/action_nav_home_to_nav_tests"
             app:destination="@id/nav_tests" />
+        <action
+            android:id="@+id/action_nav_home_pop2"
+            app:destination="@+id/nav_planets_list"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
@@ -81,19 +90,45 @@
         <action
             android:id="@+id/action_nav_planets_list_to_nav_planets_article"
             app:destination="@id/nav_planets_article" />
+        <action
+            android:id="@+id/action_nav_planets_list_pop"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@id/nav_planets_list"
+            app:popUpToInclusive="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_planets_article"
         android:name="iooogik.app.modelling.astonomy.ScrollingArticle"
         android:label="Планеты. Статья."
-        tools:layout="@layout/activity_scrolling_article"  />
+        tools:layout="@layout/activity_scrolling_article"  >
+        <action
+            android:id="@+id/action_nav_planets_article_pop"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@id/nav_planets_article"
+            app:popUpToInclusive="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_geometry_list"
         android:name="iooogik.app.modelling.geometry.GeometricFigures"
         android:label="Геометрические фигуры"
-        tools:layout="@layout/fragment_geometric_figures" />
+        tools:layout="@layout/fragment_geometric_figures" >
+        <action
+            android:id="@+id/action_nav_geometry_list_pop"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@id/nav_geometry_list"
+            app:popUpToInclusive="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_standart_note"

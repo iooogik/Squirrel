@@ -49,7 +49,7 @@
                     android:layout_height="46dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/small_buttons"
-                    android:src="@drawable/alarm_plus" />
+                    android:src="@drawable/baseline_date_range_black_18dp" />
 
             </LinearLayout>
 
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Введите текст"
+                android:hint="Введите название заметки"
                 app:helperTextEnabled="true"
                 app:helperText="Максимальное количество символов"
                 app:counterEnabled="true"

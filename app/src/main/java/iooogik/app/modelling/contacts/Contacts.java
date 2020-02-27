@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,11 +36,11 @@ public class Contacts extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_contacts, container, false);
 
-        ImageButton telegram = view.findViewById(R.id.telegram);
-        ImageButton gmail = view.findViewById(R.id.gmail);
-        ImageButton discord = view.findViewById(R.id.discord);
-        ImageButton vk = view.findViewById(R.id.vk);
-        ImageButton instagram = view.findViewById(R.id.instagram);
+        ImageView telegram = view.findViewById(R.id.telegram);
+        ImageView gmail = view.findViewById(R.id.gmail);
+        ImageView discord = view.findViewById(R.id.discord);
+        ImageView vk = view.findViewById(R.id.vk);
+        ImageView instagram = view.findViewById(R.id.instagram);
 
         telegram.setOnClickListener(this);
         gmail.setOnClickListener(this);

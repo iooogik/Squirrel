@@ -80,6 +80,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
 
+        Notes.fab.setVisibility(View.GONE);
+
         return view;
     }
 
@@ -97,11 +99,11 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         userCursor =  mDb.rawQuery("Select * from Notes", null);
 
-        userCursor.moveToPosition(getBtnID());
+        userCursor.moveToPosition(getBtnID() - 1);
 
 
 
-        name.setText(getBtnName());
+        name.setText(userCursor.getString(1));
         shortNote.setText(userCursor.getString(2));
         note.setText(userCursor.getString(3));
 
@@ -225,7 +227,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         builder.setCancelable(true);
         builder.setPositiveButton(Html.fromHtml
-                        ("<font color='" + R.color.colorCursor + "'>Готово</font>"),
+                        ("<font color='" + R.color.color_primary_text + "'>Готово</font>"),
                 (dialog, which) -> dialog.cancel());
         AlertDialog dlg = builder.create();
         dlg.show();

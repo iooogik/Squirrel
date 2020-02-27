@@ -85,10 +85,6 @@ public class QR_Demo extends AppCompatActivity {
                 layout1.setOrientation(LinearLayout.HORIZONTAL);
                 final EditText name = new EditText(getApplicationContext());
                 name.setHint("Введите имя");
-
-                final Typeface tpf = Typeface.createFromAsset(getAssets(), "rostelekom.otf");
-
-                name.setTypeface(tpf);
                 name.setTextSize(18);
                 name.setMinHeight(15);
 
@@ -117,20 +113,6 @@ public class QR_Demo extends AppCompatActivity {
                 builder.setCancelable(true);
 
                 AlertDialog dlg = builder.create();
-
-                dlg.setOnShowListener(dialog -> {
-                    Window v1 = ((AlertDialog)dialog).getWindow();
-                    assert v1 != null;
-                    v1.setBackgroundDrawableResource(R.drawable.alert_dialog_backgrond);
-                    Button posButton = ((AlertDialog)dialog).
-                            getButton(DialogInterface.BUTTON_POSITIVE);
-                    posButton.setTypeface(tpf);
-                    posButton.setTypeface(Typeface.DEFAULT_BOLD);
-                    posButton.setTextColor(R.color.colorFont);
-                });
-
-
-
                 dlg.show();
 
             }else {

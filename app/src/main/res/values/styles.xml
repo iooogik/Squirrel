@@ -17,9 +17,13 @@
         <item name="android:textColor">@color/colorWhite</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
-
+        <item name="imageButtonStyle">@style/customSmallButtons</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="customSmallButtons" parent="Widget.AppCompat.ImageButton">
+        <item name="android:tint">@color/colorWhite</item>
     </style>
 
 </resources>
