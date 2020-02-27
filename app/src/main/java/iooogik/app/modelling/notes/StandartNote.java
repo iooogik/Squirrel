@@ -161,7 +161,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id =" + (getBtnID() + 1), null);
+        mDb.update(databaseName, cv, "_id =" + (getBtnID()), null);
     }
 
     private void share(){

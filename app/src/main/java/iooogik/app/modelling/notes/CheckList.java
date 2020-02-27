@@ -2,6 +2,7 @@ package iooogik.app.modelling.notes;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -20,12 +21,15 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -75,6 +79,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         //инициализация кнопок
         ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
         buttonTimeSet.setOnClickListener(this);
+        ImageButton buttonSave = view.findViewById(R.id.buttonSave);
+        buttonSave.setOnClickListener(this);
         Notes.fab.setOnClickListener(this);
         //получение элементов чек-лсита
         getPoints();
@@ -96,7 +102,39 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     public void updFragment() {}
 
     @Override
-    public void updData(String databaseName, String name, String note, String shortNote) {}
+    public void updData(String databaseName, String name, String note, String shortNote) {
+        mDb = mDBHelper.getWritableDatabase();
+
+        //код сохранения в бд
+        ContentValues cv = new ContentValues();
+        cv.put("name", name);
+        cv.put("shortName", shortNote);
+        cv.put("text", note);
+
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                Locale.getDefault());
+
+        cv.put("date", dateFormat.format(currentDate));
+
+        //обновление базы данных
+        mDb.update(databaseName, cv, "_id =" + (getBtnID()), null);
+
+        // Скрываем клавиатуру при открытии Navigation Drawer
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
+                    getSystemService(Activity.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(Objects.
+                        requireNonNull(getActivity().getCurrentFocus()).
+                        getWindowToken(), 0);
+            }
+        } catch (Exception e){
+            Log.i("StandartNotes", String.valueOf(e));
+        }
+
+        Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_SHORT).show();
+    }
 
 
     private void getPoints(){
@@ -249,7 +287,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         if(v.getId() == R.id.buttonShopAlarm){
             //добавление уведомления
             alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
-        } else if (v.getId() == R.id.fab){
+        }
+        else if (v.getId() == R.id.fab){
             //добавление элемента
             final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
             final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
@@ -299,6 +338,9 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
             dlg.show();
 
+        } else if(v.getId() == R.id.buttonSave){
+            updData("Notes", nameNote.getText().toString(),
+                    null, shortNote.getText().toString());
         }
     }
 }
