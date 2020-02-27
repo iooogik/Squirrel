@@ -86,7 +86,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     @Override
-    public void updFragment(){
+    public void updateFragment(){
         /* БД ************************ */
         mDBHelper = new Database(getActivity());
         mDBHelper.openDataBase();
@@ -99,7 +99,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         userCursor =  mDb.rawQuery("Select * from Notes", null);
 
-        userCursor.moveToPosition(getBtnID() - 1);
+        userCursor.moveToPosition(getButtonID() - 1);
 
 
 
@@ -118,7 +118,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     @Override
-    public void updShopNotes(String databaseName, String name, String booleans) {
+    public void updateShopNotes(String databaseName, String name, String booleans) {
 
     }
 
@@ -126,26 +126,27 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         mDb = mDBHelper.getWritableDatabase();
         userCursor = mDb.rawQuery("Select * from Notes", null);
 
-        userCursor.moveToPosition(getBtnID());
+        userCursor.moveToPosition(getButtonID());
         byte[] bytesImg = userCursor.getBlob(5);
         return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
     }
 
     @Override
-    public int getBtnID(){
+    public int getButtonID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("button ID");
     }
+
     @Override
-    public String getBtnName(){
+    public String getButtonName(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
     }
 
     @Override
-    public void updData(String databaseName, String name, String note, String shortNote){
+    public void updateData(String databaseName, String name, String note, String shortNote){
         mDb = mDBHelper.getWritableDatabase();
 
         //код сохранения в бд
@@ -161,7 +162,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id =" + (getBtnID()), null);
+        mDb.update(databaseName, cv, "_id =" + (getButtonID()), null);
     }
 
     private void share(){
@@ -254,7 +255,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                     NotificationReceiver.class);
 
             Bundle args = new Bundle();
-            args.putInt("btnId", getBtnID());
+            args.putInt("btnId", getButtonID());
             args.putString("btnName", title);
             args.putString("title", title);
             args.putString("shortNote", text);
@@ -307,7 +308,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         if(view.getId() == R.id.buttonSave){
 
             String dataName = "Notes";
-            updData(dataName, nameNote, Note, shortText);
+            updateData(dataName, nameNote, Note, shortText);
 
 
             // Скрываем клавиатуру при открытии Navigation Drawer
@@ -367,7 +368,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     @Override
     public void onStart() {
         super.onStart();
-        updFragment();
+        updateFragment();
     }
 
 }

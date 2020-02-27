@@ -1,11 +1,11 @@
 package iooogik.app.modelling.notes;
 
 interface NoteInterface {
-    void updData(String databaseName, String name, String note, String shortNote);
-    String getBtnName();
-    int getBtnID();
-    void updFragment();
-    void updShopNotes(String databaseName, String name, String booleans);
+    void updateData(String databaseName, String name, String note, String shortNote);
+    String getButtonName();
+    int getButtonID();
+    void updateFragment();
+    void updateShopNotes(String databaseName, String name, String booleans);
     void alarmDialog(final String title, final String text);
 
 }

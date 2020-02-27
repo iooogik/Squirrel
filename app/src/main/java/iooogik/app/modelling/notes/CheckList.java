@@ -89,20 +89,20 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
     @Override
-    public int getBtnID(){
+    public int getButtonID(){
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("button ID");
     }
 
     @Override
-    public String getBtnName(){return null;}
+    public String getButtonName(){return null;}
 
     @Override
-    public void updFragment() {}
+    public void updateFragment() {}
 
     @Override
-    public void updData(String databaseName, String name, String note, String shortNote) {
+    public void updateData(String databaseName, String name, String note, String shortNote) {
         mDb = mDBHelper.getWritableDatabase();
 
         //код сохранения в бд
@@ -118,7 +118,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id =" + (getBtnID()), null);
+        mDb.update(databaseName, cv, "_id =" + (getButtonID()), null);
 
         // Скрываем клавиатуру при открытии Navigation Drawer
         try {
@@ -147,7 +147,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         mDb = mDBHelper.getReadableDatabase();
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
-        userCursor.moveToPosition(getBtnID() - 1);
+        userCursor.moveToPosition(getButtonID() - 1);
         nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
         shortNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
         final String TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
@@ -179,7 +179,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         }
 
         //обновление базы данных
-        mDb.update("Notes", cv, "_id=" + (getBtnID()), null);
+        mDb.update("Notes", cv, "_id=" + (getButtonID()), null);
 
         Notes.NOTES_ADAPTER.notifyDataSetChanged();
     }
@@ -201,7 +201,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             for (boolean aBoolean : Booleans) {
                 sendBool.append(aBoolean).append("\n");
             }
-            updShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
+            updateShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
                     sendBool.toString());
             isCompleted(!Booleans.contains(false));
         });
@@ -209,7 +209,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
     @Override
-    public void updShopNotes(String databaseName, String name, String booleans){
+    public void updateShopNotes(String databaseName, String name, String booleans){
         mDb = mDBHelper.getWritableDatabase();
         //код сохранения в бд
         ContentValues cv = new ContentValues();
@@ -222,7 +222,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id=" + (getBtnID()), null);
+        mDb.update(databaseName, cv, "_id=" + (getButtonID()), null);
     }
 
     @Override
@@ -246,8 +246,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                     NotificationReceiver.class);
 
             Bundle args = new Bundle();
-            args.putInt("btnId", getBtnID());
-            args.putString("btnName", getBtnName());
+            args.putInt("btnId", getButtonID());
+            args.putString("btnName", getButtonName());
             args.putString("title", TITLE);
             args.putString("shortNote", TEXT);
 
@@ -329,7 +329,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                         cv.put("isChecked", strBool.toString());
                         cv.put("points", strItems.toString());
                         //обновление базы данных
-                        mDb.update("Notes", cv, "_id=" + (getBtnID()),
+                        mDb.update("Notes", cv, "_id=" + (getButtonID()),
                                 null);
                         addCheck(false, namePoint.getText().toString());
                     });
@@ -339,7 +339,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             dlg.show();
 
         } else if(v.getId() == R.id.buttonSave){
-            updData("Notes", nameNote.getText().toString(),
+            updateData("Notes", nameNote.getText().toString(),
                     null, shortNote.getText().toString());
         }
     }
