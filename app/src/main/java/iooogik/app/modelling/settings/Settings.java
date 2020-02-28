@@ -12,9 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
@@ -26,6 +32,7 @@ public class Settings extends Fragment {
 
     private View view;
     private PackageInfo packageInfo;
+    private AutoCompleteTextView spinner;
 
 
 
@@ -40,6 +47,7 @@ public class Settings extends Fragment {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
 
         setThemeSetting();
         setShowBookMaterials();
@@ -81,30 +89,40 @@ public class Settings extends Fragment {
     }
 
     private void setThemeSetting(){
-        SwitchMaterial dark_theme = view.findViewById(R.id.dark_theme);
-        if(MainActivity.theme == 1){
-            dark_theme.setChecked(true);
+
+        List<String> themes = new ArrayList<>();
+
+        themes.add("Стандартная");
+        themes.add("Тёмная");
+        themes.add("Красная");
+        themes.add("Синяя");
+        themes.add("Жёлтая");
+
+        spinner = view.findViewById(R.id.themes);
+
+        if (MainActivity.Settings.contains(MainActivity.APP_PREFERENCES_THEME)) {
+            // Получаем число из настроек
+            int val = MainActivity.Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
+            spinner.setText(themes.get(val));
         }
-        dark_theme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked){
-                SharedPreferences.Editor SettingsEditor = MainActivity.Settings.edit();
-                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, 1);
-                SettingsEditor.apply();
 
-                getActivity().finish();
-                getActivity().startActivity(new Intent(getContext(), MainActivity.class));
-                getActivity().overridePendingTransition(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
-            } else {
-                SharedPreferences.Editor SettingsEditor = MainActivity.Settings.edit();
-                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, 0);
-                SettingsEditor.apply();
 
-                getActivity().finish();
-                getActivity().startActivity(new Intent(getContext(), MainActivity.class));
-                getActivity().overridePendingTransition(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
-            }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
+                android.R.layout.simple_spinner_dropdown_item, themes);
+
+        spinner.setAdapter(adapter);
+
+
+        spinner.setOnItemClickListener((parent, view, position, id) -> {
+
+            SharedPreferences.Editor SettingsEditor = MainActivity.Settings.edit();
+            SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, position);
+            SettingsEditor.apply();
+
+            getActivity().finish();
+            getActivity().startActivity(new Intent(getContext(), MainActivity.class));
+            getActivity().overridePendingTransition(android.R.anim.fade_in,
+                    android.R.anim.fade_out);
         });
     }
 

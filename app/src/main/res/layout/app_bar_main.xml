@@ -10,22 +10,19 @@
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bar"
-        style="@style/Widget.MaterialComponents.BottomAppBar"
+        style="@style/Widget.MaterialComponents.BottomAppBar.PrimarySurface"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:backgroundTint="@color/colorPrimary"
         app:navigationIcon="@drawable/baseline_menu_white_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
-        style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:tint="@color/colorWhite" />
 

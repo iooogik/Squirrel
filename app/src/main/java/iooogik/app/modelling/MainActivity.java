@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     // показывать ли доп. материалы в заметках
     public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Show Book Materials";
     // переменная для определия темы
-    public static int theme;
     public static SharedPreferences Settings;
 
     @Override
@@ -36,17 +35,29 @@ public class MainActivity extends AppCompatActivity {
         // получение настроек
         Settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         // изменение темы
-        if (Settings.contains(APP_PREFERENCES_THEME)) {
-            // Получаем число из настроек
-            theme = Settings.getInt(APP_PREFERENCES_THEME, 0);
 
-            if(theme == 1){
-                setTheme(R.style.AppThemeDark);
-            } else if (theme == 0){
-                setTheme(R.style.AppThemeLight);
+        if (Settings.contains(APP_PREFERENCES_THEME)) {
+
+            switch (Settings.getInt(APP_PREFERENCES_THEME, 0)) {
+                case 0:
+                    setTheme(R.style.AppThemeLight); // Стандартная
+                    break;
+                case 1:
+                    setTheme(R.style.AppThemeDark); // Тёмная
+                    break;
+                case 2:
+                    setTheme(R.style.AppThemeRed); // Красная
+                    break;
+                case 3:
+                    setTheme(R.style.AppThemeBlue); // Синяя
+                    break;
+                case 4:
+                    setTheme(R.style.AppThemeYellow); // Жёлтая
+                    break;
+
             }
         }
-        //
+
         setContentView(R.layout.activity_main);
         // создание тул-бара
         createToolbar();

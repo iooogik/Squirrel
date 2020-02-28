@@ -8,20 +8,28 @@
     tools:context=".settings.Settings">
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/dark_theme"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:text="@string/turn_on_dark_theme" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/book_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_margin="30dp"
         android:text="@string/show_book_materials" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/spinner_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp">
+
+        <AutoCompleteTextView
+            android:id="@+id/themes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="false"
+            android:editable="false" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/version"

@@ -1,5 +1,6 @@
 package iooogik.app.modelling.notes;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.R;
@@ -66,6 +69,18 @@ public class Notes extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         fab.setVisibility(View.VISIBLE);
+        // Скрываем клавиатуру при открытии Navigation Drawer
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
+                    getSystemService(Activity.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(Objects.
+                        requireNonNull(getActivity().getCurrentFocus()).
+                        getWindowToken(), 0);
+            }
+        } catch (Exception e){
+            Log.i("Notes", String.valueOf(e));
+        }
         super.onResume();
     }
 
