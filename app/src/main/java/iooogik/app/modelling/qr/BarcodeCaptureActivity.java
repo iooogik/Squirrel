@@ -30,22 +30,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
 import iooogik.app.modelling.camera.CameraSource;
 import iooogik.app.modelling.camera.CameraSourcePreview;
 import iooogik.app.modelling.camera.GraphicOverlay;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -58,7 +61,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 
 
-public final class BarcodeCaptureActivity extends AppCompatActivity implements
+public final class BarcodeCaptureActivity extends Fragment implements
         BarcodeGraphicTracker.BarcodeUpdateListener {
     private static final String TAG = "Barcode-reader";
 
@@ -69,9 +72,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // constants used to pass extra data in the intent
-    public static final String AutoFocus = "AutoFocus";
-    public static final String UseFlash = "UseFlash";
+    private static final String AutoFocus = "AutoFocus";
+    private static final String UseFlash = "UseFlash";
     public static final String BarcodeObject = "Barcode";
+
+    private View view;
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -81,60 +86,63 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
 
-
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        setContentView(R.layout.barcode_capture);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        mPreview = (CameraSourcePreview) findViewById(R.id.preview);
-        mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
+        view = inflater.inflate(R.layout.fragment_standart_note,
+                container, false);
+
+        mPreview = (CameraSourcePreview) view.findViewById(R.id.preview);
+        mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) view.findViewById(R.id.graphicOverlay);
 
         // read parameters from the intent used to launch the activity.
-        boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
-        boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
+        //boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
+        //boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
-        int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        int rc = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
-            createCameraSource(autoFocus, useFlash);
+            createCameraSource(false, false);
         } else {
             requestCameraPermission();
         }
 
-        gestureDetector = new GestureDetector(this, new CaptureGestureListener());
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        gestureDetector = new GestureDetector(getContext(), new CaptureGestureListener());
+        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
 
         Snackbar.make(mGraphicOverlay, "Нажмите на найденный QR-код, чтобы сохранить его.",
                 Snackbar.LENGTH_LONG)
                 .show();
 
-        Button savePict = findViewById(R.id.saveQR);
+        Button savePict = view.findViewById(R.id.saveQR);
         savePict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GraphicOverlay graphicOverlay = findViewById(R.id.graphicOverlay);
+                GraphicOverlay<GraphicOverlay.Graphic> graphicOverlay =
+                        view.findViewById(R.id.graphicOverlay);
                 onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
             }
         });
 
-        FloatingActionButton back = findViewById(R.id.back);
+        FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                Intent main = new Intent(getContext(), MainActivity.class);
                 startActivity(main);
             }
         });
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             // разрешение не предоставлено
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.CAMERA)) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Важное сообщение!")
                         .setMessage("Необходимо разрешение на использование камеры!")
                         .setIcon(R.drawable.ic_launcher)
@@ -156,14 +164,18 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
             } else {
                 // не требуется показывать объяснение. запрашиваем разрешение
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.CAMERA}, 100);
             }
         }
+
+
+        return view;
     }
 
+
     protected void reqPermission(){
-        ActivityCompat.requestPermissions(this,
+        ActivityCompat.requestPermissions(getActivity(),
                 new String[]{Manifest.permission.CAMERA}, 100);
     }
 
@@ -172,13 +184,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                 Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
+            ActivityCompat.requestPermissions(getActivity(), permissions, RC_HANDLE_CAMERA_PERM);
             return;
         }
 
-        final Activity thisActivity = this;
+        final Activity thisActivity = getActivity();
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -188,46 +200,38 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             }
         };
 
-        findViewById(R.id.topLayout).setOnClickListener(listener);
+        view.findViewById(R.id.topLayout).setOnClickListener(listener);
         Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
                 .show();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        boolean b = scaleGestureDetector.onTouchEvent(e);
-
-        boolean c = gestureDetector.onTouchEvent(e);
-
-        return b || c; //|| super.onTouchEvent(e);
-    }
-
 
     @SuppressLint("InlinedApi")
     private void createCameraSource(boolean autoFocus, boolean useFlash) {
-        Context context = getApplicationContext();
+        Context context = getContext();
 
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
+        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, getContext());
         barcodeDetector.setProcessor(
                 new MultiProcessor.Builder<>(barcodeFactory).build());
 
         if (!barcodeDetector.isOperational()) {
             Log.w(TAG, "Detector dependencies are not yet available.");
-
+            /*
             IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
             boolean hasLowStorage = registerReceiver(null, lowstorageFilter) != null;
 
             if (hasLowStorage) {
-                Toast.makeText(this, R.string.low_storage_error,
+                Toast.makeText(getContext(), R.string.low_storage_error,
                         Toast.LENGTH_LONG).show();
                 Log.w(TAG, getString(R.string.low_storage_error));
             }
+            */
         }
 
-        CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
+        CameraSource.Builder builder = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(30.0f);
@@ -243,13 +247,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         startCameraSource();
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         if (mPreview != null) {
             mPreview.stop();
@@ -258,7 +262,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         if (mPreview != null) {
             mPreview.release();
@@ -278,9 +282,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
-            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
-            boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
-            createCameraSource(autoFocus, useFlash);
+            //boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
+            //boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
+            createCameraSource(false, false);
             return;
         }
 
@@ -289,11 +293,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                finish();
+
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Multitracker sample")
                 .setMessage(R.string.no_camera_permission)
                 .setPositiveButton(R.string.ok, listener)
@@ -303,10 +307,10 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
     private void startCameraSource() throws SecurityException {
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                getApplicationContext());
+                getContext());
         if (code != ConnectionResult.SUCCESS) {
             Dialog dlg =
-                    GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
+                    GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), code, RC_HANDLE_GMS);
             dlg.show();
         }
 
@@ -348,11 +352,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         }
         //получение текста из qr и передача в другое активити
         if (best != null) {
-            Intent data = new Intent(this, QR_Demo.class);
+            Intent data = new Intent(getContext(), QR_Demo.class);
 
             data.putExtra("qr_text", best.displayValue);
             startActivity(data);
-            finish();
+            //finish();
             return true;
         }
 

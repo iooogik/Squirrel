@@ -109,9 +109,10 @@ public class Planets extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.openAr){
-            Intent intent = new Intent(getContext(), ARcamera.class);
-            intent.putExtra("TYPE", "SolarSystem");
-            startActivity(intent);
+            NavController navHostFragment = NavHostFragment.findNavController(this);
+            Bundle args = new Bundle();
+            args.putString("TYPE", "SolarSystem");
+            navHostFragment.navigate(R.id.nav_ar, args);
         }
     }
 }

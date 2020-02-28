@@ -81,4 +81,5 @@
     <string name="saveAndContinue">Сохранить и продолжить</string>
     <string name="turn_on_dark_theme">Включить тёмную тему</string>
     <string name="show_book_materials">Не показывать справочные материалы в заметках</string>
+    <string name="usePhoneToReadQR">Наведите второй телефон на QR-код, чтобы считать данные.</string>
 </resources>

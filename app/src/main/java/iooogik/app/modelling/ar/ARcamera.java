@@ -1,14 +1,18 @@
 package iooogik.app.modelling.ar;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
@@ -19,34 +23,50 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+import java.util.Calendar;
+
 import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
+import iooogik.app.modelling.notes.Notes;
 
-public class ARcamera extends FragmentActivity implements View.OnClickListener {
+public class ARcamera extends Fragment implements View.OnClickListener {
 
     ArFragment arFragment;
     private ModelRenderable solarSystem;
     public static String TYPE;
+    private View view;
+    private Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // получаем кнопки и "ставим" на них слушатели
+
+        view = inflater.inflate(R.layout.ar_camera_activity,
+                container, false);
+        context = view.getContext();
+
         //определение типа 3д объекта
-        if (getIntent().getExtras() != null)
-            TYPE = getIntent().getExtras().getString("TYPE");
+        // получаем id заметки
+        Bundle arguments = this.getArguments();
+        if (arguments != null)
+            TYPE = arguments.getString("TYPE");
+//?????????????????????
+        arFragment = (ArFragment) getActivity().
+                getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
 
-        setContentView(R.layout.ar_camera_activity);
 
-        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
         //загрузка и установка модели на найденную плоскость
-        loadModel();
-        createModel();
+        //loadModel();
+        //createModel();
 
-        FloatingActionButton back = findViewById(R.id.back);
+        FloatingActionButton back = view.findViewById(R.id.back);
         back.setOnClickListener(this);
-        TextView findSurface = findViewById(R.id.findARsurf);
+        TextView findSurface = view.findViewById(R.id.findARsurf);
         findSurface.setOnClickListener(this);
 
+        return view;
     }
 
     private void loadModel() {
@@ -70,21 +90,16 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
         //создание рендера модели
         ModelRenderable.builder()
-                .setSource(this, res).build()
+                .setSource(context, res).build()
                 .thenAccept(renderable -> solarSystem = renderable)
                 .exceptionally(throwable -> {
                     Toast toast =
-                            Toast.makeText(this, "Unable to load andy renderable",
+                            Toast.makeText(context, "Невозможно загрузить модели",
                                     Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                     return null;
                 });
-
-
-
-
-
     }
 
     private void createModel(){
@@ -111,11 +126,11 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     public void onClick(View v) {
         if(v.getId() == R.id.back){
             //нажатие "Назад"
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(context, MainActivity.class);
             startActivity(intent);
         } else if(v.getId() == R.id.findARsurf){
             //"заново найти поверхность
-            recreate();
+            onCreateView(getLayoutInflater(), null, null);
         }
     }
 }

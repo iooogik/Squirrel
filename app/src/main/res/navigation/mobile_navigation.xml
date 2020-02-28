@@ -98,7 +98,16 @@
             app:popUpToInclusive="true"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_nav_planets_list_to_nav_ar"
+            app:destination="@id/nav_ar" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_ar"
+        android:name="iooogik.app.modelling.ar.ARcamera"
+        android:label="ar"
+        tools:layout="@layout/ar_camera_activity" />
 
     <fragment
         android:id="@+id/nav_planets_article"
@@ -128,6 +137,9 @@
             app:popUpToInclusive="true"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_nav_geometry_list_to_nav_ar"
+            app:destination="@id/nav_ar" />
     </fragment>
 
     <fragment

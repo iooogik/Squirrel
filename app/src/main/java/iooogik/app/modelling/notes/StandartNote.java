@@ -1,8 +1,5 @@
 package iooogik.app.modelling.notes;
 
-
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -10,6 +7,7 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.zxing.WriterException;
@@ -52,25 +51,28 @@ import static android.content.Context.ALARM_SERVICE;
 
 
 public class StandartNote extends Fragment implements View.OnClickListener, NoteInterface {
-
+    // пустой контсруктор
     public StandartNote(){}
 
-    @SuppressLint("StaticFieldLeak")
-    public static View view;
+    private View view;
+    // переменные для работы с бд
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor userCursor;
-    private Calendar calendar = Calendar.getInstance();
+    // "Каледнарь для получения времени
+    private Calendar calendar;
+    private Context context;
 
 
-    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // получаем кнопки и "ставим" на них слушатели
 
         view = inflater.inflate(R.layout.fragment_standart_note,
                 container, false);
+        context = view.getContext();
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
         ImageButton btnShare = view.findViewById(R.id.buttonShare);
@@ -79,15 +81,26 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         btnSave.setOnClickListener(this);
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
-
+        // получаем текущее состояние "календаря"
+        calendar = Calendar.getInstance();
         Notes.fab.setVisibility(View.GONE);
 
         return view;
     }
 
+    @Nullable
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
     @Override
     public void updateFragment(){
-        /* БД ************************ */
+        /*
+          Обновляем содержимое фрагмента
+          "Открываем" бд
+          получаем её содержимое
+         */
         mDBHelper = new Database(getActivity());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
@@ -98,11 +111,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         mDb = mDBHelper.getReadableDatabase();
 
         userCursor =  mDb.rawQuery("Select * from Notes", null);
-
+        // перемещаем курсор
         userCursor.moveToPosition(getButtonID() - 1);
-
-
-
+        // устанавливаем дынные
         name.setText(userCursor.getString(1));
         shortNote.setText(userCursor.getString(2));
         note.setText(userCursor.getString(3));
@@ -123,6 +134,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     private Bitmap setImage(){
+        // устанавливаем картинку на фрагмент
         mDb = mDBHelper.getWritableDatabase();
         userCursor = mDb.rawQuery("Select * from Notes", null);
 
@@ -133,6 +145,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     @Override
     public int getButtonID(){
+        // получаем id заметки
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("button ID");
@@ -140,6 +153,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     @Override
     public String getButtonName(){
+        // получаем название заметки
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getString("button name");
@@ -166,6 +180,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     private void share(){
+        // Делимся заметкой
         TextView name = Objects.requireNonNull(getView()).findViewById(R.id.editName);
         TextView note = getView().findViewById(R.id.editNote);
         TextView shortNote = getView().findViewById(R.id.shortNote);
@@ -192,9 +207,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     }
 
-    @SuppressLint("SetTextI18n")
     private void createDialog(Bitmap bitmap){
-
+        // создаём AlertDialog, чтобы поделиться заметкой
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         LinearLayout mainLayout  = new LinearLayout(getActivity());
@@ -215,7 +229,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         TextView tv = new TextView(getContext());
         tv.setMinHeight(25);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-        tv.setText("Наведите второй телефон на QR-код, чтобы считать данные.");
+        tv.setText(R.string.usePhoneToReadQR);
         tv.setTextColor(Color.BLACK);
         tv.setTextSize(18);
         tv.setMinHeight(15);
@@ -236,7 +250,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     @Override
     public void alarmDialog(final String title, final String text){
-
+        // напоминание
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -247,11 +261,11 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         DatePickerDialog dialog;
         final TimePickerDialog dialog2;
 
-        dialog2 = new TimePickerDialog(view.getContext(), (timePicker, hourOfDay, minute) -> {
+        dialog2 = new TimePickerDialog(context, (timePicker, hourOfDay, minute) -> {
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
 
-            Intent notificationIntent = new Intent(view.getContext(),
+            Intent notificationIntent = new Intent(context,
                     NotificationReceiver.class);
 
             Bundle args = new Bundle();
@@ -283,7 +297,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         }, hours, minutes, true);
 
         dialog = new DatePickerDialog(
-                view.getContext(),
+                context,
                 (view, year1, month1, dayOfMonth) -> {
                     calendar.set(Calendar.YEAR, year1);
                     calendar.set(Calendar.MONTH, month1);
@@ -363,12 +377,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateFragment();
     }
 
 }
