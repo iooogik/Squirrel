@@ -19,9 +19,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import iooogik.app.modelling.ARcamera;
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.R;
-import iooogik.app.modelling.ar.ARcamera;
 
 
 /**
@@ -100,7 +100,6 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
         view1.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), ARcamera.class);
             intent.putExtra("TYPE", type);
-
             startActivity(intent);
         });
 

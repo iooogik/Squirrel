@@ -18,16 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import java.util.Objects;
 
+import iooogik.app.modelling.ARcamera;
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.R;
-import iooogik.app.modelling.ar.ARcamera;
 
 public class Planets extends Fragment implements View.OnClickListener {
 
@@ -109,10 +106,9 @@ public class Planets extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.openAr){
-            NavController navHostFragment = NavHostFragment.findNavController(this);
-            Bundle args = new Bundle();
-            args.putString("TYPE", "SolarSystem");
-            navHostFragment.navigate(R.id.nav_ar, args);
+            Intent intent = new Intent(getContext(), ARcamera.class);
+            intent.putExtra("TYPE", "SolarSystem");
+            startActivity(intent);
         }
     }
 }

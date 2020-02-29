@@ -40,7 +40,7 @@
 
         <activity android:name=".notes.StandartNote" />
         <activity android:name=".qr.QR_Demo" />
-        <activity android:name=".ar.ARcamera" />
+        <activity android:name=".ARcamera" />
         <activity android:name=".notes.Notes" />
 
         <activity android:name=".astonomy.Planets"/>
