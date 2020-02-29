@@ -15,7 +15,7 @@
     <style name="AppThemeDark" parent="Theme.MaterialComponents">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <item name="colorPrimaryDark">@color/darkBackground</item>
         <item name="android:textColor">@color/colorWhite</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
@@ -30,6 +30,7 @@
     <style name="AppThemeRed" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimaryRed</item>
         <item name="colorAccent">@color/colorAccentRed</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:textColor">@color/color_primary_textRed</item>
 
@@ -43,6 +44,7 @@
     <style name="AppThemeBlue" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimaryBlue</item>
         <item name="colorAccent">@color/colorAccentBlue</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>
         <item name="android:textColor">@color/color_primary_textBlue</item>
         <item name="colorControlNormal">@color/colorWhite</item>
 
@@ -54,6 +56,7 @@
 
     <style name="AppThemeYellow" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimaryYellow</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkYellow</item>
         <item name="colorAccent">@color/colorAccentYellow</item>
         <item name="android:textColor">@color/color_primary_textYellow</item>
         <item name="colorControlNormal">@color/colorWhite</item>

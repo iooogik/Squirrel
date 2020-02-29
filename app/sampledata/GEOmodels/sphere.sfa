@@ -62,7 +62,7 @@
     file: 'sampledata/GEOmodels/sphere.fbx',
     name: 'sphere',
     recenter: 'root',
-    scale: 0.003,
+    scale: 0.3,
   },
   version: '0.54:2',
 }

@@ -69,3 +69,9 @@ sceneform.asset('sampledata/GEOmodels/cube.fbx',
         'default',
         'sampledata/GEOmodels/cube.sfa',
         'src/main/assets/Cube')
+
+
+sceneform.asset('sampledata/GEOmodels/cube.fbx',
+        'default',
+        'sampledata/GEOmodels/cube.sfa',
+        'src/main/assets/cube')

@@ -1,7 +1,7 @@
 {
   animations: [
     {
-      path: 'sampledata/GEOmodels/Cube.fbx',
+      path: 'sampledata/GEOmodels/cube.fbx',
     },
   ],
   materials: [
@@ -56,7 +56,7 @@
     file: 'sampledata/GEOmodels/Cube.fbx',
     name: 'cube',
     recenter: 'root',
-    scale: 0.003,
+    scale: 0.3,
   },
   version: '0.54:2',
 }

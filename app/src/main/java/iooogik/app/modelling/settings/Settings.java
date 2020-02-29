@@ -106,12 +106,10 @@ public class Settings extends Fragment {
             spinner.setText(themes.get(val));
         }
 
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
                 android.R.layout.simple_spinner_dropdown_item, themes);
 
         spinner.setAdapter(adapter);
-
 
         spinner.setOnItemClickListener((parent, view, position, id) -> {
 

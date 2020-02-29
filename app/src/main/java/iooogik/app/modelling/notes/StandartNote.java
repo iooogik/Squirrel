@@ -84,7 +84,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         // получаем текущее состояние "календаря"
         calendar = Calendar.getInstance();
         Notes.fab.setVisibility(View.GONE);
-
+        updateFragment();
         return view;
     }
 
@@ -337,6 +337,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             } catch (Exception e){
                 Log.i("StandartNotes", String.valueOf(e));
             }
+
             Notes.NOTES_ADAPTER.notifyDataSetChanged();
             Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
 

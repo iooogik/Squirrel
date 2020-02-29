@@ -442,7 +442,7 @@
     file: 'sampledata/ASTROmodels/solar_system.fbx',
     name: 'solar_system',
     recenter: 'root',
-    scale: 0.003,
+    scale: 0.042,
   },
   version: '0.54:2',
 }

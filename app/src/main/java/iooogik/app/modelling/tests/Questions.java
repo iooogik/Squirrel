@@ -2,6 +2,7 @@ package iooogik.app.modelling.tests;
 
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +33,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     public Questions() {}
 
-    View view;
+    private View view;
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor userCursor;
@@ -158,24 +161,48 @@ public class Questions extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.send_answers){
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+            final LinearLayout layout = new LinearLayout(getContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
 
-            mDb = mDBHelper.getWritableDatabase();
-            userCursor = mDb.rawQuery("Select * from Tests", null);
-            userCursor.moveToPosition(getBtnID());
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("trueAnswers", rightScore);
-            contentValues.put("wrongAnswers", wrongScore);
-            contentValues.put("isPassed", 1);
-            mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
-            FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
+            View view1 = getLayoutInflater().inflate(R.layout.text_view, null, false);
+            TextView textView = view1.findViewById(R.id.tv);
+            textView.setText("Вы действительно хотите завершить выполнение теста?");
 
-            TestTheme testTheme = Tests.TEST_ITEMS.get(getBtnID());
-            testTheme.setRightAnswers(rightScore);
-            testTheme.setWrongAnswers(wrongScore);
-            testTheme.setPassed(true);
-            Tests.TEST_ADAPTER.notifyDataSetChanged();
+            layout.addView(view1);
+            builder.setView(layout);
+
+            builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mDb = mDBHelper.getWritableDatabase();
+                    userCursor = mDb.rawQuery("Select * from Tests", null);
+                    userCursor.moveToPosition(getBtnID());
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("trueAnswers", rightScore);
+                    contentValues.put("wrongAnswers", wrongScore);
+                    contentValues.put("isPassed", 1);
+                    mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
+                    FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
+                    frameLayout.removeAllViews();
+                    frameLayout.setVisibility(View.GONE);
+
+                    TestTheme testTheme = Tests.TEST_ITEMS.get(getBtnID());
+                    testTheme.setRightAnswers(rightScore);
+                    testTheme.setWrongAnswers(wrongScore);
+                    testTheme.setPassed(true);
+                    Tests.TEST_ADAPTER.notifyDataSetChanged();
+                }
+            });
+
+            builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.create().show();
         }
     }
 }
