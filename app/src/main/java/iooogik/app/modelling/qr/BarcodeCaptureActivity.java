@@ -91,7 +91,7 @@ public final class BarcodeCaptureActivity extends Fragment implements
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        view = inflater.inflate(R.layout.fragment_standart_note,
+        view = inflater.inflate(R.layout.barcode_capture,
                 container, false);
 
         mPreview = (CameraSourcePreview) view.findViewById(R.id.preview);
@@ -124,15 +124,6 @@ public final class BarcodeCaptureActivity extends Fragment implements
                 GraphicOverlay<GraphicOverlay.Graphic> graphicOverlay =
                         view.findViewById(R.id.graphicOverlay);
                 onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
-            }
-        });
-
-        FloatingActionButton back = view.findViewById(R.id.back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent main = new Intent(getContext(), MainActivity.class);
-                startActivity(main);
             }
         });
 

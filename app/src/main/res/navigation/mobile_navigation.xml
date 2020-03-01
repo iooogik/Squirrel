@@ -134,7 +134,11 @@
         android:id="@+id/nav_standart_note"
         android:name="iooogik.app.modelling.notes.StandartNote"
         android:label="Геометрические фигуры"
-        tools:layout="@layout/fragment_standart_note" />
+        tools:layout="@layout/fragment_standart_note" >
+        <action
+            android:id="@+id/action_nav_standart_note_to_nav_qr"
+            app:destination="@id/nav_qr" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_checkList"
@@ -147,5 +151,11 @@
         android:name="iooogik.app.modelling.notes.Book"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_book" />
+
+    <fragment
+        android:id="@+id/nav_qr"
+        android:name="iooogik.app.modelling.qr.BarcodeCaptureActivity"
+        android:label="Геометрические фигуры"
+        tools:layout="@layout/barcode_capture" />
 
 </navigation>

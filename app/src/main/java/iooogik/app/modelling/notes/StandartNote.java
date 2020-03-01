@@ -32,6 +32,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.zxing.WriterException;
 
@@ -77,10 +79,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
         ImageButton btnShare = view.findViewById(R.id.buttonShare);
         ImageButton btnAlarm = view.findViewById(R.id.buttonAlarm);
+        ImageButton btnQR = view.findViewById(R.id.buttonQR);
 
         btnSave.setOnClickListener(this);
         btnShare.setOnClickListener(this);
         btnAlarm.setOnClickListener(this);
+        btnQR.setOnClickListener(this);
         // получаем текущее состояние "календаря"
         calendar = Calendar.getInstance();
         Notes.fab.setVisibility(View.GONE);
@@ -377,6 +381,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             }
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
+        } else if(view.getId() == R.id.buttonQR){
+            NavController navHostFragment = NavHostFragment.findNavController(this);
+            navHostFragment.navigate(R.id.nav_qr);
         }
     }
 

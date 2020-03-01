@@ -43,11 +43,21 @@
 
                 <ImageButton
                     android:id="@+id/buttonAlarm"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
+                    android:layout_gravity="center"
                     android:background="@drawable/small_buttons"
                     android:src="@drawable/baseline_date_range_black_18dp" />
+
+                <ImageButton
+                    android:id="@+id/buttonQR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/small_buttons"
+                    android:src="@drawable/baseline_camera_enhance_black_18dp" />
 
             </LinearLayout>
 
