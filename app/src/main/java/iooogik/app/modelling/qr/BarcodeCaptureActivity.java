@@ -139,17 +139,8 @@ public final class BarcodeCaptureActivity extends Fragment implements
                         .setIcon(R.drawable.ic_launcher)
                         .setCancelable(true)
                         .setNegativeButton("Не давать разрешение",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                })
-                        .setPositiveButton("Запросить ещё раз", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                reqPermission();
-                            }
-                        });
+                                (dialog, id) -> dialog.cancel())
+                        .setPositiveButton("Запросить ещё раз", (dialog, which) -> reqPermission());
                 AlertDialog alert = builder.create();
                 alert.show();
 
@@ -183,13 +174,8 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
         final Activity thisActivity = getActivity();
 
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        RC_HANDLE_CAMERA_PERM);
-            }
-        };
+        View.OnClickListener listener = view -> ActivityCompat.requestPermissions(thisActivity, permissions,
+                RC_HANDLE_CAMERA_PERM);
 
         view.findViewById(R.id.topLayout).setOnClickListener(listener);
         Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
@@ -210,16 +196,6 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
         if (!barcodeDetector.isOperational()) {
             Log.w(TAG, "Detector dependencies are not yet available.");
-            /*
-            IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
-            boolean hasLowStorage = registerReceiver(null, lowstorageFilter) != null;
-
-            if (hasLowStorage) {
-                Toast.makeText(getContext(), R.string.low_storage_error,
-                        Toast.LENGTH_LONG).show();
-                Log.w(TAG, getString(R.string.low_storage_error));
-            }
-            */
         }
 
         CameraSource.Builder builder = new CameraSource.Builder(getContext(), barcodeDetector)
@@ -228,10 +204,8 @@ public final class BarcodeCaptureActivity extends Fragment implements
                 .setRequestedFps(30.0f);
 
         // make sure that auto focus is an available option
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            builder = builder.setFocusMode(
-                    autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
-        }
+        builder = builder.setFocusMode(
+                autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
 
         mCameraSource = builder.build();
     }
