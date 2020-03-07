@@ -3,6 +3,7 @@
     <style name="AppThemeLight" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:textColor">@color/color_primary_text</item>
 

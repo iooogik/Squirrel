@@ -315,18 +315,31 @@ public final class BarcodeCaptureActivity extends Fragment implements
                 bestDistance = distance;
             }
         }
-        //получение текста из qr и передача в другое активити
+        //получение текста из qr и сохранение его в заметках
         if (best != null) {
+            if(getNoteId() != -1){
+                /*
+                Добавить сохранение QR в текущую заметку
+                Добавить изменение имени элемента по длительному нажатию
+                 */
+            }
+
+
             Intent data = new Intent(getContext(), QR_Demo.class);
 
             data.putExtra("qr_text", best.displayValue);
             startActivity(data);
-            //finish();
+
             return true;
         }
 
 
         return false;
+    }
+
+    private int getNoteId(){
+        int id = -1;
+        return id;
     }
 
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {

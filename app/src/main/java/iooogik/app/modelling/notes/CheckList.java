@@ -81,7 +81,11 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         buttonTimeSet.setOnClickListener(this);
         ImageButton buttonSave = view.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(this);
+
+        Notes.fab.setImageResource(R.drawable.baseline_add_white_24dp);
+        Notes.fab.setVisibility(View.VISIBLE);
         Notes.fab.setOnClickListener(this);
+
         //получение элементов чек-лсита
         getPoints();
 
@@ -297,7 +301,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             //ввод названия заметки
 
             EditText namePoint = new EditText(getContext());
-            namePoint.setTextColor(Color.BLACK);
 
             namePoint.setHint("Введите текст пункта");
             LAYOUT_1.addView(namePoint);
@@ -307,31 +310,36 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             MAIN_LAYOUT.addView(LAYOUT_1);
             builder.setView(MAIN_LAYOUT);
 
-            builder.setPositiveButton(Html.fromHtml
-                            ("<font color='#7AB5FD'>Добавить</font>"),
+            builder.setPositiveButton("Добавить",
                     (dialog, which) -> {
-                        mDb = mDBHelper.getWritableDatabase();
-                        ContentValues cv = new ContentValues();
+                if(!namePoint.getText().toString().isEmpty()) {
+                    mDb = mDBHelper.getWritableDatabase();
+                    ContentValues cv = new ContentValues();
 
-                        Booleans.add(false);
-                        Items.add(namePoint.getText().toString());
+                    Booleans.add(false);
+                    Items.add(namePoint.getText().toString());
 
-                        StringBuilder strBool = new StringBuilder();
-                        StringBuilder strItems = new StringBuilder();
+                    StringBuilder strBool = new StringBuilder();
+                    StringBuilder strItems = new StringBuilder();
 
-                        for (int i = 0; i < Booleans.size(); i++) {
-                            strBool.append(Booleans.get(i)).append("\n");
-                        }
-                        for (int i = 0; i < Items.size(); i++) {
-                            strItems.append(Items.get(i)).append("\n");
-                        }
+                    for (int i = 0; i < Booleans.size(); i++) {
+                        strBool.append(Booleans.get(i)).append("\n");
+                    }
+                    for (int i = 0; i < Items.size(); i++) {
+                        strItems.append(Items.get(i)).append("\n");
+                    }
 
-                        cv.put("isChecked", strBool.toString());
-                        cv.put("points", strItems.toString());
-                        //обновление базы данных
-                        mDb.update("Notes", cv, "_id=" + (getButtonID()),
-                                null);
-                        addCheck(false, namePoint.getText().toString());
+                    cv.put("isChecked", strBool.toString());
+                    cv.put("points", strItems.toString());
+                    //обновление базы данных
+                    mDb.update("Notes", cv, "_id=" + (getButtonID()),
+                            null);
+                    addCheck(false, namePoint.getText().toString());
+                } else {
+                    Toast.makeText(getContext(),
+                            "Что-то пошло не так. Проверьте, пожалуйста, название пункта.",
+                            Toast.LENGTH_SHORT).show();
+                }
                     });
 
             AlertDialog dlg = builder.create();

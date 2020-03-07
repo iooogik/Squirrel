@@ -45,7 +45,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     private View VIEW;
     public static NotesAdapter NOTES_ADAPTER;
-    public static FloatingActionButton fab;
+    static FloatingActionButton fab;
 
     public static List<Note> ITEMS = new ArrayList<>();
 
@@ -68,6 +68,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     @Override
     public void onResume() {
+        super.onResume();
         fab.setVisibility(View.VISIBLE);
         // Скрываем клавиатуру при открытии Navigation Drawer
         try {
@@ -81,19 +82,13 @@ public class Notes extends Fragment implements View.OnClickListener {
         } catch (Exception e){
             Log.i("Notes", String.valueOf(e));
         }
-        super.onResume();
+
     }
 
     @Override
-    public void onPause() {
+    public void onDestroy() {
         fab.setVisibility(View.GONE);
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        fab.setVisibility(View.GONE);
-        super.onStop();
+        super.onDestroy();
     }
 
     private void startProcedures(){
@@ -190,37 +185,44 @@ public class Notes extends Fragment implements View.OnClickListener {
 
             builder.setPositiveButton("Добавить",
                     (dialog, which) -> {
-                        String name = nameNote.getText().toString();
-                        String shortNote = "короткое описание";
-                        String text = "Новая заметка";
-                        String type = "";
-                        mDb = mDBHelper.getWritableDatabase();
+                if(!nameNote.getText().toString().isEmpty() &&
+                        !spinner.getText().toString().isEmpty()) {
+                    String name = nameNote.getText().toString();
+                    String shortNote = "короткое описание";
+                    String text = "Новая заметка";
+                    String type = "";
+                    mDb = mDBHelper.getWritableDatabase();
 
-                        if(spinner.getText().toString().equals(standartTextNote)){
-                            type = DB_TYPE_STNDRT;
-                        } else if (spinner.getText().toString().equals(marckedList)){
-                            type = DB_TYPE_SHOP;
-                        }
+                    if (spinner.getText().toString().equals(standartTextNote)) {
+                        type = DB_TYPE_STNDRT;
+                    } else if (spinner.getText().toString().equals(marckedList)) {
+                        type = DB_TYPE_SHOP;
+                    }
 
-                        //добавление в бд и обновление адаптера
-                        ContentValues cv = new ContentValues();
-                        cv.put("_id", id);
-                        cv.put("name", name);
-                        cv.put("shortName", shortNote);
-                        cv.put("text", text);
-                        cv.put("type", type);
-                        //получение даты
-                        Date currentDate = new Date();
-                        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                                Locale.getDefault());
-                        String dateText = dateFormat.format(currentDate);
-                        cv.put("date", dateText);
-                        //запись
+                    //добавление в бд и обновление адаптера
+                    ContentValues cv = new ContentValues();
+                    cv.put("_id", id);
+                    cv.put("name", name);
+                    cv.put("shortName", shortNote);
+                    cv.put("text", text);
+                    cv.put("type", type);
+                    //получение даты
+                    Date currentDate = new Date();
+                    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                            Locale.getDefault());
+                    String dateText = dateFormat.format(currentDate);
+                    cv.put("date", dateText);
+                    //запись
 
-                        mDb.insert("Notes", null, cv);
+                    mDb.insert("Notes", null, cv);
 
-                        ITEMS.add(new Note(name, shortNote, null, type, id));
-                        NOTES_ADAPTER.notifyDataSetChanged();
+                    ITEMS.add(new Note(name, shortNote, null, type, id));
+                    NOTES_ADAPTER.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(),
+                        "Что-то пошло не так. Проверьте, пожалуйста, название и выбранный тип.",
+                            Toast.LENGTH_SHORT).show();
+                }
                     });
             builder.create().show();
         }
