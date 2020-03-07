@@ -28,17 +28,17 @@
           android:text="@string/СохранитьQR" />
     </LinearLayout>
 
-    <iooogik.app.modelling.camera.CameraSourcePreview
+    <iooogik.app.modelling.qr.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-      <iooogik.app.modelling.camera.GraphicOverlay
+      <iooogik.app.modelling.qr.GraphicOverlay
           android:id="@+id/graphicOverlay"
           android:layout_width="match_parent"
           android:layout_height="match_parent" />
 
-    </iooogik.app.modelling.camera.CameraSourcePreview>
+    </iooogik.app.modelling.qr.CameraSourcePreview>
 
   </FrameLayout>
 

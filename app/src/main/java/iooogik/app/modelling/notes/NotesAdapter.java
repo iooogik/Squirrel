@@ -1,6 +1,8 @@
 package iooogik.app.modelling.notes;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -78,6 +80,44 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 img.setMinimumHeight(150);
                 img.setMinimumWidth(150);
                 img.setImageBitmap(bitmap);
+
+                img.setOnLongClickListener(view -> {
+
+                    MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                    TextView textView = new TextView(builder.getContext());
+                    textView.setText("Вы действительно хотите удалить  QR-код?");
+                    LinearLayout layout = new LinearLayout(context);
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    layout.addView(textView);
+                    builder.setView(layout);
+
+                    builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mDb = mDBHelper.getReadableDatabase();
+                            userCursor = mDb.rawQuery("Select * from Notes", null);
+                            userCursor.moveToPosition(position);
+                            if(userCursor.getBlob(userCursor.getColumnIndex("image")) != null){
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put("image", (byte[]) null);
+                                mDb.update("Notes", contentValues, "_id="+ position, null);
+                            }
+                        }
+                    });
+
+                    builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+
+                    builder.create().show();
+
+
+                    return false;
+                });
+
             }
 
             if (note.getType().equals("shop")){

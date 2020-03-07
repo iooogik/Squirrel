@@ -382,8 +382,10 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);
         } else if(view.getId() == R.id.buttonQR){
+            Bundle args = new Bundle();
+            args.putInt("id", getButtonID());
             NavController navHostFragment = NavHostFragment.findNavController(this);
-            navHostFragment.navigate(R.id.nav_qr);
+            navHostFragment.navigate(R.id.nav_qr, args);
         }
     }
 

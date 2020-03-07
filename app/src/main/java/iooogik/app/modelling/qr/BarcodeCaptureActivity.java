@@ -20,13 +20,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -43,11 +44,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import iooogik.app.modelling.MainActivity;
+import iooogik.app.modelling.Database;
 import iooogik.app.modelling.R;
-import iooogik.app.modelling.camera.CameraSource;
-import iooogik.app.modelling.camera.CameraSourcePreview;
-import iooogik.app.modelling.camera.GraphicOverlay;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -55,14 +53,20 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 
 
+
 public final class BarcodeCaptureActivity extends Fragment implements
         BarcodeGraphicTracker.BarcodeUpdateListener {
+
+    // переменные для работы с бд
+    private Database mDBHelper;
+    private SQLiteDatabase mDb;
+    private Cursor userCursor;
+
     private static final String TAG = "Barcode-reader";
 
     // intent request code to handle updating play services if needed.
@@ -105,7 +109,7 @@ public final class BarcodeCaptureActivity extends Fragment implements
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
-            createCameraSource(false, false);
+            createCameraSource(true, false);
         } else {
             requestCameraPermission();
         }
@@ -318,10 +322,28 @@ public final class BarcodeCaptureActivity extends Fragment implements
         //получение текста из qr и сохранение его в заметках
         if (best != null) {
             if(getNoteId() != -1){
-                /*
-                Добавить сохранение QR в текущую заметку
-                Добавить изменение имени элемента по длительному нажатию
-                 */
+                byte[] image = best.rawBytes;
+                Bundle args = this.getArguments();
+                int id = args.getInt("id");
+                mDBHelper = new Database(getActivity());
+                mDBHelper.openDataBase();
+                mDb = mDBHelper.getWritableDatabase();
+
+                userCursor = mDb.rawQuery("Select * from Notes", null);
+                userCursor.moveToPosition(id + 1);
+
+                if(userCursor.getBlob(userCursor.getColumnIndex("image")) != null) {
+
+
+                    ContentValues cv = new ContentValues();
+                    cv.put("image", image);
+                    mDb.update("Notes", cv, "_id=" + id, null);
+                    Toast.makeText(getContext(), "Добавлено", Toast.LENGTH_LONG).show();
+
+
+                } else {
+                    Toast.makeText(getContext(), "У вас уже добавлен QR-код", Toast.LENGTH_LONG).show();
+                }
             }
 
 

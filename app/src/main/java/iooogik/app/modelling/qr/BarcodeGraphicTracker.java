@@ -19,7 +19,6 @@ import android.content.Context;
 
 import androidx.annotation.UiThread;
 
-import iooogik.app.modelling.camera.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
