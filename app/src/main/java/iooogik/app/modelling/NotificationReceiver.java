@@ -27,13 +27,10 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        StandartNote standartNote = new StandartNote();
-        context = standartNote.getContext();
 
         // получение NotificationManager
-        NotificationManager notificationManager =
-                (NotificationManager) Objects.requireNonNull(context).
-                        getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         assert notificationManager != null;
 
@@ -73,9 +70,9 @@ public class NotificationReceiver extends BroadcastReceiver {
                         .setContentTitle(newArgs.getString("title"))
                         .setContentText(newArgs.getString("shortNote"))
                         .setShowWhen(true)
-                        .setAutoCancel(true)
+                        .setAutoCancel(false)
                         //.setContentIntent(pendingIntent)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                        .setPriority(2);
 
         notificationManager.notify(NOTIFY_ID, builder.build());
         }

@@ -126,7 +126,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         if(!userCursor.isNull(userCursor.getColumnIndex("image"))){
             linearLayout.setVisibility(View.VISIBLE);
             img.setImageBitmap(setImage());
-            shortNote.setEnabled(false);
         }
     }
 
@@ -220,8 +219,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
 
-            Intent notificationIntent = new Intent(context,
-                    NotificationReceiver.class);
+            Intent notificationIntent = new Intent(context, NotificationReceiver.class);
 
             Bundle args = new Bundle();
             args.putInt("btnId", getButtonID());
@@ -232,19 +230,18 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             notificationIntent.putExtras(args);
             notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
+
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
                     0, notificationIntent,
                     0);
 
-            AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).
-                    getSystemService(ALARM_SERVICE);
+            AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
-            assert alarmManager != null;
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
                     10000, pendingIntent);
 
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP,
-                    calendar.getTimeInMillis(), pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
 
             Toast.makeText(getContext(), "Уведомление установлено",
                     Toast.LENGTH_LONG).show();

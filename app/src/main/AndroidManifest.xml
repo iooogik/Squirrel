@@ -31,9 +31,6 @@
             android:name=".astonomy.ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
             android:theme="@style/AppThemeLight" />
-
-        <receiver android:name=".NotificationReceiver" android:enabled="true"/>
-
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
@@ -50,6 +47,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <receiver android:name=".NotificationReceiver" android:enabled="true"/>
+
     </application>
 
 </manifest>
