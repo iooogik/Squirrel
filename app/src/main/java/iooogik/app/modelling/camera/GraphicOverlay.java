@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package iooogik.app.modelling.qr;
+package iooogik.app.modelling.camera;
 
 import android.content.Context;
 import android.graphics.Canvas;

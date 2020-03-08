@@ -46,6 +46,7 @@ import java.util.Objects;
 
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.NotificationReceiver;
+import iooogik.app.modelling.qr.BarcodeCaptureActivity;
 import iooogik.app.modelling.qr.QR_Demo;
 import iooogik.app.modelling.R;
 
@@ -87,7 +88,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         btnQR.setOnClickListener(this);
         // получаем текущее состояние "календаря"
         calendar = Calendar.getInstance();
-        Notes.fab.setVisibility(View.GONE);
+        //Notes.fab.setVisibility(View.GONE);
         updateFragment();
         return view;
     }
@@ -125,7 +126,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         ImageView img = view.findViewById(R.id.qr_view);
         LinearLayout linearLayout = view.findViewById(R.id.layout_img);
 
-        if(!userCursor.isNull(5)){
+        if(!userCursor.isNull(userCursor.getColumnIndex("image"))){
             linearLayout.setVisibility(View.VISIBLE);
             img.setImageBitmap(setImage());
             shortNote.setEnabled(false);
@@ -142,8 +143,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         mDb = mDBHelper.getWritableDatabase();
         userCursor = mDb.rawQuery("Select * from Notes", null);
 
-        userCursor.moveToPosition(getButtonID());
-        byte[] bytesImg = userCursor.getBlob(5);
+        userCursor.moveToPosition(getButtonID() - 1);
+        byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
         return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
     }
 
@@ -384,8 +385,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         } else if(view.getId() == R.id.buttonQR){
             Bundle args = new Bundle();
             args.putInt("id", getButtonID());
-            NavController navHostFragment = NavHostFragment.findNavController(this);
-            navHostFragment.navigate(R.id.nav_qr, args);
+            Intent intent = new Intent(getContext(), BarcodeCaptureActivity.class);
+            intent.putExtras(args);
+            startActivity(intent);
         }
     }
 

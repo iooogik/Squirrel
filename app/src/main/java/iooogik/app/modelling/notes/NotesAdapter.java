@@ -25,6 +25,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -142,6 +143,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         navHostFragment.navigate(R.id.nav_checkList, bundle);
                         break;
                     case "standart":
+                        Notes.fab.setVisibility(View.GONE);
                         navHostFragment.navigate(R.id.nav_standart_note, bundle);
                         break;
                     case "book":

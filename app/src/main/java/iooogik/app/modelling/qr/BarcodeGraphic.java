@@ -22,6 +22,8 @@ import android.graphics.RectF;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
+import iooogik.app.modelling.camera.GraphicOverlay;
+
 /**
  * Graphic instance for rendering barcode position, size, and ID within an associated graphic
  * overlay view.

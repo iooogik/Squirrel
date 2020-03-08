@@ -24,49 +24,55 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
-import iooogik.app.modelling.Database;
-import iooogik.app.modelling.R;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import iooogik.app.modelling.Database;
+import iooogik.app.modelling.MainActivity;
+import iooogik.app.modelling.R;
+import iooogik.app.modelling.camera.CameraSourcePreview;
+import iooogik.app.modelling.camera.GraphicOverlay;
+import iooogik.app.modelling.notes.StandartNote;
 
 
-public final class BarcodeCaptureActivity extends Fragment implements
+public final class BarcodeCaptureActivity extends AppCompatActivity implements
         BarcodeGraphicTracker.BarcodeUpdateListener {
-
-    // переменные для работы с бд
-    private Database mDBHelper;
-    private SQLiteDatabase mDb;
-    private Cursor userCursor;
-
     private static final String TAG = "Barcode-reader";
 
     // intent request code to handle updating play services if needed.
@@ -76,11 +82,9 @@ public final class BarcodeCaptureActivity extends Fragment implements
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // constants used to pass extra data in the intent
-    private static final String AutoFocus = "AutoFocus";
-    private static final String UseFlash = "UseFlash";
+    public static final String AutoFocus = "AutoFocus";
+    public static final String UseFlash = "UseFlash";
     public static final String BarcodeObject = "Barcode";
-
-    private View view;
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -90,78 +94,82 @@ public final class BarcodeCaptureActivity extends Fragment implements
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
 
+    // переменные для работы с бд
+    private Database mDBHelper;
+    private SQLiteDatabase mDb;
+    private Cursor userCursor;
+
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+        setContentView(R.layout.barcode_capture);
 
-        view = inflater.inflate(R.layout.barcode_capture,
-                container, false);
+        mPreview = (CameraSourcePreview) findViewById(R.id.preview);
+        mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
-        mPreview = (CameraSourcePreview) view.findViewById(R.id.preview);
-        mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) view.findViewById(R.id.graphicOverlay);
 
-        // read parameters from the intent used to launch the activity.
-        //boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
-        //boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
-        int rc = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA);
+        int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             createCameraSource(true, false);
         } else {
             requestCameraPermission();
         }
 
-        gestureDetector = new GestureDetector(getContext(), new CaptureGestureListener());
-        scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
+        gestureDetector = new GestureDetector(this, new CaptureGestureListener());
 
         Snackbar.make(mGraphicOverlay, "Нажмите на найденный QR-код, чтобы сохранить его.",
                 Snackbar.LENGTH_LONG)
                 .show();
 
-        Button savePict = view.findViewById(R.id.saveQR);
+        Button savePict = findViewById(R.id.saveQR);
         savePict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GraphicOverlay<GraphicOverlay.Graphic> graphicOverlay =
-                        view.findViewById(R.id.graphicOverlay);
+                GraphicOverlay graphicOverlay = findViewById(R.id.graphicOverlay);
                 onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
             }
         });
 
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             // разрешение не предоставлено
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.CAMERA)) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Важное сообщение!")
                         .setMessage("Необходимо разрешение на использование камеры!")
                         .setIcon(R.drawable.ic_launcher)
                         .setCancelable(true)
                         .setNegativeButton("Не давать разрешение",
-                                (dialog, id) -> dialog.cancel())
-                        .setPositiveButton("Запросить ещё раз", (dialog, which) -> reqPermission());
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setPositiveButton("Запросить ещё раз", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                reqPermission();
+                            }
+                        });
                 AlertDialog alert = builder.create();
                 alert.show();
 
             } else {
                 // не требуется показывать объяснение. запрашиваем разрешение
-                ActivityCompat.requestPermissions(getActivity(),
+                ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.CAMERA}, 100);
             }
         }
-
-
-        return view;
     }
 
-
     protected void reqPermission(){
-        ActivityCompat.requestPermissions(getActivity(),
+        ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA}, 100);
     }
 
@@ -170,18 +178,23 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(getActivity(), permissions, RC_HANDLE_CAMERA_PERM);
+            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
             return;
         }
 
-        final Activity thisActivity = getActivity();
+        final Activity thisActivity = this;
 
-        View.OnClickListener listener = view -> ActivityCompat.requestPermissions(thisActivity, permissions,
-                RC_HANDLE_CAMERA_PERM);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityCompat.requestPermissions(thisActivity, permissions,
+                        RC_HANDLE_CAMERA_PERM);
+            }
+        };
 
-        view.findViewById(R.id.topLayout).setOnClickListener(listener);
+        findViewById(R.id.topLayout).setOnClickListener(listener);
         Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
@@ -191,38 +204,49 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
     @SuppressLint("InlinedApi")
     private void createCameraSource(boolean autoFocus, boolean useFlash) {
-        Context context = getContext();
+        Context context = getApplicationContext();
 
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, getContext());
+        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
         barcodeDetector.setProcessor(
                 new MultiProcessor.Builder<>(barcodeFactory).build());
 
         if (!barcodeDetector.isOperational()) {
             Log.w(TAG, "Detector dependencies are not yet available.");
+
+            IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
+            boolean hasLowStorage = registerReceiver(null, lowstorageFilter) != null;
+
+            if (hasLowStorage) {
+                Toast.makeText(this, R.string.low_storage_error,
+                        Toast.LENGTH_LONG).show();
+                Log.w(TAG, getString(R.string.low_storage_error));
+            }
         }
 
-        CameraSource.Builder builder = new CameraSource.Builder(getContext(), barcodeDetector)
+        CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(30.0f);
 
         // make sure that auto focus is an available option
-        builder = builder.setFocusMode(
-                autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            builder = builder.setFocusMode(
+                    autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
+        }
 
         mCameraSource = builder.build();
     }
 
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
         startCameraSource();
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
         if (mPreview != null) {
             mPreview.stop();
@@ -231,7 +255,7 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         super.onDestroy();
         if (mPreview != null) {
             mPreview.release();
@@ -251,9 +275,9 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
-            //boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
-            //boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
-            createCameraSource(false, false);
+            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
+            boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
+            createCameraSource(autoFocus, useFlash);
             return;
         }
 
@@ -262,11 +286,11 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
+                finish();
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Multitracker sample")
                 .setMessage(R.string.no_camera_permission)
                 .setPositiveButton(R.string.ok, listener)
@@ -276,10 +300,10 @@ public final class BarcodeCaptureActivity extends Fragment implements
 
     private void startCameraSource() throws SecurityException {
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                getContext());
+                getApplicationContext());
         if (code != ConnectionResult.SUCCESS) {
             Dialog dlg =
-                    GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), code, RC_HANDLE_GMS);
+                    GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
             dlg.show();
         }
 
@@ -319,39 +343,37 @@ public final class BarcodeCaptureActivity extends Fragment implements
                 bestDistance = distance;
             }
         }
-        //получение текста из qr и сохранение его в заметках
+        //получение текста из qr и передача в другое активити
         if (best != null) {
-            if(getNoteId() != -1){
-                byte[] image = best.rawBytes;
-                Bundle args = this.getArguments();
-                int id = args.getInt("id");
-                mDBHelper = new Database(getActivity());
-                mDBHelper.openDataBase();
-                mDb = mDBHelper.getWritableDatabase();
+            Intent data = new Intent(getApplicationContext(), MainActivity.class);
 
-                userCursor = mDb.rawQuery("Select * from Notes", null);
-                userCursor.moveToPosition(id + 1);
-
-                if(userCursor.getBlob(userCursor.getColumnIndex("image")) != null) {
-
-
-                    ContentValues cv = new ContentValues();
-                    cv.put("image", image);
-                    mDb.update("Notes", cv, "_id=" + id, null);
-                    Toast.makeText(getContext(), "Добавлено", Toast.LENGTH_LONG).show();
-
-
-                } else {
-                    Toast.makeText(getContext(), "У вас уже добавлен QR-код", Toast.LENGTH_LONG).show();
-                }
+            mDBHelper = new Database(getApplicationContext());
+            mDBHelper.openDataBase();
+            mDb =  mDBHelper.getWritableDatabase();
+            userCursor =  mDb.rawQuery("Select * from Notes", null);
+            // перемещаем курсор
+            userCursor.moveToPosition(getButtonID() - 1);
+            // устанавливаем дынные
+            ContentValues cv = new ContentValues();
+            Bitmap bitmap = null;
+            try {
+                bitmap =  encodeAsBitmap(best.displayValue);
+            } catch (Exception e){
+                Log.i("encoding qr", String.valueOf(e));
             }
 
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-            Intent data = new Intent(getContext(), QR_Demo.class);
+            if(bitmap != null){
+                bitmap.compress(Bitmap.CompressFormat.PNG, 5, stream);
+            }
+            cv.put("image", stream.toByteArray());
 
-            data.putExtra("qr_text", best.displayValue);
+            mDb.update("Notes", cv, "_id=" + getButtonID(), null);
+
+
             startActivity(data);
-
+            finish();
             return true;
         }
 
@@ -359,8 +381,42 @@ public final class BarcodeCaptureActivity extends Fragment implements
         return false;
     }
 
-    private int getNoteId(){
-        int id = -1;
+    Bitmap encodeAsBitmap(String str) throws WriterException {
+        BitMatrix result;
+        try {
+            result = new MultiFormatWriter().encode(str,
+                    BarcodeFormat.QR_CODE, 200, 200, null);
+        } catch (IllegalArgumentException iae) {
+            // Unsupported format
+            return null;
+        }
+        int w = result.getWidth();
+        int h = result.getHeight();
+        int[] pixels = new int[w * h];
+        for (int y = 0; y < h; y++) {
+            int offset = y * w;
+            for (int x = 0; x < w; x++) {
+                pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, 200, 0, 0, w, h);
+        return bitmap;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        boolean b = scaleGestureDetector.onTouchEvent(e);
+
+        boolean c = gestureDetector.onTouchEvent(e);
+
+        return b || c; //|| super.onTouchEvent(e);
+    }
+
+    private int getButtonID() {
+        int id = -199;
+        Bundle args = getIntent().getExtras();
+        id = args.getInt("id");
         return id;
     }
 
@@ -368,25 +424,6 @@ public final class BarcodeCaptureActivity extends Fragment implements
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
-        }
-    }
-
-    private class ScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            return false;
-        }
-
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            return true;
-        }
-
-        @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            mCameraSource.doZoom(detector.getScaleFactor());
-
         }
     }
 
