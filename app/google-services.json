@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:22085565666:android:c9549dca0977f4f1af72bb",
         "android_client_info": {
-          "package_name": "iooogik.app.modelling"
+          "package_name": "iooojik.app.modelling"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "22085565666-5q9ok3vgii77g633ti4o57ig1991a13t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "iooogik.app.modelling",
+            "package_name": "iooojik.app.modelling",
             "certificate_hash": "18f2c00ba30f8ff271e2f257235e8c4e05a6c48d"
           }
         },
@@ -26,7 +26,7 @@
           "client_id": "22085565666-ddu93eeg8ut3tsteb3puneo22vlhmioc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "iooogik.app.modelling",
+            "package_name": "iooojik.app.modelling",
             "certificate_hash": "ce11b25d86d5269f71ebc3253363e9e103922c20"
           }
         },

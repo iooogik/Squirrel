@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="@dimen/bottom_view"
-    tools:context="iooogik.app.modelling.notes.CheckList">
+    tools:context="iooojik.app.modelling.notes.CheckList">
 
     <FrameLayout
         android:layout_width="match_parent"

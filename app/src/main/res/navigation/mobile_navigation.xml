@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="iooogik.app.modelling.home.HomeFragment"
+        android:name="iooojik.app.modelling.home.HomeFragment"
         android:label="Главная"
         tools:layout="@layout/fragment_home" >
         <action
@@ -44,7 +44,7 @@
 
     <fragment
         android:id="@+id/nav_notes"
-        android:name="iooogik.app.modelling.notes.Notes"
+        android:name="iooojik.app.modelling.notes.Notes"
         android:label="Заметки"
         tools:layout="@layout/fragment_notes" >
         <action
@@ -60,31 +60,31 @@
 
     <fragment
         android:id="@+id/nav_tests"
-        android:name="iooogik.app.modelling.tests.Tests"
+        android:name="iooojik.app.modelling.tests.Tests"
         android:label="Тесты"
         tools:layout="@layout/fragment_test" />
 
     <fragment
         android:id="@+id/nav_contacts"
-        android:name="iooogik.app.modelling.contacts.Contacts"
+        android:name="iooojik.app.modelling.contacts.Contacts"
         android:label="Контакты"
         tools:layout="@layout/fragment_contacts" />
 
     <fragment
         android:id="@+id/nav_tools"
-        android:name="iooogik.app.modelling.settings.Settings"
+        android:name="iooojik.app.modelling.settings.Settings"
         android:label="Настройки"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/nav_las"
-        android:name="iooogik.app.modelling.las.LifeAtSpace"
+        android:name="iooojik.app.modelling.las.LifeAtSpace"
         android:label="Игра от издателя"
         tools:layout="@layout/fragment_test" />
 
     <fragment
         android:id="@+id/nav_planets_list"
-        android:name="iooogik.app.modelling.astonomy.Planets"
+        android:name="iooojik.app.modelling.astonomy.Planets"
         android:label="Планеты"
         tools:layout="@layout/fragment_planets"  >
         <action
@@ -102,7 +102,7 @@
 
     <fragment
         android:id="@+id/nav_planets_article"
-        android:name="iooogik.app.modelling.astonomy.ScrollingArticle"
+        android:name="iooojik.app.modelling.astonomy.ScrollingArticle"
         android:label="Планеты. Статья."
         tools:layout="@layout/activity_scrolling_article"  >
         <action
@@ -117,7 +117,7 @@
 
     <fragment
         android:id="@+id/nav_geometry_list"
-        android:name="iooogik.app.modelling.geometry.GeometricFigures"
+        android:name="iooojik.app.modelling.geometry.GeometricFigures"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_geometric_figures" >
         <action
@@ -132,20 +132,20 @@
 
     <fragment
         android:id="@+id/nav_standart_note"
-        android:name="iooogik.app.modelling.notes.StandartNote"
+        android:name="iooojik.app.modelling.notes.StandartNote"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_standart_note" >
     </fragment>
 
     <fragment
         android:id="@+id/nav_checkList"
-        android:name="iooogik.app.modelling.notes.CheckList"
+        android:name="iooojik.app.modelling.notes.CheckList"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_check" />
 
     <fragment
         android:id="@+id/nav_book"
-        android:name="iooogik.app.modelling.notes.Book"
+        android:name="iooojik.app.modelling.notes.Book"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_book" />
 
