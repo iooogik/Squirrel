@@ -9,6 +9,7 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -33,7 +34,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.filament.Material;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.sql.Array;
 import java.text.DateFormat;
@@ -157,6 +162,15 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         final String TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
         String tempBool = userCursor.getString(userCursor.getColumnIndex("isChecked"));
 
+        try {
+            Items.clear();
+            Booleans.clear();
+        } catch (Exception e){
+            Log.i("getItems", String.valueOf(e));
+        }
+        LinearLayout linear = view.findViewById(R.id.markedScroll);
+        linear.removeAllViews();
+
         if (TEMP != null && tempBool != null) {
             //"делим" полученный текст и добавляем в соответствующие списки
             String[] tempArr = TEMP.split("\r\n|\r|\n");
@@ -209,6 +223,38 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                     sendBool.toString());
             isCompleted(!Booleans.contains(false));
         });
+
+        CHECK.setOnLongClickListener(v -> {
+
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+            LinearLayout linearLayout = new LinearLayout(getContext());
+            View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
+            TextInputEditText editText = view1.findViewById(R.id.edit_text);
+            TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
+            textInputLayout.setHint("Введите новое имя");
+            linearLayout.addView(view1);
+            builder.setView(linearLayout);
+            builder.setPositiveButton("Изменить", (dialog, which) -> {
+                mDb = mDBHelper.getWritableDatabase();
+                int id = Items.indexOf(CHECK.getText());
+                Items.set(id, editText.getText().toString());
+                ContentValues cv = new ContentValues();
+                StringBuilder stringBuilder = new StringBuilder();
+                for(String item: Items) {
+                    stringBuilder.append(item).append("\n");
+                }
+                cv.put("points", stringBuilder.toString());
+
+                mDb.update("Notes", cv, "_id=" + getButtonID(), null);
+                getPoints();
+
+            });
+
+            builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+            builder.create().show();
+            return true;
+        });
+
         linear.addView(view2);
     }
 

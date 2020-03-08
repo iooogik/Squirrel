@@ -32,8 +32,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.zxing.WriterException;
 
@@ -47,7 +45,6 @@ import java.util.Objects;
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.NotificationReceiver;
 import iooogik.app.modelling.qr.BarcodeCaptureActivity;
-import iooogik.app.modelling.qr.QR_Demo;
 import iooogik.app.modelling.R;
 
 import static android.content.Context.ALARM_SERVICE;
@@ -203,54 +200,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                     shortNote.getText().toString() + "[/shortNote]";
         }
 
-        QR_Demo qr_demo = new QR_Demo();
-        try {
-            createDialog(qr_demo.encodeAsBitmap(sendText));
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
 
-    }
-
-    private void createDialog(Bitmap bitmap){
-        // создаём AlertDialog, чтобы поделиться заметкой
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-        LinearLayout mainLayout  = new LinearLayout(getActivity());
-        LinearLayout layout1 = new LinearLayout(getActivity());
-
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
-        layout1.setOrientation(LinearLayout.VERTICAL);
-
-        int padding = 70;
-
-        mainLayout.setPadding(padding, padding, padding, padding);
-
-        ImageView imageView = new ImageView(getContext());
-        imageView.setMinimumHeight(1000);
-        imageView.setMinimumWidth(1000);
-        imageView.setImageBitmap(bitmap);
-
-        TextView tv = new TextView(getContext());
-        tv.setMinHeight(25);
-        tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-        tv.setText(R.string.usePhoneToReadQR);
-        tv.setTextColor(Color.BLACK);
-        tv.setTextSize(18);
-        tv.setMinHeight(15);
-
-        layout1.addView(tv);
-        layout1.addView(imageView);
-
-        mainLayout.addView(layout1);
-        builder.setView(mainLayout);
-
-        builder.setCancelable(true);
-        builder.setPositiveButton(Html.fromHtml
-                        ("<font color='" + R.color.color_primary_text + "'>Готово</font>"),
-                (dialog, which) -> dialog.cancel());
-        AlertDialog dlg = builder.create();
-        dlg.show();
     }
 
     @Override

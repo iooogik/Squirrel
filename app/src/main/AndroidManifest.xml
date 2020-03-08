@@ -39,7 +39,6 @@
             android:value="required" />
 
         <activity android:name=".notes.StandartNote" />
-        <activity android:name=".qr.QR_Demo" />
         <activity android:name=".ARcamera" />
         <activity android:name=".notes.Notes" />
 

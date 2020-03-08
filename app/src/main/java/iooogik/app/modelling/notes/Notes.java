@@ -106,7 +106,6 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     }
 
-
     //обновление проектов на активити
     private void updProjects(){
         //добавление новых проектов
