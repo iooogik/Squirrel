@@ -109,7 +109,6 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <LinearLayout
-                        android:id="@+id/shop"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
@@ -119,25 +118,25 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical"
-                            android:visibility="gone">
+                            android:visibility="visible">
 
                             <ImageView
                                 android:id="@+id/qr_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
-                                android:minWidth="200dp"
-                                android:minHeight="200dp"
+                                android:minWidth="150dp"
+                                android:minHeight="150dp"
                                 tools:src="@tools:sample/avatars" />
-                        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/noteWarn"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="3dp"
-                            android:text="@string/noteWarning"
-                            android:visibility="gone" />
+                            <TextView
+                                android:id="@+id/decodedqr"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginBottom="10dp"
+                                android:text="TextView" />
+                        </LinearLayout>
 
                         <EditText
                             android:id="@+id/editNote"

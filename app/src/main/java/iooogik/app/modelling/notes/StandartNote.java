@@ -2,7 +2,6 @@ package iooogik.app.modelling.notes;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -13,11 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Html;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,8 +28,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.zxing.WriterException;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,8 +37,8 @@ import java.util.Objects;
 
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.NotificationReceiver;
-import iooogik.app.modelling.qr.BarcodeCaptureActivity;
 import iooogik.app.modelling.R;
+import iooogik.app.modelling.qr.BarcodeCaptureActivity;
 
 import static android.content.Context.ALARM_SERVICE;
 
@@ -85,8 +78,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         btnQR.setOnClickListener(this);
         // получаем текущее состояние "календаря"
         calendar = Calendar.getInstance();
-        //Notes.fab.setVisibility(View.GONE);
         updateFragment();
+
         return view;
     }
 
@@ -109,6 +102,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         EditText name = view.findViewById(R.id.editName);
         EditText note = view.findViewById(R.id.editNote);
         EditText shortNote = view.findViewById(R.id.shortNote);
+        TextView decodedQR = view.findViewById(R.id.decodedqr);
 
         mDb = mDBHelper.getReadableDatabase();
 
@@ -116,9 +110,10 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         // перемещаем курсор
         userCursor.moveToPosition(getButtonID() - 1);
         // устанавливаем дынные
-        name.setText(userCursor.getString(1));
-        shortNote.setText(userCursor.getString(2));
-        note.setText(userCursor.getString(3));
+        name.setText(userCursor.getString(userCursor.getColumnIndex("name")));
+        shortNote.setText(userCursor.getString((userCursor.getColumnIndex("shortName"))));
+        note.setText(userCursor.getString(userCursor.getColumnIndex("text")));
+
 
         ImageView img = view.findViewById(R.id.qr_view);
         LinearLayout linearLayout = view.findViewById(R.id.layout_img);
@@ -126,6 +121,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         if(!userCursor.isNull(userCursor.getColumnIndex("image"))){
             linearLayout.setVisibility(View.VISIBLE);
             img.setImageBitmap(setImage());
+            decodedQR.setText(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
         }
     }
 
@@ -222,7 +218,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             Intent notificationIntent = new Intent(context, NotificationReceiver.class);
 
             Bundle args = new Bundle();
-            args.putInt("btnId", getButtonID());
+            args.putInt("button ID", getButtonID());
             args.putString("btnName", title);
             args.putString("title", title);
             args.putString("shortNote", text);
@@ -231,9 +227,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(),
-                    0, notificationIntent,
-                    0);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0,
+                    notificationIntent, 0);
 
             AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
@@ -241,7 +236,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                     10000, pendingIntent);
 
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
 
             Toast.makeText(getContext(), "Уведомление установлено",
                     Toast.LENGTH_LONG).show();
@@ -297,35 +291,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
             if(note.getText().toString().length() <= 300) {
                     share();
-                }
-            else {
-                note.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        TextView tv = view.findViewById(R.id.noteWarn);
-                        if(note.getText().toString().length() > 300){
-                            if(tv.getVisibility() != View.VISIBLE) {
-                                tv.setVisibility(View.VISIBLE);
-                            }
-                        } else {
-                            if(tv.getVisibility() != View.GONE) {
-                                tv.setVisibility(View.GONE);
-                            }
-                        }
-                    }
-                });
-
-
             }
         } else if (view.getId() == R.id.buttonAlarm){
             alarmDialog(nameNote, shortText);

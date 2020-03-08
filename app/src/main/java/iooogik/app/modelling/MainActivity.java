@@ -1,5 +1,9 @@
 package iooogik.app.modelling;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -7,13 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,26 +34,34 @@ public class MainActivity extends AppCompatActivity {
         Settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         // изменение темы
 
-        if (Settings.contains(APP_PREFERENCES_THEME)) {
+        switch (Settings.getInt(APP_PREFERENCES_THEME, 0)) {
+            case 0:
+                setTheme(R.style.AppThemeLight); // Стандартная
+                break;
+            case 1:
+                setTheme(R.style.AppThemeDark); // Тёмная
+                break;
+            case 2:
+                setTheme(R.style.AppThemeRed); // Красная
+                break;
+            case 3:
+                setTheme(R.style.AppThemeBlue); // Синяя
+                break;
+            case 4:
+                setTheme(R.style.AppThemeYellow); // Жёлтая
+                break;
 
-            switch (Settings.getInt(APP_PREFERENCES_THEME, 0)) {
-                case 0:
-                    setTheme(R.style.AppThemeLight); // Стандартная
-                    break;
-                case 1:
-                    setTheme(R.style.AppThemeDark); // Тёмная
-                    break;
-                case 2:
-                    setTheme(R.style.AppThemeRed); // Красная
-                    break;
-                case 3:
-                    setTheme(R.style.AppThemeBlue); // Синяя
-                    break;
-                case 4:
-                    setTheme(R.style.AppThemeYellow); // Жёлтая
-                    break;
 
-            }
+            case 5:
+                setTheme(R.style.AppThemeRedDark); // Красная тёмная
+                break;
+            case 6:
+                setTheme(R.style.AppThemeBlueDark); // Синяя тёмная
+                break;
+            case 7:
+                setTheme(R.style.AppThemeYellowDark); // Жёлтая тёмная
+                break;
+
         }
 
         setContentView(R.layout.activity_main);

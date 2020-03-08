@@ -48,12 +48,10 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -68,7 +66,6 @@ import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
 import iooogik.app.modelling.camera.CameraSourcePreview;
 import iooogik.app.modelling.camera.GraphicOverlay;
-import iooogik.app.modelling.notes.StandartNote;
 
 
 public final class BarcodeCaptureActivity extends AppCompatActivity implements
@@ -368,12 +365,12 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
                 bitmap.compress(Bitmap.CompressFormat.PNG, 5, stream);
             }
             cv.put("image", stream.toByteArray());
+            cv.put("decodeQR", best.displayValue);
 
             mDb.update("Notes", cv, "_id=" + getButtonID(), null);
 
 
             startActivity(data);
-            finish();
             return true;
         }
 

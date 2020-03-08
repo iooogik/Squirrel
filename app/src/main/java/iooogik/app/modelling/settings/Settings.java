@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -32,6 +31,7 @@ public class Settings extends Fragment {
     private View view;
     private PackageInfo packageInfo;
     private AutoCompleteTextView spinner;
+    private SharedPreferences Settings;
 
 
 
@@ -39,6 +39,7 @@ public class Settings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
+        Settings = MainActivity.Settings;
 
         try {
             packageInfo = getActivity().getPackageManager().
@@ -57,9 +58,9 @@ public class Settings extends Fragment {
     private void setShowBookMaterials() {
         SwitchMaterial show_book_mat = view.findViewById(R.id.book_items);
 
-        if (MainActivity.Settings.contains(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
+        if (Settings.contains(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
             // Получаем число из настроек
-            int val = MainActivity.Settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+            int val = Settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
 
             if(val == 1){
                 show_book_mat.setChecked(true);
@@ -70,7 +71,7 @@ public class Settings extends Fragment {
 
         show_book_mat.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
-                SharedPreferences.Editor SettingsEditor = MainActivity.Settings.edit();
+                SharedPreferences.Editor SettingsEditor = Settings.edit();
                 SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
                 SettingsEditor.apply();
                 try {
@@ -79,7 +80,7 @@ public class Settings extends Fragment {
                     Log.i("Settings Show_Materials", String.valueOf(e));
                 }
             } else {
-                SharedPreferences.Editor SettingsEditor = MainActivity.Settings.edit();
+                SharedPreferences.Editor SettingsEditor = Settings.edit();
                 SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
                 SettingsEditor.apply();
             }
@@ -96,13 +97,28 @@ public class Settings extends Fragment {
         themes.add("Красная");
         themes.add("Синяя");
         themes.add("Жёлтая");
-
+        SwitchMaterial darkTheme = view.findViewById(R.id.turn_on_dark_theme);
         spinner = view.findViewById(R.id.themes);
+        final int[] val = {0};
 
-        if (MainActivity.Settings.contains(MainActivity.APP_PREFERENCES_THEME)) {
+        if (Settings.contains(MainActivity.APP_PREFERENCES_THEME)) {
             // Получаем число из настроек
-            int val = MainActivity.Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
-            spinner.setText(themes.get(val));
+            val[0] = Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
+            if(val[0] > 4){
+                switch (val[0]){
+                    case 5:
+                        spinner.setText(themes.get(2));
+                        break;
+                    case 6:
+                        spinner.setText(themes.get(3));
+                        break;
+                    case 7:
+                        spinner.setText(themes.get(4));
+                        break;
+                }
+                darkTheme.setChecked(true);
+            }else
+            spinner.setText(themes.get(val[0]));
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
@@ -112,7 +128,7 @@ public class Settings extends Fragment {
 
         spinner.setOnItemClickListener((parent, view, position, id) -> {
 
-            SharedPreferences.Editor SettingsEditor = MainActivity.Settings.edit();
+            SharedPreferences.Editor SettingsEditor = Settings.edit();
             SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, position);
             SettingsEditor.apply();
 
@@ -121,6 +137,52 @@ public class Settings extends Fragment {
             getActivity().overridePendingTransition(android.R.anim.fade_in,
                     android.R.anim.fade_out);
         });
+
+
+        darkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                switch (val[0]){
+                    case 2:
+                        val[0] = 5;
+                        break;
+                    case 3:
+                        val[0] = 6;
+                        break;
+                    case 4:
+                        val[0] = 7;
+                        break;
+                }
+                SharedPreferences.Editor SettingsEditor = Settings.edit();
+                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, val[0]);
+                SettingsEditor.apply();
+
+                getActivity().finish();
+                getActivity().startActivity(new Intent(getContext(), MainActivity.class));
+                getActivity().overridePendingTransition(android.R.anim.fade_in,
+                        android.R.anim.fade_out);
+            } else {
+                switch (val[0]){
+                    case 5:
+                        val[0] = 2;
+                        break;
+                    case 6:
+                        val[0] = 3;
+                        break;
+                    case 7:
+                        val[0] = 4;
+                        break;
+                }
+                SharedPreferences.Editor SettingsEditor = Settings.edit();
+                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, val[0]);
+                SettingsEditor.apply();
+
+                getActivity().finish();
+                getActivity().startActivity(new Intent(getContext(), MainActivity.class));
+                getActivity().overridePendingTransition(android.R.anim.fade_in,
+                        android.R.anim.fade_out);
+            }
+        });
+
     }
 
     private void setCurrentVersion(){

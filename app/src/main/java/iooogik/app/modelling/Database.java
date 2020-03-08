@@ -1,9 +1,9 @@
 package iooogik.app.modelling;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,7 +19,7 @@ public class Database extends SQLiteOpenHelper {
     // путь к бд
     private static String DB_PATH;
     // версия бд
-    private static final int DB_VERSION = 37;
+    private static final int DB_VERSION = 38;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;
