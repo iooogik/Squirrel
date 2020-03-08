@@ -56,31 +56,26 @@
     </style>
 
 
-
-
-
-
-
-
-
-
-
-
-
-    <style name="AppThemeYellow" parent="Theme.MaterialComponents">
+    <style name="AppThemeYellow" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimaryYellow</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkYellow</item>
         <item name="colorAccent">@color/colorAccentYellow</item>
-        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColor">@color/color_primary_textYellow</item>
         <item name="colorControlNormal">@color/colorWhite</item>
-        <item name="android:windowBackground">@color/darkBackground</item>
-        <item name="imageButtonStyle">@style/customSmallButtons</item>
 
         <item name="floatingActionButtonStyle">@style/customFabYellow</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+
+
+
+
+
+
+
 
     <style name="AppThemeRedDark" parent="Theme.MaterialComponents">
         <item name="colorPrimary">@color/colorPrimaryRed</item>

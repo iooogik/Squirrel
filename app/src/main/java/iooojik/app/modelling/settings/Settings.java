@@ -107,25 +107,24 @@ public class Settings extends Fragment {
         //ставим текст в "спиннер"
         //если тема тёмная, то ставим аналогичную, но не указываем, что она тёмная
         //так как далее идёт "чек" для установки тёмной темы
-        if (Settings.contains(MainActivity.APP_PREFERENCES_THEME)) {
-            // Получаем число из настроек
-            val[0] = Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
-            if(val[0] > 4){
-                switch (val[0]){
-                    case 5:
-                        spinner.setText(themes.get(2));
-                        break;
-                    case 6:
-                        spinner.setText(themes.get(3));
-                        break;
-                    case 7:
-                        spinner.setText(themes.get(4));
-                        break;
-                }
-                darkTheme.setChecked(true);
-            }else
-            spinner.setText(themes.get(val[0]));
-        }
+        // Получаем число из настроек
+
+        val[0] = Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
+        if(val[0] > 4){
+            switch (val[0]){
+                case 5:
+                    spinner.setText(themes.get(2));
+                    break;
+                case 6:
+                    spinner.setText(themes.get(3));
+                    break;
+                case 7:
+                    spinner.setText(themes.get(4));
+                    break;
+            }
+            darkTheme.setChecked(true);
+        }else  spinner.setText(themes.get(val[0]));
+
         //адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
                 android.R.layout.simple_spinner_dropdown_item, themes);

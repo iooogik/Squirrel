@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         // получение настроек
         Settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         // изменение темы
-
         switch (Settings.getInt(APP_PREFERENCES_THEME, 0)) {
             case 0:
                 setTheme(R.style.AppThemeLight); // Стандартная
