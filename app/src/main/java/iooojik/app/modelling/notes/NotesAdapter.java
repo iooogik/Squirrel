@@ -130,6 +130,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 }
             }
 
+            mDb = mDBHelper.getReadableDatabase();
+            userCursor = mDb.rawQuery("Select * from Notes", null);
+            userCursor.moveToPosition(position);
+
+            if(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 1){
+                holder.isNotifSet.setVisibility(View.VISIBLE);
+            }else if(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 0){
+                holder.isNotifSet.setVisibility(View.GONE);
+            }
+
             //слушатель для открытия фрагмента с заметкой
             holder.frameLayout.setOnClickListener(v -> {
                 bundle.putString("button name", note.getName());
@@ -186,7 +196,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        final ImageView imageView, completed;
+        final ImageView imageView, completed, isNotifSet;
         final TextView name, desc;
         final LinearLayout back;
         final FrameLayout frameLayout;
@@ -197,6 +207,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             name = view.findViewById(R.id.name);
             desc = view.findViewById(R.id.description);
             back = view.findViewById(R.id.background);
+            isNotifSet = view.findViewById(R.id.notif);
             completed = view.findViewById(R.id.completed);
         }
     }

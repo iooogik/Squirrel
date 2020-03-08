@@ -35,15 +35,34 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/completed"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="end"
-                    android:layout_margin="10dp"
-                    android:visibility="gone"
-                    android:tint="@color/Completed"
-                    app:srcCompat="@drawable/baseline_check_circle_outline_white_18dp" />
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/completed"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="10dp"
+                        android:tint="@color/Completed"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/baseline_check_circle_outline_white_18dp" />
+
+                    <ImageView
+                        android:id="@+id/notif"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:tint="@color/notCompleted"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/baseline_notifications_white_18dp" />
+                </LinearLayout>
 
             </FrameLayout>
 

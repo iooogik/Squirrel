@@ -370,7 +370,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             mDb.update("Notes", cv, "_id=" + getButtonID(), null);
 
 
-            startActivity(data);
+            //startActivity(data);
+            finish();
             return true;
         }
 

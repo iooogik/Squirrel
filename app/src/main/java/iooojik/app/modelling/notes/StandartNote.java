@@ -28,6 +28,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -90,6 +92,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     @Override
+    public void onResume() {
+        updateFragment();
+        super.onResume();
+    }
+
+    @Override
     public void updateFragment(){
         /*
           Обновляем содержимое фрагмента
@@ -121,6 +129,26 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         if(!userCursor.isNull(userCursor.getColumnIndex("image"))){
             linearLayout.setVisibility(View.VISIBLE);
             img.setImageBitmap(setImage());
+            img.setOnLongClickListener(v -> {
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+                LinearLayout linearLayout1 = new LinearLayout(getContext());
+
+                TextView textView = new TextView(getContext());
+                textView.setText(R.string.deleteQR);
+                linearLayout1.setOrientation(LinearLayout.VERTICAL);
+                linearLayout1.addView(textView);
+                builder.setView(linearLayout1);
+                builder.setPositiveButton("Да", (dialog, which) -> {
+                    mDb = mDBHelper.getWritableDatabase();
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("image", (byte[]) null);
+                    mDb.update("Notes", contentValues, "_id=" + getButtonID(), null);
+                    linearLayout.setVisibility(View.GONE);
+                });
+                builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+                builder.create().show();
+                return true;
+            });
             decodedQR.setText(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
         }
     }
@@ -218,7 +246,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             Intent notificationIntent = new Intent(context, NotificationReceiver.class);
 
             Bundle args = new Bundle();
-            args.putInt("button ID", getButtonID());
+            args.putInt("btnId", getButtonID());
             args.putString("btnName", title);
             args.putString("title", title);
             args.putString("shortNote", text);
@@ -239,6 +267,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
             Toast.makeText(getContext(), "Уведомление установлено",
                     Toast.LENGTH_LONG).show();
+
+            mDb = mDBHelper.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("isNotifSet", 1);
+            mDb.update("Notes", contentValues, "_id=" + getButtonID(), null);
+            Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
         }, hours, minutes, true);
 

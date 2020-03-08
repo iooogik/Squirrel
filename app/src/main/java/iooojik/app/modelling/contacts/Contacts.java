@@ -51,7 +51,7 @@ public class Contacts extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if(v.getId() == R.id.telegram){
 
-            Uri address = Uri.parse("https://t.me/iooogik");
+            Uri address = Uri.parse("https://t.me/iooojik");
             Intent openLink = new Intent(Intent.ACTION_VIEW, address);
             startActivity(openLink);
 
@@ -79,13 +79,13 @@ public class Contacts extends Fragment implements View.OnClickListener {
 
         } else if(v.getId() == R.id.vk){
 
-            Uri address = Uri.parse("https://vk.com/iooogikdev");
+            Uri address = Uri.parse("https://vk.com/iooojikdev");
             Intent openLink = new Intent(Intent.ACTION_VIEW, address);
             startActivity(openLink);
 
         } else if(v.getId() == R.id.instagram){
 
-            Uri address = Uri.parse("https://www.instagram.com/iooogik/?r=nametag");
+            Uri address = Uri.parse("https://www.instagram.com/iooojik/?r=nametag");
             Intent openLink = new Intent(Intent.ACTION_VIEW, address);
             startActivity(openLink);
 

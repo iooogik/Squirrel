@@ -306,6 +306,12 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             Toast.makeText(getContext(), "Уведомление установлено",
                     Toast.LENGTH_LONG).show();
 
+            mDb = mDBHelper.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("isNotifSet", 1);
+            mDb.update("Notes", contentValues, "_id=" + getButtonID(), null);
+            Notes.NOTES_ADAPTER.notifyDataSetChanged();
+
         }, hours, minutes, true);
 
         dialog = new DatePickerDialog(

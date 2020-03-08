@@ -3,12 +3,16 @@ package iooojik.app.modelling;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
+
+import iooojik.app.modelling.notes.Notes;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -39,7 +43,20 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         Bundle newArgs = intent.getExtras();
 
+        //Переменная для работы с БД
+        Database mDBHelper;
+        SQLiteDatabase mDb;
 
+        mDBHelper = new Database(context);
+        mDBHelper.openDataBase();
+        mDb = mDBHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("isNotifSet", 0);
+
+        mDb.update("Notes", contentValues, "_id="+ newArgs.getInt("btnId"), null);
+
+        Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, CHANNEL_ID)
