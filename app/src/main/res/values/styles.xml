@@ -71,7 +71,7 @@
         <item name="colorPrimary">@color/colorPrimaryYellow</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkYellow</item>
         <item name="colorAccent">@color/colorAccentYellow</item>
-        <item name="android:textColor">@color/color_primary_textYellow</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
         <item name="imageButtonStyle">@style/customSmallButtons</item>
@@ -87,7 +87,7 @@
         <item name="colorAccent">@color/colorAccentRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
         <item name="colorControlNormal">@color/colorWhite</item>
-        <item name="android:textColor">@color/color_primary_textRed</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
         <item name="imageButtonStyle">@style/customSmallButtons</item>
 
@@ -102,7 +102,7 @@
         <item name="colorPrimary">@color/colorPrimaryBlue</item>
         <item name="colorAccent">@color/colorAccentBlue</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>
-        <item name="android:textColor">@color/color_primary_textBlue</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
         <item name="imageButtonStyle">@style/customSmallButtons</item>
@@ -117,7 +117,7 @@
         <item name="colorPrimary">@color/colorPrimaryYellow</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkYellow</item>
         <item name="colorAccent">@color/colorAccentYellow</item>
-        <item name="android:textColor">@color/color_primary_textYellow</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
         <item name="imageButtonStyle">@style/customSmallButtons</item>
