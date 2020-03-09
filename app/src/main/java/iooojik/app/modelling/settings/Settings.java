@@ -105,7 +105,7 @@ public class Settings extends Fragment {
         spinner = view.findViewById(R.id.themes);
         final int[] val = {0};
         //ставим текст в "спиннер"
-        //если тема тёмная, то ставим аналогичную, но не указываем, что она тёмная
+        //если тема тёмная, то ставим аналогичную, но не указываем, что она тёмная,
         //так как далее идёт "чек" для установки тёмной темы
         // Получаем число из настроек
 
@@ -123,7 +123,7 @@ public class Settings extends Fragment {
                     break;
             }
             darkTheme.setChecked(true);
-        }else  spinner.setText(themes.get(val[0]));
+        } else  spinner.setText(themes.get(val[0]));
 
         //адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
@@ -140,6 +140,8 @@ public class Settings extends Fragment {
             getActivity().overridePendingTransition(android.R.anim.fade_in,
                     android.R.anim.fade_out);
         });
+
+        if(val[0] == 1){darkTheme.setChecked(true); darkTheme.setEnabled(false);}
 
         //слушатель для выбора тёмной темы
         darkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
