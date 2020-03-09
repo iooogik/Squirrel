@@ -28,7 +28,7 @@
           android:text="@string/СохранитьQR" />
     </LinearLayout>
 
-    <iooojik.app.modelling.camera.CameraSourcePreview
+    <iooogik.app.modelling.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -38,7 +38,7 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent" />
 
-    </iooojik.app.modelling.camera.CameraSourcePreview>
+    </iooogik.app.modelling.camera.CameraSourcePreview>
 
   </FrameLayout>
 
