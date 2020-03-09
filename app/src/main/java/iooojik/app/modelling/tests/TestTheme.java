@@ -6,14 +6,20 @@ public class TestTheme {
     private float rightAnswers;
     private float wrongAnswers;
     private boolean isPassed;
+    private int id;
 
 
-    TestTheme(String name, String desc, float rightAnswers, float wrongAnswers, boolean isPassed){
+    TestTheme(String name, String desc, float rightAnswers, float wrongAnswers, boolean isPassed, int id){
         this.name = name;
         this.desc = desc;
         this.rightAnswers = rightAnswers;
         this.wrongAnswers = wrongAnswers;
         this.isPassed = isPassed;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public boolean isPassed() {

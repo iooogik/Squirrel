@@ -102,7 +102,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
                 quest_frame.setVisibility(View.VISIBLE);
 
                 bundle.putString("button name", testTheme.getName());
-                bundle.putInt("button ID", position);
+                bundle.putInt("button ID", testTheme.getId());
 
                 Questions questions = new Questions();
                 questions.setArguments(bundle);
@@ -111,7 +111,6 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
                         .setCustomAnimations(R.anim.nav_default_enter_anim,
                                 R.anim.nav_default_exit_anim).
-
                         replace(R.id.test_frame, questions,
                                 "testFrame").commitAllowingStateLoss();
 

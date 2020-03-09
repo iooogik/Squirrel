@@ -199,6 +199,7 @@ public class Notes extends Fragment implements View.OnClickListener {
                     cv.put("shortName", shortNote);
                     cv.put("text", text);
                     cv.put("type", type);
+                    cv.put("isNotifSet", 0);
                     //получение даты
                     Date currentDate = new Date();
                     DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",

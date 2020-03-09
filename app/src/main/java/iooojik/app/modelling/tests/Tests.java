@@ -79,9 +79,9 @@ public class Tests extends Fragment implements View.OnClickListener{
                     getInt(userCursor.getColumnIndex("isPassed"));
             boolean isPassed = false;
             isPassed = isPassedDB == 1;
-
+            int id = userCursor.getInt(userCursor.getColumnIndex("_id"));
             //добавляем тест в recyclerView
-            TEST_ITEMS.add(new TestTheme(name, desc, rightScore, wrongScore, isPassed));
+            TEST_ITEMS.add(new TestTheme(name, desc, rightScore, wrongScore, isPassed, id));
             userCursor.moveToNext();
 
         }

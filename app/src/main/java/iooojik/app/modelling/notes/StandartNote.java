@@ -114,10 +114,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         mDb = mDBHelper.getReadableDatabase();
 
-        userCursor =  mDb.rawQuery("Select * from Notes", null);
+        userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
+        userCursor.moveToFirst();
         // перемещаем курсор
-        userCursor.moveToPosition(getButtonID() - 1);
+
         // устанавливаем дынные
+
         name.setText(userCursor.getString(userCursor.getColumnIndex("name")));
         shortNote.setText(userCursor.getString((userCursor.getColumnIndex("shortName"))));
         note.setText(userCursor.getString(userCursor.getColumnIndex("text")));
@@ -161,9 +163,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     private Bitmap setImage(){
         // устанавливаем картинку на фрагмент
         mDb = mDBHelper.getWritableDatabase();
-        userCursor = mDb.rawQuery("Select * from Notes", null);
-
-        userCursor.moveToPosition(getButtonID() - 1);
+        userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
+        userCursor.moveToFirst();
         byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
         return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
     }

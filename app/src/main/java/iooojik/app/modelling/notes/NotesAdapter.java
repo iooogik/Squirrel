@@ -93,8 +93,11 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             mDb = mDBHelper.getReadableDatabase();
-                            userCursor = mDb.rawQuery("Select * from Notes", null);
-                            userCursor.moveToPosition(position);
+
+                            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
+                                    new String[]{String.valueOf(note.getId())});
+                            userCursor.moveToFirst();
+
                             if(userCursor.getBlob(userCursor.getColumnIndex("image")) != null){
                                 ContentValues contentValues = new ContentValues();
                                 contentValues.put("image", (byte[]) null);
@@ -120,8 +123,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
             if (note.getType().equals("shop")){
                 mDb = mDBHelper.getReadableDatabase();
-                userCursor = mDb.rawQuery("Select * from Notes", null);
-                userCursor.moveToPosition(position);
+
+                userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
+                        new String[]{String.valueOf(note.getId())});
+                userCursor.moveToFirst();
 
                 if(userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1){
                     holder.completed.setVisibility(View.VISIBLE);
@@ -131,8 +136,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             }
 
             mDb = mDBHelper.getReadableDatabase();
-            userCursor = mDb.rawQuery("Select * from Notes", null);
-            userCursor.moveToPosition(position);
+
+            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
+                    new String[]{String.valueOf(note.getId())});
+            userCursor.moveToFirst();
 
             if(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 1){
                 holder.isNotifSet.setVisibility(View.VISIBLE);

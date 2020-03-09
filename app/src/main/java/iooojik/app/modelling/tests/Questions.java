@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -135,8 +136,9 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private void getAnswers(){
         mDb = mDBHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from Tests", null);
-        userCursor.moveToPosition(getBtnID());
+
+        userCursor =  mDb.rawQuery("Select * from Tests WHERE _id=?", new String[]{String.valueOf(getBtnID())});
+        userCursor.moveToFirst();
 
         String TEMPansws = userCursor.getString(userCursor.getColumnIndex("textAnswers"));
 
@@ -149,8 +151,10 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private void getQuestions() {
         mDb = mDBHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from Tests", null);
-        userCursor.moveToPosition(getBtnID());
+        Toast.makeText(getContext(), String.valueOf(getBtnID()), Toast.LENGTH_SHORT).show();
+        userCursor =  mDb.rawQuery("Select * from Tests WHERE _id=?", new String[]{String.valueOf(getBtnID())});
+        userCursor.moveToFirst();
+
         String TEMP_quests = userCursor.getString(userCursor.getColumnIndex("questions"));
         String[] quests = TEMP_quests.split("\r\n|\r|\n");
         questions.addAll(Arrays.asList(quests));
@@ -174,13 +178,15 @@ public class Questions extends Fragment implements View.OnClickListener{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mDb = mDBHelper.getWritableDatabase();
-                    userCursor = mDb.rawQuery("Select * from Tests", null);
-                    userCursor.moveToPosition(getBtnID());
+
+                    userCursor =  mDb.rawQuery("Select * from Tests WHERE _id=?", new String[]{String.valueOf(getBtnID())});
+                    userCursor.moveToFirst();
+
                     ContentValues contentValues = new ContentValues();
                     contentValues.put("trueAnswers", rightScore);
                     contentValues.put("wrongAnswers", wrongScore);
                     contentValues.put("isPassed", 1);
-                    mDb.update("Tests", contentValues, "_id =" + (getBtnID() + 1), null);
+                    mDb.update("Tests", contentValues, "_id =" + (getBtnID()), null);
                     FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
                     frameLayout.removeAllViews();
                     frameLayout.setVisibility(View.GONE);
