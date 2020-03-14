@@ -85,6 +85,12 @@ public class Notes extends Fragment implements View.OnClickListener {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        fab.setVisibility(View.GONE);
+    }
+
     private void startProcedures(){
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();

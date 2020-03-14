@@ -41,7 +41,7 @@ public class Book extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         linear = view.findViewById(R.id.scroll);
-
+        Notes.fab.setVisibility(View.GONE);
         return view;
     }
 

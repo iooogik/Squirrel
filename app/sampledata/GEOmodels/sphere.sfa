@@ -12,13 +12,13 @@
   ],
   materials: [
     {
-      name: 'material',
+      name: 'unnamed material',
       parameters: [
         {
           baseColor: [
             1,
-            0.27,
-            0.52,
+            0.87,
+            0.62,
             1,
           ],
         },
@@ -62,7 +62,7 @@
     file: 'sampledata/GEOmodels/sphere.fbx',
     name: 'sphere',
     recenter: 'root',
-    scale: 0.3,
+    scale: 0.10727900000000002,
   },
   version: '0.54:2',
 }

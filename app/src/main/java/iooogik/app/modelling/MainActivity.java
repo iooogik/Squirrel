@@ -1,5 +1,6 @@
 package iooogik.app.modelling;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
-    // названия настроек
+    // название настроек
     public static final String APP_PREFERENCES = "Settings";
     // тема приложения
     public static final String APP_PREFERENCES_THEME = "Theme";
@@ -87,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
         createToolbar();
         database = FirebaseDatabase.getInstance();
         needUpdate();
+        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+
+        if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1);
+        }
     }
 
     private void createToolbar(){
