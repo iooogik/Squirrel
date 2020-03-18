@@ -98,32 +98,17 @@ public class Settings extends Fragment {
         //список тем
         themes.add("Стандартная");
         themes.add("Тёмная");
-        themes.add("Красная");
-        themes.add("Синяя");
-        themes.add("Жёлтая");
-        SwitchMaterial darkTheme = view.findViewById(R.id.turn_on_dark_theme);
         spinner = view.findViewById(R.id.themes);
-        final int[] val = {0};
+        int val = 0;
         //ставим текст в "спиннер"
         //если тема тёмная, то ставим аналогичную, но не указываем, что она тёмная,
-        //так как далее идёт "чек" для установки тёмной темы
+        //так как далее идёт "чек" для установки тёмной темы.
+
         // Получаем число из настроек
 
-        val[0] = Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
-        if(val[0] > 4){
-            switch (val[0]){
-                case 5:
-                    spinner.setText(themes.get(2));
-                    break;
-                case 6:
-                    spinner.setText(themes.get(3));
-                    break;
-                case 7:
-                    spinner.setText(themes.get(4));
-                    break;
-            }
-            darkTheme.setChecked(true);
-        } else  spinner.setText(themes.get(val[0]));
+        val = Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
+
+        spinner.setText(themes.get(val));
 
         //адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
@@ -139,53 +124,6 @@ public class Settings extends Fragment {
             getActivity().startActivity(new Intent(getContext(), MainActivity.class));
             getActivity().overridePendingTransition(android.R.anim.fade_in,
                     android.R.anim.fade_out);
-        });
-
-        if(val[0] == 1){darkTheme.setChecked(true); darkTheme.setEnabled(false);}
-
-        //слушатель для выбора тёмной темы
-        darkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked){
-                switch (val[0]){
-                    case 2:
-                        val[0] = 5;
-                        break;
-                    case 3:
-                        val[0] = 6;
-                        break;
-                    case 4:
-                        val[0] = 7;
-                        break;
-                }
-                SharedPreferences.Editor SettingsEditor = Settings.edit();
-                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, val[0]);
-                SettingsEditor.apply();
-
-                getActivity().finish();
-                getActivity().startActivity(new Intent(getContext(), MainActivity.class));
-                getActivity().overridePendingTransition(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
-            } else {
-                switch (val[0]){
-                    case 5:
-                        val[0] = 2;
-                        break;
-                    case 6:
-                        val[0] = 3;
-                        break;
-                    case 7:
-                        val[0] = 4;
-                        break;
-                }
-                SharedPreferences.Editor SettingsEditor = Settings.edit();
-                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, val[0]);
-                SettingsEditor.apply();
-
-                getActivity().finish();
-                getActivity().startActivity(new Intent(getContext(), MainActivity.class));
-                getActivity().overridePendingTransition(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
-            }
         });
 
     }

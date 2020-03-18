@@ -37,13 +37,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/turn_on_dark_theme"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:text="Включить тёмную тему" />
-
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/version"

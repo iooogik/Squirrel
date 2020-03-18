@@ -62,27 +62,6 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 setTheme(R.style.AppThemeDark); // Тёмная
                 break;
-            case 2:
-                setTheme(R.style.AppThemeRed); // Красная
-                break;
-            case 3:
-                setTheme(R.style.AppThemeBlue); // Синяя
-                break;
-            case 4:
-                setTheme(R.style.AppThemeYellow); // Жёлтая
-                break;
-
-
-            case 5:
-                setTheme(R.style.AppThemeRedDark); // Красная тёмная
-                break;
-            case 6:
-                setTheme(R.style.AppThemeBlueDark); // Синяя тёмная
-                break;
-            case 7:
-                setTheme(R.style.AppThemeYellowDark); // Жёлтая тёмная
-                break;
-
         }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
