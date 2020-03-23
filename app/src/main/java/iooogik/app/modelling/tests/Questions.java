@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -50,6 +49,8 @@ public class Questions extends Fragment implements View.OnClickListener{
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
 
+
+
         getQuestions();
         getAnswers();
         setTest();
@@ -58,6 +59,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         btn.setOnClickListener(this);
         return view;
     }
+
 
     private void setTest(){
         List<String> temp = new ArrayList<>(answers);
@@ -151,7 +153,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private void getQuestions() {
         mDb = mDBHelper.getReadableDatabase();
-        Toast.makeText(getContext(), String.valueOf(getBtnID()), Toast.LENGTH_SHORT).show();
+
         userCursor =  mDb.rawQuery("Select * from Tests WHERE _id=?", new String[]{String.valueOf(getBtnID())});
         userCursor.moveToFirst();
 
@@ -191,7 +193,7 @@ public class Questions extends Fragment implements View.OnClickListener{
                     frameLayout.removeAllViews();
                     frameLayout.setVisibility(View.GONE);
 
-                    TestTheme testTheme = Tests.TEST_ITEMS.get(getBtnID());
+                    TestTheme testTheme = Tests.TEST_ITEMS.get(getBtnID() - 1);
                     testTheme.setRightAnswers(rightScore);
                     testTheme.setWrongAnswers(wrongScore);
                     testTheme.setPassed(true);

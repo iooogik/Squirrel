@@ -40,16 +40,4 @@
         <item name="backgroundTint">@color/colorAccent</item>
     </style>
 
-    <style name="customFabRed" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">@color/colorAccentRed</item>
-    </style>
-
-    <style name="customFabBlue" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">@color/colorAccentBlue</item>
-    </style>
-
-    <style name="customFabYellow" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">@color/colorAccentYellow</item>
-    </style>
-
 </resources>

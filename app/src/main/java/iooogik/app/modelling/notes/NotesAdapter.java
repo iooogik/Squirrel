@@ -3,6 +3,7 @@ package iooogik.app.modelling.notes;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -29,6 +30,8 @@ import java.util.List;
 import iooogik.app.modelling.Database;
 import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
+
+import static iooogik.app.modelling.MainActivity.APP_PREFERENCES;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
 
@@ -63,7 +66,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         mDBHelper.openDataBase();
         //получение и установка данных в элемент
         Note note = notes.get(position);
-        int val = MainActivity.Settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+        SharedPreferences settings = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        int val = settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
 
         NavController navHostFragment = NavHostFragment.findNavController(fragment);
 
@@ -157,7 +161,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         navHostFragment.navigate(R.id.nav_checkList, bundle);
                         break;
                     case "standart":
-                        Notes.fab.setVisibility(View.GONE);
                         navHostFragment.navigate(R.id.nav_standart_note, bundle);
                         break;
                     case "book":
@@ -184,7 +187,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                             mDb.delete("Notes", "_id=" + (note.getId()), null);
 
                             Notes.ITEMS.remove(note);
-                            Notes.NOTES_ADAPTER.notifyItemRemoved(position);
+                            notifyItemRemoved(position);
 
 
                         })

@@ -42,11 +42,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String APP_PREFERENCES_THEME = "Theme";
     // показывать ли доп. материалы в заметках
     public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Show Book Materials";
-    // переменная для определия темы
-    public static SharedPreferences Settings;
+    // переменная с настройками приложения
+    public SharedPreferences Settings;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseDatabase database;
+
     private PackageInfo packageInfo;
+
 
 
     @Override
@@ -68,9 +70,10 @@ public class MainActivity extends AppCompatActivity {
         // создание тул-бара
         createToolbar();
         database = FirebaseDatabase.getInstance();
+        //проверка акутальной версии приложения
         needUpdate();
+        //запрос на разрешение использования камеры
         int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1);
         }
@@ -102,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void needUpdate(){
-
         DatabaseReference databaseReference = database.getReference();
         databaseReference.child("Current Version").addValueEventListener(new ValueEventListener() {
             @Override
@@ -126,9 +128,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     private void showUpdateDialog(String currVersion) {
+        //метод показывание всплывающего окна с просьбой обновить приложение
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
 
         View view = getLayoutInflater().inflate(R.layout.req_update_dialog, null, false);

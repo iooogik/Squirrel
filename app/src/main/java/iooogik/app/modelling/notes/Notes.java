@@ -2,6 +2,7 @@ package iooogik.app.modelling.notes;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -43,33 +44,34 @@ public class Notes extends Fragment implements View.OnClickListener {
     private Database mDBHelper;
     private SQLiteDatabase mDb;
 
-    private View VIEW;
-    public static NotesAdapter NOTES_ADAPTER;
-    static FloatingActionButton fab;
+    private View view;
+    private Context context;
+    private NotesAdapter NOTES_ADAPTER;
+    private FloatingActionButton fab;
 
-    public static List<Note> ITEMS = new ArrayList<>();
+    static List<Note> ITEMS = new ArrayList<>();
 
     public Notes(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        VIEW = inflater.inflate(R.layout.fragment_notes, container ,false);
-
+        view = inflater.inflate(R.layout.fragment_notes, container ,false);
+        context = view.getContext();
         //находим кнопку добавление заметок
         fab = getActivity().findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
+        fab.show();
         fab.setImageResource(R.drawable.baseline_add_white_24dp);
         fab.setOnClickListener(this);
         // запускаем поток для обновления списка заметок
         startProcedures();
-        return VIEW;
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        fab.setVisibility(View.VISIBLE);
+        fab.show();
         // Скрываем клавиатуру при открытии Navigation Drawer
         try {
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
@@ -83,12 +85,15 @@ public class Notes extends Fragment implements View.OnClickListener {
             Log.i("Notes", String.valueOf(e));
         }
 
+        synchronized (NOTES_ADAPTER){
+            NOTES_ADAPTER.notify();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        fab.setVisibility(View.GONE);
+        fab.hide();
     }
 
     private void startProcedures(){
@@ -140,7 +145,7 @@ public class Notes extends Fragment implements View.OnClickListener {
 
 
         userCursor.close();
-        RecyclerView recyclerView = VIEW.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         NOTES_ADAPTER = new NotesAdapter(getContext(), ITEMS, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(NOTES_ADAPTER);
@@ -149,7 +154,7 @@ public class Notes extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.fab){
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(VIEW.getContext());
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
 
             final LinearLayout layout1 = new LinearLayout(getContext());
             layout1.setOrientation(LinearLayout.VERTICAL);
@@ -169,7 +174,7 @@ public class Notes extends Fragment implements View.OnClickListener {
             TextInputLayout textInputLayout2 = view2.findViewById(R.id.spinner_layout);
             AutoCompleteTextView spinner = textInputLayout2.findViewById(R.id.filled_exposed_dropdown);
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(VIEW.getContext(),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                     android.R.layout.simple_spinner_dropdown_item, types);
 
             spinner.setAdapter(adapter);
@@ -227,5 +232,6 @@ public class Notes extends Fragment implements View.OnClickListener {
             builder.create().show();
         }
     }
+
 }
 

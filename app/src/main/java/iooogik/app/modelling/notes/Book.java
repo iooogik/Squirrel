@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
 import iooogik.app.modelling.Database;
@@ -41,7 +43,8 @@ public class Book extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         linear = view.findViewById(R.id.scroll);
-        Notes.fab.setVisibility(View.GONE);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.hide();
         return view;
     }
 

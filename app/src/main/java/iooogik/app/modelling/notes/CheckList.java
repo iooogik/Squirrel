@@ -1,7 +1,6 @@
 package iooogik.app.modelling.notes;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -27,6 +26,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -72,9 +72,11 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         ImageButton buttonSave = view.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(this);
 
-        Notes.fab.setImageResource(R.drawable.baseline_add_white_24dp);
-        Notes.fab.setVisibility(View.VISIBLE);
-        Notes.fab.setOnClickListener(this);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+
+        fab.setImageResource(R.drawable.baseline_add_white_24dp);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(this);
 
         //получение элементов чек-лсита
         getPoints();
@@ -84,6 +86,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
     @Override
     public int getButtonID(){
+        //получение id нажатой "кнопки"
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("button ID");
@@ -104,11 +107,10 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         cv.put("name", name);
         cv.put("shortName", shortNote);
         cv.put("text", note);
-
+        //получение даты
         Date currentDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
                 Locale.getDefault());
-
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
@@ -130,7 +132,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_SHORT).show();
     }
 
-
     private void getPoints(){
         //"открытие" бд
         mDBHelper = new Database(getActivity());
@@ -138,8 +139,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         mDBHelper.updateDataBase();
         nameNote = view.findViewById(R.id.editNameShopNote);
         shortNote = view.findViewById(R.id.editNameShortShopNote);
-
         mDb = mDBHelper.getReadableDatabase();
+
         final String TEMP;
         String tempBool;
         Cursor userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
@@ -187,13 +188,11 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         //обновление базы данных
         mDb.update("Notes", cv, "_id=" + (getButtonID()), null);
 
-        Notes.NOTES_ADAPTER.notifyDataSetChanged();
     }
 
     private void addCheck(boolean state, String nameCheck){
         //"слушатель" для нажатого элемента списка
         LinearLayout linear = view.findViewById(R.id.markedScroll);
-        @SuppressLint("InflateParams")
         View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
         final CheckBox CHECK = view2.findViewById(R.id.checkBox);
         final EditText EDIT_SHOP_NAME = view.findViewById(R.id.editNameShopNote);
@@ -213,6 +212,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         });
 
         CHECK.setOnLongClickListener(v -> {
+            //слушатель для изменения названия пункта
 
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
             LinearLayout linearLayout = new LinearLayout(getContext());
@@ -264,7 +264,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     }
 
     @Override
-    public void alarmDialog(final String TITLE, final String TEXT) {
+    public void alarmDialog(final String title, final String text) {
         //создание уведомления
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -286,8 +286,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             Bundle args = new Bundle();
             args.putInt("btnId", getButtonID());
             args.putString("btnName", getButtonName());
-            args.putString("title", TITLE);
-            args.putString("shortNote", TEXT);
+            args.putString("title", title);
+            args.putString("shortNote", text);
 
             notificationIntent.putExtras(args);
             notificationIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
@@ -310,7 +310,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             ContentValues contentValues = new ContentValues();
             contentValues.put("isNotifSet", 1);
             mDb.update("Notes", contentValues, "_id=" + getButtonID(), null);
-            Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
         }, hours, minutes, true);
 

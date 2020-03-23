@@ -1,11 +1,11 @@
 package iooogik.app.modelling.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +22,8 @@ import java.util.List;
 
 import iooogik.app.modelling.MainActivity;
 import iooogik.app.modelling.R;
-import iooogik.app.modelling.notes.Notes;
+
+import static iooogik.app.modelling.MainActivity.APP_PREFERENCES;
 
 public class Settings extends Fragment {
 
@@ -30,17 +31,14 @@ public class Settings extends Fragment {
 
     private View view;
     private PackageInfo packageInfo;
-    private AutoCompleteTextView spinner;
     private SharedPreferences Settings;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
         //получаем настройки
-        Settings = MainActivity.Settings;
+        Settings = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);;
         //получаем packageInfo, чтобы узнать версию установленного приложения
         try {
             packageInfo = getActivity().getPackageManager().
@@ -59,6 +57,7 @@ public class Settings extends Fragment {
     }
 
     private void setShowBookMaterials() {
+        //убираем справочные материалы из заметок
         SwitchMaterial show_book_mat = view.findViewById(R.id.book_items);
 
         if (Settings.contains(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
@@ -77,11 +76,6 @@ public class Settings extends Fragment {
                 SharedPreferences.Editor SettingsEditor = Settings.edit();
                 SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
                 SettingsEditor.apply();
-                try {
-                    Notes.NOTES_ADAPTER.notifyDataSetChanged();
-                } catch (Exception e){
-                    Log.i("Settings Show_Materials", String.valueOf(e));
-                }
             } else {
                 SharedPreferences.Editor SettingsEditor = Settings.edit();
                 SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
@@ -98,7 +92,7 @@ public class Settings extends Fragment {
         //список тем
         themes.add("Стандартная");
         themes.add("Тёмная");
-        spinner = view.findViewById(R.id.themes);
+        AutoCompleteTextView spinner = view.findViewById(R.id.themes);
         int val = 0;
         //ставим текст в "спиннер"
         //если тема тёмная, то ставим аналогичную, но не указываем, что она тёмная,

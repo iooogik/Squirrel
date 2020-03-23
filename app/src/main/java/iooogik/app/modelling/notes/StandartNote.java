@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -54,7 +55,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor userCursor;
-    // "Каледнарь для получения времени
+    // "Календарь" для получения времени
     private Calendar calendar;
     private Context context;
 
@@ -68,6 +69,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         view = inflater.inflate(R.layout.fragment_standart_note,
                 container, false);
         context = view.getContext();
+
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.hide();
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
         ImageButton btnShare = view.findViewById(R.id.buttonShare);
@@ -273,7 +277,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             ContentValues contentValues = new ContentValues();
             contentValues.put("isNotifSet", 1);
             mDb.update("Notes", contentValues, "_id=" + getButtonID(), null);
-            Notes.NOTES_ADAPTER.notifyDataSetChanged();
+            //Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
         }, hours, minutes, true);
 
@@ -319,7 +323,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                 Log.i("StandartNotes", String.valueOf(e));
             }
 
-            Notes.NOTES_ADAPTER.notifyDataSetChanged();
+            //Notes.NOTES_ADAPTER.notifyDataSetChanged();
             Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
 
         } else if(view.getId() == R.id.buttonShare){

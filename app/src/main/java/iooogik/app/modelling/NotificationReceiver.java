@@ -12,8 +12,6 @@ import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
 
-import iooogik.app.modelling.notes.Notes;
-
 public class NotificationReceiver extends BroadcastReceiver {
 
     // идентификатор уведомления
@@ -52,11 +50,11 @@ public class NotificationReceiver extends BroadcastReceiver {
         mDb = mDBHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put("isNotifSet", 0);
+        contentValues.put("isNotifSet", 0); //необходимо обновить значение переменной, чтобы урать значок
 
         mDb.update("Notes", contentValues, "_id="+ newArgs.getInt("btnId"), null);
 
-        Notes.NOTES_ADAPTER.notifyDataSetChanged();
+        //Notes.NOTES_ADAPTER.notifyDataSetChanged();
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, CHANNEL_ID)
