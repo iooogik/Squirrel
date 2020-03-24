@@ -44,25 +44,25 @@
 
                     <ImageView
                         android:id="@+id/completed"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="@dimen/small_buttons"
+                        android:layout_height="@dimen/small_buttons"
                         android:layout_gravity="end"
                         android:layout_margin="10dp"
                         android:tint="@color/Completed"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/baseline_check_circle_outline_white_18dp" />
+                        app:srcCompat="@drawable/round_check_circle_24" />
 
                     <ImageView
                         android:id="@+id/notif"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="@dimen/small_buttons"
+                        android:layout_height="@dimen/small_buttons"
                         android:layout_gravity="end"
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginLeft="10dp"
                         android:tint="@color/notCompleted"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/baseline_notifications_white_18dp" />
+                        app:srcCompat="@drawable/baseline_notifications_active_24" />
                 </LinearLayout>
 
             </FrameLayout>

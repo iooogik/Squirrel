@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView desc = frameLayout.findViewById(R.id.description);
         TextView nameTv = frameLayout.findViewById(R.id.namePlanet);
-        nameTv.setText("Астрономия");
+        nameTv.setText("Астрономические объекты");
 
         int width = 300;
         int height = 300;
@@ -70,7 +70,7 @@ public class HomeFragment extends Fragment {
         TextView desc2 = frameLayout2.findViewById(R.id.description);
         TextView nameTv2 = frameLayout2.findViewById(R.id.namePlanet);
 
-        nameTv2.setText("Геометрия");
+        nameTv2.setText("Геометрические фигуры");
         Bitmap bitmapGeo = BitmapFactory.decodeResource(getResources(), R.drawable.geometry);
         imageView2.setImageBitmap(Bitmap.createScaledBitmap(bitmapGeo, width, height, false));
         desc2.setText(R.string.geometryTerm);

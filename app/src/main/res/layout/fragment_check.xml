@@ -20,36 +20,43 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
+                android:background="@drawable/frame"
+                android:layout_marginEnd="10dp"
                 android:orientation="horizontal">
 
 
                 <ImageButton
                     android:id="@+id/buttonSave"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="@dimen/small_buttons"
+                    android:layout_height="@dimen/small_buttons"
                     android:layout_margin="5dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center"
                     android:background="@drawable/small_buttons"
-                    android:text="Button"
-                    app:srcCompat="@drawable/save" />
+                    app:srcCompat="@drawable/round_save_24" />
 
                 <ImageButton
                     android:id="@+id/buttonShare"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="@dimen/small_buttons"
+                    android:layout_height="@dimen/small_buttons"
                     android:layout_margin="5dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center"
                     android:background="@drawable/small_buttons"
-                    app:srcCompat="@drawable/share_all" />
+                    app:srcCompat="@drawable/round_share_24" />
 
                 <ImageButton
                     android:id="@+id/buttonShopAlarm"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="@dimen/small_buttons"
+                    android:layout_height="@dimen/small_buttons"
                     android:layout_margin="5dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
                     android:background="@drawable/small_buttons"
-                    android:src="@drawable/baseline_date_range_black_18dp" />
+                    android:src="@drawable/baseline_notifications_active_24" />
 
             </LinearLayout>
 

@@ -74,7 +74,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
 
-        fab.setImageResource(R.drawable.baseline_add_white_24dp);
+        fab.setImageResource(R.drawable.round_add_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(this);
 

@@ -7,7 +7,7 @@
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:textColor">@color/color_primary_text</item>
 
-        <item name="floatingActionButtonStyle">@style/customFabStandart</item>
+        <item name="imageButtonStyle">@style/CustomSmallButtons</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -20,24 +20,18 @@
         <item name="android:textColor">@color/colorWhite</item>
         <item name="colorControlNormal">@color/colorWhite</item>
         <item name="android:windowBackground">@color/darkBackground</item>
-        <item name="imageButtonStyle">@style/customSmallButtons</item>
-
-        <item name="floatingActionButtonStyle">@style/customFabDark</item>
+        <item name="imageButtonStyle">@style/darkCustomSmallButtons</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="customSmallButtons" parent="Widget.AppCompat.ImageButton">
-        <item name="android:tint">@color/colorWhite</item>
+    <style name="darkCustomSmallButtons" parent="Widget.AppCompat.ImageButton">
+        <item name="android:tint">@color/colorAccent</item>
     </style>
 
-    <style name="customFabStandart" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">@color/colorAccent</item>
-    </style>
-
-    <style name="customFabDark" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">@color/colorAccent</item>
+    <style name="CustomSmallButtons" parent="Widget.AppCompat.ImageButton">
+        <item name="android:tint">@color/colorAccent</item>
     </style>
 
 </resources>

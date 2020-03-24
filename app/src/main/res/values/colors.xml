@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#7B1FA2</color>
-    <color name="colorPrimaryDark">#9C27B0</color>
-    <color name="color_primary_light">#E1BEE7</color>
-    <color name="colorAccent">#7C4DFF</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="color_primary_light">#C5CAE9</color>
+    <color name="colorAccent">#448AFF</color>
     <color name="color_primary_text">#212121</color>
     <color name="color_secondary_text">#757575</color>
 
@@ -13,26 +13,4 @@
     <color name="notCompleted">#FF7A7A</color>
     <color name="Completed">#ADFA6E</color>
     <color name="colorWhite">#FFFFFF</color>
-
-    <color name="colorPrimaryRed">#F44336</color>
-    <color name="colorPrimaryDarkRed">#D32F2F</color>
-    <color name="color_primary_lightRed">#FFCDD2</color>
-    <color name="colorAccentRed">#9E9E9E</color>
-    <color name="color_primary_textRed">#212121</color>
-    <color name="color_secondary_textRed">#757575</color>
-
-    <color name="colorPrimaryBlue">#2196F3</color>
-    <color name="colorPrimaryDarkBlue">#1976D2</color>
-    <color name="color_primary_lightBlue">#BBDEFB</color>
-    <color name="colorAccentBlue">#448AFF</color>
-    <color name="color_primary_textBlue">#212121</color>
-    <color name="color_secondary_textBlue">#757575</color>
-
-    <color name="colorPrimaryYellow">#FFC107</color>
-    <color name="colorPrimaryDarkYellow">#FFA000</color>
-    <color name="color_primary_lightYellow">#FFECB3</color>
-    <color name="colorAccentYellow">#FF9800</color>
-    <color name="color_primary_textYellow">#212121</color>
-    <color name="color_secondary_textYellow">#757575</color>
-
 </resources>

@@ -61,7 +61,7 @@ public class Notes extends Fragment implements View.OnClickListener {
         //находим кнопку добавление заметок
         fab = getActivity().findViewById(R.id.fab);
         fab.show();
-        fab.setImageResource(R.drawable.baseline_add_white_24dp);
+        fab.setImageResource(R.drawable.round_add_24);
         fab.setOnClickListener(this);
         // запускаем поток для обновления списка заметок
         startProcedures();

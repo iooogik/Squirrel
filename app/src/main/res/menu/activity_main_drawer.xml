@@ -7,25 +7,31 @@
 
         <item
             android:id="@+id/nav_home"
+            android:icon="@drawable/baseline_home_24"
             android:title="Главная" />
 
         <item
             android:id="@+id/nav_notes"
+            android:icon="@drawable/round_notes_24"
             android:title="Заметки" />
 
         <item
             android:id="@+id/nav_tests"
+            android:icon="@drawable/round_check_box_24"
             android:title="Тесты" />
 
         <item
             android:id="@+id/nav_contacts"
+            android:icon="@drawable/round_contacts_24"
             android:title="Контакты" />
 
         <item
             android:id="@+id/nav_tools"
+            android:icon="@drawable/round_settings_24"
             android:title="Настройки" />
         <item
             android:id="@+id/nav_las"
+            android:icon="@drawable/round_videogame_asset_24"
             android:title="Игра от издателя" />
 
     </group>
