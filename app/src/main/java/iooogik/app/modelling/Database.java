@@ -19,7 +19,7 @@ public class Database extends SQLiteOpenHelper {
     // путь к бд
     private static String DB_PATH;
     // версия бд
-    private static final int DB_VERSION = 39;
+    private static final int DB_VERSION = 42;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;

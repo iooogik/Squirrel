@@ -16,6 +16,10 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private FloatingActionButton fab;
     private Context context;
     private List<View> questions;
+    private String group = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,9 +47,15 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         questions = new ArrayList<>();
         Button button = view.findViewById(R.id.collectTest);
         button.setOnClickListener(this);
+        getGroup();
 
         context = getContext();
         return view;
+    }
+
+    private void getGroup(){
+        Bundle bundle = this.getArguments();
+        group = bundle.getString("groupName");
     }
 
     @Override
@@ -118,25 +129,32 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
         StringBuilder builderQuestions = new StringBuilder();
         builderQuestions.append("'");
-        for (String question: textQuestions) builderQuestions.append(question).append("\n");
+        for (String question: textQuestions) builderQuestions.append(question).append("<br>");
         builderQuestions.append("'");
 
         StringBuilder builderTrueAnswers = new StringBuilder();
         builderTrueAnswers.append("'");
-        for (String answ : trueAnswers) builderTrueAnswers.append(answ).append("\n");
+        for (String answ : trueAnswers) builderTrueAnswers.append(answ).append("<br>");
         builderTrueAnswers.append("'");
 
         StringBuilder builderTextAnswers = new StringBuilder();
         builderTextAnswers.append("'");
-        for (String answ : textAnswers) builderTextAnswers.append(answ).append("\n");
+        for (String answ : textAnswers) builderTextAnswers.append(answ).append("<br>");
         builderTextAnswers.append("'");
 
         EditText name = view.findViewById(R.id.name);
         EditText description = view.findViewById(R.id.description);
 
-        TextView textView = view.findViewById(R.id.textView2);
-        textView.setText(createSQLandSendToDatabase(name.getText().toString(), description.getText().toString(),
-                builderQuestions.toString(), builderTrueAnswers.toString(), builderTextAnswers.toString()));
+        //отправляем в бд
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(user.getUid());
+        databaseReference.child("groups").child(group).child("currentTest").
+                setValue(createSQLandSendToDatabase("'"+ name.getText().toString() + "'",
+                        "'"+ description.getText().toString() + "'",
+                builderQuestions.toString(),
+                        builderTrueAnswers.toString(),
+                        builderTextAnswers.toString()));
 
     }
 
@@ -144,9 +162,9 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                                              String trueAnswers, String textAnswers){
         String SQL = "";
 
-        SQL = "INSERT INTO Tests (name, description, questions, answers, textAnswers, trueAnswers, wrongAnswers)" +
-                "VALUES (" + name + "," + description + "," + textQuestions + "," + trueAnswers + "," + textAnswers + ","
-                + "0" + "," + "0" + ")";
+        SQL = "INSERT INTO Tests (name, description, isPassed, questions, answers, textAnswers, trueAnswers, wrongAnswers)" +
+                "VALUES (" + name + "," + description + "," + 0 + "," + textQuestions + "," + trueAnswers + "," + textAnswers + ","
+                + 0 + "," + 0 + ")";
 
         return SQL;
     }

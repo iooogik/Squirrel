@@ -173,8 +173,10 @@ public class Group extends Fragment implements View.OnClickListener{
                 builder.create().show();
                 break;
             case R.id.testEditor:
+                Bundle bundle = new Bundle();
+                bundle.putString("groupName", groupName);
                 NavController navController = NavHostFragment.findNavController(this);
-                navController.navigate(R.id.nav_testEditor);
+                navController.navigate(R.id.nav_testEditor, bundle);
         }
     }
 }

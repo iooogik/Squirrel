@@ -144,11 +144,12 @@ public class Questions extends Fragment implements View.OnClickListener{
 
         String TEMPansws = userCursor.getString(userCursor.getColumnIndex("textAnswers"));
 
-        answers.addAll(Arrays.asList(TEMPansws.split("\r\n|\r|\n")));
+        answers.addAll(Arrays.asList(TEMPansws.split("<br>")));
 
         TEMPansws = userCursor.getString(userCursor.getColumnIndex("answers"));
 
-        isTrue.addAll(Arrays.asList(TEMPansws.split("\r\n|\r|\n")));
+        isTrue.addAll(Arrays.asList(TEMPansws.split("<br>")));
+        System.out.println(isTrue);
     }
 
     private void getQuestions() {
@@ -158,7 +159,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         userCursor.moveToFirst();
 
         String TEMP_quests = userCursor.getString(userCursor.getColumnIndex("questions"));
-        String[] quests = TEMP_quests.split("\r\n|\r|\n");
+        String[] quests = TEMP_quests.split("<br>");
         questions.addAll(Arrays.asList(quests));
     }
 
