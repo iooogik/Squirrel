@@ -1,6 +1,8 @@
 package iooogik.app.modelling.entry;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +56,29 @@ public class SignUp extends Fragment implements View.OnClickListener{
         Button signIn = view.findViewById(R.id.login);
         signIn.setOnClickListener(this);
 
+        EditText email = view.findViewById(R.id.email);
+        TextInputLayout password = view.findViewById(R.id.text_input_pass);
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count != 0){
+                    password.setVisibility(View.VISIBLE);
+                } else {
+                    password.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         return view;
     }
 
@@ -73,7 +99,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
                                     database.child("type").setValue(userType);
 
                                     NavController navController = NavHostFragment.findNavController(getParentFragment());
-                                    navController.navigate(R.id.nav_home);
+                                    navController.navigate(R.id.nav_profile);
                                     BottomAppBar bottomAppBar = getActivity().findViewById(R.id.bar);
                                     bottomAppBar.setVisibility(View.VISIBLE);
                                 } else {

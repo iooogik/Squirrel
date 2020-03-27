@@ -56,6 +56,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         getGroupsFromDatabase();
 
         fab = getActivity().findViewById(R.id.fab);
+        fab.show();
         fab.setImageResource(R.drawable.round_add_24);
         fab.setOnClickListener(this);
 
@@ -69,7 +70,11 @@ public class Profile extends Fragment implements View.OnClickListener {
         return view;
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fab.hide();
+    }
 
     private void setUserInformation(){
         mAuth = FirebaseAuth.getInstance();
@@ -164,7 +169,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                     View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
                     TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-                    textInputLayout.setHint("Введите название класса. Например, 11А");
+                    textInputLayout.setHint("Введите класс");
                     textInputLayout.setCounterMaxLength(3);
                     TextInputEditText editText = view1.findViewById(R.id.edit_text);
                     builder.setView(view1);

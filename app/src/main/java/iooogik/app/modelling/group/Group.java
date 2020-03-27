@@ -45,7 +45,7 @@ public class Group extends Fragment implements View.OnClickListener{
     private String groupName;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
-    private List<String> groupMates;
+    private List<Mate> groupMates;
     private Context context;
     private GroupMatesAdapter groupmatesAdapter;
     private FirebaseDatabase database;
@@ -92,8 +92,21 @@ public class Group extends Fragment implements View.OnClickListener{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
-                    groupMates.add(String.valueOf(ds.getKey()));
-                    groupmatesAdapter.notifyDataSetChanged();
+
+                    databaseReference.child("groups").child(groupName).child("groupmates").child(ds.getKey()).child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String email = String.valueOf(dataSnapshot.getValue(String.class));
+                            groupMates.add(new Mate(ds.getKey(), email));
+                            groupmatesAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
             }
 

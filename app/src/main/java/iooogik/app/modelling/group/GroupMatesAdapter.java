@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,10 +19,10 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
 
     private Context context;
     private Fragment fragment;
-    private List<String> mates;
+    private List<Mate> mates;
     private LayoutInflater inflater;
 
-    GroupMatesAdapter(Context context, Fragment fragment, List<String> mates) {
+    GroupMatesAdapter(Context context, Fragment fragment, List<Mate> mates) {
         this.context = context;
         this.fragment = fragment;
         this.mates = mates;
@@ -31,14 +32,16 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.group_item, parent, false);
+        View view = inflater.inflate(R.layout.recycler_view_mate, parent, false);
         return new GroupMatesAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String mate = mates.get(position);
-        holder.name.setText(mate);
+        Mate mate = mates.get(position);
+        holder.name.setText(mate.getName());
+        holder.email.setText(mate.getEmail());
+        holder.img.setImageResource(R.drawable.baseline_account_circle_24);
     }
 
     @Override
@@ -48,10 +51,14 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
 
     class ViewHolder extends RecyclerView.ViewHolder{
         TextView name;
+        TextView email;
+        ImageView img;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.groupName);
+            img = itemView.findViewById(R.id.imageView2);
+            name = itemView.findViewById(R.id.textView);
+            email = itemView.findViewById(R.id.textView2);
         }
     }
 }
