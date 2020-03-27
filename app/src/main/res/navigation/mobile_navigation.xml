@@ -3,43 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_profile">
 
     <fragment
         android:id="@+id/nav_home"
         android:name="iooogik.app.modelling.home.HomeFragment"
         android:label="Главная"
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_nav_home_to_nav_planets_list"
-            app:destination="@id/nav_planets_list" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_geometry_list"
-            app:destination="@id/nav_geometry_list" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_tools"
-            app:destination="@id/nav_tools" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_las"
-            app:destination="@id/nav_las" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_notes"
-            app:destination="@id/nav_notes" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_contacts"
-            app:destination="@id/nav_contacts" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_tests"
-            app:destination="@id/nav_tests" />
-        <action
-            android:id="@+id/action_nav_home_pop2"
-            app:destination="@+id/nav_planets_list"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/mobile_navigation"
-            app:popUpToInclusive="false" />
+
     </fragment>
 
     <fragment
@@ -120,14 +91,6 @@
         android:name="iooogik.app.modelling.geometry.GeometricFigures"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_geometric_figures" >
-        <action
-            android:id="@+id/action_nav_geometry_list_pop"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popUpTo="@id/nav_geometry_list"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -148,5 +111,80 @@
         android:name="iooogik.app.modelling.notes.Book"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_book" />
+    <fragment
+        android:id="@+id/nav_signUp"
+        android:name="iooogik.app.modelling.entry.SignUp"
+        android:label="SignUp" />
+
+    <fragment
+        android:id="@+id/nav_signIn"
+        android:name="iooogik.app.modelling.entry.SignIn"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signIn_to_signUp"
+            app:destination="@id/nav_signUp" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="iooogik.app.modelling.profile.Profile"
+        tools:layout="@layout/fragment_profile"
+        android:label="Профиль" >
+        <action
+            android:id="@+id/action_nav_profile_to_group"
+            app:destination="@id/nav_group" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_planets_list"
+            app:destination="@id/nav_planets_list" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_geometry_list"
+            app:destination="@id/nav_geometry_list" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_tools"
+            app:destination="@id/nav_tools" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_las"
+            app:destination="@id/nav_las" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_notes"
+            app:destination="@id/nav_notes" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_contacts"
+            app:destination="@id/nav_contacts" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_tests"
+            app:destination="@id/nav_tests" />
+        <action
+            android:id="@+id/action_nav_home_pop2"
+            app:destination="@+id/nav_planets_list"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_nav_home_to_signIn"
+            app:destination="@id/nav_signIn" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_home"
+            app:destination="@id/nav_home" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/nav_group"
+        android:name="iooogik.app.modelling.group.Group"
+        tools:layout="@layout/fragment_group"
+        android:label="Group" >
+        <action
+            android:id="@+id/action_nav_group_to_testEditor2"
+            app:destination="@id/nav_testEditor" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_testEditor"
+        android:name="iooogik.app.modelling.tests.TestEditor"
+        android:label="TestEditor" />
 
 </navigation>

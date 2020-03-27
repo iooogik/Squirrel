@@ -26,6 +26,8 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,14 +44,16 @@ public class MainActivity extends AppCompatActivity {
     public static final String APP_PREFERENCES_THEME = "Theme";
     // показывать ли доп. материалы в заметках
     public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Show Book Materials";
+    //зарегистрирован ли пользователь
+    public static final String APP_PREFERENCES_IS_AUTH = "is User Passed Auth";
     // переменная с настройками приложения
     public SharedPreferences Settings;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseAuth mAuth;
     private FirebaseDatabase database;
+    private NavController navController;
 
     private PackageInfo packageInfo;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
         }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
-        // создание тул-бара
-        createToolbar();
+        isUserAuth();
         database = FirebaseDatabase.getInstance();
         //проверка акутальной версии приложения
         needUpdate();
+        createToolbar();
         //запрос на разрешение использования камеры
         int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
@@ -79,19 +83,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void createToolbar(){
+    private void isUserAuth(){
+        // создание тул-бара
         //нижний тул-бар
         BottomAppBar bottomAppBar = findViewById(R.id.bar);
         setSupportActionBar(bottomAppBar);
 
+        database = FirebaseDatabase.getInstance();
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user == null){
+            navController.navigate(R.id.nav_signIn);
+            bottomAppBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        isUserAuth();
+    }
+
+    private void createToolbar(){
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+
         // определение "домашнего" фрагмента
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home)
-                .setDrawerLayout(drawer)
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile).setDrawerLayout(drawer)
                 .build();
         // получение nav-контроллера
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }

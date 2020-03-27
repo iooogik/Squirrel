@@ -15,7 +15,7 @@ import java.io.OutputStream;
 
 public class Database extends SQLiteOpenHelper {
     // имя файла с бд
-    private static String DB_NAME = "planetsDB.db";
+    private static String DB_NAME = "database.db";
     // путь к бд
     private static String DB_PATH;
     // версия бд
