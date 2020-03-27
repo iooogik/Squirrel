@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="iooogik.app.modelling.home.HomeFragment"
+        android:name="iooojik.app.klass.home.HomeFragment"
         android:label="Главная"
         tools:layout="@layout/fragment_home" >
 
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/nav_notes"
-        android:name="iooogik.app.modelling.notes.Notes"
+        android:name="iooojik.app.klass.notes.Notes"
         android:label="Заметки"
         tools:layout="@layout/fragment_notes" >
         <action
@@ -31,31 +31,31 @@
 
     <fragment
         android:id="@+id/nav_tests"
-        android:name="iooogik.app.modelling.tests.Tests"
+        android:name="iooojik.app.klass.tests.Tests"
         android:label="Тесты"
         tools:layout="@layout/fragment_test" />
 
     <fragment
         android:id="@+id/nav_contacts"
-        android:name="iooogik.app.modelling.contacts.Contacts"
+        android:name="iooojik.app.klass.contacts.Contacts"
         android:label="Контакты"
         tools:layout="@layout/fragment_contacts" />
 
     <fragment
         android:id="@+id/nav_tools"
-        android:name="iooogik.app.modelling.settings.Settings"
+        android:name="iooojik.app.klass.settings.Settings"
         android:label="Настройки"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/nav_las"
-        android:name="iooogik.app.modelling.las.LifeAtSpace"
+        android:name="iooojik.app.klass.games.las.LifeAtSpace"
         android:label="Игра от издателя"
         tools:layout="@layout/fragment_test" />
 
     <fragment
         android:id="@+id/nav_planets_list"
-        android:name="iooogik.app.modelling.astonomy.Planets"
+        android:name="iooojik.app.klass.astonomy.Planets"
         android:label="Планеты"
         tools:layout="@layout/fragment_planets"  >
         <action
@@ -73,7 +73,7 @@
 
     <fragment
         android:id="@+id/nav_planets_article"
-        android:name="iooogik.app.modelling.astonomy.ScrollingArticle"
+        android:name="iooojik.app.klass.astonomy.ScrollingArticle"
         android:label="Планеты. Статья."
         tools:layout="@layout/activity_scrolling_article"  >
         <action
@@ -88,37 +88,37 @@
 
     <fragment
         android:id="@+id/nav_geometry_list"
-        android:name="iooogik.app.modelling.geometry.GeometricFigures"
+        android:name="iooojik.app.klass.geometry.GeometricFigures"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_geometric_figures" >
     </fragment>
 
     <fragment
         android:id="@+id/nav_standart_note"
-        android:name="iooogik.app.modelling.notes.StandartNote"
+        android:name="iooojik.app.klass.notes.StandartNote"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_standart_note" >
     </fragment>
 
     <fragment
         android:id="@+id/nav_checkList"
-        android:name="iooogik.app.modelling.notes.CheckList"
+        android:name="iooojik.app.klass.notes.CheckList"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_check" />
 
     <fragment
         android:id="@+id/nav_book"
-        android:name="iooogik.app.modelling.notes.Book"
+        android:name="iooojik.app.klass.notes.Book"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_book" />
     <fragment
         android:id="@+id/nav_signUp"
-        android:name="iooogik.app.modelling.entry.SignUp"
+        android:name="iooojik.app.klass.entry.SignUp"
         android:label="SignUp" />
 
     <fragment
         android:id="@+id/nav_signIn"
-        android:name="iooogik.app.modelling.entry.SignIn"
+        android:name="iooojik.app.klass.entry.SignIn"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
         <action
@@ -128,7 +128,7 @@
 
     <fragment
         android:id="@+id/nav_profile"
-        android:name="iooogik.app.modelling.profile.Profile"
+        android:name="iooojik.app.klass.profile.Profile"
         tools:layout="@layout/fragment_profile"
         android:label="Профиль" >
         <action
@@ -144,9 +144,6 @@
         <action
             android:id="@+id/action_nav_home_to_nav_tools"
             app:destination="@id/nav_tools" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_las"
-            app:destination="@id/nav_las" />
         <action
             android:id="@+id/action_nav_home_to_nav_notes"
             app:destination="@id/nav_notes" />
@@ -171,11 +168,17 @@
         <action
             android:id="@+id/action_nav_profile_to_nav_home"
             app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_nav_profile_to_games2"
+            app:destination="@id/nav_games" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_games"
+            app:destination="@id/nav_games" />
 
     </fragment>
     <fragment
         android:id="@+id/nav_group"
-        android:name="iooogik.app.modelling.group.Group"
+        android:name="iooojik.app.klass.group.Group"
         tools:layout="@layout/fragment_group"
         android:label="Group" >
         <action
@@ -184,7 +187,28 @@
     </fragment>
     <fragment
         android:id="@+id/nav_testEditor"
-        android:name="iooogik.app.modelling.tests.TestEditor"
+        android:name="iooojik.app.klass.tests.TestEditor"
         android:label="TestEditor" />
+    <fragment
+        android:id="@+id/nav_games"
+        android:name="iooojik.app.klass.games.Games"
+        android:label="fragment_games"
+        tools:layout="@layout/fragment_games" >
+        <action
+            android:id="@+id/action_games2_to_nav_las"
+            app:destination="@id/nav_las" />
+
+        <action
+            android:id="@+id/action_games2_to_pairs_menu"
+            app:destination="@id/pairs_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/pairs_menu"
+        android:name="iooojik.app.klass.games.pairs.Menu"
+        android:label="Menu" />
+    <fragment
+        android:id="@+id/nav_pairs"
+        android:name="iooojik.app.klass.games.pairs.Game"
+        android:label="Game" />
 
 </navigation>

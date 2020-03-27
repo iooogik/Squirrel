@@ -35,9 +35,9 @@
             android:icon="@drawable/round_settings_24"
             android:title="Настройки" />
         <item
-            android:id="@+id/nav_las"
+            android:id="@+id/nav_games"
             android:icon="@drawable/round_videogame_asset_24"
-            android:title="Игра от издателя" />
+            android:title="Переменка" />
 
     </group>
 

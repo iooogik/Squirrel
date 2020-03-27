@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="iooogik.app.modelling">
+    package="iooojik.app.klass">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -20,36 +20,36 @@
         android:theme="@style/AppThemeLight"
 
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name="iooojik.app.klass.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".contacts.Contacts" />
+        <activity android:name="iooojik.app.klass.contacts.Contacts" />
         <activity
-            android:name=".astonomy.ScrollingArticle"
+            android:name="iooojik.app.klass.astonomy.ScrollingArticle"
             android:label="@string/title_activity_scrolling_article"
             android:theme="@style/AppThemeLight" />
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <activity android:name=".notes.StandartNote" />
-        <activity android:name=".ARcamera" />
-        <activity android:name=".notes.Notes" />
+        <activity android:name="iooojik.app.klass.notes.StandartNote" />
+        <activity android:name="iooojik.app.klass.ARcamera" />
+        <activity android:name="iooojik.app.klass.notes.Notes" />
 
-        <activity android:name=".astonomy.Planets"/>
+        <activity android:name="iooojik.app.klass.astonomy.Planets"/>
         <activity
-            android:name=".qr.BarcodeCaptureActivity"
+            android:name="iooojik.app.klass.qr.BarcodeCaptureActivity"
             android:label="Read Barcode" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <receiver android:name=".NotificationReceiver" android:enabled="true"/>
+        <receiver android:name="iooojik.app.klass.NotificationReceiver" android:enabled="true"/>
 
     </application>
 

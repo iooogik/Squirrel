@@ -6,7 +6,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
-        applicationId "iooogik.app.modelling"
+        applicationId "iooojik.app.klass"
         minSdkVersion 22
         targetSdkVersion 29
         versionCode 17
@@ -69,7 +69,7 @@ sceneform.asset('sampledata/ASTROmodels/solar_system.fbx',
         'sampledata/ASTROmodels/solar_system.sfa',
         'src/main/res/raw/solar_system')
 
-sceneform.asset('sampledata/GEOmodels/cube.fbx', // 'Source Asset Path' specified during import.
-        'default',                    // 'Material Path' specified during import.
-        'sampledata/GEOmodels/cube.sfa', // '.sfa Output Path' specified during import.
+sceneform.asset('sampledata/GEOmodels/cube.fbx', // 'Source Asset Path'
+        'default',                    // 'Material Path'
+        'sampledata/GEOmodels/cube.sfa', // '.sfa Output Path'
         'src/main/res/raw/cube')
