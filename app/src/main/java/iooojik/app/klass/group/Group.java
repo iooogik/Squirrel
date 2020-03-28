@@ -75,15 +75,17 @@ public class Group extends Fragment implements View.OnClickListener{
         Button testEditor = view.findViewById(R.id.testEditor);
         testEditor.setOnClickListener(this);
 
+        fab = getActivity().findViewById(R.id.fab);
+        fab.show();
+        fab.setOnClickListener(this);
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        fab = getActivity().findViewById(R.id.fab);
-        fab.show();
-        fab.setOnClickListener(this);
+
     }
 
     private void getGroupMates(){
@@ -154,16 +156,20 @@ public class Group extends Fragment implements View.OnClickListener{
                     public void onClick(DialogInterface dialog, int which) {
                         String email = emailText.getText().toString();
                         boolean result = false;
+                        String pupilID = "";
+                        //проверяем, есть ли пользовтель в бд
                         if(user != null){
                             for(UserInfo profile : user.getProviderData()){
                                 String tempMail = profile.getEmail();
                                 if (email.equals(tempMail)){
+                                    pupilID = profile.getUid();
                                     result = true;
                                     break;
                                 }
                             }
                         }
-                        if(result){
+                        Toast.makeText(getContext(), pupilID + " " + result, Toast.LENGTH_LONG).show();
+                        if(result && !pupilID.isEmpty()){
                             DatabaseReference databaseReference = FirebaseDatabase.
                                     getInstance().getReference(user.getUid());
 
@@ -172,12 +178,18 @@ public class Group extends Fragment implements View.OnClickListener{
 
                             databaseReference.child("groups").child(groupName).child("groupmates")
                                     .child(nameSurname.getText().toString()).child("email").setValue(email);
+
+                            //добавляем учителя в список учителей у ученика
+                            databaseReference = FirebaseDatabase.getInstance().getReference(pupilID);
+                            databaseReference.child("teachers").child(user.getUid()).setValue(0);
                             getGroupMates();
                         } else {
-                            Toast.makeText(getContext(),
+                            /* Toast.makeText(getContext(),
                                     "Пользователь с указанным e-mail адресом не был найден." +
                                             "Пожалуйста, повторите попытку снова или напишите разработчику.",
                                     Toast.LENGTH_LONG).show();
+
+                             */
                         }
                     }
                 });

@@ -32,7 +32,7 @@ public class Games extends Fragment {
         gamesList = new ArrayList<>();
 
         gamesList.add(new Game("Life at space", R.drawable.las_logo, R.id.nav_las));
-        gamesList.add(new Game("Поиск пар", R.drawable.las_logo, R.id.pairs_menu));
+        gamesList.add(new Game("Поиск пар", R.drawable.pairs_logo, R.id.pairs_menu));
 
         games.setLayoutManager(new LinearLayoutManager(getContext()));
 

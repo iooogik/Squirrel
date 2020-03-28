@@ -57,7 +57,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
         signIn.setOnClickListener(this);
 
         EditText email = view.findViewById(R.id.email);
-        TextInputLayout password = view.findViewById(R.id.text_input_pass);
+        TextInputLayout password = view.findViewById(R.id.text_input_pass3);
         email.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -79,6 +79,53 @@ public class SignUp extends Fragment implements View.OnClickListener{
             }
         });
 
+        TextInputLayout textInputLayout = view.findViewById(R.id.text_input_pass4);
+        EditText editPass = view.findViewById(R.id.password);
+        editPass.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count != 0){
+                    textInputLayout.setVisibility(View.VISIBLE);
+                } else {
+                    textInputLayout.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        EditText name = view.findViewById(R.id.name);
+        TextInputLayout textInputLayout2 = view.findViewById(R.id.text_input_pass5);
+        name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count != 0){
+                    textInputLayout2.setVisibility(View.VISIBLE);
+                } else {
+                    textInputLayout2.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
         return view;
     }
 
@@ -88,15 +135,22 @@ public class SignUp extends Fragment implements View.OnClickListener{
             case R.id.login:
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
-                if(!(userType == null && email.getText().toString().isEmpty() && password.getText().toString().isEmpty())) {
+                EditText name = view.findViewById(R.id.name);
+                EditText surname = view.findViewById(R.id.surname);
+                if(!(userType == null && email.getText().toString().isEmpty() &&
+                        password.getText().toString().isEmpty()
+                && name.getText().toString().isEmpty() && surname.getText().toString().isEmpty())) {
+
                     mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(getActivity(), task -> {
                                 if (task.isSuccessful()) {
 
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     DatabaseReference database = FirebaseDatabase.getInstance().
-                                            getReference(user.getUid());
-                                    database.child("type").setValue(userType);
+                                            getReference();
+                                    database.child(user.getUid()).child("type").setValue(userType);
+                                    database.child(user.getUid()).child("name").setValue(name.getText().toString());
+                                    database.child(user.getUid()).child("surname").setValue(surname.getText().toString());
 
                                     NavController navController = NavHostFragment.findNavController(getParentFragment());
                                     navController.navigate(R.id.nav_profile);
@@ -107,6 +161,9 @@ public class SignUp extends Fragment implements View.OnClickListener{
                                             Toast.LENGTH_LONG).show();
                                 }
                             });
+
+                }else {
+                    Toast.makeText(getContext(), "Не все поля заполнены", Toast.LENGTH_LONG).show();
                 }
                 break;
         }
