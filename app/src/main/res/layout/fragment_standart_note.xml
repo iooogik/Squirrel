@@ -82,7 +82,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:hint="Введите текст"
+                        android:hint="@string/noteNameHint"
                         app:counterEnabled="true"
                         app:counterMaxLength="40"
                         app:helperText="Максимальное количество символов"
@@ -101,7 +101,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:hint="Введите краткое описание"
+                        android:hint="@string/typeShortDescHint"
                         app:counterEnabled="true"
                         app:counterMaxLength="100"
                         app:helperText="Максимальное количество символов"
@@ -141,7 +141,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
                                 android:layout_marginBottom="10dp"
-                                android:text="TextView" />
+                                />
                         </LinearLayout>
 
                         <EditText
@@ -149,7 +149,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="8dp"
-                            android:hint="@string/note"
+                            android:hint="@string/noteHint"
                             android:inputType="textMultiLine"
                             android:textAlignment="viewStart"
                             android:textColorHint="#AFADAD"/>

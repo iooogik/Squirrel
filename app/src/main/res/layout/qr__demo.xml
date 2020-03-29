@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
         android:layout_marginTop="16dp"
-        android:text="расшифрованный текст"
         android:maxHeight="80dp"
         android:textSize="24sp" />
 
@@ -31,7 +30,7 @@
         android:layout_marginTop="150dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/frame"
-        android:text="@string/saveQRbtn"
+        android:text="@string/СохранитьQR"
         />
 
 </LinearLayout>

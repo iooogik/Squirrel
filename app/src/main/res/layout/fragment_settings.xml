@@ -18,8 +18,8 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:text="Выберите тему:" />
+        android:layout_marginStart="30dp"
+        android:text="@string/chooseTheme" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/spinner_layout"
@@ -44,6 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_margin="30dp"
-        android:text="Установленная версия приложения: " />
+        android:text="@string/installedVersion" />
 
 </LinearLayout>

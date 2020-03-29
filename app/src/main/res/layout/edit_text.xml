@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:hint="Введите текст"
+        android:hint="@string/enterText"
         app:helperTextEnabled="true"
         app:helperText="Максимальное количество символов"
         app:counterEnabled="true"

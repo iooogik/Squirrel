@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Первый ответ">
+                android:hint="@string/firstAnswerHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/answ1"
@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Втрой ответ">
+                android:hint="@string/secondAnswerHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/answ2"
@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Третий ответ">
+                android:hint="@string/thirdAnswerHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/answ3"
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Четвёртый ответ">
+                android:hint="@string/fourthAnswerHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/answ4"

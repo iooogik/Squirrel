@@ -1,26 +1,17 @@
 <resources>
     <string name="app_name">KLass.</string>
 
-    <string name="menu_home">Домой</string>
-    <string name="menu_slideshow">Слайд-шоу</string>
-    <string name="menu_share">Поделиться</string>
-    <string name="menu_send">Отправить</string>
-    <string name="textNotes">Текстовые заметки</string>
+    <!-- menu items -->
+    <string name="profile">Профиль</string>
+    <string name="main">Главная</string>
+    <string name="notes">Заметки</string>
+    <string name="tests">Тесты</string>
     <string name="contacts">Контакты</string>
+    <string name="settings">Настройки</string>
+    <string name="recreation">Переменка</string>
+    <!-- menu items end -->
 
-    <string name="drawer_item_home">Главная</string>
-    <string name="drawer_item_free_play">Free Play</string>
-    <string name="drawer_item_custom">Custom</string>
-    <string name="drawer_item_settings">Настройки</string>
-    <string name="drawer_item_help">Помощь</string>
-    <string name="drawer_item_open_source">Open Source</string>
-    <string name="drawer_item_contact">Контакты</string>
-    <string name="drawer_item_qr">Считать QR-код</string>
-    <string name="search">Поиск</string>
-    <string name="note">Текст заметки</string>
-    <string name="short_note">Краткое описание</string>
-    <string name="name">Название заметки</string>
-
+    <!-- QR strings -->
     <string name="ok">OK</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the
@@ -36,30 +27,17 @@
     <string name="barcode_failure">No barcode captured</string>
     <string name="barcode_error">"Error reading barcode: %1$s"</string>
     <string name="СохранитьQR">Сохранить QR</string>
+    <!-- QR strings end-->
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="deleteButton">Удалить выбранную запись</string>
-    <string name="shortNoteWarning">Количество символов в кратком описании должно быть не более 100</string>
-    <string name="nameWarning">Количество символов в названии должно быть не более 40</string>
-    <string name="noteWarning">Количество символов в заметке должно быть не более 300</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="saveQRbtn">Сохранить в \'Заметки\' текст и QR</string>
-    <string name="strNameNotes">Заметки</string>
-    <string name="books">Справочники</string>
-    <string name="title_activity_scrolling_article">ScrollingArticle</string>
-    <string name="showAR">Посмотреть Солнечную систему в AR</string>
+    <!-- contact strings -->
     <string name="telegram">Telegram</string>
     <string name="gmail">Gmail</string>
     <string name="contactDev">Связаться с разработчиком можно в:</string>
     <string name="discord">Discord</string>
+    <string name="vk">ВКонтакте</string>
+    <string name="instagram">Instagram</string>
+    <!-- contact strings end-->
+
     <string name="LifeAtSpace">Life at Space</string>
     <string name="las_desc">Где-то далеко есть Перпендикулярная Вселенная. В ней обитают странные существа, ведущие скромный образ перпендикулярной жизни.
 Твоя задача - исследовать этот мир, параллельно атакуя других жителей и накапливая Искромётные значки.
@@ -70,17 +48,61 @@
 - проводи исследования объектов (за штампы исследований с шансом успеха в 35%)
 - собирай коллекционные карточки
 - атакуй других жителей, за победу получая искромётные значки и продвигаясь вверх по ТОПу жителей: в атаке учитывается уровень базы, количество завершённых исследований и собранные коллекционные карточки</string>
-    <string name="quest_num">Номер вопроса:</string>
-    <string name="answ_var">Варианты ответа:</string>
-    <string name="vk">ВКонтакте</string>
-    <string name="instagram">Instagram</string>
+
     <string name="astronomyTerm">Астроно́мия (от др.-греч. ἄστρον «звезда» и νόμος «закон») — наука о Вселенной, изучающая расположение, движение, структуру, происхождение и развитие небесных тел и систем.</string>
     <string name="geometryTerm">Геоме́трия — раздел математики, изучающий пространственные структуры и отношения, а также их обобщения. Геометрия как систематическая наука появилась в Древней Греции, её аксиоматические построения описаны в «Началах» Евклида.</string>
-    <string name="findARSurface">Заново найти поверхность</string>
+
+
+    <!-- buttons strings-->
+    <string name="saveQRbutton">Сохранить в \'Заметки\' текст и QR</string>
+    <string name="showSolarSystemButton">Посмотреть Солнечную систему в AR</string>
+    <string name="findARSurfaceButton">Заново найти поверхность</string>
+    <string name="saveAndContinueButton">Сохранить и продолжить</string>
+    <string name="openTestEditor">Открыть редактор теста</string>
+    <string name="enterButton">Войти</string>
+    <string name="createNewAccountButton">Создать новый аккаунт</string>
+    <string name="radioBTNteacher">Я учитель</string>
+    <string name="radioBTNpupil">Я ученик</string>
+    <!-- buttons strings end-->
+
+    <!-- hint strings-->
+    <string name="noteHint">Заметка</string>
+    <string name="firstAnswerHint">Первый ответ</string>
+    <string name="secondAnswerHint">Втрой ответ</string>
+    <string name="thirdAnswerHint">Третий ответ</string>
+    <string name="fourthAnswerHint">Четвёртый ответ</string>
+    <string name="typeNoteNameHint">Введите название заметки</string>
+    <string name="typeShortDescHint">Введите краткое описание</string>
+    <string name="typeEmailHint">Введите e-mail</string>
+    <string name="typePasswordHint">Введите пароль</string>
+    <string name="typeNameHint">Имя</string>
+    <string name="typeSurnameHint">Фамилия</string>
+    <string name="typeTextHint">Введите текст</string>
+    <string name="noteNameHint">Название заметка</string>
+    <string name="testNameHint">Название теста</string>
+    <string name="descTestHint">Описание теста</string>
+    <string name="actualVersionHint">Актуальная версия:</string>
+    <!-- hint strings end-->
+
+    <!-- notification strings-->
     <string name="onFigureClick">При нажатии на фигуру вы сразу же сможете увидеть её в AR</string>
-    <string name="saveAndContinue">Сохранить и продолжить</string>
-    <string name="turn_on_dark_theme">Включить тёмную тему</string>
-    <string name="show_book_materials">Не показывать справочные материалы в заметках</string>
     <string name="usePhoneToReadQR">Наведите второй телефон на QR-код, чтобы считать данные.</string>
     <string name="deleteQR">Вы действительно хотите удалить QR-код?</string>
+    <string name="updateAppNotif">Пожалуйста, обновите приложение!</string>
+    <!-- notification strings end-->
+
+    <!-- other strings-->
+    <string name="show_book_materials">Не показывать справочные материалы в заметках</string>
+    <string name="quest_num">Номер вопроса:</string>
+    <string name="answ_var">Варианты ответа:</string>
+    <string name="enterText">Введите текст</string>
+    <string name="dowloadLAS">Скачать можно, отсканировав QR-код или нажав на него</string>
+    <string name="chooseTheme">Выберите тему:</string>
+    <string name="installedVersion">Установленная версия приложения:</string>
+    <string name="pleaseEnter">Выполните вход</string>
+    <string name="registration">Регистрация</string>
+    <string name="changesList">Список изменений:</string>
+    <!-- other strings end-->
+
+
 </resources>

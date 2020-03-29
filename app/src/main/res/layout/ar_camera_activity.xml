@@ -42,7 +42,7 @@
                 android:layout_marginStart="90dp"
                 android:layout_marginBottom="@dimen/fab_margin"
                 android:layout_marginEnd="@dimen/fab_margin"
-                android:text="@string/findARSurface"
+                android:text="@string/findARSurfaceButton"
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
 

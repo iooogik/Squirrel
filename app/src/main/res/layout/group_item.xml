@@ -18,7 +18,6 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:layout_margin="20dp"
-            android:text="Класс: "
             android:textStyle="bold" />
 
     </LinearLayout>

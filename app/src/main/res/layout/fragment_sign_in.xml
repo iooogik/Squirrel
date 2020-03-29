@@ -19,14 +19,14 @@
             android:textColor="@color/colorWhite"
             android:layout_marginBottom="80dp"
             android:textSize="30sp"
-            android:text="Выполните вход" />
+            android:text="@string/pleaseEnter" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:hint="Введите e-mail"
+            android:hint="@string/typeEmailHint"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             >
 
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:visibility="invisible"
-            android:hint="Введите пароль"
+            android:hint="@string/typePasswordHint"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             >
 
@@ -59,12 +59,13 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            style="@style/Widget.MaterialComponents.Button"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/colorWhite"
             android:id="@+id/login"
             android:layout_margin="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Войти" />
+            android:text="@string/enterButton" />
 
         <Button
             android:id="@+id/registr"
@@ -74,7 +75,7 @@
             android:layout_marginTop="20dp"
             android:textColor="@color/colorWhite"
             android:textSize="12sp"
-            android:text="Создать новый аккаунт" />
+            android:text="@string/createNewAccountButton" />
 
     </LinearLayout>
 </FrameLayout>

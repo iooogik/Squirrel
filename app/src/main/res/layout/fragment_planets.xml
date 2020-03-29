@@ -12,7 +12,7 @@
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:textColor="@color/colorWhite"
-        android:text="@string/showAR" />
+        android:text="@string/showSolarSystemButton" />
 
     <FrameLayout
         android:id="@+id/planets_frame"
