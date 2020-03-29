@@ -262,7 +262,7 @@ public class Game extends Fragment implements View.OnClickListener{
         int k = 0; //переменная, которая используется для получения кнопки и картинки из массива
         for (int i = 0; i < HEIGHT; i++) {//строка
             for (int j = 0; j < WIDTH; j++) { //столбец
-                LayoutInflater inflater = (LayoutInflater) getContext()
+                LayoutInflater inflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                 Image image = images.get(k); //получаем картинку
@@ -274,7 +274,6 @@ public class Game extends Fragment implements View.OnClickListener{
                 //делаем проверку, чтобы не было больше 2 одинаковых картинок
                 image.setTwiceUsed(image.getTwiceUsed() + 1);
                 if (image.getTwiceUsed() >= 2) {
-                    //images.remove(image);
                     k++;
                 }
 
@@ -301,9 +300,12 @@ public class Game extends Fragment implements View.OnClickListener{
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                setButtonsInGrid();
-                seconds = 0;
-                startTimer();
+                if (getContext() == context) {
+                    setButtonsInGrid();
+                    seconds = 0;
+                    startTimer();
+                }
+
             }
         }, 5000);
 

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -87,6 +88,10 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                             Toast.LENGTH_LONG).show();
 
                                 } else {
+
+                                    DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+                                    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
                                     //переходим на "главный" фрагмент и показываем нижний toolbar
                                     NavController navController = NavHostFragment.
                                             findNavController(getParentFragment());

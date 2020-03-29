@@ -82,12 +82,6 @@ public class Group extends Fragment implements View.OnClickListener{
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
     private void getGroupMates(){
         DatabaseReference databaseReference = database.getReference(user.getUid());
         databaseReference.child("groups").child(groupName).child("groupmates").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -99,7 +93,7 @@ public class Group extends Fragment implements View.OnClickListener{
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String email = String.valueOf(dataSnapshot.getValue(String.class));
-                            groupMates.add(new Mate(ds.getKey(), email));
+                            groupMates.add(new Mate(ds.getKey(), email, groupName));
                             groupmatesAdapter.notifyDataSetChanged();
                         }
 

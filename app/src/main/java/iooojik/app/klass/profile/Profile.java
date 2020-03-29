@@ -1,6 +1,7 @@
 package iooojik.app.klass.profile;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 
 public class Profile extends Fragment implements View.OnClickListener {
@@ -47,6 +49,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     private Context context;
     private FirebaseDatabase database;
     private Fragment fragment;
+    private String name2 = "sdfsdf";
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         fragment = this;
 
         fab = getActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(this::onClick);
+        fab.setOnClickListener(this);
         context = getContext();
 
         return view;
@@ -103,12 +106,6 @@ public class Profile extends Fragment implements View.OnClickListener {
         });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        fab.hide();
-    }
-
     private void setUserInformation() {
         //устанавливаем пользовательскую информацию
 
@@ -126,6 +123,7 @@ public class Profile extends Fragment implements View.OnClickListener {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String type;
                 type = String.valueOf(dataSnapshot.getValue(String.class));
+
                 if (type.equals(teacherRole)) {
                     //учительский профиль
                     FrameLayout pupilProfile = view.findViewById(R.id.pupil_profile);
@@ -166,12 +164,17 @@ public class Profile extends Fragment implements View.OnClickListener {
 
             }
         });
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
 
         databaseReference.child("name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 name.setText(String.valueOf(dataSnapshot.getValue()));
+                SharedPreferences.Editor SettingsEditor = sharedPreferences.edit();
+                SettingsEditor.putString("name", String.valueOf(dataSnapshot.getValue()));
+                SettingsEditor.apply();
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -179,6 +182,8 @@ public class Profile extends Fragment implements View.OnClickListener {
             }
         });
 
+
+        Toast.makeText(getContext(), String.valueOf(sharedPreferences.getString("name", "")), Toast.LENGTH_LONG).show();
         databaseReference.child("surname").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -192,7 +197,6 @@ public class Profile extends Fragment implements View.OnClickListener {
         });
 
     }
-
 
     private void getGroupsFromDatabase(){
         //получаем группы(классы) учителя и доавляем их в список

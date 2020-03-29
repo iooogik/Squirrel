@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
                 setTheme(R.style.AppThemeDark); // Тёмная
                 break;
         }
+
+
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
         isUserAuth();
@@ -81,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1);
         }
+
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
     }
 
     private void isUserAuth(){
