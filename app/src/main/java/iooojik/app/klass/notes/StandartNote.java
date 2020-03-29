@@ -23,13 +23,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -219,12 +219,12 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         String sendText;
         if(linearLayout.getVisibility() == View.VISIBLE){
             sendText = name.getText().toString() + "[/name]" +
-                    note.getText().toString() + "[/item_note]" +
+                    note.getText().toString() + "[/recycler_view_item_note]" +
                     shortNote.getText().toString() + "[/shortNote]"
                     + shortNote.getText().toString() + "[/QR]";
         } else {
             sendText = name.getText().toString() + "[/name]" +
-                    note.getText().toString() + "[/item_note]" +
+                    note.getText().toString() + "[/recycler_view_item_note]" +
                     shortNote.getText().toString() + "[/shortNote]";
         }
 
@@ -269,9 +269,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                     10000, pendingIntent);
 
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
-            Toast.makeText(getContext(), "Уведомление установлено",
-                    Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "Уведомление установлено", Snackbar.LENGTH_LONG).show();
 
             mDb = mDBHelper.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
@@ -323,8 +321,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                 Log.i("StandartNotes", String.valueOf(e));
             }
 
-            //Notes.NOTES_ADAPTER.notifyDataSetChanged();
-            Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "Сохранено", Snackbar.LENGTH_LONG).show();
 
         } else if(view.getId() == R.id.buttonShare){
 

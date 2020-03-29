@@ -26,7 +26,7 @@ import iooojik.app.klass.ar.ARcamera;
 
 public class Planets extends Fragment implements View.OnClickListener {
 
-    View view;
+    private View view;
     private Database mDBHelper;
     private Cursor userCursor;
     private SQLiteDatabase mDb;
@@ -77,7 +77,7 @@ public class Planets extends Fragment implements View.OnClickListener {
     private void setInformation(String name, String description, Bitmap bitmap, int id){
         LinearLayout linearLayout = view.findViewById(R.id.linear);
         @SuppressLint("InflateParams")
-        View view1 = getLayoutInflater().inflate(R.layout.item_planet, null, false);
+        View view1 = getLayoutInflater().inflate(R.layout.recycler_view_item_planet, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView desc = frameLayout.findViewById(R.id.description);

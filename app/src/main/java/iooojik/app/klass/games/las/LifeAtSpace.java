@@ -21,13 +21,11 @@ public class LifeAtSpace extends Fragment implements View.OnClickListener {
 
     public LifeAtSpace() {}
 
-    View view;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_life_at_space, container, false);
+        View view = inflater.inflate(R.layout.fragment_life_at_space, container, false);
 
         ImageView openGP = view.findViewById(R.id.imageView2);
         openGP.setOnClickListener(this);

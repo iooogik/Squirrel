@@ -1,4 +1,4 @@
-package iooojik.app.klass.home;
+package iooojik.app.klass.subjects;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +16,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 
-public class HomeFragment extends Fragment {
+public class Subject extends Fragment {
 
 
     private View view;
@@ -32,7 +34,8 @@ public class HomeFragment extends Fragment {
         Database mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
+        floatingActionButton.hide();
         updateList();
 
         return view;
@@ -41,7 +44,7 @@ public class HomeFragment extends Fragment {
     private void updateList(){
         LinearLayout linearLayout = view.findViewById(R.id.items_linear);
 
-        View view1 = getLayoutInflater().inflate(R.layout.item_planet, null, false);
+        View view1 = getLayoutInflater().inflate(R.layout.recycler_view_item_planet, null, false);
         //астрономия
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
@@ -63,7 +66,7 @@ public class HomeFragment extends Fragment {
         linearLayout.addView(view1);
 
         //геометрия
-        View view2 = getLayoutInflater().inflate(R.layout.item_planet, null, false);
+        View view2 = getLayoutInflater().inflate(R.layout.recycler_view_item_planet, null, false);
         FrameLayout frameLayout2 = view2.findViewById(R.id.frame_formulae);
 
         ImageView imageView2 = frameLayout2.findViewById(R.id.formulae);

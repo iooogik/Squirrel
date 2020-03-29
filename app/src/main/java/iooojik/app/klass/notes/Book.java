@@ -93,7 +93,7 @@ public class Book extends Fragment implements View.OnClickListener {
     }
 
     private void setInformation(int pos){
-        View view1 = getLayoutInflater().inflate(R.layout.book_item, null, false);
+        View view1 = getLayoutInflater().inflate(R.layout.recycler_view_book_item, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView tv = frameLayout.findViewById(R.id.description);

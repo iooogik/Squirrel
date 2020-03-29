@@ -9,18 +9,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import iooojik.app.klass.R;
 
@@ -30,32 +22,18 @@ public class SignUp extends Fragment implements View.OnClickListener{
     public SignUp() {}
 
     private View view;
-    private FirebaseAuth mAuth;
-    private String userType = null;
+
+    private String accountType = "";
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-        mAuth = FirebaseAuth.getInstance();
-        RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            switch (checkedId){
-                case R.id.teacher:
-                    userType = "teacher";
-                    break;
-                case R.id.pupil:
-                    userType = "pupil";
-                    break;
-                default:
-                    userType = null;
-                    break;
-            }
-        });
+
         Button signIn = view.findViewById(R.id.login);
         signIn.setOnClickListener(this);
-
+        //поле email с слушателем, чтобы после изменения поля показывать пароль (аналогично для последующих полей)
         EditText email = view.findViewById(R.id.email);
         TextInputLayout password = view.findViewById(R.id.text_input_pass3);
         email.addTextChangedListener(new TextWatcher() {
@@ -124,7 +102,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
             }
         });
-
+        //
 
         return view;
     }
@@ -137,34 +115,25 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 EditText password = view.findViewById(R.id.password);
                 EditText name = view.findViewById(R.id.name);
                 EditText surname = view.findViewById(R.id.surname);
-                if(!(userType == null && email.getText().toString().isEmpty() &&
-                        password.getText().toString().isEmpty()
-                && name.getText().toString().isEmpty() && surname.getText().toString().isEmpty())) {
-
-                    mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                            .addOnCompleteListener(getActivity(), task -> {
-                                if (task.isSuccessful()) {
-
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    DatabaseReference database = FirebaseDatabase.getInstance().
-                                            getReference();
-                                    database.child(user.getUid()).child("type").setValue(userType);
-                                    database.child(user.getUid()).child("name").setValue(name.getText().toString());
-                                    database.child(user.getUid()).child("surname").setValue(surname.getText().toString());
-
-                                    NavController navController = NavHostFragment.findNavController(getParentFragment());
-                                    navController.navigate(R.id.nav_profile);
-                                    BottomAppBar bottomAppBar = getActivity().findViewById(R.id.bar);
-                                    bottomAppBar.setVisibility(View.VISIBLE);
-                                } else {
-                                    Toast.makeText(getContext(), "Что-то пошло не так. Попробуйте снова.",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-                }else {
-                    Toast.makeText(getContext(), "Не все поля заполнены", Toast.LENGTH_LONG).show();
-                }
+                RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
+                //слушатель, чтобы получить тип аккаунта
+                radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                    switch (checkedId){
+                        case R.id.teacher:
+                            accountType = "teacher";
+                            break;
+                        case R.id.pupil:
+                            accountType = "pupil";
+                            break;
+                        default:
+                            accountType = null;
+                            break;
+                    }
+                });
+                /**
+                 * 1. проверяем, не пустые ли поля, если не все поля заполнены, то выводим сообщение: "Не все поля заполнены"
+                 * 2. проводим регистрацию, в случае неудачи выводим сообщение: "Что-то пошло не так. Попробуйте снова."
+                 */
                 break;
         }
     }

@@ -15,7 +15,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -24,12 +23,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
-import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
+
+import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIALS;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
 
@@ -54,7 +56,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     @NonNull
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_note, parent, false);//поиск элемента списка
+        View view = inflater.inflate(R.layout.recycler_view_item_note, parent, false);//поиск элемента списка
         return new ViewHolder(view);
     }
 
@@ -64,8 +66,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         mDBHelper.openDataBase();
         //получение и установка данных в элемент
         Note note = notes.get(position);
-        SharedPreferences settings = context.getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
-        int val = settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+        SharedPreferences settings = context.getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        int val = settings.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
 
         NavController navHostFragment = NavHostFragment.findNavController(fragment);
 
@@ -165,8 +167,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         navHostFragment.navigate(R.id.nav_book, bundle);
                         break;
                     default:
-                        Toast.makeText(v.getContext(), "Error",
-                                Toast.LENGTH_SHORT).show();
+                        Snackbar.make(holder.itemView, "Error", Snackbar.LENGTH_LONG).show();
                         break;
                 }
 

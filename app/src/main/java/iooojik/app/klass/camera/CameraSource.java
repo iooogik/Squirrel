@@ -34,19 +34,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static iooojik.app.klass.AppСonstants.ASPECT_RATIO_TOLERANCE;
+import static iooojik.app.klass.AppСonstants.CAMERA_FACING_BACK;
+import static iooojik.app.klass.AppСonstants.CAMERA_FACING_FRONT;
+import static iooojik.app.klass.AppСonstants.DUMMY_TEXTURE_NAME;
+import static iooojik.app.klass.AppСonstants.TAG;
+
 @SuppressWarnings("deprecation")
 public class CameraSource {
-    @SuppressLint("InlinedApi")
-    public static final int CAMERA_FACING_BACK = CameraInfo.CAMERA_FACING_BACK;
-    @SuppressLint("InlinedApi")
-    private static final int CAMERA_FACING_FRONT = CameraInfo.CAMERA_FACING_FRONT;
-
-    private static final String TAG = "OpenCameraSource";
-
-    private static final int DUMMY_TEXTURE_NAME = 100;
-
-
-    private static final float ASPECT_RATIO_TOLERANCE = 0.01f;
 
     @StringDef({
         Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE,
@@ -325,10 +320,7 @@ public class CameraSource {
         return mPreviewSize;
     }
 
-    /**
-     * Returns the selected camera; one of {@link #CAMERA_FACING_BACK} or
-     * {@link #CAMERA_FACING_FRONT}.
-     */
+
     public int getCameraFacing() {
         return mFacing;
     }

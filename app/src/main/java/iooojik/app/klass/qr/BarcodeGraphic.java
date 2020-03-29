@@ -24,11 +24,6 @@ import com.google.android.gms.vision.barcode.Barcode;
 
 import iooojik.app.klass.camera.GraphicOverlay;
 
-
-/**
- * Graphic instance for rendering barcode position, size, and ID within an associated graphic
- * overlay view.
- */
 public class BarcodeGraphic extends GraphicOverlay.Graphic {
 
     private int mId;

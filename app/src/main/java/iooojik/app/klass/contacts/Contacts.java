@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -23,7 +25,7 @@ import iooojik.app.klass.R;
 
 public class Contacts extends Fragment implements View.OnClickListener {
 
-    View view;
+    private View view;
 
     public Contacts() {}
 
@@ -32,6 +34,9 @@ public class Contacts extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_contacts, container, false);
+
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
+        floatingActionButton.hide();
 
         ImageView telegram = view.findViewById(R.id.telegram);
         ImageView gmail = view.findViewById(R.id.gmail);
@@ -64,8 +69,9 @@ public class Contacts extends Fragment implements View.OnClickListener {
             ClipData clip = ClipData.newPlainText("", "iooogikdev@gmail.com");
             assert clipboard != null;
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(getContext(), "Адрес электронной почты был " +
-                    "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "Адрес электронной почты был скопирован в буфер обмена.",
+                    Snackbar.LENGTH_LONG).show();
+
 
         } else if(v.getId() == R.id.discord){
 
@@ -75,8 +81,9 @@ public class Contacts extends Fragment implements View.OnClickListener {
             ClipData clip = ClipData.newPlainText("", "Стасян#6249");
             assert clipboard != null;
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(getContext(), "Тег дискорда был " +
-                    "скопирован в буфер обмена.", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, "Тег дискорда был скопирован в буфер обмена.",
+                    Snackbar.LENGTH_LONG).show();
+
 
         } else if(v.getId() == R.id.vk){
 

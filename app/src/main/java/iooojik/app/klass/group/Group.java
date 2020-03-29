@@ -9,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -20,16 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +34,9 @@ public class Group extends Fragment implements View.OnClickListener{
 
     private View view;
     private String groupName;
-    private FirebaseUser user;
-    private FirebaseAuth mAuth;
     private List<Mate> groupMates;
     private Context context;
     private GroupMatesAdapter groupmatesAdapter;
-    private FirebaseDatabase database;
     private FloatingActionButton fab;
 
     @Override
@@ -59,19 +47,16 @@ public class Group extends Fragment implements View.OnClickListener{
         groupMates = new ArrayList<>();
         //получение названия нажатого класса
         getGroupName();
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        //контекст
         context = getContext();
-        database = FirebaseDatabase.getInstance();
         //получение списка одноклассников
         getGroupMates();
-
+        //адаптер для списка учеников
         groupmatesAdapter =  new GroupMatesAdapter(context, this, groupMates);
         RecyclerView groupmates = view.findViewById(R.id.groupmates);
         groupmates.setLayoutManager(new LinearLayoutManager(context));
         groupmates.setAdapter(groupmatesAdapter);
-
-
+        //конпка с открытием редактора тестов
         Button testEditor = view.findViewById(R.id.testEditor);
         testEditor.setOnClickListener(this);
 
@@ -83,34 +68,7 @@ public class Group extends Fragment implements View.OnClickListener{
     }
 
     private void getGroupMates(){
-        DatabaseReference databaseReference = database.getReference(user.getUid());
-        databaseReference.child("groups").child(groupName).child("groupmates").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()){
-
-                    databaseReference.child("groups").child(groupName).child("groupmates").child(ds.getKey()).child("email").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String email = String.valueOf(dataSnapshot.getValue(String.class));
-                            groupMates.add(new Mate(ds.getKey(), email, groupName));
-                            groupmatesAdapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        //получаем список учеников(их полное имя и email) из бд
     }
 
     private void getGroupName(){
@@ -122,6 +80,11 @@ public class Group extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fab:
+                /**MaterialAlertDialogBuilder для добавления нового ученика в группу
+                 * 1. пользователь вводит email и полное имя ученика, если он есть в базе, то
+                 * он добавляется в список и, соответсвенно, в бд
+                 */
+
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                 LinearLayout layout = new LinearLayout(context);
                 layout.setOrientation(LinearLayout.VERTICAL);
@@ -152,38 +115,17 @@ public class Group extends Fragment implements View.OnClickListener{
                         boolean result = false;
                         String pupilID = "";
                         //проверяем, есть ли пользовтель в бд
-                        if(user != null){
-                            for(UserInfo profile : user.getProviderData()){
-                                String tempMail = profile.getEmail();
-                                if (email.equals(tempMail)){
-                                    pupilID = profile.getUid();
-                                    result = true;
-                                    break;
-                                }
-                            }
-                        }
-                        Toast.makeText(getContext(), pupilID + " " + result, Toast.LENGTH_LONG).show();
+
+
                         if(result && !pupilID.isEmpty()){
-                            DatabaseReference databaseReference = FirebaseDatabase.
-                                    getInstance().getReference(user.getUid());
 
-                            databaseReference.child("groups").child(groupName).child("groupmates")
-                                    .child(nameSurname.getText().toString()).child("averageScore").setValue(0);
-
-                            databaseReference.child("groups").child(groupName).child("groupmates")
-                                    .child(nameSurname.getText().toString()).child("email").setValue(email);
-
-                            //добавляем учителя в список учителей у ученика
-                            databaseReference = FirebaseDatabase.getInstance().getReference(pupilID);
-                            databaseReference.child("teachers").child(user.getUid()).setValue(0);
-                            getGroupMates();
                         } else {
-                            /* Toast.makeText(getContext(),
-                                    "Пользователь с указанным e-mail адресом не был найден." +
-                                            "Пожалуйста, повторите попытку снова или напишите разработчику.",
-                                    Toast.LENGTH_LONG).show();
+                            Snackbar.make(view, "Пользователь с указанным e-mail адресом не был найден." +
+                                    "Пожалуйста, повторите попытку снова или напишите разработчику.",
+                                    Snackbar.LENGTH_LONG).show();
 
-                             */
+
+
                         }
                     }
                 });
@@ -192,6 +134,7 @@ public class Group extends Fragment implements View.OnClickListener{
                 builder.create().show();
                 break;
             case R.id.testEditor:
+                //редактор тестов
                 Bundle bundle = new Bundle();
                 bundle.putString("groupName", groupName);
                 NavController navController = NavHostFragment.findNavController(this);

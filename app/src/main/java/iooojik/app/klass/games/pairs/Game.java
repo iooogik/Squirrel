@@ -1,10 +1,10 @@
 package iooojik.app.klass.games.pairs;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +25,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -104,21 +103,15 @@ public class Game extends Fragment implements View.OnClickListener{
             builder.setView(layout);
             final Dialog dialog = builder.create();
             startNewGame.setText("Начать игру заново");
-            startNewGame.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    makeCells();
-                    dialog.dismiss();
-                }
+            startNewGame.setOnClickListener(v12 -> {
+                makeCells();
+                dialog.dismiss();
             });
 
-            goToMainMenu.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    NavController navController = NavHostFragment.findNavController(getParentFragment());
-                    navController.navigate(R.id.pairs_menu);
-                    dialog.dismiss();
-                }
+            goToMainMenu.setOnClickListener(v1 -> {
+                NavController navController = NavHostFragment.findNavController(getParentFragment());
+                navController.navigate(R.id.nav_games);
+                dialog.dismiss();
             });
 
             dialog.show();
@@ -155,44 +148,42 @@ public class Game extends Fragment implements View.OnClickListener{
             }
 
             //задержка перед проверкой, чтобы у пользователя появилось время на запоминание картинок
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            handler.postDelayed(() -> {
 
-                    //если картинки совпадают
-                    if (tempPressed == tappedResID) {
-                        //делаем кнопки невидимыми, иначе они сместятся
-                        tappedCell.setBackgroundColor(Color.TRANSPARENT);
-                        tempButton.setBackgroundColor(Color.TRANSPARENT);
-                        //обнуляем счётчики и переменные, делаем неактивными кнопки
-                        tappedCell.setEnabled(false);
-                        tempButton.setEnabled(false);
-                        tempPressed = -1;
+                //если картинки совпадают
+                if (tempPressed == tappedResID) {
+                    //делаем кнопки невидимыми, иначе они сместятся
+                    tappedCell.setBackgroundColor(Color.TRANSPARENT);
+                    tempButton.setBackgroundColor(Color.TRANSPARENT);
+                    //обнуляем счётчики и переменные, делаем неактивными кнопки
+                    tappedCell.setEnabled(false);
+                    tempButton.setEnabled(false);
+                    tempPressed = -1;
 
-                        tempButton = null;
-                        guessedPairs++;
-                        isGameEnd(); //проверяем, найдены все пары или нет
+                    tempButton = null;
+                    guessedPairs++;
+                    isGameEnd(); //проверяем, найдены все пары или нет
 
-                    } else { //если не совпадают
-                        tappedCell.setBackgroundColor(Color.GRAY);
-                        tempButton.setBackgroundColor(Color.GRAY);
+                } else { //если не совпадают
+                    tappedCell.setBackgroundColor(Color.GRAY);
+                    tempButton.setBackgroundColor(Color.GRAY);
 
-                        tempPressed = -1;
-                        tempButton.setEnabled(true);
-                        tempButton = null;
-                    }
-
-                    for (ImageButton b: activeButtons) {
-                        b.setClickable(true); //делаем кликабельными кнопки
-                    }
-
+                    tempPressed = -1;
+                    tempButton.setEnabled(true);
+                    tempButton = null;
                 }
+
+                for (ImageButton b: activeButtons) {
+                    b.setClickable(true); //делаем кликабельными кнопки
+                }
+
             }, 1000); //задержка в мс
         }
 
         tapCounter++; //счётчик нажатий
     }
 
+    @SuppressLint("SetTextI18n")
     private void isGameEnd(){
         if(guessedPairs == (HEIGHT*WIDTH)/2){
             running = false;
@@ -212,19 +203,13 @@ public class Game extends Fragment implements View.OnClickListener{
             linearLayout.addView(textView);
             builder.setView(linearLayout);
             builder.setCancelable(false);
-            builder.setPositiveButton("Выйти в главное меню", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    NavController navController = NavHostFragment.findNavController(getParentFragment());
-                    navController.navigate(R.id.pairs_menu);
-                }
+            builder.setPositiveButton("Выйти в главное меню", (dialog, which) -> {
+                NavController navController = NavHostFragment.findNavController(getParentFragment());
+                navController.navigate(R.id.nav_games);
             });
-            builder.setNegativeButton("Начать заново", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    makeCells();
-                    dialog.cancel();
-                }
+            builder.setNegativeButton("Начать заново", (dialog, which) -> {
+                makeCells();
+                dialog.cancel();
             });
             builder.create().show();
         }
@@ -236,17 +221,18 @@ public class Game extends Fragment implements View.OnClickListener{
     }
 
     private void makeCells() {
-        Collections.shuffle(Arrays.asList(image_res));
-
+        Collections.shuffle(Collections.singletonList(image_res));
+        running = false;
 
         TextView time = view.findViewById(R.id.timer);
         time.setText("");
+        time.setVisibility(View.INVISIBLE);
         guessedPairs = 0;
         tapCounter = 0;
         //метод создания кнопок
         ImageButton[][] cells = new ImageButton[HEIGHT][WIDTH];
         //инициализация сетки
-        cellsLayout = (GridLayout) view.findViewById(R.id.CellsLayout);
+        cellsLayout = view.findViewById(R.id.CellsLayout);
         cellsLayout.removeAllViews();
         cellsLayout.setColumnCount(HEIGHT);
         //массив с картинками и кнопками
@@ -280,7 +266,7 @@ public class Game extends Fragment implements View.OnClickListener{
                 //устанавливаем тег, по которому будем определять схожесть картинок
                 cells[i][j].setTag(i + "," + j + "," + image.getResourceID());
                 //добавляем в массив кнопок кнопку
-                buttons.add(new Cell(cells[i][j], i, j));
+                buttons.add(new Cell(cells[i][j]));
             }
         }
 
@@ -297,16 +283,14 @@ public class Game extends Fragment implements View.OnClickListener{
         }
         //задержка
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (getContext() == context) {
-                    setButtonsInGrid();
-                    seconds = 0;
-                    startTimer();
-                }
-
+        handler.postDelayed(() -> {
+            if (getContext() == context) {
+                setButtonsInGrid();
+                seconds = 0;
+                time.setVisibility(View.VISIBLE);
+                startTimer();
             }
+
         }, 5000);
 
     }
@@ -347,7 +331,7 @@ public class Game extends Fragment implements View.OnClickListener{
                 if(running) {
                     int minutes = (seconds % 3600) / 60;
                     int secon = seconds % 60;
-                    String time = String.format("%02d:%02d", minutes, secon);
+                    @SuppressLint("DefaultLocale") String time = String.format("%02d:%02d", minutes, secon);
                     timer.setText(time);
                     seconds++;
                     chrono.postDelayed(this, 1000);

@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class Tests extends Fragment implements View.OnClickListener{
 
     private Cursor userCursor;
     static TestsAdapter TEST_ADAPTER;
-    static List<TestTheme> TEST_ITEMS = new ArrayList<>();
+    static List<TestTheme> TEST_ITEMS;
 
 
     public Tests() {}
@@ -41,6 +43,10 @@ public class Tests extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         VIEW = inflater.inflate(R.layout.fragment_test, container, false);
 
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
+        floatingActionButton.hide();
+
+        TEST_ITEMS = new ArrayList<>();
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();

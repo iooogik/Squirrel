@@ -2,21 +2,21 @@ package iooojik.app.klass.games.pairs;
 
 
 public class Image {
-    int id;
-    int resourceID;
-    int TwiceUsed;
+    private int id;
+    private int resourceID;
+    private int TwiceUsed;
 
-    public Image(int id, int resourceID, int twiceUsed) {
+    Image(int id, int resourceID, int twiceUsed) {
         this.id = id;
         this.resourceID = resourceID;
         this.TwiceUsed = twiceUsed;
     }
 
-    public int getTwiceUsed() {
+    int getTwiceUsed() {
         return TwiceUsed;
     }
 
-    public void setTwiceUsed(int twiceUsed) {
+    void setTwiceUsed(int twiceUsed) {
         TwiceUsed = twiceUsed;
     }
 
@@ -24,7 +24,7 @@ public class Image {
         return id;
     }
 
-    public int getResourceID() {
+    int getResourceID() {
         return resourceID;
     }
 }

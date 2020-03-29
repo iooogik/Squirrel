@@ -14,8 +14,6 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
-    // идентификатор уведомления
-    private static final int NOTIFY_ID = 101;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -65,6 +63,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                         .setAutoCancel(false)   //автоматическое "отключение" заметки из статус-бара
                         .setPriority(2); //приоритет
 
-        notificationManager.notify(NOTIFY_ID, builder.build());
+        notificationManager.notify(AppСonstants.NOTIFY_ID, builder.build());
         }
 }

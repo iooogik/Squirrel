@@ -11,15 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static iooojik.app.klass.AppСonstants.DB_NAME;
+import static iooojik.app.klass.AppСonstants.DB_PATH;
+import static iooojik.app.klass.AppСonstants.DB_VERSION;
+
 // класс для работы с файлом бд
 
 public class Database extends SQLiteOpenHelper {
-    // имя файла с бд
-    private static String DB_NAME = "database.db";
-    // путь к бд
-    private static String DB_PATH;
-    // версия бд
-    private static final int DB_VERSION = 42;
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;

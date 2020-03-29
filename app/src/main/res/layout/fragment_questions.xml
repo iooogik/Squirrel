@@ -17,7 +17,7 @@
         android:tint="@color/Completed"
         android:src="@drawable/round_check_circle_24" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginRight="16dp"
@@ -30,6 +30,6 @@
             android:orientation="vertical">
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

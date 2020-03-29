@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
@@ -224,9 +224,8 @@ public class Notes extends Fragment implements View.OnClickListener {
                     ITEMS.add(new Note(name, shortNote, null, type, id));
                     NOTES_ADAPTER.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getContext(),
-                        "Что-то пошло не так. Проверьте, пожалуйста, название и выбранный тип.",
-                            Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, "Что-то пошло не так. Проверьте, пожалуйста, название и выбранный тип.",
+                            Snackbar.LENGTH_LONG).show();
                 }
                     });
             builder.create().show();

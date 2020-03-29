@@ -61,27 +61,20 @@ import com.google.zxing.common.BitMatrix;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 import iooojik.app.klass.camera.CameraSourcePreview;
 import iooojik.app.klass.camera.GraphicOverlay;
 
+import static iooojik.app.klass.AppСonstants.RC_HANDLE_CAMERA_PERM;
+
 
 public final class BarcodeCaptureActivity extends AppCompatActivity implements
         BarcodeGraphicTracker.BarcodeUpdateListener {
     private static final String TAG = "Barcode-reader";
 
-    // intent request code to handle updating play services if needed.
-    private static final int RC_HANDLE_GMS = 9001;
-
-    // permission request codes need to be < 256
-    private static final int RC_HANDLE_CAMERA_PERM = 2;
-
-    // constants used to pass extra data in the intent
-    public static final String AutoFocus = "AutoFocus";
-    public static final String UseFlash = "UseFlash";
-    public static final String BarcodeObject = "Barcode";
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -217,6 +210,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             if (hasLowStorage) {
                 Toast.makeText(this, R.string.low_storage_error,
                         Toast.LENGTH_LONG).show();
+
                 Log.w(TAG, getString(R.string.low_storage_error));
             }
         }
@@ -272,8 +266,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
-            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
-            boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
+            boolean autoFocus = getIntent().getBooleanExtra(AppСonstants.AutoFocus,false);
+            boolean useFlash = getIntent().getBooleanExtra(AppСonstants.UseFlash, false);
             createCameraSource(autoFocus, useFlash);
             return;
         }
@@ -300,7 +294,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
                 getApplicationContext());
         if (code != ConnectionResult.SUCCESS) {
             Dialog dlg =
-                    GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
+                    GoogleApiAvailability.getInstance().getErrorDialog(this, code, AppСonstants.RC_HANDLE_GMS);
             dlg.show();
         }
 

@@ -65,7 +65,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         List<String> temp = new ArrayList<>(answers);
         for (int i = 0; i < (answers.size()/questions.size() + 1); i++) {
 
-            View view1 = getLayoutInflater().inflate(R.layout.item_question, null, false);
+            View view1 = getLayoutInflater().inflate(R.layout.recycler_view_item_question, null, false);
 
             //вопрос
             TextView nameNote = view1.findViewById(R.id.task);

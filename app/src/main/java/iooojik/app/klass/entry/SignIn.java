@@ -8,17 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 
 import iooojik.app.klass.R;
 
@@ -27,14 +23,12 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public SignIn() {}
 
     private View view;
-    private FirebaseAuth mAuth;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_sign_in, container, false);
-        mAuth = FirebaseAuth.getInstance();
+
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);
         signIn.setOnClickListener(this);
@@ -76,36 +70,18 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login:
+                /**
+                 * Обработка нажатия кнопки "Войти"
+                 * 1. проверяем, не пустые ли поля с email и password
+                 * 2. выполняем авторизацию, если она не удалась, то вызываем Snackbar c сообщением "Что-то пошло не так. Попробуйте снова."
+                 * если авторизация прошла успешно, то переходим на главный фрагмент, показываем нижний toolbar и разблокируем щторку
+                 */
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
-                //если EditText не пустые, то
-                if(!(email.getText().toString().isEmpty() && password.getText().toString().isEmpty())) {
-                    //выполняем авторизацию
-                    mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                            .addOnCompleteListener(task -> {
-                                if (!task.isSuccessful()) {//если авторизация не удалась
-                                    Toast.makeText(getContext(), "Что-то пошло не так. Попробуйте снова.",
-                                            Toast.LENGTH_LONG).show();
-
-                                } else {
-
-                                    DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
-                                    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-
-                                    //переходим на "главный" фрагмент и показываем нижний toolbar
-                                    NavController navController = NavHostFragment.
-                                            findNavController(getParentFragment());
-                                    navController.navigate(R.id.nav_profile);
-
-                                    BottomAppBar bottomAppBar = getActivity().findViewById(R.id.bar);
-                                    bottomAppBar.setVisibility(View.VISIBLE);
-
-                                    FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-                                    fab.show();
-                                }
-                            });
-                }
-
+                /*
+                DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                 */
                 break;
             case R.id.registr:
                 //переход на регистрационную форму

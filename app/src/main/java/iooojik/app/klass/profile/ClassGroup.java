@@ -3,10 +3,10 @@ package iooojik.app.klass.profile;
 import java.util.List;
 
 class ClassGroup {
-    private int id;
-    private String name;
-    private int count;
-    private List<String> users;
+    private int id; //id группы из бд
+    private String name; //название группы
+    private int count; //количество участников
+    private List<String> users; //список с пользователями
 
     ClassGroup(int id, String name, List<String> users){
         this.id = id;

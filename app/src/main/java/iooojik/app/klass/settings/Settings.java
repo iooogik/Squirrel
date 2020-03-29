@@ -15,13 +15,18 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
+
+import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIALS;
+import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
 
 public class Settings extends Fragment {
 
@@ -35,8 +40,10 @@ public class Settings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
+        floatingActionButton.hide();
         //получаем настройки
-        Settings = getActivity().getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);;
+        Settings = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);;
         //получаем packageInfo, чтобы узнать версию установленного приложения
         try {
             packageInfo = getActivity().getPackageManager().
@@ -58,9 +65,9 @@ public class Settings extends Fragment {
         //убираем справочные материалы из заметок
         SwitchMaterial show_book_mat = view.findViewById(R.id.book_items);
 
-        if (Settings.contains(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
+        if (Settings.contains(APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
             // Получаем число из настроек
-            int val = Settings.getInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+            int val = Settings.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
 
             if(val == 1){
                 show_book_mat.setChecked(true);
@@ -72,11 +79,11 @@ public class Settings extends Fragment {
         show_book_mat.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 SharedPreferences.Editor SettingsEditor = Settings.edit();
-                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
+                SettingsEditor.putInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
                 SettingsEditor.apply();
             } else {
                 SharedPreferences.Editor SettingsEditor = Settings.edit();
-                SettingsEditor.putInt(MainActivity.APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+                SettingsEditor.putInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
                 SettingsEditor.apply();
             }
         });
@@ -98,7 +105,7 @@ public class Settings extends Fragment {
 
         // Получаем число из настроек
 
-        val = Settings.getInt(MainActivity.APP_PREFERENCES_THEME, 0);
+        val = Settings.getInt(APP_PREFERENCES_THEME, 0);
 
         spinner.setText(themes.get(val));
 
@@ -109,7 +116,7 @@ public class Settings extends Fragment {
         spinner.setOnItemClickListener((parent, view, position, id) -> {
 
             SharedPreferences.Editor SettingsEditor = Settings.edit();
-            SettingsEditor.putInt(MainActivity.APP_PREFERENCES_THEME, position);
+            SettingsEditor.putInt(APP_PREFERENCES_THEME, position);
             SettingsEditor.apply();
 
             getActivity().finish();

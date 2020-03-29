@@ -78,17 +78,12 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
                 .thenAccept(renderable -> solarSystem = renderable)
                 .exceptionally(throwable -> {
                     Toast toast =
-                            Toast.makeText(this, "Unable to load andy renderable",
+                            Toast.makeText(this, "Невозможно загрузить объект",
                                     Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                     return null;
                 });
-
-
-
-
-
     }
 
     private void createModel(){

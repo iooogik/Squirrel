@@ -38,7 +38,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_test, parent, false);//поиск элемента списка
+        View view = inflater.inflate(R.layout.recycler_view_item_test, parent, false);//поиск элемента списка
         return new TestsAdapter.ViewHolder(view);
     }
 

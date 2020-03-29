@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_profile">
+    app:startDestination="@+id/nav_news">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="iooojik.app.klass.home.HomeFragment"
+        android:id="@+id/nav_news"
+        android:name="iooojik.app.klass.subjects.Subject"
         android:label="Главная"
         tools:layout="@layout/fragment_home" >
 
@@ -55,7 +55,7 @@
 
     <fragment
         android:id="@+id/nav_planets_list"
-        android:name="iooojik.app.klass.astonomy.Planets"
+        android:name="iooojik.app.klass.astronomy.Planets"
         android:label="Планеты"
         tools:layout="@layout/fragment_planets"  >
         <action
@@ -73,7 +73,7 @@
 
     <fragment
         android:id="@+id/nav_planets_article"
-        android:name="iooojik.app.klass.astonomy.ScrollingArticle"
+        android:name="iooojik.app.klass.astronomy.ScrollingArticle"
         android:label="Планеты. Статья."
         tools:layout="@layout/activity_scrolling_article"  >
         <action
@@ -114,6 +114,7 @@
     <fragment
         android:id="@+id/nav_signUp"
         android:name="iooojik.app.klass.entry.SignUp"
+        tools:layout="@layout/fragment_sign_up"
         android:label="SignUp" />
 
     <fragment
@@ -188,6 +189,7 @@
     <fragment
         android:id="@+id/nav_testEditor"
         android:name="iooojik.app.klass.tests.TestEditor"
+        tools:layout="@layout/fragment_test_editor"
         android:label="TestEditor" />
     <fragment
         android:id="@+id/nav_games"
@@ -197,18 +199,16 @@
         <action
             android:id="@+id/action_games2_to_nav_las"
             app:destination="@id/nav_las" />
-
         <action
-            android:id="@+id/action_games2_to_pairs_menu"
-            app:destination="@id/pairs_menu" />
+            android:id="@+id/action_nav_games_to_nav_pairs"
+            app:destination="@id/nav_pairs" />
+
     </fragment>
-    <fragment
-        android:id="@+id/pairs_menu"
-        android:name="iooojik.app.klass.games.pairs.Menu"
-        android:label="Menu" />
+
     <fragment
         android:id="@+id/nav_pairs"
         android:name="iooojik.app.klass.games.pairs.Game"
+        tools:layout="@layout/fragment_pairs_game"
         android:label="Game" />
 
 </navigation>

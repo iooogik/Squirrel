@@ -21,12 +21,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -128,8 +128,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         } catch (Exception e){
             Log.i("StandartNotes", String.valueOf(e));
         }
-
-        Toast.makeText(getContext(), "Сохранено", Toast.LENGTH_SHORT).show();
+        Snackbar.make(view, "Сохранено", Snackbar.LENGTH_LONG).show();
     }
 
     private void getPoints(){
@@ -303,8 +302,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             assert alarmManager != null;
             alarmManager.setExact(AlarmManager.RTC_WAKEUP,
                     calendar.getTimeInMillis(), pendingIntent);
-            Toast.makeText(getContext(), "Уведомление установлено",
-                    Toast.LENGTH_LONG).show();
+
+            Snackbar.make(view, "Уведомление установлено", Snackbar.LENGTH_LONG).show();
 
             mDb = mDBHelper.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
@@ -375,9 +374,8 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                             null);
                     addCheck(false, namePoint.getText().toString());
                 } else {
-                    Toast.makeText(getContext(),
-                            "Что-то пошло не так. Проверьте, пожалуйста, название пункта.",
-                            Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, "Что-то пошло не так. Проверьте, пожалуйста, название пункта.",
+                            Snackbar.LENGTH_LONG).show();
                 }
                     });
 

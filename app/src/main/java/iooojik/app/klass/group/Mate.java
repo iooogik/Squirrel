@@ -1,6 +1,6 @@
 package iooojik.app.klass.group;
 
-public class Mate {
+public class Mate { //ученик
     String name, email, group;
 
      Mate(String name, String email, String group) {

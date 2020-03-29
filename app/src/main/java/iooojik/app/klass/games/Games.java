@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,20 +21,19 @@ public class Games extends Fragment {
 
     public Games() {}
 
-    private View view;
-    private List<Game> gamesList;
-    private Context context;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_games, container, false);
+        View view = inflater.inflate(R.layout.fragment_games, container, false);
         RecyclerView games = view.findViewById(R.id.games);
-        context = getContext();
-        gamesList = new ArrayList<>();
+        Context context = getContext();
+        List<Game> gamesList = new ArrayList<>();
+
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
+        floatingActionButton.hide();
 
         gamesList.add(new Game("Life at space", R.drawable.las_logo, R.id.nav_las));
-        gamesList.add(new Game("Поиск пар", R.drawable.pairs_logo, R.id.pairs_menu));
+        gamesList.add(new Game("Поиск пар", R.drawable.pairs_logo, R.id.nav_pairs));
 
         games.setLayoutManager(new LinearLayoutManager(getContext()));
 
