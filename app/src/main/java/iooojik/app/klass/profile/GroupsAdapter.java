@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import iooojik.app.klass.R;
@@ -25,6 +25,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     private List<GroupInfo> classGroupInfos;
     private Fragment fragment;
     private LayoutInflater inflater;
+    private List<Integer> colors;
 
     GroupsAdapter(Context context, List<GroupInfo> classGroupInfos, Fragment fragment){
         this.context = context;
@@ -36,6 +37,11 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        colors = new ArrayList<Integer>();
+        colors.add(context.getColor(R.color.colorAccent));//0
+        colors.add(context.getColor(R.color.color_primary_light));//1
+        colors.add(context.getColor(R.color.colorWhite));//2
+        colors.add(context.getColor(R.color.color_primary_text));//3
         View view = inflater.inflate(R.layout.group_item, parent, false);
         return new GroupsAdapter.ViewHolder(view);
     }
@@ -43,8 +49,17 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         GroupInfo groupInfo = classGroupInfos.get(position);
-        holder.groupName.setText(groupInfo.getName());
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+        if (position % 2 == 0){
+            holder.itemView.setBackgroundColor(colors.get(0));
+            holder.groupID.setTextColor(colors.get(2));
+        } else {
+            holder.itemView.setBackgroundColor(colors.get(2));
+            holder.groupID.setTextColor(colors.get(3));
+            holder.groupName.setTextColor(colors.get(3));
+        }
+        holder.groupName.setText(String.format("%s %s", holder.groupName.getText().toString(), groupInfo.getName()));
+        holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(), groupInfo.getId()));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
@@ -66,12 +81,12 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView groupName;
-        LinearLayout linearLayout;
+        TextView groupID;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.linearLayout = itemView.findViewById(R.id.linear);
             this.groupName = itemView.findViewById(R.id.groupName);
+            this.groupID = itemView.findViewById(R.id.groupID);
         }
     }
 }

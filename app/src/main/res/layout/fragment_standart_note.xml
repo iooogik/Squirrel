@@ -6,161 +6,148 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/frame"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/buttonSave"
+            android:layout_width="@dimen/small_buttons"
+            android:layout_height="@dimen/small_buttons"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/round_save_24" />
+
+        <ImageButton
+            android:id="@+id/buttonShare"
+            android:layout_width="@dimen/small_buttons"
+            android:layout_height="@dimen/small_buttons"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/round_share_24" />
+
+        <ImageButton
+            android:id="@+id/buttonAlarm"
+            android:layout_width="@dimen/small_buttons"
+            android:layout_height="@dimen/small_buttons"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_notifications_active_24" />
+
+        <ImageButton
+            android:id="@+id/buttonQR"
+            android:layout_width="@dimen/small_buttons"
+            android:layout_height="@dimen/small_buttons"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="@drawable/small_buttons"
+            android:scaleType="fitCenter"
+            android:src="@drawable/round_center_focus_strong_24" />
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/name_note_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="@string/noteNameHint"
+                app:counterEnabled="true"
+                app:counterMaxLength="40"
+                app:helperText="Максимальное количество символов"
+                app:helperTextEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/short_note_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="@string/typeShortDescHint"
+                app:counterEnabled="true"
+                app:counterMaxLength="100"
+                app:helperText="Максимальное количество символов"
+                app:helperTextEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/shortNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@drawable/frame"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
+                <LinearLayout
+                    android:id="@+id/layout_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
-                <ImageButton
-                    android:id="@+id/buttonSave"
-                    android:layout_width="@dimen/small_buttons"
-                    android:layout_height="@dimen/small_buttons"
-                    android:layout_margin="5dp"
-                    android:scaleType="fitCenter"
-                    android:layout_gravity="center"
-                    android:background="@drawable/small_buttons"
-                    app:srcCompat="@drawable/round_save_24" />
+                    <ImageView
+                        android:id="@+id/qr_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:minWidth="150dp"
+                        android:minHeight="150dp"
+                        tools:src="@tools:sample/avatars"
+                        />
 
-                <ImageButton
-                    android:id="@+id/buttonShare"
-                    android:layout_width="@dimen/small_buttons"
-                    android:layout_height="@dimen/small_buttons"
-                    android:layout_margin="5dp"
-                    android:layout_gravity="center"
-                    android:scaleType="fitCenter"
-                    android:background="@drawable/small_buttons"
-                    app:srcCompat="@drawable/round_share_24" />
+                    <TextView
+                        android:id="@+id/decodedqr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="10dp" />
+                </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/buttonAlarm"
-                    android:layout_width="@dimen/small_buttons"
-                    android:layout_height="@dimen/small_buttons"
-                    android:layout_gravity="center"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/small_buttons"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/baseline_notifications_active_24" />
-
-                <ImageButton
-                    android:id="@+id/buttonQR"
-                    android:layout_width="@dimen/small_buttons"
-                    android:layout_height="@dimen/small_buttons"
-                    android:layout_margin="5dp"
-                    android:layout_gravity="center"
-                    android:scaleType="fitCenter"
-                    android:background="@drawable/small_buttons"
-                    android:src="@drawable/round_center_focus_strong_24" />
+                <EditText
+                    android:id="@+id/editNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:hint="@string/noteHint"
+                    android:inputType="textMultiLine"
+                    android:textAlignment="viewStart"
+                    android:textColorHint="#AFADAD" />
 
             </LinearLayout>
 
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/name_note_input_layout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:hint="@string/noteNameHint"
-                        app:counterEnabled="true"
-                        app:counterMaxLength="40"
-                        app:helperText="Максимальное количество символов"
-                        app:helperTextEnabled="true">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/short_note_input_layout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:hint="@string/typeShortDescHint"
-                        app:counterEnabled="true"
-                        app:counterMaxLength="100"
-                        app:helperText="Максимальное количество символов"
-                        app:helperTextEnabled="true">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/shortNote"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:id="@+id/layout_img"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:id="@+id/qr_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal"
-                                android:minWidth="150dp"
-                                android:minHeight="150dp"
-                                tools:src="@tools:sample/avatars" />
-
-                            <TextView
-                                android:id="@+id/decodedqr"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="10dp"
-                                />
-                        </LinearLayout>
-
-                        <EditText
-                            android:id="@+id/editNote"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="8dp"
-                            android:hint="@string/noteHint"
-                            android:inputType="textMultiLine"
-                            android:textAlignment="viewStart"
-                            android:textColorHint="#AFADAD"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
-
         </LinearLayout>
-
-    </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

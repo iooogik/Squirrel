@@ -133,7 +133,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Важное сообщение!")
                         .setMessage("Необходимо разрешение на использование камеры!")
-                        .setIcon(R.drawable.ic_launcher)
+                        .setIcon(R.drawable.ic_launcher_round)
                         .setCancelable(true)
                         .setNegativeButton("Не давать разрешение",
                                 new DialogInterface.OnClickListener() {

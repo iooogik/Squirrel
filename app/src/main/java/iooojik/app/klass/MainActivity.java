@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         //метод проверки на аутентификацию пользователя
         //проверка акутальной версии приложения
         //needUpdate();
-
         isUserAuth();
         createToolbar();
 
