@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
         //метод проверки на аутентификацию пользователя
         //проверка акутальной версии приложения
         //needUpdate();
-        createToolbar();
-        isUserAuth();
 
+        isUserAuth();
+        createToolbar();
 
     }
 
@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
             //убираем шторку
             DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        } else {
+            navController.navigate(R.id.nav_profile);
         }
     }
 

@@ -167,9 +167,6 @@
             android:id="@+id/action_nav_home_to_signIn"
             app:destination="@id/nav_signIn" />
         <action
-            android:id="@+id/action_nav_profile_to_nav_home"
-            app:destination="@id/nav_home" />
-        <action
             android:id="@+id/action_nav_profile_to_games2"
             app:destination="@id/nav_games" />
         <action
