@@ -1,0 +1,151 @@
+package iooojik.app.klass.groupProfile;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
+import iooojik.app.klass.Api;
+import iooojik.app.klass.AppСonstants;
+import iooojik.app.klass.Database;
+import iooojik.app.klass.R;
+import iooojik.app.klass.group.GroupMatesAdapter;
+import iooojik.app.klass.group.matesList.DataUsersToGroup;
+import iooojik.app.klass.group.matesList.Mates;
+import iooojik.app.klass.models.ServerResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class GroupProfile extends Fragment {
+
+    public GroupProfile() {}
+
+    private View view;
+    private String groupName = "", groupID = "";
+    private Api api;
+    private Context context;
+    private Fragment fragment;
+    private SharedPreferences sharedPreferences;
+    private Group group;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_group_profile, container, false);
+        sharedPreferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        context = getContext();
+        fragment = this;
+        setInformation();
+        return view;
+
+    }
+
+    private void setInformation(){
+        getExtraData();
+        TextView groupN = view.findViewById(R.id.group_name);
+        groupN.setText(groupName);
+        getGroupInformation();
+        getTestTeacherInfo();
+
+    }
+
+    private void getGroupInformation() {
+        doRetrofit();
+        //получаем список одноклассников
+        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, "group_id", groupID);
+
+        response.enqueue(new Callback<ServerResponse<DataUsersToGroup>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataUsersToGroup>> call, Response<ServerResponse<DataUsersToGroup>> response) {
+                if(response.code() == 200) {
+                    ServerResponse<DataUsersToGroup> result = response.body();
+                    List<Mates> mates = result.getData().getMates();
+                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates);
+                    RecyclerView recyclerView = view.findViewById(R.id.group_mates);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    recyclerView.setAdapter(groupmatesAdapter);
+
+                } else {
+                    Log.e("GETTING MATES", response.raw() + "");
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerResponse<DataUsersToGroup>> call, Throwable t) {
+                Log.e("GETTING MATES",t.toString());
+            }
+        });
+    }
+
+    private void getTestTeacherInfo(){
+        doRetrofit();
+        Toast.makeText(getContext(), groupID, Toast.LENGTH_LONG).show();
+        Call<ServerResponse<DataGroup>> responseCall = api.groupDetail(AppСonstants.X_API_KEY,
+                sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), Integer.parseInt(groupID));
+        responseCall.enqueue(new Callback<ServerResponse<DataGroup>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
+                if (response.code() == 200) {
+                    DataGroup groupInfo = response.body().getData();
+                    group = groupInfo.getGroups();
+
+                    TextView teacher_name = view.findViewById(R.id.teacher_name);
+                    TextView teacher_email = view.findViewById(R.id.teacher_email);
+                    TextView test = view.findViewById(R.id.test);
+                    teacher_name.setText(group.getAuthorName());
+                    teacher_email.setText(group.getAuthorEmail());
+
+                    test.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Database mDBHelper = new Database(getContext());
+                            SQLiteDatabase mDb;
+                            mDBHelper = new Database(getContext());
+                            mDBHelper.openDataBase();
+                            mDBHelper.updateDataBase();
+
+                            mDb = mDBHelper.getWritableDatabase();
+                            mDb.execSQL(group.getTest());
+                        }
+                    });
+
+                    test.setText(group.getTest());
+
+                }else Log.e("GET TEACHER INFO", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataGroup>> call, Throwable t) {
+                Log.e("GET TEACHER INFO", String.valueOf(t));
+            }
+        });
+    }
+
+    private void doRetrofit(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
+    }
+
+    private void getExtraData(){
+        Bundle bundle = this.getArguments();
+        groupID = bundle.getString("groupID");
+        groupName = bundle.getString("groupName");
+    }
+}

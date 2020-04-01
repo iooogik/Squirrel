@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_news">
+    app:startDestination="@+id/nav_profile">
 
     <fragment
         android:id="@+id/nav_news"
@@ -113,13 +113,13 @@
         tools:layout="@layout/fragment_book" />
     <fragment
         android:id="@+id/nav_signUp"
-        android:name="iooojik.app.klass.entry.SignUp"
+        android:name="iooojik.app.klass.auth.SignUp"
         tools:layout="@layout/fragment_sign_up"
         android:label="SignUp" />
 
     <fragment
         android:id="@+id/nav_signIn"
-        android:name="iooojik.app.klass.entry.SignIn"
+        android:name="iooojik.app.klass.auth.SignIn"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
         <action
@@ -210,5 +210,14 @@
         android:name="iooojik.app.klass.games.pairs.Game"
         tools:layout="@layout/fragment_pairs_game"
         android:label="Game" />
+    <fragment
+        android:id="@+id/groupProfile"
+        android:name="iooojik.app.klass.groupProfile.GroupProfile"
+        android:label="fragment_group_profile"
+        tools:layout="@layout/fragment_group_profile" >
+        <action
+            android:id="@+id/action_groupProfile_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
 
 </navigation>

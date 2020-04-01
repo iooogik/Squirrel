@@ -1,12 +1,10 @@
 package iooojik.app.klass.group;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,24 +12,19 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.List;
 
 import iooojik.app.klass.R;
+import iooojik.app.klass.group.matesList.Mates;
 
 public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.ViewHolder> {
 
     private Context context;
     private Fragment fragment;
-    private List<Mate> mates;
+    private List<Mates> mates;
     private LayoutInflater inflater;
 
-    GroupMatesAdapter(Context context, Fragment fragment, List<Mate> mates) {
+    public GroupMatesAdapter(Context context, Fragment fragment, List<Mates> mates) {
         this.context = context;
         this.fragment = fragment;
         this.mates = mates;
@@ -47,37 +40,10 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Mate mate = mates.get(position);
-        holder.name.setText(mate.getName());
+        Mates mate = mates.get(position);
         holder.email.setText(mate.getEmail());
+        holder.name.setText(mate.getFullName());
         holder.img.setImageResource(R.drawable.baseline_account_circle_24);
-        holder.constraintLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                LinearLayout layout = new LinearLayout(context);
-                layout.setOrientation(LinearLayout.VERTICAL);
-                TextView textView = new TextView(context);
-                textView.setText("Вы действительно хотите удалить ученика из списка?");
-                layout.addView(textView);
-                builder.setView(layout);
-                builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference(user.getUid());
-                        reference.child("groups").child(mate.getGroup()).child(mate.getName()).removeValue();
-                    }
-                });
-                builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                return true;
-            }
-        });
     }
 
     @Override

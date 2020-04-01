@@ -17,17 +17,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import iooojik.app.klass.R;
+import iooojik.app.klass.profile.teacher.GroupInfo;
 
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
 
     private Context context;
-    private List<String> classGroups;
+    private List<GroupInfo> classGroupInfos;
     private Fragment fragment;
     private LayoutInflater inflater;
 
-    GroupsAdapter(Context context, List<String> classGroups, Fragment fragment){
+    GroupsAdapter(Context context, List<GroupInfo> classGroupInfos, Fragment fragment){
         this.context = context;
-        this.classGroups = classGroups;
+        this.classGroupInfos = classGroupInfos;
         this.fragment = fragment;
         this.inflater = LayoutInflater.from(context);
     }
@@ -41,13 +42,15 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String groupName = classGroups.get(position);
-        holder.groupName.setText(groupName);
+        GroupInfo groupInfo = classGroupInfos.get(position);
+        holder.groupName.setText(groupInfo.getName());
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString("groupName", groupName);
+                bundle.putInt("id", Integer.parseInt(groupInfo.getId()));
+                bundle.putString("groupAuthor", groupInfo.getAuthorEmail());
+                bundle.putString("groupName", groupInfo.getName());
                 NavController navController = NavHostFragment.findNavController(fragment);
                 navController.navigate(R.id.nav_group, bundle);
             }
@@ -56,7 +59,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return classGroups.size();
+        return classGroupInfos.size();
     }
 
 

@@ -52,42 +52,43 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //метод проверки на аутентификацию пользователя
-        //isUserAuth();
         //проверка акутальной версии приложения
-        needUpdate();
-        //создание toolbar
+        //needUpdate();
         createToolbar();
-
+        isUserAuth();
 
 
     }
 
     private void isUserAuth(){
-        // "ставим" toolbar и проверяем на авторизацию пользователя
-        createToolbar();
-        /*
-        if(user == null){ //если пользователь не авторизован
+        BottomAppBar bottomAppBar = findViewById(R.id.bar);
+
+        //получаем токен пользователя
+        String token = Settings.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
+
+        if(token.isEmpty()){
             navController.navigate(R.id.nav_signIn);
-            getSupportActionBar().getCustomView().setVisibility(View.GONE);
+            bottomAppBar.setVisibility(View.GONE);
             //убираем шторку
             DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
-
-         */
     }
 
     private void createToolbar(){
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        //нижний тул-бар
         BottomAppBar bottomAppBar = findViewById(R.id.bar);
         setSupportActionBar(bottomAppBar);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         // определение "домашнего" фрагмента
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_news).setDrawerLayout(drawer)
-                .build();
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile)
+                .setDrawerLayout(drawer).build();
         // получение nav-контроллера
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationView navigationView = findViewById(R.id.nav_view);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }

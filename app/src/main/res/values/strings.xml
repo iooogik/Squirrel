@@ -102,6 +102,9 @@
     <string name="pleaseEnter">Выполните вход</string>
     <string name="registration">Регистрация</string>
     <string name="changesList">Список изменений:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- other strings end-->
 
 

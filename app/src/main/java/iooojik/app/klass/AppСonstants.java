@@ -20,7 +20,7 @@ public class AppСonstants {
     // путь к бд
     public static String DB_PATH;
     // версия бд
-    public static final int DB_VERSION = 42;
+    public static final int DB_VERSION = 49;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -40,5 +40,14 @@ public class AppСonstants {
     public static final float ASPECT_RATIO_TOLERANCE = 0.01f;
     //страница в google play market
     public static String url = "https://play.google.com/store/apps/details?id=iooogik.app.modelling";
+    //
+    public static final String BASE_URL = "http://195.19.44.146/service/";
+    public static final String X_API_KEY = "33CD9CAE7D5D15F7E435A26BBFF81A4E";
+    public static String AUTH_SAVED_TOKEN = "AUTH_TOKEN";
+    public static String STANDART_TOKEN =
+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoiMiJ9LCJpYXQiOjE1ODU3MTgxNzksImV4cCI6MTU4NTgwNDU3OX0.v5iLAEPJZj8GWDBwpKe9tCOdV2RYXC5yjs-qA5A8YeQ";
+    //
+    public static String email = "";
+    public static String password = "";
 
 }

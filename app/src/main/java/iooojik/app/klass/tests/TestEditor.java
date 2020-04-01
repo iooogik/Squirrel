@@ -2,6 +2,7 @@ package iooojik.app.klass.tests;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +17,22 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import iooojik.app.klass.Api;
+import iooojik.app.klass.AppСonstants;
+import iooojik.app.klass.PostResult;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.ServerResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class TestEditor extends Fragment implements View.OnClickListener {
@@ -35,7 +43,11 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private FloatingActionButton fab;
     private Context context;
     private List<View> questions;
-    private String group = "";
+    private int groupID = -1;
+    private int id = -1;
+    private Api api;
+    private String groupName;
+    private String groupAuthor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,15 +59,18 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         questions = new ArrayList<>();
         Button button = view.findViewById(R.id.collectTest);
         button.setOnClickListener(this);
-        getGroup();
+        getGroupInfo();
 
         context = getContext();
         return view;
     }
 
-    private void getGroup(){
+    private void getGroupInfo(){
         Bundle bundle = this.getArguments();
-        group = bundle.getString("groupName");
+        groupID = bundle.getInt("groupID");
+        groupAuthor = bundle.getString("groupAuthor");
+        groupName = bundle.getString("groupName");
+        id = bundle.getInt("id");
     }
 
     @Override
@@ -94,7 +109,15 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void CollectQuestionsAndSendThem(){
+    private void doRetrofit(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
+    }
+
+    private void CollectQuestionsAndSendThem(){
         List<String> textQuestions = new ArrayList<>();
         List<String> trueAnswers = new ArrayList<>();
         List<String> textAnswers = new ArrayList<>();
@@ -145,21 +168,45 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         EditText name = view.findViewById(R.id.name);
         EditText description = view.findViewById(R.id.description);
 
-        //отправляем в бд
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(user.getUid());
-        databaseReference.child("groups").child(group).child("currentTest").
-                setValue(createSQLandSendToDatabase("'"+ name.getText().toString() + "'",
-                        "'"+ description.getText().toString() + "'",
-                builderQuestions.toString(),
-                        builderTrueAnswers.toString(),
-                        builderTextAnswers.toString()));
+        doRetrofit();
 
+        HashMap<String, String> updateMap = new HashMap<>();
+
+        updateMap.put("_id", String.valueOf(id));
+        updateMap.put("author_email", groupAuthor);
+        updateMap.put("name", groupName);
+        updateMap.put("test", createSQLandSendToDatabase("'"+ name.getText().toString() + "'",
+                "'"+ description.getText().toString() + "'",
+                builderQuestions.toString(),
+                builderTrueAnswers.toString(),
+                builderTextAnswers.toString()));
+
+        Call<ServerResponse<PostResult>> responseCall = api.updateTest(AppСonstants.X_API_KEY,
+                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES,
+                        Context.MODE_PRIVATE).getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                updateMap);
+
+        responseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code()==200) {
+                    Snackbar.make(view, "Тест был успешно добавлен!", Snackbar.LENGTH_LONG).show();
+                }else {
+                    Snackbar.make(view, "Что-то пошло не так. Код ошибки: " + response.code(),
+                            Snackbar.LENGTH_LONG).show();
+                    Log.e("ADD TEST", String.valueOf(response.raw()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("ADD TEST", String.valueOf(t));
+            }
+        });
     }
 
-    public String createSQLandSendToDatabase(String name, String description, String textQuestions,
-                                             String trueAnswers, String textAnswers){
+    private String createSQLandSendToDatabase(String name, String description, String textQuestions,
+                                              String trueAnswers, String textAnswers){
         String SQL = "";
 
         SQL = "INSERT INTO Tests (name, description, isPassed, questions, answers, textAnswers, trueAnswers, wrongAnswers)" +
