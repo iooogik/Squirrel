@@ -57,16 +57,17 @@ public class Questions extends Fragment implements View.OnClickListener{
         wrongScore = questions.size();
         ImageView btn = view.findViewById(R.id.send_answers);
         btn.setOnClickListener(this);
+
         return view;
     }
 
 
     private void setTest(){
-        List<String> temp = new ArrayList<>(answers);
-        for (int i = 0; i < (answers.size()/questions.size() + 1); i++) {
+        List<String> temp = answers;
+
+        for (int i = 0; i < questions.size(); i++) {
 
             View view1 = getLayoutInflater().inflate(R.layout.recycler_view_item_question, null, false);
-
             //вопрос
             TextView nameNote = view1.findViewById(R.id.task);
             nameNote.setText(questions.get(i));

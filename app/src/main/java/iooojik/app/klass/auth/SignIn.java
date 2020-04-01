@@ -144,7 +144,6 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 cv.put("email", result.getEmail());
                                 cv.put("username", result.getUsername());
                                 cv.put("full_name", result.getFullName());
-                                cv.put("type", "pupil");
                                 cv.put("id", result.getId());
 
                                 mDb.update("Profile", cv, "_id=0", null);

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -71,12 +73,16 @@ public class Profile extends Fragment implements View.OnClickListener {
     private Api api;
     private NavController navController;
     private int userID;
+    private Database mDbHelper;
+    private Cursor userCursor;
+    private SQLiteDatabase mDb;
 
 
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
+
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //список с группами(для учителей)
         groupList = new ArrayList<>();
@@ -99,7 +105,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         //
         Button exitProfile = view.findViewById(R.id.exitProfile);
         exitProfile.setOnClickListener(this);
-
+        setHeaderInformation();
         return view;
     }
 
@@ -132,6 +138,20 @@ public class Profile extends Fragment implements View.OnClickListener {
         });
     }
 
+    private void setHeaderInformation(){
+        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+        View header = navigationView.getHeaderView(0);
+        header.setPadding(0, 110, 0, 80);
+
+        TextView name = header.findViewById(R.id.textView);
+        TextView emailText = header.findViewById(R.id.textView2);
+        ImageView profileImg = header.findViewById(R.id.imageView2);
+
+        profileImg.setImageResource(R.drawable.baseline_account_circle_24);
+        name.setText(fullName);
+        emailText.setText(email);
+    }
+
     @SuppressLint("SetTextI18n")
     private void setUserInformation() {
         //получаем и устанавливаем пользовательскую информацию
@@ -139,12 +159,15 @@ public class Profile extends Fragment implements View.OnClickListener {
         TextView Email = view.findViewById(R.id.email);
         TextView name = view.findViewById(R.id.name);
         TextView surname = view.findViewById(R.id.surname);
-        TextView role = view.findViewById(R.id.role);
 
-        Database mDbHelper = new Database(getContext());
-        SQLiteDatabase mDb = mDbHelper.getReadableDatabase();
-        Cursor userCursor;
-        userCursor =  mDb.rawQuery("Select * from Profile WHERE _id=?", new String[]{String.valueOf(0)});
+        mDbHelper = new Database(getContext());
+        mDbHelper.openDataBase();
+        mDbHelper.updateDataBase();
+        mDb = mDbHelper.getWritableDatabase();
+        userCursor =  mDb.rawQuery("Select * from Profile WHERE _id=?",
+                new String[]{String.valueOf(0)});
+
+        mDb = mDbHelper.getReadableDatabase();
         userCursor.moveToFirst();
 
         fullName = userCursor.getString(userCursor.getColumnIndex("full_name"));
@@ -155,25 +178,11 @@ public class Profile extends Fragment implements View.OnClickListener {
         surname.setText(userName);
         getUserID();
         getUserRole();
-
-        userRole = userCursor.getString(userCursor.getColumnIndex("type"));
-
-        if (userRole.equals(teacherRole)){
-            getGroupsFromDatabase();
-            fab.show();
-            fab.setImageResource(R.drawable.round_add_24);
-        } else {
-            fab.hide();
-            getActiveTests();
-        }
-
-        switch (userRole.toLowerCase()){
-            case "teacher":
-                role.setText("учитель");
-                break;
-            case "pupil":
-                role.setText("учащийся");
-                break;
+        try {
+            userRole = userCursor.getString(userCursor.getColumnIndex("type"));
+        }catch (Exception e){
+            Log.e("userRole", String.valueOf(e));
+            getUserRole();
         }
 
         /**
@@ -227,8 +236,27 @@ public class Profile extends Fragment implements View.OnClickListener {
 
                     mDb = mDBHelper.getWritableDatabase();
                     ContentValues cv = new ContentValues();
-                    cv.put("type", type.toLowerCase());
+                    cv.put("type", type.toString().toLowerCase());
                     mDb.update("Profile", cv, "_id=0", null);
+
+                    userRole = type.toLowerCase();
+                    if (userRole.equals(teacherRole)){
+                        getGroupsFromDatabase();
+                        fab.show();
+                        fab.setImageResource(R.drawable.round_add_24);
+                    } else {
+                        fab.hide();
+                        getActiveTests();
+                    }
+                    TextView role = view.findViewById(R.id.role);
+                    switch (userRole.toLowerCase()){
+                        case "teacher":
+                            role.setText("учитель");
+                            break;
+                        case "pupil":
+                            role.setText("учащийся");
+                            break;
+                    }
 
                 } else {
                     Log.e("GETTING USER DETAIL", response.raw() + " " +response.code());

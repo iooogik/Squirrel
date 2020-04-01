@@ -61,30 +61,13 @@
         <action
             android:id="@+id/action_nav_planets_list_to_nav_planets_article"
             app:destination="@id/nav_planets_article" />
-        <action
-            android:id="@+id/action_nav_planets_list_pop"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popUpTo="@id/nav_planets_list"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_planets_article"
         android:name="iooojik.app.klass.astronomy.ScrollingArticle"
         android:label="Планеты. Статья."
-        tools:layout="@layout/activity_scrolling_article"  >
-        <action
-            android:id="@+id/action_nav_planets_article_pop"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popUpTo="@id/nav_planets_article"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-    </fragment>
+        tools:layout="@layout/activity_scrolling_article"  />
 
     <fragment
         android:id="@+id/nav_geometry_list"
@@ -121,11 +104,7 @@
         android:id="@+id/nav_signIn"
         android:name="iooojik.app.klass.auth.SignIn"
         android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" >
-        <action
-            android:id="@+id/action_signIn_to_signUp"
-            app:destination="@id/nav_signUp" />
-    </fragment>
+        tools:layout="@layout/fragment_sign_in" />
 
     <fragment
         android:id="@+id/nav_profile"
@@ -164,14 +143,14 @@
             app:popUpTo="@+id/mobile_navigation"
             app:popUpToInclusive="false" />
         <action
-            android:id="@+id/action_nav_home_to_signIn"
-            app:destination="@id/nav_signIn" />
-        <action
             android:id="@+id/action_nav_profile_to_games2"
             app:destination="@id/nav_games" />
         <action
             android:id="@+id/action_nav_profile_to_nav_games"
             app:destination="@id/nav_games" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_news"
+            app:destination="@id/nav_news" />
 
     </fragment>
     <fragment
@@ -215,6 +194,15 @@
         <action
             android:id="@+id/action_groupProfile_to_nav_profile"
             app:destination="@id/nav_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/questions"
+        android:name="iooojik.app.klass.tests.Questions"
+        android:label="fragment_questions"
+        tools:layout="@layout/fragment_questions" >
+        <action
+            android:id="@+id/action_questions_to_nav_tests"
+            app:destination="@id/nav_tests" />
     </fragment>
 
 </navigation>

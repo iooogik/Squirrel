@@ -149,17 +149,17 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         }
 
         //собираем каждый массив, чтобы выполнить SQL-запрос
-
+        //объединяем вопросы
         StringBuilder builderQuestions = new StringBuilder();
         builderQuestions.append("'");
         for (String question: textQuestions) builderQuestions.append(question).append("<br>");
         builderQuestions.append("'");
-
+        //объединяем правильные оветы
         StringBuilder builderTrueAnswers = new StringBuilder();
         builderTrueAnswers.append("'");
         for (String answ : trueAnswers) builderTrueAnswers.append(answ).append("<br>");
         builderTrueAnswers.append("'");
-
+        //объединяем все ответы
         StringBuilder builderTextAnswers = new StringBuilder();
         builderTextAnswers.append("'");
         for (String answ : textAnswers) builderTextAnswers.append(answ).append("<br>");
