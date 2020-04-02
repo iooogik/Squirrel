@@ -1,5 +1,6 @@
 package iooojik.app.klass.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ public class Settings extends Fragment {
 
     private View view;
     private PackageInfo packageInfo;
-    private SharedPreferences Settings;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,7 +47,7 @@ public class Settings extends Fragment {
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
         //получаем настройки
-        Settings = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);;
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);;
         //получаем packageInfo, чтобы узнать версию установленного приложения
         try {
             packageInfo = getActivity().getPackageManager().
@@ -51,7 +55,8 @@ public class Settings extends Fragment {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
+        //выбор фона для профиля
+        setProfileBackground();
         //установка тем
         setThemeSetting();
         //"чек" для того, чтобы убрать справочные материалы из заметок
@@ -61,13 +66,39 @@ public class Settings extends Fragment {
         return view;
     }
 
+    private void setProfileBackground() {
+        int[] res = new int[4];
+        res[0] = R.drawable.background0;
+        res[1] = R.drawable.background1;
+        res[2] = R.drawable.background2;
+        res[3] = R.drawable.background3;
+        LinearLayout layout = view.findViewById(R.id.horizontalBackProfile);
+
+        for (int re : res) {
+            View viewInfl = getLayoutInflater().inflate(R.layout.background_selector, null);
+            ImageView imageView = viewInfl.findViewById(R.id.imageView4);
+            imageView.setImageResource(re);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("CommitPrefEdits")
+                @Override
+                public void onClick(View v) {
+                    if (re != R.drawable.background0)
+                    preferences.edit().putInt(AppСonstants.BACKGROUND_PROFILE, re).apply();
+                    else preferences.edit().putInt(AppСonstants.BACKGROUND_PROFILE, -1).apply();
+                    Snackbar.make(view, "Задний фон профиля установлен", Snackbar.LENGTH_LONG).show();
+                }
+            });
+            layout.addView(viewInfl);
+        }
+    }
+
     private void setShowBookMaterials() {
         //убираем справочные материалы из заметок
         SwitchMaterial show_book_mat = view.findViewById(R.id.book_items);
 
-        if (Settings.contains(APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
+        if (preferences.contains(APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
             // Получаем число из настроек
-            int val = Settings.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
+            int val = preferences.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
 
             if(val == 1){
                 show_book_mat.setChecked(true);
@@ -78,11 +109,11 @@ public class Settings extends Fragment {
 
         show_book_mat.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
-                SharedPreferences.Editor SettingsEditor = Settings.edit();
+                SharedPreferences.Editor SettingsEditor = preferences.edit();
                 SettingsEditor.putInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
                 SettingsEditor.apply();
             } else {
-                SharedPreferences.Editor SettingsEditor = Settings.edit();
+                SharedPreferences.Editor SettingsEditor = preferences.edit();
                 SettingsEditor.putInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
                 SettingsEditor.apply();
             }
@@ -105,7 +136,7 @@ public class Settings extends Fragment {
 
         // Получаем число из настроек
 
-        val = Settings.getInt(APP_PREFERENCES_THEME, 0);
+        val = preferences.getInt(APP_PREFERENCES_THEME, 0);
 
         spinner.setText(themes.get(val));
 
@@ -115,7 +146,7 @@ public class Settings extends Fragment {
         spinner.setAdapter(adapter);
         spinner.setOnItemClickListener((parent, view, position, id) -> {
 
-            SharedPreferences.Editor SettingsEditor = Settings.edit();
+            SharedPreferences.Editor SettingsEditor = preferences.edit();
             SettingsEditor.putInt(APP_PREFERENCES_THEME, position);
             SettingsEditor.apply();
 

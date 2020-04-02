@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
@@ -93,6 +94,7 @@ public class Group extends Fragment implements View.OnClickListener{
     }
 
     private void getGroupMates(){
+
         //получаем список учеников(их полное имя и email) из бд
         doRetrofit();
         Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, "group_id", String.valueOf(id));
@@ -116,6 +118,9 @@ public class Group extends Fragment implements View.OnClickListener{
             @Override
             public void onFailure(Call<ServerResponse<DataUsersToGroup>> call, Throwable t) {
                 Log.e("GETTING MATES",t.toString());
+                fab.hide();
+                ImageView error = view.findViewById(R.id.errorImg);
+                error.setVisibility(View.VISIBLE);
             }
         });
     }

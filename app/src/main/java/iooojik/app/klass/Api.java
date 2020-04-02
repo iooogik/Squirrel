@@ -13,6 +13,7 @@ import iooojik.app.klass.profile.teacher.AddGroupResult;
 import iooojik.app.klass.profile.teacher.DataGroup;
 import iooojik.app.klass.profile.userDetail.DataUser;
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -41,7 +42,8 @@ public interface Api {
     @POST("api/user/add")
     Call<ServerResponse<SignUpResult>> UserRegistration(@Header("X-API-KEY") String api_key,
                                                         @Header("X-TOKEN") String token,
-                                                        @FieldMap HashMap<String, String> map);
+                                                        @FieldMap HashMap<String, String> map,
+                                                        @Field("Group") String[] groups);
 
     @FormUrlEncoded
     @POST("api/groups/add")

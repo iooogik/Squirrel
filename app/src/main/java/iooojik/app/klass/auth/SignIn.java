@@ -49,7 +49,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_sign_in, container, false);
-
+        getSuperAdminToken();
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);
         signIn.setOnClickListener(this);
@@ -85,6 +85,47 @@ public class SignIn extends Fragment implements View.OnClickListener {
         });
 
         return view;
+    }
+
+    private void getSuperAdminToken(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Api api = retrofit.create(Api.class);
+
+        HashMap<String, String> uCredi = new HashMap<>();
+        uCredi.put("username", "test@test.com");
+        uCredi.put("password", "123456");
+
+        SharedPreferences preferences = getActivity().
+                getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        Call<ServerResponse<DataAuth>> authResponse = api.UserLogin(uCredi);
+
+        authResponse.enqueue(new Callback<ServerResponse<DataAuth>>() {
+            @SuppressLint("CommitPrefEdits")
+            @Override
+            public void onResponse(Call<ServerResponse<DataAuth>> call, Response<ServerResponse<DataAuth>> response) {
+                if (response.code() == 200) {
+                    //получаем данные с сервера
+                    ServerResponse<DataAuth> dataAuth = response.body();
+
+                    //сохраняем токен
+                    preferences.edit().putString(AppСonstants.STANDART_TOKEN, dataAuth.getToken()).apply();
+                }
+                else {
+                    Log.e("Sign In", String.valueOf(response.raw()));
+                    Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataAuth>> call, Throwable t) {
+                Log.e("Sign In", String.valueOf(t));
+                Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

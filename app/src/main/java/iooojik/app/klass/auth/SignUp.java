@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -58,7 +57,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
         Button signIn = view.findViewById(R.id.login);
         signIn.setOnClickListener(this);
-
+        getSuperAdminToken();
         //слушатель, чтобы получить тип аккаунта
 
         RadioButton radioButton1 = view.findViewById(R.id.teacher);
@@ -165,7 +164,6 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 EditText password = view.findViewById(R.id.password);
                 EditText name = view.findViewById(R.id.name);
                 EditText surname = view.findViewById(R.id.surname);
-                Toast.makeText(getContext(), AppСonstants.STANDART_TOKEN, Toast.LENGTH_LONG).show();
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(AppСonstants.BASE_URL)
@@ -200,8 +198,11 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 map.put("password", uPassword);
                 map.put("full_name", uFullName);
 
+                String[] group = new String[1];
+                group[0] = accountType;
+
                 Call<ServerResponse<SignUpResult>> authResponse = api.UserRegistration(
-                        AppСonstants.X_API_KEY, AppСonstants.STANDART_TOKEN, map);
+                        AppСonstants.X_API_KEY, AppСonstants.STANDART_TOKEN, map, group);
 
                 authResponse.enqueue(new Callback<ServerResponse<SignUpResult>>() {
                     @Override
@@ -224,6 +225,47 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
                break;
         }
+    }
+
+    private void getSuperAdminToken(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Api api = retrofit.create(Api.class);
+
+        HashMap<String, String> uCredi = new HashMap<>();
+        uCredi.put("username", "test@test.com");
+        uCredi.put("password", "123456");
+
+        SharedPreferences preferences = getActivity().
+                getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        Call<ServerResponse<DataAuth>> authResponse = api.UserLogin(uCredi);
+
+        authResponse.enqueue(new Callback<ServerResponse<DataAuth>>() {
+            @SuppressLint("CommitPrefEdits")
+            @Override
+            public void onResponse(Call<ServerResponse<DataAuth>> call, Response<ServerResponse<DataAuth>> response) {
+                if (response.code() == 200) {
+                    //получаем данные с сервера
+                    ServerResponse<DataAuth> dataAuth = response.body();
+
+                    //сохраняем токен
+                    preferences.edit().putString(AppСonstants.STANDART_TOKEN, dataAuth.getToken()).apply();
+                }
+                else {
+                    Log.e("Sign In", String.valueOf(response.raw()));
+                    Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataAuth>> call, Throwable t) {
+                Log.e("Sign In", String.valueOf(t));
+                Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void signIN(String uEmail, String uPassword, String type){

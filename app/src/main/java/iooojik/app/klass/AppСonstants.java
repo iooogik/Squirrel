@@ -44,10 +44,11 @@ public class AppСonstants {
     public static final String BASE_URL = "http://195.19.44.146/service/";
     public static final String X_API_KEY = "33CD9CAE7D5D15F7E435A26BBFF81A4E";
     public static String AUTH_SAVED_TOKEN = "AUTH_TOKEN";
-    public static String STANDART_TOKEN =
-"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoiMiJ9LCJpYXQiOjE1ODU3MTgxNzksImV4cCI6MTU4NTgwNDU3OX0.v5iLAEPJZj8GWDBwpKe9tCOdV2RYXC5yjs-qA5A8YeQ";
+    public static String STANDART_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoiMiJ9LCJpYXQiOjE1ODU4MjM5NjEsImV4cCI6MTU4NTkxMDM2MX0.zTH0-suui8ojXHmXwY2ek-Z1nghFx1vpRHg7dolZgzk";
     //
     public static String email = "";
     public static String password = "";
+
+    public static String BACKGROUND_PROFILE = "BACKGROUND_PROFILE";
 
 }

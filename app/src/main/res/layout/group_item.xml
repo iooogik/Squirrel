@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="60dp"
+    android:layout_margin="10dp"
+    android:background="@drawable/frame"
     >
 
     <TextView
@@ -13,7 +15,6 @@
         android:layout_marginTop="5dp"
         android:text="Класс:"
         android:textAlignment="center"
-        android:textColor="@color/colorWhite"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -25,7 +26,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:text="id группы:"
-        android:textColor="?attr/colorPrimaryDark"
+        android:textColor="?attr/colorAccent"
         android:textSize="9sp"
         android:textStyle="bold"
         tools:ignore="SmallSp" />

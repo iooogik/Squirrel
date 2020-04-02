@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,19 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -40,6 +40,7 @@ import java.util.List;
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
+import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.profile.pupil.DataPupilList;
@@ -76,13 +77,15 @@ public class Profile extends Fragment implements View.OnClickListener {
     private Database mDbHelper;
     private Cursor userCursor;
     private SQLiteDatabase mDb;
+    private ImageView error;
 
 
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
-
+        error = view.findViewById(R.id.errorImg);
+        error.setVisibility(View.GONE);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //список с группами(для учителей)
         groupList = new ArrayList<>();
@@ -152,10 +155,18 @@ public class Profile extends Fragment implements View.OnClickListener {
         emailText.setText(email);
     }
 
+    private void setProfileBackground(){
+        FrameLayout frameLayout = view.findViewById(R.id.backroundProfile);
+        Toast.makeText(getContext(), String.valueOf(preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1)), Toast.LENGTH_LONG).show();
+        if (preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1) != -1)
+        frameLayout.setBackgroundResource(preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1));
+
+    }
+
     @SuppressLint("SetTextI18n")
     private void setUserInformation() {
         //получаем и устанавливаем пользовательскую информацию
-
+        setProfileBackground();
         TextView Email = view.findViewById(R.id.email);
         TextView name = view.findViewById(R.id.name);
         TextView surname = view.findViewById(R.id.surname);
@@ -210,7 +221,6 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void getUserRole(){
-
         doRetrofit();
         Call<ServerResponse<DataUser>> response = api.getUserDetail(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN,""), userID);
@@ -221,9 +231,11 @@ public class Profile extends Fragment implements View.OnClickListener {
                                    Response<ServerResponse<DataUser>> response) {
 
                 if(response.code() == 200) {
-
+                    error.setVisibility(View.GONE);
                     ServerResponse<DataUser> result = response.body();
                     User_ user = result.getData().getUser();
+
+
 
                     DetailedGroup detailedGroup = user.getGroup().get(0);
                     String type = detailedGroup.getName();
@@ -258,7 +270,8 @@ public class Profile extends Fragment implements View.OnClickListener {
                             break;
                     }
 
-                } else {
+                }
+                else {
                     Log.e("GETTING USER DETAIL", response.raw() + " " +response.code());
                 }
 
@@ -266,7 +279,11 @@ public class Profile extends Fragment implements View.OnClickListener {
             }
             @Override
             public void onFailure(Call<ServerResponse<DataUser>> call, Throwable t) {
-                Log.e("GETTING USER DETAIL",t.toString());
+                if (!t.getMessage().isEmpty()){
+                    fab.hide();
+                    error.setVisibility(View.VISIBLE);
+                }
+                Log.e("GETTING USER DETAIL", t.toString());
             }
         });
     }
@@ -362,13 +379,11 @@ public class Profile extends Fragment implements View.OnClickListener {
             case R.id.exitProfile:
                 getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
                         .edit().putString(AppСonstants.AUTH_SAVED_TOKEN, "").apply();
-                BottomAppBar bottomAppBar = getActivity().findViewById(R.id.bar);
-                bottomAppBar.setVisibility(View.GONE);
-                navController = NavHostFragment.findNavController(this);
-                navController.navigate(R.id.nav_signIn);
-                //убираем шторку
-                DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
+                        .edit().putInt(AppСonstants.APP_PREFERENCES_THEME, 0).apply();
+
+                startActivity(new Intent(context, MainActivity.class));
         }
     }
 
