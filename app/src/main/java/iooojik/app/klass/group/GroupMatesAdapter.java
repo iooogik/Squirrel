@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import iooojik.app.klass.R;
-import iooojik.app.klass.group.matesList.Mates;
+import iooojik.app.klass.models.matesList.Mates;
 
 public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.ViewHolder> {
 

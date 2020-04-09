@@ -2,16 +2,15 @@ package iooojik.app.klass;
 
 import java.util.HashMap;
 
-import iooojik.app.klass.auth.DataToken;
-import iooojik.app.klass.auth.SignUpResult;
-import iooojik.app.klass.group.matesList.DataUsersToGroup;
-import iooojik.app.klass.models.DataAuth;
-import iooojik.app.klass.models.DataProfile;
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.profile.pupil.DataPupilList;
-import iooojik.app.klass.profile.teacher.AddGroupResult;
-import iooojik.app.klass.profile.teacher.DataGroup;
-import iooojik.app.klass.profile.userDetail.DataUser;
+import iooojik.app.klass.models.authorization.SignUpResult;
+import iooojik.app.klass.models.getToken.DataToken;
+import iooojik.app.klass.models.matesList.DataUsersToGroup;
+import iooojik.app.klass.models.profileData.ProfileData;
+import iooojik.app.klass.models.pupil.DataPupilList;
+import iooojik.app.klass.models.teacher.AddGroupResult;
+import iooojik.app.klass.models.teacher.DataGroup;
+import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
@@ -28,22 +27,24 @@ public interface Api {
             "Content-Type: application/x-www-form-urlencoded"
     })
 
+    //авторизация
     @FormUrlEncoded
     @POST("api/user/login")
-    Call<ServerResponse<DataAuth>> UserLogin(@FieldMap HashMap<String, String> map);
+    Call<ServerResponse<Data>> UserLogin(@FieldMap HashMap<String, String> map);
 
+    //распределение по классам
     @FormUrlEncoded
     @POST("api/users_to_group/add")
     Call<ServerResponse<PostResult>> addUserToGroup(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
-
+    //регистрация
     @FormUrlEncoded
     @POST("api/user/add")
-    Call<ServerResponse<SignUpResult>> UserRegistration(@Header("X-API-KEY") String api_key,
-                                                        @Header("X-TOKEN") String token,
-                                                        @FieldMap HashMap<String, String> map,
-                                                        @Field("Group") String[] groups);
+    Call<SignUpResult> userRegistration(@Header("X-API-KEY") String api_key,
+                                        @Header("X-TOKEN") String token,
+                                        @FieldMap HashMap<String, String> map,
+                                        @Field("group") String group);
 
     @FormUrlEncoded
     @POST("api/groups/add")
@@ -56,23 +57,20 @@ public interface Api {
     Call<ServerResponse<PostResult>> updateTest(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
-
+    //получение админского токена
     @FormUrlEncoded
     @POST("api/user/request_token")
-    Call<ServerResponse<DataToken>> request_token(@Header("X-API-KEY") String api_key,
-                                                  @FieldMap HashMap<String, String> map);
-
-    @GET("api/user/profile")
-    Call<ServerResponse<DataProfile>> getUserInfo(@Header("X-API-KEY") String api_key, @Header("X-TOKEN") String token);
+    Call<DataToken> request_token(@Header("X-API-KEY") String api_key,
+                                  @FieldMap HashMap<String, String> map);
 
     @GET("api/groups/all?")
     Call<ServerResponse<DataGroup>> getGroups(@Header("X-API-KEY") String api_key,
                                               @Query("field") String field, @Query("filter") String email);
 
     @GET("api/user/detail")
-    Call<ServerResponse<DataUser>> getUserDetail(@Header("X-API-KEY") String api_key,
-                                                 @Header("X-TOKEN") String token,
-                                                 @Query("id") int id);
+    Call<ServerResponse<ProfileData>> getUserDetail(@Header("X-API-KEY") String api_key,
+                                                    @Header("X-TOKEN") String token,
+                                                    @Query("id") int id);
 
     @GET("api/users_to_group/all?")
     Call<ServerResponse<DataUsersToGroup>> getMatesList(@Header("X-API-KEY") String api_key,

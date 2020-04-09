@@ -98,13 +98,17 @@
     <string name="enterText">Введите текст</string>
     <string name="dowloadLAS">Скачать можно, отсканировав QR-код или нажав на него</string>
     <string name="chooseTheme">Выберите тему:</string>
-    <string name="installedVersion">Установленная версия приложения:</string>
+    <string name="installedVersion">Установленная версия приложения: </string>
     <string name="pleaseEnter">Выполните вход</string>
     <string name="registration">Регистрация</string>
     <string name="changesList">Список изменений:</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="exitAcc">Выйти из аккаунта</string>
+    <string name="darkTheme">Тёмная тема</string>
+    <string name="ar">AR</string>
+    <string name="profileTheme">Тема для профиля:</string>
     <!-- other strings end-->
 
 

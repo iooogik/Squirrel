@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +14,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -24,7 +23,6 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.HashMap;
 
@@ -32,8 +30,9 @@ import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
-import iooojik.app.klass.models.DataAuth;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.authorization.SignUpResult;
+import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,8 +45,8 @@ public class SignUp extends Fragment implements View.OnClickListener{
     public SignUp() {}
 
     private View view;
-
     private String accountType = "";
+    private Api api;
 
 
     @Override
@@ -55,9 +54,11 @@ public class SignUp extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
-        Button signIn = view.findViewById(R.id.login);
+        Button signIn = view.findViewById(R.id.signIn);
         signIn.setOnClickListener(this);
-        getSuperAdminToken();
+
+        Button signUp = view.findViewById(R.id.sign_up);
+        signUp.setOnClickListener(this);
         //слушатель, чтобы получить тип аккаунта
 
         RadioButton radioButton1 = view.findViewById(R.id.teacher);
@@ -81,95 +82,26 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 }
             }
         });
-
-        //поле email с слушателем, чтобы после изменения поля показывать пароль (аналогично для последующих полей)
-        EditText email = view.findViewById(R.id.email);
-        TextInputLayout password = view.findViewById(R.id.text_input_pass3);
-        email.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (count != 0){
-                    password.setVisibility(View.VISIBLE);
-                } else {
-                    password.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        TextInputLayout textInputLayout = view.findViewById(R.id.text_input_pass4);
-        EditText editPass = view.findViewById(R.id.password);
-        editPass.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (count != 0){
-                    textInputLayout.setVisibility(View.VISIBLE);
-                } else {
-                    textInputLayout.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        EditText name = view.findViewById(R.id.name);
-        TextInputLayout textInputLayout2 = view.findViewById(R.id.text_input_pass5);
-        name.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (count != 0){
-                    textInputLayout2.setVisibility(View.VISIBLE);
-                } else {
-                    textInputLayout2.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        //
-
         return view;
+    }
+
+    private void doBase(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.login:
+            case R.id.sign_up:
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
                 EditText name = view.findViewById(R.id.name);
                 EditText surname = view.findViewById(R.id.surname);
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(AppСonstants.BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                Api api = retrofit.create(Api.class);
+                doBase();
 
                 SharedPreferences pref = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
@@ -179,18 +111,17 @@ public class SignUp extends Fragment implements View.OnClickListener{
                  * 2. проводим регистрацию, в случае неудачи выводим сообщение: "Что-то пошло не так. Попробуйте снова."
                  */
 
-                String uEmail = email.getText().toString();
-                String uPassword = password.getText().toString();
-                String uFullName = name.getText().toString() + " " + surname.getText().toString();
-                StringBuilder userName = new StringBuilder();
+                String uEmail = email.getText().toString().trim(); //email
+                String uPassword = password.getText().toString().trim(); //password
+                String uFullName = name.getText().toString().trim() + " "
+                        + surname.getText().toString().trim(); //full name
 
                 int id = uEmail.indexOf("@");
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < id; i++) {
                     builder.append(uEmail.charAt(i));
-                }
-
-                String login = builder.toString();
+                } //получение логина
+                String login = builder.toString(); // login
 
                 HashMap<String, String> map = new HashMap<>();
                 map.put("username", login);
@@ -198,85 +129,49 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 map.put("password", uPassword);
                 map.put("full_name", uFullName);
 
-                String[] group = new String[1];
-                group[0] = accountType;
+                String group = "[4]";
+                if (accountType.equals("Teacher")) group = "[5]";
+                else group = "[6]";  //id группы (типа аккаунта)
+                Call<SignUpResult> authResponse =
+                        api.userRegistration(AppСonstants.X_API_KEY,
+                                pref.getString(AppСonstants.STANDART_TOKEN, ""),
+                                map, group);
 
-                Call<ServerResponse<SignUpResult>> authResponse = api.UserRegistration(
-                        AppСonstants.X_API_KEY, AppСonstants.STANDART_TOKEN, map, group);
-
-                authResponse.enqueue(new Callback<ServerResponse<SignUpResult>>() {
+                String finalGroup = group;
+                authResponse.enqueue(new Callback<SignUpResult>() {
                     @Override
-                    public void onResponse(Call<ServerResponse<SignUpResult>> call, Response<ServerResponse<SignUpResult>> response) {
+                    public void onResponse(Call<SignUpResult> call, Response<SignUpResult> response) {
                         if (response.code() == 200) {
-                            ServerResponse<SignUpResult> dataAuth = response.body();
-                            if (dataAuth.getStatus()) {
-                                signIN(uEmail, uPassword, accountType.toString());
-                            }
+                            SignUpResult dataAuth = response.body();
+
+                            String type = "";
+                            if (finalGroup.equals("[5]")) type = "teacher";
+                            else type = "pupil";
+
+                            Toast.makeText(getContext(), type, Toast.LENGTH_LONG).show();
+
+                            if (dataAuth.getStatus()) signIN(uEmail, uPassword, type);
                         } else Log.e("Sign Up", String.valueOf(response.raw()));
                     }
 
                     @Override
-                    public void onFailure(Call<ServerResponse<SignUpResult>> call, Throwable t) {
+                    public void onFailure(Call<SignUpResult> call, Throwable t) {
                         Log.e("Sign Up", String.valueOf(t));
                     }
                 });
 
-
-
                break;
+            case R.id.signIn:
+                NavController navController = NavHostFragment.findNavController(this);
+                navController.navigate(R.id.nav_signIn);
         }
-    }
-
-    private void getSuperAdminToken(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(AppСonstants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        Api api = retrofit.create(Api.class);
-
-        HashMap<String, String> uCredi = new HashMap<>();
-        uCredi.put("username", "test@test.com");
-        uCredi.put("password", "123456");
-
-        SharedPreferences preferences = getActivity().
-                getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        Call<ServerResponse<DataAuth>> authResponse = api.UserLogin(uCredi);
-
-        authResponse.enqueue(new Callback<ServerResponse<DataAuth>>() {
-            @SuppressLint("CommitPrefEdits")
-            @Override
-            public void onResponse(Call<ServerResponse<DataAuth>> call, Response<ServerResponse<DataAuth>> response) {
-                if (response.code() == 200) {
-                    //получаем данные с сервера
-                    ServerResponse<DataAuth> dataAuth = response.body();
-
-                    //сохраняем токен
-                    preferences.edit().putString(AppСonstants.STANDART_TOKEN, dataAuth.getToken()).apply();
-                }
-                else {
-                    Log.e("Sign In", String.valueOf(response.raw()));
-                    Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ServerResponse<DataAuth>> call, Throwable t) {
-                Log.e("Sign In", String.valueOf(t));
-                Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
-            }
-        });
     }
 
     private void signIN(String uEmail, String uPassword, String type){
 
         NavController navController = NavHostFragment.findNavController(this);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(AppСonstants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        Api api = retrofit.create(Api.class);
+        doBase();
 
         HashMap<String, String> uCredi = new HashMap<>();
         uCredi.put("username", uEmail);
@@ -285,19 +180,20 @@ public class SignUp extends Fragment implements View.OnClickListener{
         SharedPreferences preferences = getActivity().
                 getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
-        Call<ServerResponse<DataAuth>> authResponse = api.UserLogin(uCredi);
+        Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
 
-        authResponse.enqueue(new Callback<ServerResponse<DataAuth>>() {
+        authResponse.enqueue(new Callback<ServerResponse<Data>>() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onResponse(Call<ServerResponse<DataAuth>> call, Response<ServerResponse<DataAuth>> response) {
+            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
                 if (response.code() == 200) {
                     //получаем данные с сервера
-                    ServerResponse<DataAuth> dataAuth = response.body();
-                    DataAuth result = dataAuth.getData();
+                    ServerResponse<Data> dataAuth = response.body();
+                    Data result = dataAuth.getData();
+
                     //сохраняем пользовательский токен
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
-                    preferences.edit().putString(AppСonstants.password, uPassword).apply();
+
                     //сохраняем данные в бд
                     Database mDBHelper = new Database(getContext());
                     SQLiteDatabase mDb;
@@ -312,7 +208,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
                     cv.put("username", result.getUsername());
                     cv.put("full_name", result.getFullName());
                     cv.put("id", result.getId());
-                    cv.put("type", type.toLowerCase());
+                    cv.put("type", type);
 
                     mDb.update("Profile", cv, "_id=0", null);
 
@@ -332,7 +228,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<DataAuth>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
                 Log.e("Sign In", String.valueOf(t));
                 Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
             }

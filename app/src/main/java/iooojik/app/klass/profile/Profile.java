@@ -1,10 +1,7 @@
 package iooojik.app.klass.profile;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -14,17 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,25 +28,25 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
-import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.profile.pupil.DataPupilList;
-import iooojik.app.klass.profile.pupil.PupilGroups;
-import iooojik.app.klass.profile.teacher.AddGroupResult;
-import iooojik.app.klass.profile.teacher.DataGroup;
-import iooojik.app.klass.profile.teacher.GroupInfo;
-import iooojik.app.klass.profile.userDetail.DataUser;
-import iooojik.app.klass.profile.userDetail.DetailedGroup;
-import iooojik.app.klass.profile.userDetail.User_;
+import iooojik.app.klass.models.profileData.Group;
+import iooojik.app.klass.models.profileData.ProfileData;
+import iooojik.app.klass.models.profileData.User;
+import iooojik.app.klass.models.pupil.DataPupilList;
+import iooojik.app.klass.models.pupil.PupilGroups;
+import iooojik.app.klass.models.teacher.AddGroupResult;
+import iooojik.app.klass.models.teacher.DataGroup;
+import iooojik.app.klass.models.teacher.GroupInfo;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,10 +57,8 @@ public class Profile extends Fragment implements View.OnClickListener {
     public Profile(){}
 
     private View view;
-    private List<String> groupList;
-    private List<Test> testList;
     private FloatingActionButton fab;
-    private String teacherRole = "teacher", pupilRole = "pupil";
+    private String teacherRole = "учитель", pupilRole = "ученик";
     private String userRole = "";
     private GroupsAdapter groupsAdapter;
     private Context context;
@@ -73,11 +67,11 @@ public class Profile extends Fragment implements View.OnClickListener {
     private String email, fullName, role, userName;
     private Api api;
     private NavController navController;
-    private int userID;
     private Database mDbHelper;
     private Cursor userCursor;
     private SQLiteDatabase mDb;
     private ImageView error;
+    private View header;
 
 
 
@@ -86,29 +80,38 @@ public class Profile extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         error = view.findViewById(R.id.errorImg);
         error.setVisibility(View.GONE);
+
+        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+        header = navigationView.getHeaderView(0);
+        header.setPadding(0, 110, 0, 80);
+
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        //список с группами(для учителей)
-        groupList = new ArrayList<>();
+
         //получаем fab и ставим слушатель на него
         fab = getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(this);
-        //список с активными тестами
-        testList = new ArrayList<>();
-        //получение пользовательской информации
-        setUserInformation();
+
         //получение текущего фрагмента, чтобы использовать его в адаптере
         fragment = this;
         //контекст
         context = getContext();
+
+        //получение пользовательской информации
+        setUserInformation();
+
         //запрос на разрешение использования камеры
         int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, 1);
         }
         //
-        Button exitProfile = view.findViewById(R.id.exitProfile);
-        exitProfile.setOnClickListener(this);
+        ImageView settings = view.findViewById(R.id.settings);
+        settings.setOnClickListener(this);
+
+        navController = NavHostFragment.findNavController(this);
+
         setHeaderInformation();
+
         return view;
     }
 
@@ -126,6 +129,11 @@ public class Profile extends Fragment implements View.OnClickListener {
                     DataPupilList dataPupilList = response.body().getData();
                     List<PupilGroups> pupilGroups = dataPupilList.getPupilGroups();
                     PupilGroupsAdapter groupsAdapter = new PupilGroupsAdapter(pupilGroups, fragment, context);
+                    if (pupilGroups.size() != 0) {
+                        TextView warn = view.findViewById(R.id.nothing);
+                        warn.setVisibility(View.GONE);
+                    }
+
                     RecyclerView recyclerView = view.findViewById(R.id.classes);
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                     recyclerView.setAdapter(groupsAdapter);
@@ -142,34 +150,26 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void setHeaderInformation(){
-        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
-        View header = navigationView.getHeaderView(0);
-        header.setPadding(0, 110, 0, 80);
 
         TextView name = header.findViewById(R.id.textView);
         TextView emailText = header.findViewById(R.id.textView2);
-        ImageView profileImg = header.findViewById(R.id.imageView2);
 
-        profileImg.setImageResource(R.drawable.baseline_account_circle_24);
         name.setText(fullName);
         emailText.setText(email);
     }
 
     private void setProfileBackground(){
         FrameLayout frameLayout = view.findViewById(R.id.backroundProfile);
-        Toast.makeText(getContext(), String.valueOf(preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1)), Toast.LENGTH_LONG).show();
         if (preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1) != -1)
         frameLayout.setBackgroundResource(preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1));
 
     }
 
-    @SuppressLint("SetTextI18n")
     private void setUserInformation() {
         //получаем и устанавливаем пользовательскую информацию
         setProfileBackground();
         TextView Email = view.findViewById(R.id.email);
         TextView name = view.findViewById(R.id.name);
-        TextView surname = view.findViewById(R.id.surname);
 
         mDbHelper = new Database(getContext());
         mDbHelper.openDataBase();
@@ -186,15 +186,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         userName = userCursor.getString(userCursor.getColumnIndex("username"));
         Email.setText(email);
         name.setText(fullName);
-        surname.setText(userName);
-        getUserID();
-        getUserRole();
-        try {
-            userRole = userCursor.getString(userCursor.getColumnIndex("type"));
-        }catch (Exception e){
-            Log.e("userRole", String.valueOf(e));
-            getUserRole();
-        }
+        getUserProfile();
 
         /**
          * 1. если стоит учительский профиль, то убираем ученический профиль, изменяем поле "роль",
@@ -205,87 +197,67 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     }
 
-    private void getUserID(){
-        Database mDBHelper = new Database(getContext());
-        SQLiteDatabase mDb;
-        mDBHelper = new Database(getContext());
-        mDBHelper.openDataBase();
-        mDBHelper.updateDataBase();
-        mDb = mDBHelper.getReadableDatabase();
-        Cursor userCursor = mDb.rawQuery("Select * from Profile WHERE _id=?",
-                new String[]{String.valueOf(0)});
-        userCursor.moveToFirst();
-
-        userID = Integer.parseInt(userCursor.getString(userCursor.getColumnIndex("id")));
-
-    }
-
-    private void getUserRole(){
+    private void getUserProfile(){
         doRetrofit();
-        Call<ServerResponse<DataUser>> response = api.getUserDetail(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN,""), userID);
 
-        response.enqueue(new Callback<ServerResponse<DataUser>>() {
+        Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), getUserID());
+
+        call.enqueue(new Callback<ServerResponse<ProfileData>>() {
             @Override
-            public void onResponse(Call<ServerResponse<DataUser>> call,
-                                   Response<ServerResponse<DataUser>> response) {
-
-                if(response.code() == 200) {
-                    error.setVisibility(View.GONE);
-                    ServerResponse<DataUser> result = response.body();
-                    User_ user = result.getData().getUser();
-
-
-
-                    DetailedGroup detailedGroup = user.getGroup().get(0);
-                    String type = detailedGroup.getName();
-
-                    Database mDBHelper = new Database(getContext());
-                    SQLiteDatabase mDb;
-                    mDBHelper = new Database(getContext());
-                    mDBHelper.openDataBase();
-                    mDBHelper.updateDataBase();
-
-                    mDb = mDBHelper.getWritableDatabase();
-                    ContentValues cv = new ContentValues();
-                    cv.put("type", type.toString().toLowerCase());
-                    mDb.update("Profile", cv, "_id=0", null);
-
-                    userRole = type.toLowerCase();
-                    if (userRole.equals(teacherRole)){
-                        getGroupsFromDatabase();
-                        fab.show();
-                        fab.setImageResource(R.drawable.round_add_24);
-                    } else {
-                        fab.hide();
-                        getActiveTests();
-                    }
-                    TextView role = view.findViewById(R.id.role);
-                    switch (userRole.toLowerCase()){
+            public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
+                if (response.code() == 200){
+                    ProfileData profileData = response.body().getData();
+                    User user = profileData.getUser();
+                    Group group = user.getGroup().get(user.getGroup().size() - 1);
+                    switch (group.getName().toLowerCase()){
                         case "teacher":
-                            role.setText("учитель");
+                            userRole = teacherRole;
+                            getGroupsFromDatabase();
                             break;
                         case "pupil":
-                            role.setText("учащийся");
+                            userRole = pupilRole;
+                            getActiveTests();
                             break;
                     }
+                    TextView role = view.findViewById(R.id.role);
+                    role.setText(userRole);
+                    if (!user.getAvatar().isEmpty()) {
+                        ImageView avatar = view.findViewById(R.id.avatar);
+                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
+                                .resize(100, 100)
+                                .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
 
+                        ImageView profileImg = header.findViewById(R.id.imageView2);
+
+                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
+                                .resize(100, 100)
+                                .transform(new RoundedCornersTransformation(30, 5)).into(profileImg);
+
+
+                    }
                 }
-                else {
-                    Log.e("GETTING USER DETAIL", response.raw() + " " +response.code());
-                }
-
-
             }
+
             @Override
-            public void onFailure(Call<ServerResponse<DataUser>> call, Throwable t) {
-                if (!t.getMessage().isEmpty()){
-                    fab.hide();
-                    error.setVisibility(View.VISIBLE);
-                }
-                Log.e("GETTING USER DETAIL", t.toString());
+            public void onFailure(Call<ServerResponse<ProfileData>> call, Throwable t) {
+
             }
         });
+    }
+
+    private int getUserID(){
+        int userId = -1;
+        mDbHelper = new Database(context);
+        mDbHelper = new Database(context);
+        mDbHelper.openDataBase();
+        mDbHelper.updateDataBase();
+        mDb = mDbHelper.getReadableDatabase();
+        userCursor = mDb.rawQuery("Select * from Profile WHERE _id=?", new String[]{String.valueOf(0)});
+        userCursor.moveToFirst();
+
+        userId = Integer.parseInt(userCursor.getString(userCursor.getColumnIndex("id")));
+        return userId;
     }
 
     private void doRetrofit(){
@@ -297,6 +269,8 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void getGroupsFromDatabase(){
+        fab.show();
+        fab.setImageResource(R.drawable.round_add_24);
         doRetrofit();
         Call<ServerResponse<DataGroup>> response = api.getGroups(AppСonstants.X_API_KEY, "author_email", email);
 
@@ -305,8 +279,12 @@ public class Profile extends Fragment implements View.OnClickListener {
             public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
                 if(response.code() == 200) {
                     ServerResponse<DataGroup> result = response.body();
-                    List<GroupInfo> groupInfos = result.getData().getGroupInfos();
-                    groupsAdapter = new GroupsAdapter(context, groupInfos, fragment);
+                    List<GroupInfo> groupInforms = result.getData().getGroupInfos();
+                    if (groupInforms.size() != 0) {
+                        TextView warn = view.findViewById(R.id.nothing);
+                        warn.setVisibility(View.GONE);
+                    }
+                    groupsAdapter = new GroupsAdapter(context, groupInforms, fragment);
                     RecyclerView recyclerView = view.findViewById(R.id.classes);
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                     recyclerView.setAdapter(groupsAdapter);
@@ -340,6 +318,10 @@ public class Profile extends Fragment implements View.OnClickListener {
                     builder.setPositiveButton("Добавить", (dialog, which) -> {
                         //заносим в базу данных
                         doRetrofit();
+
+                        error.setVisibility(View.GONE);
+                        TextView warn = view.findViewById(R.id.nothing);
+                        warn.setVisibility(View.GONE);
 
                         String nameGroup = name.getText().toString();
 
@@ -376,14 +358,9 @@ public class Profile extends Fragment implements View.OnClickListener {
                     builder.create().show();
                 }
                 break;
-            case R.id.exitProfile:
-                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                        .edit().putString(AppСonstants.AUTH_SAVED_TOKEN, "").apply();
-
-                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                        .edit().putInt(AppСonstants.APP_PREFERENCES_THEME, 0).apply();
-
-                startActivity(new Intent(context, MainActivity.class));
+            case R.id.settings:
+                navController.navigate(R.id.nav_settings);
+                break;
         }
     }
 

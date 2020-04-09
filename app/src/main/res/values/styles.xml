@@ -17,7 +17,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimaryDark">@color/darkBackground</item>
         <item name="android:textColor">@color/colorWhite</item>
-        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="colorControlNormal">@color/darkBackground</item>
         <item name="android:windowBackground">@color/darkBackground</item>
         <item name="imageButtonStyle">@style/darkCustomSmallButtons</item>
 

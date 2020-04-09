@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import iooojik.app.klass.R;
-import iooojik.app.klass.profile.pupil.PupilGroups;
+import iooojik.app.klass.models.pupil.PupilGroups;
 
 public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.ViewHolder> {
 
@@ -36,7 +35,7 @@ public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.group_item, parent, false);
+        View view = inflater.inflate(R.layout.recycler_view_group_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -44,6 +43,10 @@ public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PupilGroups pupilGroup = pupilGroups.get(position);
         holder.groupName.setText(pupilGroup.getGroup_name());
+
+        holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(),
+                String.valueOf(pupilGroup.getGroupId())));
+
         Bundle args = new Bundle();
         args.putString("groupID", pupilGroup.getGroupId());
         args.putString("groupName", pupilGroup.getGroup_name());
@@ -65,12 +68,12 @@ public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.
     static class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView groupName;
-        LinearLayout linearLayout;
+        TextView groupID;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.linearLayout = itemView.findViewById(R.id.linear);
             this.groupName = itemView.findViewById(R.id.groupName);
+            this.groupID = itemView.findViewById(R.id.groupID);
         }
     }
 }

@@ -32,9 +32,9 @@ import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.PostResult;
 import iooojik.app.klass.R;
-import iooojik.app.klass.group.matesList.DataUsersToGroup;
-import iooojik.app.klass.group.matesList.Mates;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.matesList.DataUsersToGroup;
+import iooojik.app.klass.models.matesList.Mates;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -115,6 +115,7 @@ public class Group extends Fragment implements View.OnClickListener{
                     Log.e("GETTING MATES", response.raw() + "");
                 }
             }
+
             @Override
             public void onFailure(Call<ServerResponse<DataUsersToGroup>> call, Throwable t) {
                 Log.e("GETTING MATES",t.toString());

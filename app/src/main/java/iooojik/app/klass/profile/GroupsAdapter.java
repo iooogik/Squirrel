@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import iooojik.app.klass.R;
-import iooojik.app.klass.profile.teacher.GroupInfo;
+import iooojik.app.klass.models.teacher.GroupInfo;
 
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
 
@@ -35,7 +35,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.group_item, parent, false);
+        View view = inflater.inflate(R.layout.recycler_view_group_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -44,7 +44,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         GroupInfo groupInfo = classGroupInfos.get(position);
 
         holder.groupName.setText(String.format("%s %s", holder.groupName.getText().toString(), groupInfo.getName()));
-        holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(), groupInfo.getId()));
+        holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(), String.valueOf(groupInfo.getId())));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

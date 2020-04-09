@@ -49,6 +49,7 @@ public class ServerResponse<T> {
         this.token = token;
     }
 
+
     @Override
     public String toString() {
         return "ServerResponse{" +

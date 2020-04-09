@@ -27,6 +27,7 @@
         android:backgroundTint="@color/colorAccent"
         app:tint="@color/colorWhite"
         app:borderWidth="0dp"
+        android:visibility="gone"
         app:layout_anchor="@id/bar"
         />
 

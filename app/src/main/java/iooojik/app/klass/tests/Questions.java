@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -21,7 +24,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
@@ -39,6 +44,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     private List<String> questions = new ArrayList<>();
     private List<String> answers = new ArrayList<>();
     private List<String> isTrue = new ArrayList<>();
+    private HashMap<Integer, Bitmap> images = new HashMap<>();
     private int rightScore = 0;
     private int wrongScore = 0;
 
@@ -49,10 +55,9 @@ public class Questions extends Fragment implements View.OnClickListener{
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
 
-
-
         getQuestions();
         getAnswers();
+        getImages();
         setTest();
         wrongScore = questions.size();
         ImageView btn = view.findViewById(R.id.send_answers);
@@ -61,6 +66,20 @@ public class Questions extends Fragment implements View.OnClickListener{
         return view;
     }
 
+    private void getImages() {
+        mDb = mDBHelper.getReadableDatabase();
+        userCursor =  mDb.rawQuery("Select * from picturesToQuestions WHERE test_id=?", new String[]{String.valueOf(getBtnID())});
+        userCursor.moveToFirst();
+        Bitmap bitmap;
+        while (!userCursor.isAfterLast()){
+            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
+            bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
+            images.put(userCursor.getInt(userCursor.getColumnIndex("num_question")), bitmap);
+            userCursor.moveToNext();
+        }
+        Toast.makeText(getContext(), String.valueOf(images.size()), Toast.LENGTH_LONG).show();
+
+    }
 
     private void setTest(){
         List<String> temp = answers;
@@ -72,7 +91,15 @@ public class Questions extends Fragment implements View.OnClickListener{
             TextView nameNote = view1.findViewById(R.id.task);
             nameNote.setText(questions.get(i));
 
+            for (Map.Entry entry : images.entrySet()){
+                if ((int) entry.getKey() - 1 == i){
+                    ImageView img = view1.findViewById(R.id.image);
+                    img.setVisibility(View.VISIBLE);
 
+                    img.setImageBitmap((Bitmap) entry.getValue());
+                    break;
+                }
+            }
 
             RadioButton radioButton1 = view1.findViewById(R.id.radioButton1);
             radioButton1.setText(temp.get(0));

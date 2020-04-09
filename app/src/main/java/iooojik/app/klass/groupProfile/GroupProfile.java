@@ -9,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,9 +22,9 @@ import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.group.GroupMatesAdapter;
-import iooojik.app.klass.group.matesList.DataUsersToGroup;
-import iooojik.app.klass.group.matesList.Mates;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.matesList.DataUsersToGroup;
+import iooojik.app.klass.models.matesList.Mates;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -93,7 +93,6 @@ public class GroupProfile extends Fragment {
 
     private void getTestTeacherInfo(){
         doRetrofit();
-        Toast.makeText(getContext(), groupID, Toast.LENGTH_LONG).show();
         Call<ServerResponse<DataGroup>> responseCall = api.groupDetail(AppСonstants.X_API_KEY,
                 sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), Integer.parseInt(groupID));
         responseCall.enqueue(new Callback<ServerResponse<DataGroup>>() {
@@ -106,24 +105,31 @@ public class GroupProfile extends Fragment {
                     TextView teacher_name = view.findViewById(R.id.teacher_name);
                     TextView teacher_email = view.findViewById(R.id.teacher_email);
                     TextView test = view.findViewById(R.id.test);
-                    teacher_name.setText(group.getAuthorName());
-                    teacher_email.setText(group.getAuthorEmail());
 
-                    test.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Database mDBHelper = new Database(getContext());
-                            SQLiteDatabase mDb;
-                            mDBHelper = new Database(getContext());
-                            mDBHelper.openDataBase();
-                            mDBHelper.updateDataBase();
+                    teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
+                            + " ", group.getAuthorName()));
+                    teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
+                            + " ", group.getAuthorEmail()));
 
-                            mDb = mDBHelper.getWritableDatabase();
-                            mDb.execSQL(group.getTest());
-                        }
+                    test.setOnClickListener(v -> {
+                        Database mDBHelper = new Database(getContext());
+                        SQLiteDatabase mDb;
+                        mDBHelper = new Database(getContext());
+                        mDBHelper.openDataBase();
+                        mDBHelper.updateDataBase();
+
+                        mDb = mDBHelper.getWritableDatabase();
+                        mDb.execSQL(group.getTest());
                     });
 
                     test.setText(group.getTest());
+                    if (group.getTest().contains("SELECT")){
+                        test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
+                        test.setText("Тест доступен");
+                    }else {
+                        test.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
+                        test.setText("Тест не доступен");
+                    }
 
                 }else Log.e("GET TEACHER INFO", String.valueOf(response.raw()));
             }

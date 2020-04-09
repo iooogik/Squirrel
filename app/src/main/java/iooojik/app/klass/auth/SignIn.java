@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +21,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.HashMap;
 
@@ -31,8 +28,8 @@ import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
-import iooojik.app.klass.models.DataAuth;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,7 +46,6 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_sign_in, container, false);
-        getSuperAdminToken();
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);
         signIn.setOnClickListener(this);
@@ -59,73 +55,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
         //скрываем fab
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.hide();
-        //слушатель для EditText (EditText для ввода пароля
-        // будет появляться после изменения EditText с email-ом)
-        EditText email = view.findViewById(R.id.email);
-        TextInputLayout password = view.findViewById(R.id.text_input_pass);
-        email.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (count != 0){
-                    password.setVisibility(View.VISIBLE);
-                } else {
-                    password.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         return view;
-    }
-
-    private void getSuperAdminToken(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(AppСonstants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        Api api = retrofit.create(Api.class);
-
-        HashMap<String, String> uCredi = new HashMap<>();
-        uCredi.put("username", "test@test.com");
-        uCredi.put("password", "123456");
-
-        SharedPreferences preferences = getActivity().
-                getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        Call<ServerResponse<DataAuth>> authResponse = api.UserLogin(uCredi);
-
-        authResponse.enqueue(new Callback<ServerResponse<DataAuth>>() {
-            @SuppressLint("CommitPrefEdits")
-            @Override
-            public void onResponse(Call<ServerResponse<DataAuth>> call, Response<ServerResponse<DataAuth>> response) {
-                if (response.code() == 200) {
-                    //получаем данные с сервера
-                    ServerResponse<DataAuth> dataAuth = response.body();
-
-                    //сохраняем токен
-                    preferences.edit().putString(AppСonstants.STANDART_TOKEN, dataAuth.getToken()).apply();
-                }
-                else {
-                    Log.e("Sign In", String.valueOf(response.raw()));
-                    Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ServerResponse<DataAuth>> call, Throwable t) {
-                Log.e("Sign In", String.valueOf(t));
-                Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
-            }
-        });
     }
 
     @Override
@@ -142,16 +72,16 @@ public class SignIn extends Fragment implements View.OnClickListener {
                 EditText password = view.findViewById(R.id.password);
 
                 NavController navController = NavHostFragment.findNavController(this);
-                String uEmail = email.getText().toString();
-                String uPassword = password.getText().toString();
-
+                String uEmail = email.getText().toString().trim();
+                String uPassword = password.getText().toString().trim();
+                //проверка пароля и email
                 if (!(uEmail.isEmpty() && uPassword.isEmpty())) {
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl(AppСonstants.BASE_URL)
                             .addConverterFactory(GsonConverterFactory.create())
                             .build();
                     Api api = retrofit.create(Api.class);
-
+                    //данные пользователя
                     HashMap<String, String> uCredi = new HashMap<>();
                     uCredi.put("username", uEmail);
                     uCredi.put("password", uPassword);
@@ -159,27 +89,27 @@ public class SignIn extends Fragment implements View.OnClickListener {
                     SharedPreferences preferences = getActivity().
                             getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
-                    Call<ServerResponse<DataAuth>> authResponse = api.UserLogin(uCredi);
+                    Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
 
-                    authResponse.enqueue(new Callback<ServerResponse<DataAuth>>() {
+                    authResponse.enqueue(new Callback<ServerResponse<Data>>() {
                         @SuppressLint("CommitPrefEdits")
                         @Override
-                        public void onResponse(Call<ServerResponse<DataAuth>> call, Response<ServerResponse<DataAuth>> response) {
+                        public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
                             if (response.code() == 200) {
                                 //получаем данные с сервера
-                                ServerResponse<DataAuth> dataAuth = response.body();
-                                DataAuth result = dataAuth.getData();
+                                ServerResponse<Data> dataAuth = response.body();
+                                Data result = dataAuth.getData();
+
                                 //сохраняем пользовательский токен
                                 preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
-                                preferences.edit().putString(AppСonstants.password, uPassword).apply();
+
                                 //сохраняем данные в бд
                                 Database mDBHelper = new Database(getContext());
-                                SQLiteDatabase mDb;
+
                                 mDBHelper = new Database(getContext());
                                 mDBHelper.openDataBase();
                                 mDBHelper.updateDataBase();
-
-                                mDb = mDBHelper.getWritableDatabase();
+                                SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
 
                                 ContentValues cv = new ContentValues();
                                 cv.put("email", result.getEmail());
@@ -205,7 +135,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
                         }
 
                         @Override
-                        public void onFailure(Call<ServerResponse<DataAuth>> call, Throwable t) {
+                        public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
                             Log.e("Sign In", String.valueOf(t));
                             Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
                         }

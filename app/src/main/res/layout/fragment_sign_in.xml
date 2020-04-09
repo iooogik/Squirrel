@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary"
+    android:background="?attr/colorControlNormal"
     tools:context=".auth.SignIn">
 
     <LinearLayout
@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorAccent"
             android:layout_marginBottom="80dp"
             android:textSize="30sp"
             android:text="@string/pleaseEnter" />
@@ -45,7 +45,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:visibility="invisible"
             android:hint="@string/typePasswordHint"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             >
@@ -62,7 +61,7 @@
 
         <Button
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorAccent"
             android:id="@+id/login"
             android:layout_margin="30dp"
             android:layout_width="match_parent"
@@ -75,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorAccent"
             android:textSize="12sp"
             android:text="@string/createNewAccountButton" />
 

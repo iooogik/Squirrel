@@ -2,8 +2,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/frame"
-    android:layout_margin="10dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -12,7 +10,6 @@
         android:id="@+id/imageView4"
         android:layout_width="214dp"
         android:layout_height="111dp"
-        android:layout_margin="10dp"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
         app:srcCompat="@drawable/background3" />
 </FrameLayout>

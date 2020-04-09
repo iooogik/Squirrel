@@ -36,13 +36,7 @@
         tools:layout="@layout/fragment_test" />
 
     <fragment
-        android:id="@+id/nav_contacts"
-        android:name="iooojik.app.klass.contacts.Contacts"
-        android:label="Контакты"
-        tools:layout="@layout/fragment_contacts" />
-
-    <fragment
-        android:id="@+id/nav_tools"
+        android:id="@+id/nav_settings"
         android:name="iooojik.app.klass.settings.Settings"
         android:label="Настройки"
         tools:layout="@layout/fragment_settings" />
@@ -121,15 +115,10 @@
         <action
             android:id="@+id/action_nav_home_to_nav_geometry_list"
             app:destination="@id/nav_geometry_list" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_tools"
-            app:destination="@id/nav_tools" />
+
         <action
             android:id="@+id/action_nav_home_to_nav_notes"
             app:destination="@id/nav_notes" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_contacts"
-            app:destination="@id/nav_contacts" />
         <action
             android:id="@+id/action_nav_home_to_nav_tests"
             app:destination="@id/nav_tests" />

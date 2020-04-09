@@ -76,9 +76,9 @@ public class Tests extends Fragment implements View.OnClickListener{
             //получение количества правильных и неправильных ответов
             float rightScore = 0, wrongScore = 0;
 
-            rightScore = Float.valueOf(userCursor.
+            rightScore = Float.parseFloat(userCursor.
                     getString(userCursor.getColumnIndex("trueAnswers")));
-            wrongScore = Float.valueOf(userCursor.
+            wrongScore = Float.parseFloat(userCursor.
                     getString(userCursor.getColumnIndex("wrongAnswers")));
 
             int isPassedDB = userCursor.

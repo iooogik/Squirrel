@@ -12,7 +12,6 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/frame"
         android:orientation="horizontal">
 
 
@@ -54,9 +53,15 @@
             android:layout_margin="5dp"
             android:background="@drawable/small_buttons"
             android:scaleType="fitCenter"
-            android:src="@drawable/round_center_focus_strong_24" />
+            android:src="@drawable/scan" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/colorAccent" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
