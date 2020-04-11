@@ -58,6 +58,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     //"Календарь" для получения даты от пользователя
     private Calendar calendar = Calendar.getInstance();
     private EditText nameNote, shortNote;
+    private FloatingActionButton fab;
 
     public CheckList() {}
 
@@ -72,7 +73,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         ImageButton buttonSave = view.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(this);
 
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab = getActivity().findViewById(R.id.fab);
 
         fab.setImageResource(R.drawable.round_add_24);
         fab.setVisibility(View.VISIBLE);
@@ -387,5 +388,11 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             updateData("Notes", nameNote.getText().toString(),
                     null, shortNote.getText().toString());
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fab.hide();
     }
 }

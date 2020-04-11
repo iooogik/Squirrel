@@ -17,6 +17,17 @@ public class Mates {
     @SerializedName("group_id")
     @Expose
     private String groupId;
+    @SerializedName("avatar")
+    @Expose
+    private String avatar;
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
     public String getId() {
         return id;

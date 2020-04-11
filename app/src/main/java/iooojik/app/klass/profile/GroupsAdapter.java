@@ -52,6 +52,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
                 bundle.putInt("id", Integer.parseInt(groupInfo.getId()));
                 bundle.putString("groupAuthor", groupInfo.getAuthorEmail());
                 bundle.putString("groupName", groupInfo.getName());
+                bundle.putString("groupAuthorName", groupInfo.getAuthor_name());
                 NavController navController = NavHostFragment.findNavController(fragment);
                 navController.navigate(R.id.nav_group, bundle);
             }

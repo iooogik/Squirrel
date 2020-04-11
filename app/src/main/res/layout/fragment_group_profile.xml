@@ -61,16 +61,33 @@
                         android:textSize="18sp"
                         android:text="email:" />
 
-                    <TextView
-                        android:id="@+id/test"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="15dp"
-                        android:textColor="@color/colorWhite"
-                        android:textSize="14sp"
-                        android:text="Тест доступен:" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/test"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            android:text="Тест доступен"
+                            android:gravity="center"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="14sp" />
+
+                        <Button
+                            android:id="@+id/execTest"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_gravity="center|end"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:textColor="@color/Completed"
+                            android:visibility="gone"
+                            android:text="Получить тест" />
+                    </FrameLayout>
 
                 </LinearLayout>
             </FrameLayout>

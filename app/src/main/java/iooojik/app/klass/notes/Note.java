@@ -8,13 +8,23 @@ public class Note {
     private Bitmap image;
     private String type;
     private int id;
+    private int dataID;
 
-    public Note(String name, String description, Bitmap image, String type, int id){
+    public int getDataID() {
+        return dataID;
+    }
+
+    public void setDataID(int dataID) {
+        this.dataID = dataID;
+    }
+
+    Note(String name, String description, Bitmap image, String type, int id, int dataID){
         this.name = name;
         this.description = description;
         this.image = image;
         this.type = type;
         this.id = id;
+        this.dataID = dataID;
     }
 
     public int getId() {

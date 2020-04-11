@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_upload_test"
+        android:title="отправить тест"
+        android:icon="@drawable/round_cloud_upload_24"
+        />
+
+    <item
+        android:id="@+id/action_add_test_item"
+        android:title="добавить вопрос"
+        android:icon="@drawable/round_add_24"
+        />
+
+</menu>

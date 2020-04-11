@@ -2,10 +2,14 @@ package iooojik.app.klass.profile;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -30,6 +35,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +57,9 @@ import iooojik.app.klass.models.teacher.AddGroupResult;
 import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.teacher.GroupInfo;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,7 +93,8 @@ public class Profile extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         error = view.findViewById(R.id.errorImg);
         error.setVisibility(View.GONE);
-
+        ImageView avatar = view.findViewById(R.id.avatar);
+        avatar.setOnClickListener(this);
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         header = navigationView.getHeaderView(0);
         header.setPadding(0, 110, 0, 80);
@@ -248,6 +262,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private int getUserID(){
         int userId = -1;
+        /*
         mDbHelper = new Database(context);
         mDbHelper = new Database(context);
         mDbHelper.openDataBase();
@@ -256,7 +271,9 @@ public class Profile extends Fragment implements View.OnClickListener {
         userCursor = mDb.rawQuery("Select * from Profile WHERE _id=?", new String[]{String.valueOf(0)});
         userCursor.moveToFirst();
 
-        userId = Integer.parseInt(userCursor.getString(userCursor.getColumnIndex("id")));
+
+         */
+        userId = Integer.parseInt(preferences.getString(AppСonstants.USER_ID, ""));
         return userId;
     }
 
@@ -361,7 +378,66 @@ public class Profile extends Fragment implements View.OnClickListener {
             case R.id.settings:
                 navController.navigate(R.id.nav_settings);
                 break;
+            case R.id.avatar:
+                Intent photoPicker = new Intent(Intent.ACTION_PICK);
+                photoPicker.setType("image/*");
+                startActivityForResult(photoPicker, 1);
+                break;
         }
     }
 
+    private void changeAvatar(File file){
+        doRetrofit();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("email", email);
+        //map.put("password", );
+        map.put("id", String.valueOf(getUserID()));
+        map.put("full_name", fullName);
+
+        RequestBody reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
+        RequestBody name = RequestBody.create(MediaType.parse("multipart/form-data"), "upload_test");
+
+        /*
+        Call<PostResult> call = api.userUpdateAvatar(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map,
+                );
+         */
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                ImageView avatar = view.findViewById(R.id.avatar);
+                try {
+                    Uri img = data.getData();
+                    InputStream imgStream = getActivity().getContentResolver().openInputStream(img);
+                    Bitmap bitmap = BitmapFactory.decodeStream(imgStream);
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+                    byte[] imgData = stream.toByteArray();
+
+                    File file = new File(context.getCacheDir(), "avatar");
+                    file.createNewFile();
+
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(imgData);
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+
+                    Picasso.get().load(file)
+                            .resize(100, 100)
+                            .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
+
+                    changeAvatar(file);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
@@ -171,16 +173,34 @@ public class Settings extends Fragment implements View.OnClickListener{
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                        .edit().putString(AppСonstants.AUTH_SAVED_TOKEN, "").apply();
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
 
-                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                        .edit().putInt(AppСonstants.APP_PREFERENCES_THEME, 0).apply();
+                builder.setTitle("Важное сообщение!");
+                builder.setMessage("При выходе все ваши заметки будут удалены, результаты тестов сброшены." +
+                        "Вы действительно хотите выйти?");
 
-                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                        .edit().putInt(AppСonstants.BACKGROUND_PROFILE, -1).apply();
+                builder.setPositiveButton("Выйти", (dialog, which) -> {
+                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
+                            .edit().putString(AppСonstants.AUTH_SAVED_TOKEN, "").apply();
 
-                startActivity(new Intent(getContext(), MainActivity.class));
+                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
+                            .edit().putInt(AppСonstants.APP_PREFERENCES_THEME, 0).apply();
+
+                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
+                            .edit().putInt(AppСonstants.BACKGROUND_PROFILE, -1).apply();
+
+                    startActivity(new Intent(getContext(), MainActivity.class));
+
+                });
+
+                builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.create().show();
             }
         });
 

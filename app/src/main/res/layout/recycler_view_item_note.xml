@@ -57,9 +57,9 @@
                         android:layout_width="@dimen/small_buttons"
                         android:layout_height="@dimen/small_buttons"
                         android:layout_gravity="end"
+                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="10dp"
-                        android:layout_marginLeft="10dp"
                         android:tint="@color/notCompleted"
                         android:visibility="gone"
                         app:srcCompat="@drawable/baseline_notifications_active_24" />
@@ -76,8 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:layout_margin="10dp"
-                    />
+                    android:layout_margin="10dp" />
 
                 <ImageView
                     android:id="@+id/subImg"
@@ -86,7 +85,19 @@
                     android:layout_gravity="end"
                     android:layout_margin="10dp"
                     tools:srcCompat="@tools:sample/avatars" />
+
             </FrameLayout>
+
+            <TextView
+                android:id="@+id/onlineID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:textColor="@color/colorAccent"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="id " />
+
         </LinearLayout>
 
     </FrameLayout>

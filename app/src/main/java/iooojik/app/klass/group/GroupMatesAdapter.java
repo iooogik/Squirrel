@@ -12,10 +12,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.matesList.Mates;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.ViewHolder> {
 
@@ -43,7 +47,13 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
         Mates mate = mates.get(position);
         holder.email.setText(mate.getEmail());
         holder.name.setText(mate.getFullName());
-        holder.img.setImageResource(R.drawable.baseline_account_circle_24);
+        if (!mate.getAvatar().toString().equals("null")){
+            Picasso.get().load(AppСonstants.IMAGE_URL + mate.getAvatar())
+                    .resize(100, 100)
+                    .transform(new RoundedCornersTransformation(30, 5)).into(holder.img);
+
+        }else holder.img.setImageResource(R.drawable.dark_baseline_account_circle_24);
+
     }
 
     @Override

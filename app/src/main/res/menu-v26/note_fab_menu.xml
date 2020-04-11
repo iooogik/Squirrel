@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_upload_notes"
+        android:title="синхронизоровать"
+        android:icon="@drawable/round_cloud_upload_24"
+        />
+
+    <item
+        android:id="@+id/action_download_notes"
+        android:title="загрузить"
+        android:icon="@drawable/round_cloud_download_24"
+        />
+
+    <item
+        android:id="@+id/action_add_note"
+        android:title="добавить"
+        android:icon="@drawable/round_add_24"
+        android:iconTint="?attr/colorAccent"
+        />
+</menu>

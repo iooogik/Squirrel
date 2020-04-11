@@ -1,7 +1,6 @@
 package iooojik.app.klass.group;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
@@ -30,11 +29,13 @@ import java.util.List;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
-import iooojik.app.klass.PostResult;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mates;
+import iooojik.app.klass.models.paramUsers.Data;
+import iooojik.app.klass.models.paramUsers.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +51,7 @@ public class Group extends Fragment implements View.OnClickListener{
     private int groupID = -1;
     private String groupName;
     private String groupAuthor;
+    private String groupAuthorName;
     private int id = -1;
     private Context context;
     private GroupMatesAdapter groupmatesAdapter;
@@ -57,14 +59,16 @@ public class Group extends Fragment implements View.OnClickListener{
     private Api api;
     private Fragment fragment;
     private List<Mates> mates;
+    private SharedPreferences preferences;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_group, container, false);
-
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //получение названия нажатого класса
-        getGroupID();
+        getGroupInfo();
         //контекст
         context = getContext();
         //получение списка одноклассников
@@ -126,11 +130,12 @@ public class Group extends Fragment implements View.OnClickListener{
         });
     }
 
-    private void getGroupID(){
+    private void getGroupInfo(){
         Bundle args = this.getArguments();
         groupID = args.getInt("groupID");
         groupAuthor = args.getString("groupAuthor");
         groupName = args.getString("groupName");
+        groupAuthorName = args.getString("groupAuthorName");
         id = args.getInt("id");
     }
 
@@ -154,71 +159,35 @@ public class Group extends Fragment implements View.OnClickListener{
                 textInputLayout.setHelperTextEnabled(false);
                 textInputLayout.setCounterEnabled(false);
 
-
-                View view2 = getLayoutInflater().inflate(R.layout.edit_text, null);
-                TextInputEditText nameSurname = view2.findViewById(R.id.edit_text);
-
-                TextInputLayout textInputLayout2 = view2.findViewById(R.id.text_input_layout);
-                textInputLayout2.setHint("Введите ФИО ученика");
-                textInputLayout2.setHelperTextEnabled(false);
-                textInputLayout2.setCounterEnabled(false);
-
-
-                layout.addView(view2);
                 layout.addView(view1);
 
-                builder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String email = emailText.getText().toString();
-                        boolean result = false;
+                builder.setPositiveButton("Добавить", (dialog, which) -> {
+                    String email = emailText.getText().toString().trim();
+                    boolean result = false;
 
-                        //проверяем, есть ли пользовтель в бд
-                        if (mates.size() == 0) {
-                            result = true;
-                        }else {
-                            for (Mates mate : mates) {
-                                if (email.equals(mate.getEmail())) {
-                                    result = false;
-                                    break;
-                                } else result = true;
-                            }
+                    //проверяем, есть ли пользовтель в группе
+                    if (mates.size() == 0 && !email.equals(groupAuthor)) {
+                        result = true;
+                    }else {
+
+                        for (Mates mate : mates) {
+                            if (email.equals(mate.getEmail())) {
+                                result = false;
+                                break;
+                            } else result = true;
                         }
 
-                        if(result){
-                            SharedPreferences preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-                            //добавление пользователя
-                            doRetrofit();
-                            HashMap<String, String> map = new HashMap<>();
-                            map.put("full_name", nameSurname.getText().toString());
-                            map.put("email", emailText.getText().toString());
-                            map.put("group_id", String.valueOf(id));
-                            map.put("group_name", groupName);
-                            Call<ServerResponse<PostResult>> response = api.addUserToGroup(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
-
-                            response.enqueue(new Callback<ServerResponse<PostResult>>() {
-                                @Override
-                                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                                    if (response.code() == 200) {
-                                        Snackbar.make(view, "Пользователь был успешно добавлен", Snackbar.LENGTH_LONG).show();
-                                        getGroupMates();
-                                    }
-                                    else Log.e("ADD MATE", String.valueOf(response.raw()));
-                                }
-
-                                @Override
-                                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                                    Log.e("ADD MATE", String.valueOf(t));
-                                }
-                            });
-
-                        } else {
-                            Snackbar.make(view, "Пользователь с указанным e-mail адресом не был найден." +
-                                    "Пожалуйста, повторите попытку снова или напишите разработчику.",
-                                    Snackbar.LENGTH_LONG).show();
-                        }
                     }
+
+                    //получаем пользовательскую информацию по email
+                    //если код == 200, то заносим пользователя в группу
+                    //иначе выдаём сообщение об ошибке
+
+                    if (result){
+                        addNewUser(email);
+                    }
+                    else Snackbar.make(view, "Пользователь с указанным email-адресом уже есть в группе", Snackbar.LENGTH_LONG).show();
+
                 });
 
                 builder.setView(layout);
@@ -230,9 +199,72 @@ public class Group extends Fragment implements View.OnClickListener{
                 bundle.putInt("id", id);
                 bundle.putInt("groupID", groupID);
                 bundle.putString("groupAuthor", groupAuthor);
+                bundle.putString("groupAuthorName", groupAuthorName);
                 bundle.putString("groupName", groupName);
                 NavController navController = NavHostFragment.findNavController(this);
                 navController.navigate(R.id.nav_testEditor, bundle);
         }
+    }
+
+    private void addNewUser(String email) {
+        //получение информации о добавляемом пользователе
+
+        doRetrofit();
+
+        Call<ServerResponse<Data>> call = api.getParamUser(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),"email", email);
+
+        call.enqueue(new Callback<ServerResponse<Data>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+                if (response.code() == 200){
+
+                    Data data = response.body().getData();
+                    User user = data.getUser().get(0);
+
+                    String avatar = user.getAvatar();
+                    if (avatar == null || avatar.isEmpty()){
+                        avatar = "null";
+                    }
+
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("full_name", user.getFullName());
+                    map.put("email", user.getEmail());
+                    map.put("group_id", String.valueOf(id));
+                    map.put("group_name", groupName);
+                    map.put("avatar", avatar);
+
+                    Call<ServerResponse<PostResult>> response2 = api.addUserToGroup(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+
+                    response2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                            if (response.code() == 200) {
+                                Snackbar.make(view, "Пользователь был успешно добавлен", Snackbar.LENGTH_LONG).show();
+                                getGroupMates();
+                            }
+                            else Log.e("ADD MATE", String.valueOf(response.raw()) + map);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                            Log.e("ADD MATE", String.valueOf(t));
+                        }
+                    });
+
+
+
+                    } else {
+                        Log.e("ttt", String.valueOf(response.raw()));
+                        Snackbar.make(view, "Пользователь с указанным e-mail адресом не был найден.",
+                                Snackbar.LENGTH_LONG).show();
+                    }
+            }
+            @Override
+            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+
+            }
+        });
     }
 }

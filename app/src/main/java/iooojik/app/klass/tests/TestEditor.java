@@ -1,5 +1,6 @@
 package iooojik.app.klass.tests;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,8 +26,8 @@ import java.util.List;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
-import iooojik.app.klass.PostResult;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,20 +41,19 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     public TestEditor() {}
 
     private View view;
-    private FloatingActionButton fab;
     private Context context;
     private List<View> questions;
-    private int groupID = -1;
     private int id = -1;
     private Api api;
-    private String groupName;
-    private String groupAuthor;
+    private String groupName, groupAuthor, groupAuthorName;
+    private String firstSel = "Первый ответ", secondSel = "Второй ответ",
+    thirdSel = "Третий ответ", fourthSel = "Четвёртый ответ";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_test_editor, container, false);
-        fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.show();
         fab.setOnClickListener(this);
         questions = new ArrayList<>();
@@ -67,23 +67,24 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
     private void getGroupInfo(){
         Bundle bundle = this.getArguments();
-        groupID = bundle.getInt("groupID");
         groupAuthor = bundle.getString("groupAuthor");
+        groupAuthorName = bundle.getString("groupAuthorName");
         groupName = bundle.getString("groupName");
         id = bundle.getInt("id");
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fab:
 
-                View q = getLayoutInflater().inflate(R.layout.dialog_edit_test, null);
+                View q = getLayoutInflater().inflate(R.layout.recycler_view_edit_test, null);
 
                 LinearLayout layout = view.findViewById(R.id.linear);
 
                 Spinner spinner = q.findViewById(R.id.spinner);
-                String[] trueAnsw = {"Первый ответ", "Второй ответ", "Третий ответ", "Четвёртый ответ"};
+                String[] trueAnsw = {firstSel, secondSel, thirdSel, fourthSel};
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                         android.R.layout.simple_spinner_dropdown_item, trueAnsw);
                 spinner.setAdapter(adapter);
@@ -145,7 +146,11 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
             //правильный ответ
             Spinner spinner = tempQuestion.findViewById(R.id.spinner);
-            trueAnswers.add(spinner.getSelectedItem().toString());
+            if (spinner.getSelectedItem().toString().equals(firstSel)) trueAnswers.add(firstAnsw.getText().toString());
+            else if (spinner.getSelectedItem().toString().equals(secondSel)) trueAnswers.add(secondAnsw.getText().toString());
+            else if (spinner.getSelectedItem().toString().equals(thirdSel)) trueAnswers.add(thirdAnsw.getText().toString());
+            else if (spinner.getSelectedItem().toString().equals(fourthSel)) trueAnswers.add(fourthAnsw.getText().toString());
+
         }
 
         //собираем каждый массив, чтобы выполнить SQL-запрос
@@ -174,6 +179,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
         updateMap.put("_id", String.valueOf(id));
         updateMap.put("author_email", groupAuthor);
+        updateMap.put("author_name", groupAuthorName);
         updateMap.put("name", groupName);
         updateMap.put("test", createSQLandSendToDatabase("'"+ name.getText().toString() + "'",
                 "'"+ description.getText().toString() + "'",

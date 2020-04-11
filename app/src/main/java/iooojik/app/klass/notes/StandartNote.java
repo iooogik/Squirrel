@@ -58,6 +58,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     // "Календарь" для получения времени
     private Calendar calendar;
     private Context context;
+    private FloatingActionButton fab;
 
 
     @Override
@@ -70,7 +71,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                 container, false);
         context = view.getContext();
 
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab = getActivity().findViewById(R.id.fab);
         fab.hide();
 
         ImageButton btnSave = view.findViewById(R.id.buttonSave);
@@ -339,6 +340,11 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fab.hide();
+    }
 }
 
 

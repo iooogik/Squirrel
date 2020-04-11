@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -132,8 +131,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 String group = "[4]";
                 if (accountType.equals("Teacher")) group = "[5]";
                 else group = "[6]";  //id группы (типа аккаунта)
-                Call<SignUpResult> authResponse =
-                        api.userRegistration(AppСonstants.X_API_KEY,
+                Call<SignUpResult> authResponse = api.userRegistration(AppСonstants.X_API_KEY,
                                 pref.getString(AppСonstants.STANDART_TOKEN, ""),
                                 map, group);
 
@@ -148,7 +146,6 @@ public class SignUp extends Fragment implements View.OnClickListener{
                             if (finalGroup.equals("[5]")) type = "teacher";
                             else type = "pupil";
 
-                            Toast.makeText(getContext(), type, Toast.LENGTH_LONG).show();
 
                             if (dataAuth.getStatus()) signIN(uEmail, uPassword, type);
                         } else Log.e("Sign Up", String.valueOf(response.raw()));
@@ -193,7 +190,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
                     //сохраняем пользовательский токен
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
-
+                    preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                     //сохраняем данные в бд
                     Database mDBHelper = new Database(getContext());
                     SQLiteDatabase mDb;

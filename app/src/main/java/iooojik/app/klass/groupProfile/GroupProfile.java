@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -111,21 +112,25 @@ public class GroupProfile extends Fragment {
                     teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
                             + " ", group.getAuthorEmail()));
 
-                    test.setOnClickListener(v -> {
-                        Database mDBHelper = new Database(getContext());
-                        SQLiteDatabase mDb;
-                        mDBHelper = new Database(getContext());
-                        mDBHelper.openDataBase();
-                        mDBHelper.updateDataBase();
-
-                        mDb = mDBHelper.getWritableDatabase();
-                        mDb.execSQL(group.getTest());
-                    });
-
                     test.setText(group.getTest());
-                    if (group.getTest().contains("SELECT")){
+                    if (group.getTest().contains("INSERT")){
                         test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
                         test.setText("Тест доступен");
+                        Button execTest = view.findViewById(R.id.execTest);
+                        execTest.setVisibility(View.VISIBLE);
+                        execTest.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Database mDBHelper = new Database(getContext());
+                                SQLiteDatabase mDb;
+                                mDBHelper = new Database(getContext());
+                                mDBHelper.openDataBase();
+                                mDBHelper.updateDataBase();
+
+                                mDb = mDBHelper.getWritableDatabase();
+                                mDb.execSQL(group.getTest());
+                            }
+                        });
                     }else {
                         test.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
                         test.setText("Тест не доступен");

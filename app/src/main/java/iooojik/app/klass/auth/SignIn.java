@@ -102,7 +102,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
 
                                 //сохраняем пользовательский токен
                                 preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
-
+                                preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                                 //сохраняем данные в бд
                                 Database mDBHelper = new Database(getContext());
 
