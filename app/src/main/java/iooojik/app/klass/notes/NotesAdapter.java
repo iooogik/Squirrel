@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import iooojik.app.klass.AppСonstants;
@@ -44,12 +46,14 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     private Fragment fragment;
     private Context context;
     private Cursor userCursor;
+    private Filter filter;
 
     NotesAdapter(Context context, List<Note> notes, Fragment fragment){
         this.notes = notes;
         this.inflater = LayoutInflater.from(context);
         this.fragment = fragment;
         this.context = context;
+        filter = new ItemFilter();
     }
 
 
@@ -204,7 +208,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return notes.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder{
         final ImageView imageView, completed, isNotifSet;
         final TextView name, desc;
         final LinearLayout back;
@@ -220,4 +224,49 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             completed = view.findViewById(R.id.completed);
         }
     }
+
+    Filter getFilter() {
+        return filter;
+    }
+
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            String filterString = constraint.toString().toLowerCase();
+
+
+            FilterResults results = new FilterResults();
+
+            final List<Note> list = notes;
+            int count = list.size();
+            final List<Note> nlist = new ArrayList<Note>(count);
+
+
+
+            String filterableString;
+
+            for (int i = 0; i < count; i++) {
+                filterableString = list.get(i).getName();
+
+                if (filterableString.toLowerCase().contains(filterString)) {
+                    nlist.add(list.get(i));
+                }
+            }
+
+            results.values = nlist;
+            results.count = nlist.size();
+
+            return results;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            notes = (ArrayList<Note>) results.values;
+            notifyDataSetChanged();
+        }
+
+    }
+
 }

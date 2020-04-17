@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -112,7 +114,30 @@ public class Notes extends Fragment {
 
             }
         });
+
+        enableSearch();
+
         return view;
+    }
+
+    private void enableSearch() {
+        EditText filter = view.findViewById(R.id.search);
+        filter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NOTES_ADAPTER.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -137,14 +162,8 @@ public class Notes extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        fabSpeedDial.hide();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDetach() {
+        super.onDetach();
         fabSpeedDial.hide();
     }
 

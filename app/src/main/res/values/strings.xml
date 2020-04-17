@@ -109,6 +109,8 @@
     <string name="darkTheme">Тёмная тема</string>
     <string name="ar">AR</string>
     <string name="profileTheme">Тема для профиля:</string>
+    <string name="searchHint">Поиск</string>
+    <string name="todo">TODO</string>
     <!-- other strings end-->
 
 

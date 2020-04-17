@@ -1,7 +1,9 @@
 package iooojik.app.klass.groupProfile;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -76,7 +78,7 @@ public class GroupProfile extends Fragment {
                 if(response.code() == 200) {
                     ServerResponse<DataUsersToGroup> result = response.body();
                     List<Mates> mates = result.getData().getMates();
-                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates);
+                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates, null);
                     RecyclerView recyclerView = view.findViewById(R.id.group_mates);
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                     recyclerView.setAdapter(groupmatesAdapter);
@@ -96,6 +98,7 @@ public class GroupProfile extends Fragment {
         doRetrofit();
         Call<ServerResponse<DataGroup>> responseCall = api.groupDetail(AppСonstants.X_API_KEY,
                 sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), Integer.parseInt(groupID));
+        TextView test = view.findViewById(R.id.test);
         responseCall.enqueue(new Callback<ServerResponse<DataGroup>>() {
             @Override
             public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
@@ -105,7 +108,7 @@ public class GroupProfile extends Fragment {
 
                     TextView teacher_name = view.findViewById(R.id.teacher_name);
                     TextView teacher_email = view.findViewById(R.id.teacher_email);
-                    TextView test = view.findViewById(R.id.test);
+
 
                     teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
                             + " ", group.getAuthorName()));
@@ -121,14 +124,25 @@ public class GroupProfile extends Fragment {
                         execTest.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Database mDBHelper = new Database(getContext());
-                                SQLiteDatabase mDb;
-                                mDBHelper = new Database(getContext());
-                                mDBHelper.openDataBase();
-                                mDBHelper.updateDataBase();
+                                try {
+                                    Database mDBHelper = new Database(getContext());
+                                    SQLiteDatabase mDb;
+                                    mDBHelper = new Database(getContext());
+                                    mDBHelper.openDataBase();
+                                    mDBHelper.updateDataBase();
 
-                                mDb = mDBHelper.getWritableDatabase();
-                                mDb.execSQL(group.getTest());
+                                    mDb = mDBHelper.getWritableDatabase();
+                                    mDb.execSQL(group.getTest());
+
+                                    Cursor cursor = mDb.rawQuery("Select * from Tests", null);
+                                    cursor.moveToLast();
+                                    ContentValues contentValues = new ContentValues();
+                                    contentValues.put("group_id", Integer.parseInt(group.getId()));
+                                    mDb.update("Tests", contentValues, "_id=" + (cursor.getPosition() + 1), null);
+                                } catch (Exception e) {
+                                    Log.i("LOAD TEST", String.valueOf(e));
+                                }
+
                             }
                         });
                     }else {
@@ -136,7 +150,10 @@ public class GroupProfile extends Fragment {
                         test.setText("Тест не доступен");
                     }
 
-                }else Log.e("GET TEACHER INFO", String.valueOf(response.raw()));
+                }else {
+                    Log.e("GET TEACHER INFO", String.valueOf(response.raw()));
+                    test.setText("Тест не доступен");
+                }
             }
 
             @Override

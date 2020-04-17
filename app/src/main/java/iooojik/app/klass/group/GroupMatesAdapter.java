@@ -5,10 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,6 +20,7 @@ import java.util.List;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.TestResults.TestsResult;
 import iooojik.app.klass.models.matesList.Mates;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
@@ -26,12 +29,14 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     private Context context;
     private Fragment fragment;
     private List<Mates> mates;
+    private List<TestsResult> testsResults;
     private LayoutInflater inflater;
 
-    public GroupMatesAdapter(Context context, Fragment fragment, List<Mates> mates) {
+    public GroupMatesAdapter(Context context, Fragment fragment, List<Mates> mates, List<TestsResult> testsResults) {
         this.context = context;
         this.fragment = fragment;
         this.mates = mates;
+        this.testsResults = testsResults;
         inflater = LayoutInflater.from(context);
     }
 
@@ -39,12 +44,36 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.recycler_view_mate, parent, false);
-        return new GroupMatesAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Mates mate = mates.get(position);
+        if (testsResults != null){
+            boolean wasFound = false;
+            for (TestsResult testResult: testsResults) {
+                if (testResult.getUserEmail().equals(mate.getEmail())){
+                    //ставим результат и показываем его
+                    holder.progress.setVisibility(View.VISIBLE);
+                    holder.progressBar.setProgress(Integer.parseInt(testResult.getResult()));
+                    holder.text_result.setText(String.format("%s/100", testResult.getResult()));
+                    testsResults.remove(testResult);
+                    wasFound = true;
+                    break;
+                }
+            }
+
+
+            if (!wasFound){
+                holder.progress.setVisibility(View.VISIBLE);
+                holder.progressBar.setVisibility(View.GONE);
+                holder.text_tint.setVisibility(View.GONE);
+                holder.text_result.setVisibility(View.VISIBLE);
+                holder.text_result.setText("Тест ещё не был пройден");
+                holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
+            }
+        }
         holder.email.setText(mate.getEmail());
         holder.name.setText(mate.getFullName());
         if (!mate.getAvatar().toString().equals("null")){
@@ -61,18 +90,24 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
         return mates.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder{
         TextView name;
         TextView email;
         ImageView img;
-        ConstraintLayout constraintLayout;
+        LinearLayout progress;
+        ProgressBar progressBar;
+        TextView text_result, text_tint;
+
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.imageView2);
             name = itemView.findViewById(R.id.textView);
             email = itemView.findViewById(R.id.textView2);
-            constraintLayout = itemView.findViewById(R.id.constraint);
+            progress = itemView.findViewById(R.id.linearLayout_result);
+            progressBar = itemView.findViewById(R.id.progress);
+            text_result = itemView.findViewById(R.id.text_result);
+            text_tint = itemView.findViewById(R.id.text_tint);
         }
     }
 }

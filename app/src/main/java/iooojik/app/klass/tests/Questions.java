@@ -2,12 +2,15 @@ package iooojik.app.klass.tests;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -28,8 +30,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import iooojik.app.klass.Api;
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
+import iooojik.app.klass.models.ServerResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class Questions extends Fragment implements View.OnClickListener{
@@ -41,12 +52,14 @@ public class Questions extends Fragment implements View.OnClickListener{
     private SQLiteDatabase mDb;
     private Cursor userCursor;
 
-    private List<String> questions = new ArrayList<>();
-    private List<String> answers = new ArrayList<>();
-    private List<String> isTrue = new ArrayList<>();
-    private HashMap<Integer, Bitmap> images = new HashMap<>();
+    private List<String> questions;
+    private List<String> answers;
+    private List<String> isTrue;
+    private HashMap<Integer, Bitmap> images;
     private int rightScore = 0;
     private int wrongScore = 0;
+    private Api api;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +67,12 @@ public class Questions extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_questions, container, false);
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
+
+        questions = new ArrayList<>();
+        answers = new ArrayList<>();
+        isTrue = new ArrayList<>();
+        images= new HashMap<>();
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
         getQuestions();
         getAnswers();
@@ -77,7 +96,6 @@ public class Questions extends Fragment implements View.OnClickListener{
             images.put(userCursor.getInt(userCursor.getColumnIndex("num_question")), bitmap);
             userCursor.moveToNext();
         }
-        Toast.makeText(getContext(), String.valueOf(images.size()), Toast.LENGTH_LONG).show();
 
     }
 
@@ -227,6 +245,33 @@ public class Questions extends Fragment implements View.OnClickListener{
                     testTheme.setWrongAnswers(wrongScore);
                     testTheme.setPassed(true);
                     Tests.TEST_ADAPTER.notifyDataSetChanged();
+
+                    doRetrofit();
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+                    map.put("group_id", String.valueOf(userCursor.getString(userCursor.getColumnIndex("group_id"))));
+                    float tempRightScore = (float) rightScore;
+                    float tempWrongScore = (float) wrongScore;
+                    map.put("result",  String.valueOf((tempRightScore / tempWrongScore) * 100.0f));
+
+
+
+                    Call<ServerResponse<PostResult>> updateInfo = api.addResult(
+                            AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+
+                    updateInfo.enqueue(new Callback<ServerResponse<PostResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                            if (response.code() != 200) Log.e("SENDING RESULT", String.valueOf(response.raw()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                            Log.e("SENDING RESULT", String.valueOf(t));
+                        }
+                    });
+
+
                 }
             });
 
@@ -239,5 +284,13 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             builder.create().show();
         }
+    }
+
+    private void doRetrofit(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
     }
 }

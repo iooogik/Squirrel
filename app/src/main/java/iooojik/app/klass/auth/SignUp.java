@@ -46,6 +46,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
     private View view;
     private String accountType = "";
     private Api api;
+    private SharedPreferences preferences;
 
 
     @Override
@@ -55,7 +56,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
         Button signIn = view.findViewById(R.id.signIn);
         signIn.setOnClickListener(this);
-
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         Button signUp = view.findViewById(R.id.sign_up);
         signUp.setOnClickListener(this);
         //слушатель, чтобы получить тип аккаунта
@@ -137,15 +138,15 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
                 String finalGroup = group;
                 authResponse.enqueue(new Callback<SignUpResult>() {
+                    @SuppressLint("CommitPrefEdits")
                     @Override
                     public void onResponse(Call<SignUpResult> call, Response<SignUpResult> response) {
                         if (response.code() == 200) {
                             SignUpResult dataAuth = response.body();
-
+                            preferences.edit().putString(AppСonstants.USER_LOGIN, login);
                             String type = "";
                             if (finalGroup.equals("[5]")) type = "teacher";
                             else type = "pupil";
-
 
                             if (dataAuth.getStatus()) signIN(uEmail, uPassword, type);
                         } else Log.e("Sign Up", String.valueOf(response.raw()));
@@ -174,9 +175,6 @@ public class SignUp extends Fragment implements View.OnClickListener{
         uCredi.put("username", uEmail);
         uCredi.put("password", uPassword);
 
-        SharedPreferences preferences = getActivity().
-                getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
         Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
 
         authResponse.enqueue(new Callback<ServerResponse<Data>>() {
@@ -191,6 +189,8 @@ public class SignUp extends Fragment implements View.OnClickListener{
                     //сохраняем пользовательский токен
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
                     preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
+                    preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
+                    preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
                     //сохраняем данные в бд
                     Database mDBHelper = new Database(getContext());
                     SQLiteDatabase mDb;

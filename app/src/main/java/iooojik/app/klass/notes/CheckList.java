@@ -76,7 +76,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         fab = getActivity().findViewById(R.id.fab);
 
         fab.setImageResource(R.drawable.round_add_24);
-        fab.setVisibility(View.VISIBLE);
+        fab.show();
         fab.setOnClickListener(this);
 
         //получение элементов чек-лсита

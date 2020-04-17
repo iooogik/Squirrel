@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.TestResults.DataTestResult;
 import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
@@ -12,7 +13,7 @@ import iooojik.app.klass.models.pupil.DataPupilList;
 import iooojik.app.klass.models.teacher.AddGroupResult;
 import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.userData.Data;
-import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
@@ -22,7 +23,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
 public interface Api {
@@ -51,13 +52,11 @@ public interface Api {
                                         @Field("group") String group);
 
     //обновлени пользовательской информации
-    @FormUrlEncoded
     @Multipart
     @POST("api/user/add")
     Call<PostResult> userUpdateAvatar(@Header("X-API-KEY") String api_key,
-                                        @Header("X-TOKEN") String token,
-                                        @FieldMap HashMap<String, String> map,
-                                        @Part MultipartBody.Part avatar);
+                                      @Header("X-TOKEN") String token,
+                                      @PartMap HashMap<String, RequestBody> map);
 
     @FormUrlEncoded
     @POST("api/groups/add")
@@ -81,6 +80,13 @@ public interface Api {
     @POST("api/notes/add")
     Call<ServerResponse<PostResult>> uploadNotes(@Header("X-API-KEY") String api_key, @Header("X-TOKEN") String token,
                                   @FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/tests_result/add")
+    Call<ServerResponse<PostResult>> addResult(@Header("X-API-KEY") String api_key,
+                                                @Header("X-TOKEN") String token,
+                                                @FieldMap HashMap<String, String> map);
+
     @FormUrlEncoded
     @POST("api/notes/delete")
     Call<ServerResponse<PostResult>> removeNotes(@Header("X-API-KEY") String api_key, @Field("_id") String id);
@@ -117,6 +123,12 @@ public interface Api {
     Call<ServerResponse<iooojik.app.klass.groupProfile.DataGroup>> groupDetail(@Header("X-API-KEY") String api_key,
                                                                                @Header("X-TOKEN") String token,
                                                                                @Query("_id") int id);
+
+    @GET("api/tests_result/all?")
+    Call<ServerResponse<DataTestResult>> getTestResults(@Header("X-API-KEY") String api_key,
+                                                       @Header("X-TOKEN") String token,
+                                                       @Query("field") String field,
+                                                       @Query("filter") String filter);
 
 
 

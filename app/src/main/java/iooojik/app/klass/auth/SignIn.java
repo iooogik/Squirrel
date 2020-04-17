@@ -103,6 +103,8 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 //сохраняем пользовательский токен
                                 preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
                                 preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
+                                preferences.edit().putString(AppСonstants.USER_PASSWORD, password.getText().toString()).apply();
+                                preferences.edit().putString(AppСonstants.USER_LOGIN, result.getUsername()).apply();
                                 //сохраняем данные в бд
                                 Database mDBHelper = new Database(getContext());
 
@@ -112,6 +114,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
 
                                 ContentValues cv = new ContentValues();
+                                preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
                                 cv.put("email", result.getEmail());
                                 cv.put("username", result.getUsername());
                                 cv.put("full_name", result.getFullName());

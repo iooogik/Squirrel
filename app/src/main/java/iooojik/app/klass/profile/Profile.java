@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,14 +29,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +41,7 @@ import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
@@ -58,7 +53,6 @@ import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.teacher.GroupInfo;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -172,16 +166,8 @@ public class Profile extends Fragment implements View.OnClickListener {
         emailText.setText(email);
     }
 
-    private void setProfileBackground(){
-        FrameLayout frameLayout = view.findViewById(R.id.backroundProfile);
-        if (preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1) != -1)
-        frameLayout.setBackgroundResource(preferences.getInt(AppСonstants.BACKGROUND_PROFILE, -1));
-
-    }
-
     private void setUserInformation() {
         //получаем и устанавливаем пользовательскую информацию
-        setProfileBackground();
         TextView Email = view.findViewById(R.id.email);
         TextView name = view.findViewById(R.id.name);
 
@@ -234,22 +220,23 @@ public class Profile extends Fragment implements View.OnClickListener {
                             getActiveTests();
                             break;
                     }
-                    TextView role = view.findViewById(R.id.role);
-                    role.setText(userRole);
+
+                    ImageView profileImg = header.findViewById(R.id.side_avatar);
+                    ImageView avatar = view.findViewById(R.id.avatar);
                     if (!user.getAvatar().isEmpty()) {
-                        ImageView avatar = view.findViewById(R.id.avatar);
+
                         Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
                                 .resize(100, 100)
                                 .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
 
-                        ImageView profileImg = header.findViewById(R.id.imageView2);
+
 
                         Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
                                 .resize(100, 100)
                                 .transform(new RoundedCornersTransformation(30, 5)).into(profileImg);
 
 
-                    }
+                    } else profileImg.setImageResource(R.drawable.baseline_account_circle_24);
                 }
             }
 
@@ -262,17 +249,6 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private int getUserID(){
         int userId = -1;
-        /*
-        mDbHelper = new Database(context);
-        mDbHelper = new Database(context);
-        mDbHelper.openDataBase();
-        mDbHelper.updateDataBase();
-        mDb = mDbHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from Profile WHERE _id=?", new String[]{String.valueOf(0)});
-        userCursor.moveToFirst();
-
-
-         */
         userId = Integer.parseInt(preferences.getString(AppСonstants.USER_ID, ""));
         return userId;
     }
@@ -388,21 +364,45 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private void changeAvatar(File file){
         doRetrofit();
-        HashMap<String, String> map = new HashMap<>();
-        map.put("email", email);
-        //map.put("password", );
-        map.put("id", String.valueOf(getUserID()));
-        map.put("full_name", fullName);
 
-        RequestBody reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
-        RequestBody name = RequestBody.create(MediaType.parse("multipart/form-data"), "upload_test");
+        RequestBody requestBody;
+        HashMap<String, RequestBody> map = new HashMap<>();
+        requestBody = RequestBody.create(MediaType.parse("text/plain"), email);
 
+        map.put("email", requestBody);
+        requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                preferences.getString(AppСonstants.USER_PASSWORD, ""));
+
+        map.put("password", requestBody);
+
+        RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
         /*
-        Call<PostResult> call = api.userUpdateAvatar(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map,
-                );
+        MultipartBody.Part part = MultipartBody.Part.createFormData(
+                preferences.getString(AppСonstants.USER_LOGIN, "avatar"),
+                file.getName(), fileReqBody);
+
          */
+
+        map.put("Avatar", fileReqBody);
+
+        Call<PostResult> call = api.userUpdateAvatar(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+
+        call.enqueue(new Callback<PostResult>() {
+            @Override
+            public void onResponse(Call<PostResult> call, Response<PostResult> response) {
+                if (response.code() == 200){
+                    Snackbar.make(getView(), "Аватар успешно изменён", Snackbar.LENGTH_LONG).show();
+                }
+                else Log.e("CHANGE AVATAR", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<PostResult> call, Throwable t) {
+                Log.e("CHANGE AVATAR", String.valueOf(t));
+            }
+        });
+
     }
 
     @Override
@@ -411,32 +411,19 @@ public class Profile extends Fragment implements View.OnClickListener {
         switch (requestCode){
             case 1:
                 ImageView avatar = view.findViewById(R.id.avatar);
-                try {
-                    Uri img = data.getData();
-                    InputStream imgStream = getActivity().getContentResolver().openInputStream(img);
-                    Bitmap bitmap = BitmapFactory.decodeStream(imgStream);
+                Uri img = data.getData();
+                File file = new File(img.getPath());
+                changeAvatar(file);
 
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-                    byte[] imgData = stream.toByteArray();
-
-                    File file = new File(context.getCacheDir(), "avatar");
-                    file.createNewFile();
-
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(imgData);
-                    fileOutputStream.flush();
-                    fileOutputStream.close();
-
+                    /*
                     Picasso.get().load(file)
                             .resize(100, 100)
                             .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
 
-                    changeAvatar(file);
+                     */
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+
                 break;
         }
     }

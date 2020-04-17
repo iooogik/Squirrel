@@ -32,6 +32,8 @@ import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.TestResults.DataTestResult;
+import iooojik.app.klass.models.TestResults.TestsResult;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mates;
 import iooojik.app.klass.models.paramUsers.Data;
@@ -110,10 +112,27 @@ public class Group extends Fragment implements View.OnClickListener{
                     ServerResponse<DataUsersToGroup> result = response.body();
                     mates = result.getData().getMates();
 
-                    groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates);
-                    RecyclerView recyclerView = view.findViewById(R.id.groupmates);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    recyclerView.setAdapter(groupmatesAdapter);
+                    Call<ServerResponse<DataTestResult>> call2 = api.getTestResults(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", String.valueOf(id));
+                    call2.enqueue(new Callback<ServerResponse<DataTestResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
+                            if (response.code() == 200){
+                                DataTestResult result = response.body().getData();
+                                List<TestsResult> testsResults = result.getTestsResult();
+                                groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates, testsResults);
+                                RecyclerView recyclerView = view.findViewById(R.id.groupmates);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                                recyclerView.setAdapter(groupmatesAdapter);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<DataTestResult>> call, Throwable t) {
+
+                        }
+                    });
+
 
                 } else {
                     Log.e("GETTING MATES", response.raw() + "");

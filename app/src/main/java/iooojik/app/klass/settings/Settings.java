@@ -1,6 +1,5 @@
 package iooojik.app.klass.settings;
 
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -26,14 +24,12 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIALS;
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
@@ -61,8 +57,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        //выбор фона для профиля
-        setProfileBackground();
         //установка тем
         setDarkTheme();
         //"чек" для того, чтобы убрать справочные материалы из заметок
@@ -103,34 +97,6 @@ public class Settings extends Fragment implements View.OnClickListener{
                 startActivity(intent);
             }
         });
-    }
-
-    private void setProfileBackground() {
-        int[] res = new int[4];
-        res[0] = R.drawable.background0;
-        res[1] = R.drawable.background1;
-        res[2] = R.drawable.background2;
-        res[3] = R.drawable.background3;
-        LinearLayout layout = view.findViewById(R.id.horizontalBackProfile);
-
-        for (int re : res) {
-            View viewInfl = getLayoutInflater().inflate(R.layout.background_selector, null);
-            ImageView imageView = viewInfl.findViewById(R.id.imageView4);
-            Picasso.get().load(re).resize(250, 150)
-                    .transform(new RoundedCornersTransformation(20, 0)).into(imageView);
-
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("CommitPrefEdits")
-                @Override
-                public void onClick(View v) {
-                    if (re != R.drawable.background0)
-                    preferences.edit().putInt(AppСonstants.BACKGROUND_PROFILE, re).apply();
-                    else preferences.edit().putInt(AppСonstants.BACKGROUND_PROFILE, -1).apply();
-                    Snackbar.make(view, "Задний фон профиля установлен", Snackbar.LENGTH_LONG).show();
-                }
-            });
-            layout.addView(viewInfl);
-        }
     }
 
     private void setShowBookMaterials() {
@@ -186,11 +152,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                     getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
                             .edit().putInt(AppСonstants.APP_PREFERENCES_THEME, 0).apply();
 
-                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                            .edit().putInt(AppСonstants.BACKGROUND_PROFILE, -1).apply();
-
                     startActivity(new Intent(getContext(), MainActivity.class));
-
                 });
 
                 builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {

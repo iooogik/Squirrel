@@ -11,7 +11,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height">
+        android:background="@color/colorAccent"
+        android:layout_height="130dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -21,71 +22,56 @@
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <FrameLayout
-                android:id="@+id/backroundProfile"
+
+            <ImageView
+                android:id="@+id/settings"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_margin="7dp"
+                android:background="@drawable/round_settings_24"
+                android:contentDescription="@string/todo" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint"
+                android:layout_marginBottom="8dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorAccent">
+                android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/settings"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="end"
-                    android:layout_margin="7dp"
-                    android:background="@drawable/round_settings_24" />
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/avatar"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/baseline_account_circle_24"
-                        />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/colorWhite"
-                            android:textSize="30sp" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/email"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="10dp"
-                        android:textColor="@color/colorWhite" />
-                </LinearLayout>
+                    android:id="@+id/avatar"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:srcCompat="@drawable/baseline_account_circle_24" />
 
                 <TextView
-                    android:id="@+id/role"
+                    android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="123"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="14sp" />
+                    android:layout_marginStart="8dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/email"
+                    app:layout_constraintStart_toEndOf="@+id/avatar"
+                    tools:text="@tools:sample/full_names" />
 
-            </FrameLayout>
+                <TextView
+                    android:id="@+id/email"
+                    android:layout_width="285dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintBottom_toBottomOf="@+id/avatar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.050"
+                    app:layout_constraintStart_toEndOf="@+id/avatar"
+                    tools:text="@tools:sample/lorem[4:10]" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

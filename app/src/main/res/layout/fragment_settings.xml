@@ -35,26 +35,6 @@
             android:layout_height="1dp"
             android:background="?android:attr/colorAccent" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginStart="15dp"
-            android:text="@string/profileTheme" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp">
-
-            <LinearLayout
-                android:id="@+id/horizontalBackProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:orientation="horizontal" />
-        </HorizontalScrollView>
-
     </LinearLayout>
 
     <LinearLayout

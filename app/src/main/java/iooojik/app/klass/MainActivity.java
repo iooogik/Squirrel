@@ -1,11 +1,13 @@
 package iooojik.app.klass;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +27,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.HashMap;
 
+import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.getToken.DataToken;
+import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // переменная с настройками приложения
-    public SharedPreferences Settings;
+    public SharedPreferences preferences;
     //контроллер
     private NavController navController;
     //packageInfo, чтобы получать текущую версию приложения
@@ -52,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // получение настроек
-        Settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         // изменение темы
-        switch (Settings.getInt(APP_PREFERENCES_THEME, 0)) {
+        switch (preferences.getInt(APP_PREFERENCES_THEME, 0)) {
             case 0:
                 setTheme(R.style.AppThemeLight); // Стандартная
                 break;
@@ -117,9 +121,8 @@ public class MainActivity extends AppCompatActivity {
     private void isUserAuth(){
         BottomAppBar bottomAppBar = findViewById(R.id.bar);
         //получаем токен пользователя
-        String token = Settings.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
-
-        if(token.isEmpty()){
+        String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
+        if(token.isEmpty() || preferences.getString(AppСonstants.USER_EMAIL, "").isEmpty()){
             navController.navigate(R.id.nav_signIn);
             bottomAppBar.setVisibility(View.GONE);
             //убираем шторку
@@ -127,6 +130,9 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else {
 
+
+            signIN(preferences.getString(AppСonstants.USER_EMAIL, ""),
+                    preferences.getString(AppСonstants.USER_PASSWORD, "."));
             navController.navigate(R.id.nav_profile);
         }
     }
@@ -192,6 +198,61 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setView(view);
         builder.create().show();
+
+    }
+
+    private void signIN(String uEmail, String uPassword){
+
+        doBase();
+
+        HashMap<String, String> uCredi = new HashMap<>();
+        uCredi.put("username", uEmail);
+        uCredi.put("password", uPassword);
+
+        Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
+
+        authResponse.enqueue(new Callback<ServerResponse<Data>>() {
+            @SuppressLint("CommitPrefEdits")
+            @Override
+            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+                if (response.code() == 200) {
+                    //получаем данные с сервера
+                    ServerResponse<Data> dataAuth = response.body();
+                    Data result = dataAuth.getData();
+
+                    //сохраняем пользовательский токен
+                    preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
+                    preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
+                    preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
+                    preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
+                    //сохраняем данные в бд
+                    Database mDBHelper = new Database(getApplicationContext());
+                    SQLiteDatabase mDb;
+                    mDBHelper = new Database(getApplicationContext());
+                    mDBHelper.openDataBase();
+                    mDBHelper.updateDataBase();
+
+                    mDb = mDBHelper.getWritableDatabase();
+
+                    ContentValues cv = new ContentValues();
+                    cv.put("email", result.getEmail());
+                    cv.put("username", result.getUsername());
+                    cv.put("full_name", result.getFullName());
+                    cv.put("id", result.getId());
+
+                    mDb.update("Profile", cv, "_id=0", null);
+
+                }
+                else {
+                    Log.e("Sign In", String.valueOf(response.raw()) + uEmail + " " + uPassword);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+                Log.e("Sign In", String.valueOf(t));
+            }
+        });
 
     }
 
