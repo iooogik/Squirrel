@@ -13,22 +13,24 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.internal.NavigationMenu;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -40,9 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
-import io.github.yavski.fabspeeddial.FabSpeedDial;
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
@@ -66,9 +66,10 @@ public class Notes extends Fragment {
     private View view;
     private Context context;
     private NotesAdapter NOTES_ADAPTER;
-    private FabSpeedDial fabSpeedDial;
+
     private Api api;
     private SharedPreferences preferences;
+    private BottomSheetBehavior behavior;
 
     static List<Note> ITEMS = new ArrayList<>();
 
@@ -81,12 +82,8 @@ public class Notes extends Fragment {
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = view.getContext();
         startProcedures();
-
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.hide();
-
-        fabSpeedDial = getActivity().findViewById(R.id.fab_dial);
-        fabSpeedDial.show();
+        initBottomSheet();
+        /*
         fabSpeedDial.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
@@ -103,7 +100,7 @@ public class Notes extends Fragment {
                         downloadNotes();
                         break;
                     case R.id.action_add_note:
-                        addNote();
+
                         break;
                 }
                 return true;
@@ -115,9 +112,59 @@ public class Notes extends Fragment {
             }
         });
 
+         */
+
         enableSearch();
 
         return view;
+    }
+
+    private void initBottomSheet(){
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.show();
+        FrameLayout bottomSheet = getActivity().findViewById(R.id.bottomSheet);
+        behavior = BottomSheetBehavior.from(bottomSheet);
+
+        fab.setOnClickListener(v -> {
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            fab.hide();
+        });
+
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED){
+                    fab.hide();
+                }else if (newState == BottomSheetBehavior.STATE_HIDDEN){
+                    fab.show();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        Button add = bottomSheet.findViewById(R.id.add);
+        add.setOnClickListener(v -> {
+            addNote();
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+        Button sync = bottomSheet.findViewById(R.id.sync);
+        sync.setOnClickListener(v -> {
+            uploadNotes();
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+
+        Button download = bottomSheet.findViewById(R.id.download);
+        download.setOnClickListener(v -> {
+            downloadNotes();
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
     }
 
     private void enableSearch() {
@@ -138,33 +185,6 @@ public class Notes extends Fragment {
 
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Скрываем клавиатуру при открытии Navigation Drawer
-        try {
-            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
-                    getSystemService(Activity.INPUT_METHOD_SERVICE);
-            if (inputMethodManager != null) {
-                inputMethodManager.hideSoftInputFromWindow(Objects.
-                        requireNonNull(getActivity().getCurrentFocus()).
-                        getWindowToken(), 0);
-            }
-        } catch (Exception e){
-            Log.i("Notes", String.valueOf(e));
-        }
-
-        synchronized (NOTES_ADAPTER){
-            NOTES_ADAPTER.notify();
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        fabSpeedDial.hide();
     }
 
     private void startProcedures(){
@@ -504,5 +524,30 @@ public class Notes extends Fragment {
         Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Скрываем клавиатуру при открытии Navigation Drawer
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
+                    getSystemService(Activity.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(requireActivity().getCurrentFocus().
+                        getWindowToken(), 0);
+            }
+        } catch (Exception e){
+            Log.i("Notes", String.valueOf(e));
+        }
+
+        synchronized (NOTES_ADAPTER){
+            NOTES_ADAPTER.notify();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
 }
 

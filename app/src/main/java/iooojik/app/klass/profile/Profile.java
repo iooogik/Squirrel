@@ -236,7 +236,10 @@ public class Profile extends Fragment implements View.OnClickListener {
                                 .transform(new RoundedCornersTransformation(30, 5)).into(profileImg);
 
 
-                    } else profileImg.setImageResource(R.drawable.baseline_account_circle_24);
+                    } else {
+                        profileImg.setImageResource(R.drawable.baseline_account_circle_24);
+                        avatar.setImageResource(R.drawable.baseline_account_circle_24);
+                    }
                 }
             }
 
@@ -323,8 +326,6 @@ public class Profile extends Fragment implements View.OnClickListener {
                         post.put("name", nameGroup);
                         post.put("test", "q");
                         post.put("author_name", fullName);
-
-                        Log.e("creds", email + " " + nameGroup + " ");
 
                         Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
                                 AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),

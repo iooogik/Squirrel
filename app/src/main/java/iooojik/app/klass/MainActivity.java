@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
@@ -67,7 +69,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         getAdminToken();
+
         setContentView(R.layout.activity_main);
+
+        FrameLayout bottomSheet = findViewById(R.id.bottomSheet);
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+
+
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //метод проверки на аутентификацию пользователя
         //проверка акутальной версии приложения
@@ -130,9 +140,9 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else {
 
-
             signIN(preferences.getString(AppСonstants.USER_EMAIL, ""),
-                    preferences.getString(AppСonstants.USER_PASSWORD, "."));
+                    preferences.getString(AppСonstants.USER_PASSWORD, ""));
+
             navController.navigate(R.id.nav_profile);
         }
     }
