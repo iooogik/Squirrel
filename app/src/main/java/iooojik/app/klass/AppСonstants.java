@@ -20,7 +20,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 57;
+    static int DB_VERSION = 58;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения

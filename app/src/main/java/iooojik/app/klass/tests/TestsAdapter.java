@@ -1,5 +1,6 @@
 package iooojik.app.klass.tests;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
         return new TestsAdapter.ViewHolder(view);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         TestTheme testTheme = tests.get(position);
@@ -64,11 +66,11 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             }
 
             PieDataSet pieDataSet = new PieDataSet(entries, "");
-            pieDataSet.setSliceSpace(7);
+            pieDataSet.setSliceSpace(5);
             //устанавливаем цвета
             List<Integer> colors = new ArrayList<Integer>();
-            int green = Color.parseColor("#ADFA6E");
-            int red = Color.parseColor("#FF7A7A");
+            int green = Color.parseColor("#56CF54");
+            int red = Color.parseColor("#FF5252");
             colors.add(green);
             colors.add(red);
 
@@ -77,7 +79,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
             PieData pieData = new PieData(pieDataSet);
             //анимация
-            holder.pieChart.animateY(600);
+            holder.pieChart.animateY(500);
             //убираем надписи
             Description description = new Description();
             description.setText("");
@@ -86,13 +88,15 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             holder.pieChart.getLegend().setFormSize(0f);
             pieData.setValueTextSize(0f);
 
-            holder.pieChart.setHoleRadius(25);
+            holder.pieChart.setTransparentCircleRadius(0);
+
+            holder.pieChart.setHoleRadius(2);
             holder.pieChart.setData(pieData);
 
             //процент правильных ответов
             TextView textView = holder.result.findViewById(R.id.result);
-            textView.setText
-                    ("Тест был на пройден на " +  Math.round((rightScore/wrongScore)* 100) + "%");
+            textView.setText(String.format("Тест был на пройден на %d%%",
+                    Math.round((rightScore / wrongScore) * 100)));
 
         } else {
             //обработка нажатия на view

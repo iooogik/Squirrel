@@ -5,10 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="52dp">
-
-
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested"

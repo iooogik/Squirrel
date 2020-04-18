@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,7 +27,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import iooojik.app.klass.AppСonstants;
-import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
@@ -44,10 +41,6 @@ public class Settings extends Fragment implements View.OnClickListener{
     private View view;
     private PackageInfo packageInfo;
     private SharedPreferences preferences;
-    private Database mDbHelper;
-    private Cursor userCursor;
-    private SQLiteDatabase mDb;
-    private String email, fullName, role, userName;
 
 
     @Override
@@ -159,11 +152,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                         "Вы действительно хотите выйти?");
 
                 builder.setPositiveButton("Выйти", (dialog, which) -> {
-                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                            .edit().putString(AppСonstants.AUTH_SAVED_TOKEN, "").apply();
-
-                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE)
-                            .edit().putInt(AppСonstants.APP_PREFERENCES_THEME, 0).apply();
+                    preferences.edit().clear().apply();
 
                     startActivity(new Intent(getContext(), MainActivity.class));
                 });

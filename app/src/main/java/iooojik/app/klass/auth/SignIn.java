@@ -1,10 +1,8 @@
 package iooojik.app.klass.auth;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +24,6 @@ import java.util.HashMap;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
-import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.userData.Data;
@@ -105,22 +102,6 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                                 preferences.edit().putString(AppСonstants.USER_PASSWORD, password.getText().toString()).apply();
                                 preferences.edit().putString(AppСonstants.USER_LOGIN, result.getUsername()).apply();
-                                //сохраняем данные в бд
-                                Database mDBHelper = new Database(getContext());
-
-                                mDBHelper = new Database(getContext());
-                                mDBHelper.openDataBase();
-                                mDBHelper.updateDataBase();
-                                SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
-
-                                ContentValues cv = new ContentValues();
-                                preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
-                                cv.put("email", result.getEmail());
-                                cv.put("username", result.getUsername());
-                                cv.put("full_name", result.getFullName());
-                                cv.put("id", result.getId());
-
-                                mDb.update("Profile", cv, "_id=0", null);
 
                                 DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
                                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
