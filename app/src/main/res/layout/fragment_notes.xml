@@ -5,8 +5,7 @@
     tools:context=".notes.Notes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/bottom_view">
+    android:orientation="vertical">
 
 
     <com.google.android.material.textfield.TextInputLayout

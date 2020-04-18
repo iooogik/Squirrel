@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/nav_news"
         android:name="iooojik.app.klass.subjects.Subject"
-        android:label="Главная"
-        tools:layout="@layout/fragment_home" >
+        android:label="AR"
+        tools:layout="@layout/fragment_subjects" >
 
     </fragment>
 
@@ -60,7 +60,7 @@
     <fragment
         android:id="@+id/nav_planets_article"
         android:name="iooojik.app.klass.astronomy.ScrollingArticle"
-        android:label="Планеты. Статья."
+        android:label="Статья"
         tools:layout="@layout/activity_scrolling_article"  />
 
     <fragment
@@ -73,38 +73,38 @@
     <fragment
         android:id="@+id/nav_standart_note"
         android:name="iooojik.app.klass.notes.StandartNote"
-        android:label="Геометрические фигуры"
+        android:label="Заметка"
         tools:layout="@layout/fragment_standart_note" >
     </fragment>
 
     <fragment
         android:id="@+id/nav_checkList"
         android:name="iooojik.app.klass.notes.CheckList"
-        android:label="Геометрические фигуры"
+        android:label="Список"
         tools:layout="@layout/fragment_check" />
 
     <fragment
         android:id="@+id/nav_book"
         android:name="iooojik.app.klass.notes.Book"
-        android:label="Геометрические фигуры"
+        android:label="Справочные материалы"
         tools:layout="@layout/fragment_book" />
     <fragment
         android:id="@+id/nav_signUp"
         android:name="iooojik.app.klass.auth.SignUp"
         tools:layout="@layout/fragment_sign_up"
-        android:label="SignUp" />
+        android:label="Регистрация" />
 
     <fragment
         android:id="@+id/nav_signIn"
         android:name="iooojik.app.klass.auth.SignIn"
-        android:label="fragment_sign_in"
+        android:label="Вход"
         tools:layout="@layout/fragment_sign_in" />
 
     <fragment
         android:id="@+id/nav_profile"
         android:name="iooojik.app.klass.profile.Profile"
         tools:layout="@layout/fragment_profile"
-        android:label="Профиль" >
+        android:label="Главная" >
         <action
             android:id="@+id/action_nav_profile_to_group"
             app:destination="@id/nav_group" />
@@ -146,7 +146,7 @@
         android:id="@+id/nav_group"
         android:name="iooojik.app.klass.group.Group"
         tools:layout="@layout/fragment_group"
-        android:label="Group" >
+        android:label="Группа" >
         <action
             android:id="@+id/action_nav_group_to_testEditor2"
             app:destination="@id/nav_testEditor" />
@@ -155,11 +155,11 @@
         android:id="@+id/nav_testEditor"
         android:name="iooojik.app.klass.tests.TestEditor"
         tools:layout="@layout/fragment_test_editor"
-        android:label="TestEditor" />
+        android:label="Редактор теста" />
     <fragment
         android:id="@+id/nav_games"
         android:name="iooojik.app.klass.games.Games"
-        android:label="fragment_games"
+        android:label="Переменка"
         tools:layout="@layout/fragment_games" >
         <action
             android:id="@+id/action_games2_to_nav_las"
@@ -174,11 +174,11 @@
         android:id="@+id/nav_pairs"
         android:name="iooojik.app.klass.games.pairs.Game"
         tools:layout="@layout/fragment_pairs_game"
-        android:label="Game" />
+        android:label="Pairs" />
     <fragment
         android:id="@+id/groupProfile"
         android:name="iooojik.app.klass.groupProfile.GroupProfile"
-        android:label="fragment_group_profile"
+        android:label="Группа"
         tools:layout="@layout/fragment_group_profile" >
         <action
             android:id="@+id/action_groupProfile_to_nav_profile"
@@ -187,7 +187,7 @@
     <fragment
         android:id="@+id/questions"
         android:name="iooojik.app.klass.tests.Questions"
-        android:label="fragment_questions"
+        android:label="Тест"
         tools:layout="@layout/fragment_questions" >
         <action
             android:id="@+id/action_questions_to_nav_tests"

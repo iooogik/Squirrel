@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,8 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,7 +35,6 @@ import java.util.List;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
-import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
@@ -65,18 +60,14 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private View view;
     private FloatingActionButton fab;
-    private String teacherRole = "учитель", pupilRole = "ученик";
     private String userRole = "";
     private GroupsAdapter groupsAdapter;
     private Context context;
     private Fragment fragment;
     private SharedPreferences preferences;
-    private String email, fullName, role, userName;
     private Api api;
-    private NavController navController;
-    private Database mDbHelper;
-    private Cursor userCursor;
-    private SQLiteDatabase mDb;
+    private String email, fullName;
+
     private ImageView error;
     private View header;
 
@@ -87,8 +78,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         error = view.findViewById(R.id.errorImg);
         error.setVisibility(View.GONE);
-        ImageView avatar = view.findViewById(R.id.avatar);
-        avatar.setOnClickListener(this);
+
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         header = navigationView.getHeaderView(0);
         header.setPadding(0, 110, 0, 80);
@@ -104,24 +94,86 @@ public class Profile extends Fragment implements View.OnClickListener {
         //контекст
         context = getContext();
 
-        //получение пользовательской информации
-        setUserInformation();
-
         //запрос на разрешение использования камеры
         int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, 1);
         }
         //
-        ImageView settings = view.findViewById(R.id.settings);
-        settings.setOnClickListener(this);
+        getUserProfile();
 
-        navController = NavHostFragment.findNavController(this);
 
-        setHeaderInformation();
 
         return view;
     }
+
+    private void getUserProfile() {
+
+        doRetrofit();
+
+        Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                Integer.parseInt(preferences.getString(AppСonstants.USER_ID, "")));
+
+        call.enqueue(new Callback<ServerResponse<ProfileData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
+                if (response.code() == 200){
+                    ProfileData profileData = response.body().getData();
+                    User user = profileData.getUser();
+
+                    email = user.getEmail();
+                    fullName = user.getFullName();
+
+                    preferences.edit().putString(AppСonstants.USER_EMAIL, email).apply();
+                    preferences.edit().putString(AppСonstants.USER_ID, user.getId()).apply();
+                    preferences.edit().putString(AppСonstants.USER_FULL_NAME, fullName).apply();
+
+
+                    ImageView avatar = header.findViewById(R.id.side_avatar);
+                    if (!user.getAvatar().isEmpty()) {
+                        preferences.edit().putString(AppСonstants.USER_AVATAR,
+                                AppСonstants.IMAGE_URL + user.getAvatar()).apply();
+
+                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
+                                .resize(100, 100)
+                                .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
+                    } else {
+                        avatar.setImageResource(R.drawable.dark_baseline_account_circle_24);
+                    }
+
+                    TextView name = header.findViewById(R.id.textView);
+                    TextView email_text = header.findViewById(R.id.textView2);
+
+                    name.setText(preferences.getString(AppСonstants.USER_FULL_NAME, ""));
+                    email_text.setText(preferences.getString(AppСonstants.USER_EMAIL, ""));
+
+                    Group group = user.getGroup().get(user.getGroup().size() - 1);
+                    switch (group.getName().toLowerCase()){
+                        case "teacher":
+                            preferences.edit().putString(AppСonstants.USER_ROLE, "teacher").apply();
+                            getGroupsFromDatabase();
+                            break;
+                        case "pupil":
+                            preferences.edit().putString(AppСonstants.USER_ROLE, "pupil").apply();
+                            getActiveTests();
+                            break;
+                    }
+
+                    userRole = preferences.getString(AppСonstants.USER_ROLE, "").toLowerCase();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<ProfileData>> call, Throwable t) {
+
+            }
+        });
+
+
+    }
+
 
     private void getActiveTests() {
         //получаем к каким группам относится пользователь
@@ -155,105 +207,6 @@ public class Profile extends Fragment implements View.OnClickListener {
                 Log.e("GET PUPIL GROUPS", String.valueOf(t));
             }
         });
-    }
-
-    private void setHeaderInformation(){
-
-        TextView name = header.findViewById(R.id.textView);
-        TextView emailText = header.findViewById(R.id.textView2);
-
-        name.setText(fullName);
-        emailText.setText(email);
-    }
-
-    private void setUserInformation() {
-        //получаем и устанавливаем пользовательскую информацию
-        TextView Email = view.findViewById(R.id.email);
-        TextView name = view.findViewById(R.id.name);
-
-        mDbHelper = new Database(getContext());
-        mDbHelper.openDataBase();
-        mDbHelper.updateDataBase();
-        mDb = mDbHelper.getWritableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Profile WHERE _id=?",
-                new String[]{String.valueOf(0)});
-
-        mDb = mDbHelper.getReadableDatabase();
-        userCursor.moveToFirst();
-
-        fullName = userCursor.getString(userCursor.getColumnIndex("full_name"));
-        email = userCursor.getString(userCursor.getColumnIndex("email"));
-        userName = userCursor.getString(userCursor.getColumnIndex("username"));
-        Email.setText(email);
-        name.setText(fullName);
-        getUserProfile();
-
-        /**
-         * 1. если стоит учительский профиль, то убираем ученический профиль, изменяем поле "роль",
-         * показываем fab и ставим адаптер для RecyclerView(id = classes). GroupsAdapter(контекст, список с группами, текущий фрагмент)
-         * 2. если ученический профиль, то убираем учительский, ставим соответсвующую роль, убираем fab
-         * и ставим адаптер на RecyclerView(id = teachers) и получаем список активных тестов
-         */
-
-    }
-
-    private void getUserProfile(){
-        doRetrofit();
-
-        Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), getUserID());
-
-        call.enqueue(new Callback<ServerResponse<ProfileData>>() {
-            @Override
-            public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
-                if (response.code() == 200){
-                    ProfileData profileData = response.body().getData();
-                    User user = profileData.getUser();
-                    Group group = user.getGroup().get(user.getGroup().size() - 1);
-                    switch (group.getName().toLowerCase()){
-                        case "teacher":
-                            userRole = teacherRole;
-                            getGroupsFromDatabase();
-                            break;
-                        case "pupil":
-                            userRole = pupilRole;
-                            getActiveTests();
-                            break;
-                    }
-
-                    ImageView profileImg = header.findViewById(R.id.side_avatar);
-                    ImageView avatar = view.findViewById(R.id.avatar);
-                    if (!user.getAvatar().isEmpty()) {
-
-                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
-                                .resize(100, 100)
-                                .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
-
-
-
-                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
-                                .resize(100, 100)
-                                .transform(new RoundedCornersTransformation(30, 5)).into(profileImg);
-
-
-                    } else {
-                        profileImg.setImageResource(R.drawable.baseline_account_circle_24);
-                        avatar.setImageResource(R.drawable.baseline_account_circle_24);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ServerResponse<ProfileData>> call, Throwable t) {
-
-            }
-        });
-    }
-
-    private int getUserID(){
-        int userId = -1;
-        userId = Integer.parseInt(preferences.getString(AppСonstants.USER_ID, ""));
-        return userId;
     }
 
     private void doRetrofit(){
@@ -298,6 +251,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        String teacherRole = "teacher";
         switch (v.getId()){
             case R.id.fab:
                 //добавление класса в учительский профиль
@@ -352,9 +306,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                     builder.create().show();
                 }
                 break;
-            case R.id.settings:
-                navController.navigate(R.id.nav_settings);
-                break;
+
             case R.id.avatar:
                 Intent photoPicker = new Intent(Intent.ACTION_PICK);
                 photoPicker.setType("image/*");

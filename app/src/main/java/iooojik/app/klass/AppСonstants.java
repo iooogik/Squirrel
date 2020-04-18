@@ -20,7 +20,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static final int DB_VERSION = 54;
+    static int DB_VERSION = 57;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -50,6 +50,9 @@ public class AppСonstants {
     public static String USER_PASSWORD = "USER_PASSWORD";
     public static String USER_LOGIN = "USER_LOGIN";
     public static String USER_EMAIL = "USER_EMAIL";
+    public static String USER_AVATAR = "USER_AVATAR";
+    public static String USER_ROLE = "USER_ROLE";
+    public static String USER_FULL_NAME = "USER_FULL_NAME";
 
     static final String adminEmail = "test@test.com";
     static final String adminPassword = "123456";

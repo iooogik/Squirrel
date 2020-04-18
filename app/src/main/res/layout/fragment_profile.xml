@@ -8,74 +8,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="52dp">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:background="@color/colorAccent"
-        android:layout_height="130dp">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorAccent"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-
-            <ImageView
-                android:id="@+id/settings"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="end"
-                android:layout_margin="7dp"
-                android:background="@drawable/round_settings_24"
-                android:contentDescription="@string/todo" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint"
-                android:layout_marginBottom="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/avatar"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:srcCompat="@drawable/baseline_account_circle_24" />
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/email"
-                    app:layout_constraintStart_toEndOf="@+id/avatar"
-                    tools:text="@tools:sample/full_names" />
-
-                <TextView
-                    android:id="@+id/email"
-                    android:layout_width="285dp"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="8dp"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintBottom_toBottomOf="@+id/avatar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.050"
-                    app:layout_constraintStart_toEndOf="@+id/avatar"
-                    tools:text="@tools:sample/lorem[4:10]" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested"

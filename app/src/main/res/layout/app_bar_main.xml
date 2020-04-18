@@ -8,27 +8,35 @@
     <include layout="@layout/content_main" />
 
 
-    <com.google.android.material.bottomappbar.BottomAppBar
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorControlNormal"
+        >
+
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/bar"
-        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
-        android:backgroundTint="@color/colorAccent"
+        style="@style/Widget.MaterialComponents.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:navigationIcon="@drawable/baseline_menu_24"
-        app:fabAlignmentMode="end"
-        app:hideOnScroll="true"
+        app:menu="@menu/profile_menu_items"
+        app:titleTextColor="?attr/colorAccent"
+        app:navigationIcon="@drawable/round_menu_24"
         />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="?attr/colorAccent"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
         android:visibility="gone"
-        app:tint="@color/colorWhite"
+        app:tint="?attr/colorControlNormal"
         app:borderWidth="0dp"
-        app:layout_anchor="@id/bar"
         />
 
     <FrameLayout

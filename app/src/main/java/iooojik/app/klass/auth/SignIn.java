@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -127,8 +127,8 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 navController.navigate(R.id.nav_profile);
                                 Log.i("Sign In", String.valueOf(dataAuth.getToken()));
 
-                                BottomAppBar bottomAppBar = getActivity().findViewById(R.id.bar);
-                                bottomAppBar.setVisibility(View.VISIBLE);
+                                MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+                                materialToolbar.setVisibility(View.VISIBLE);
 
                             }
                             else {

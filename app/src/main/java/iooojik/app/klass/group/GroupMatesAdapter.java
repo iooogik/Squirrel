@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,8 +55,9 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                 if (testResult.getUserEmail().equals(mate.getEmail())){
                     //ставим результат и показываем его
                     holder.progress.setVisibility(View.VISIBLE);
-                    holder.progressBar.setProgress(Integer.parseInt(testResult.getResult()));
-                    holder.text_result.setText(String.format("%s/100", testResult.getResult()));
+                    holder.text_result.setText("Тест был пройден на " + testResult.getResult() + "/100");
+                    holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.Completed));
+
                     testsResults.remove(testResult);
                     wasFound = true;
                     break;
@@ -65,10 +65,9 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
             }
 
 
+
             if (!wasFound){
                 holder.progress.setVisibility(View.VISIBLE);
-                holder.progressBar.setVisibility(View.GONE);
-                holder.text_tint.setVisibility(View.GONE);
                 holder.text_result.setVisibility(View.VISIBLE);
                 holder.text_result.setText("Тест ещё не был пройден");
                 holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
@@ -95,8 +94,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
         TextView email;
         ImageView img;
         LinearLayout progress;
-        ProgressBar progressBar;
-        TextView text_result, text_tint;
+        TextView text_result;
 
 
         ViewHolder(@NonNull View itemView) {
@@ -105,9 +103,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
             name = itemView.findViewById(R.id.textView);
             email = itemView.findViewById(R.id.textView2);
             progress = itemView.findViewById(R.id.linearLayout_result);
-            progressBar = itemView.findViewById(R.id.progress);
-            text_result = itemView.findViewById(R.id.text_result);
-            text_tint = itemView.findViewById(R.id.text_tint);
+            text_result = itemView.findViewById(R.id.text_tint);
         }
     }
 }

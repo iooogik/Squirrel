@@ -36,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 import iooojik.app.klass.Database;
 import iooojik.app.klass.NotificationReceiver;
@@ -212,7 +211,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     private void share(){
         // Делимся заметкой
-        TextView name = Objects.requireNonNull(getView()).findViewById(R.id.editName);
+        TextView name = requireView().findViewById(R.id.editName);
         TextView note = getView().findViewById(R.id.editNote);
         TextView shortNote = getView().findViewById(R.id.shortNote);
 
@@ -295,7 +294,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     @Override
     public void onClick(final View view) {
 
-        final EditText name = Objects.requireNonNull(getActivity()).findViewById(R.id.editName);
+        final EditText name = requireActivity().findViewById(R.id.editName);
         final EditText note = getActivity().findViewById(R.id.editNote);
         EditText shortNote = getActivity().findViewById(R.id.shortNote);
 
@@ -314,8 +313,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                 InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
                         getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (inputMethodManager != null) {
-                    inputMethodManager.hideSoftInputFromWindow(Objects.
-                            requireNonNull(getActivity().getCurrentFocus()).
+                    inputMethodManager.hideSoftInputFromWindow(requireActivity().getCurrentFocus().
                             getWindowToken(), 0);
                 }
             } catch (Exception e){

@@ -1,28 +1,28 @@
 package iooojik.app.klass;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
@@ -129,12 +129,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void isUserAuth(){
-        BottomAppBar bottomAppBar = findViewById(R.id.bar);
+        MaterialToolbar materialToolbar = findViewById(R.id.bar);
         //получаем токен пользователя
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         if(token.isEmpty() || preferences.getString(AppСonstants.USER_EMAIL, "").isEmpty()){
             navController.navigate(R.id.nav_signIn);
-            bottomAppBar.setVisibility(View.GONE);
+            materialToolbar.setVisibility(View.GONE);
             //убираем шторку
             DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -149,8 +149,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void createToolbar(){
         //нижний тул-бар
-        BottomAppBar bottomAppBar = findViewById(R.id.bar);
-        setSupportActionBar(bottomAppBar);
+        MaterialToolbar materialToolbar = findViewById(R.id.bar);
+
+        materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.action_settings){
+                    navController.navigate(R.id.nav_settings);
+                }
+                return false;
+            }
+        });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -159,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 .setDrawerLayout(drawer).build();
         // получение nav-контроллера
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(materialToolbar, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
@@ -226,35 +235,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
                 if (response.code() == 200) {
+
                     //получаем данные с сервера
                     ServerResponse<Data> dataAuth = response.body();
                     Data result = dataAuth.getData();
+                    preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
 
                     //сохраняем пользовательский токен
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
-                    preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
+
                     preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
                     preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
-                    //сохраняем данные в бд
-                    Database mDBHelper = new Database(getApplicationContext());
-                    SQLiteDatabase mDb;
-                    mDBHelper = new Database(getApplicationContext());
-                    mDBHelper.openDataBase();
-                    mDBHelper.updateDataBase();
-
-                    mDb = mDBHelper.getWritableDatabase();
-
-                    ContentValues cv = new ContentValues();
-                    cv.put("email", result.getEmail());
-                    cv.put("username", result.getUsername());
-                    cv.put("full_name", result.getFullName());
-                    cv.put("id", result.getId());
-
-                    mDb.update("Profile", cv, "_id=0", null);
 
                 }
                 else {
-                    Log.e("Sign In", String.valueOf(response.raw()) + uEmail + " " + uPassword);
+                    Log.e("Sign In", String.valueOf(response.raw()));
                 }
             }
 
@@ -265,5 +260,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
 
 }

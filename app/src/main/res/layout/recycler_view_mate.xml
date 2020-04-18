@@ -46,7 +46,7 @@
       android:layout_marginStart="8dp"
       android:layout_marginTop="12dp"
       android:orientation="horizontal"
-      android:visibility="gone"
+      android:visibility="visible"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toEndOf="@+id/imageView2"
       app:layout_constraintHorizontal_bias="0.050"
@@ -56,23 +56,8 @@
         android:id="@+id/text_tint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Результат теста: " />
+        android:text="" />
 
-    <ProgressBar
-        android:id="@+id/progress"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:max="100" />
-
-    <TextView
-        android:id="@+id/text_result"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView" />
   </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
