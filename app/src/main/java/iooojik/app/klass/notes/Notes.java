@@ -20,15 +20,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,7 +35,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,101 +66,63 @@ public class Notes extends Fragment {
 
     private Api api;
     private SharedPreferences preferences;
-    private BottomSheetBehavior behavior;
+
+    private FloatingActionButton fab;
 
     static List<Note> ITEMS = new ArrayList<>();
 
-    public Notes(){}
+    public Notes() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_notes, container ,false);
+        view = inflater.inflate(R.layout.fragment_notes, container, false);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = view.getContext();
+        fab = getActivity().findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.baseline_add_24);
+
         startProcedures();
-        initBottomSheet();
-        /*
-        fabSpeedDial.setMenuListener(new FabSpeedDial.MenuListener() {
-            @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.action_upload_notes:
-                        uploadNotes();
-                        break;
-                    case R.id.action_download_notes:
-                        downloadNotes();
-                        break;
-                    case R.id.action_add_note:
-
-                        break;
-                }
-                return true;
-            }
-
-            @Override
-            public void onMenuClosed() {
-
-            }
-        });
-
-         */
-
+        enableBottomSheet();
         enableSearch();
-
         return view;
     }
 
-    private void initBottomSheet(){
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.show();
-        FrameLayout bottomSheet = getActivity().findViewById(R.id.bottomSheet);
-        behavior = BottomSheetBehavior.from(bottomSheet);
+    private void enableBottomSheet() {
 
-        fab.setOnClickListener(v -> {
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            fab.hide();
-        });
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
+        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_notes, null);
 
-        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED){
-                    fab.hide();
-                }else if (newState == BottomSheetBehavior.STATE_HIDDEN){
-                    fab.show();
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
+        bottomSheetDialog.setContentView(bottomSheet);
 
         Button add = bottomSheet.findViewById(R.id.add);
         add.setOnClickListener(v -> {
             addNote();
-            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            bottomSheetDialog.hide();
         });
 
         Button sync = bottomSheet.findViewById(R.id.sync);
         sync.setOnClickListener(v -> {
             uploadNotes();
-            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            bottomSheetDialog.hide();
         });
 
 
         Button download = bottomSheet.findViewById(R.id.download);
         download.setOnClickListener(v -> {
             downloadNotes();
-            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            bottomSheetDialog.hide();
         });
+
+        bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
+
+
+        fab.setOnClickListener(v -> {
+            bottomSheetDialog.show();
+            fab.hide();
+        });
+
 
     }
 
@@ -187,7 +146,7 @@ public class Notes extends Fragment {
         });
     }
 
-    private void startProcedures(){
+    private void startProcedures() {
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
@@ -195,7 +154,7 @@ public class Notes extends Fragment {
         //необходимо очистить содержимое, чтобы при старте активити не было повторяющихся элементов
         try {
             ITEMS.clear();
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.i("Notes", String.valueOf(e));
         }
         updProjects();
@@ -203,7 +162,7 @@ public class Notes extends Fragment {
     }
 
     //обновление проектов на активити
-    private void updProjects(){
+    private void updProjects() {
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
@@ -221,11 +180,11 @@ public class Notes extends Fragment {
 
             byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
 
-            if(bytesImg != null){
+            if (bytesImg != null) {
                 bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
             }
 
-            if(name != null || type != null)
+            if (name != null || type != null)
                 ITEMS.add(new Note(name, desc, bitmap, type,
                         userCursor.getInt(userCursor.getColumnIndex("_id")), -1));
 
@@ -242,7 +201,7 @@ public class Notes extends Fragment {
         recyclerView.setAdapter(NOTES_ADAPTER);
     }
 
-    private void addNote(){
+    private void addNote() {
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
 
@@ -275,12 +234,16 @@ public class Notes extends Fragment {
 
         final String DB_TYPE_STNDRT = "standart";
         final String DB_TYPE_SHOP = "shop";
-        Note note = ITEMS.get(ITEMS.size() - 1);
-        int id = note.getId() + 1;
+        int id = 0;
+        if (ITEMS.size() != 0) {
+            Note note = ITEMS.get(ITEMS.size() - 1);
+            id = note.getId() + 1;
+        }
 
+        int finalId = id;
         builder.setPositiveButton("Добавить",
                 (dialog, which) -> {
-                    if(!nameNote.getText().toString().isEmpty() &&
+                    if (!nameNote.getText().toString().isEmpty() &&
                             !spinner.getText().toString().isEmpty()) {
                         String name = nameNote.getText().toString();
                         String shortNote = "короткое описание";
@@ -296,7 +259,7 @@ public class Notes extends Fragment {
 
                         //добавление в бд и обновление адаптера
                         ContentValues cv = new ContentValues();
-                        cv.put("_id", id);
+                        cv.put("_id", finalId);
                         cv.put("name", name);
                         cv.put("shortName", shortNote);
                         cv.put("text", text);
@@ -312,7 +275,7 @@ public class Notes extends Fragment {
                         //запись
                         mDb.insert("Notes", null, cv);
 
-                        ITEMS.add(new Note(name, shortNote, null, type, id, -1));
+                        ITEMS.add(new Note(name, shortNote, null, type, finalId, -1));
                         NOTES_ADAPTER.notifyDataSetChanged();
                     } else {
                         Snackbar.make(view, "Что-то пошло не так. Проверьте, пожалуйста, название и выбранный тип.",
@@ -322,7 +285,7 @@ public class Notes extends Fragment {
         builder.create().show();
     }
 
-    private void doRetrofit(){
+    private void doRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -330,18 +293,18 @@ public class Notes extends Fragment {
         api = retrofit.create(Api.class);
     }
 
-    private void uploadNotes(){
+    private void uploadNotes() {
         //получаем id каждой заметки из списка ITEMS и узнаём, можно ли добавлять картинку в базу
         List<Note> uploadNotes = new ArrayList<>();
         mDb = mDBHelper.getReadableDatabase();
 
-        for (Note note: ITEMS){
+        for (Note note : ITEMS) {
             int id = note.getId();
 
-            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(id)});
+            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(id)});
             userCursor.moveToFirst();
 
-            if (userCursor.getInt(userCursor.getColumnIndex("permToSync")) == 1){
+            if (userCursor.getInt(userCursor.getColumnIndex("permToSync")) == 1) {
                 uploadNotes.add(note);
             }
         }
@@ -351,25 +314,27 @@ public class Notes extends Fragment {
         //удаляем все пользовательские заметки
         if (uploadNotes.size() > 0) clearNotes();
 
-        for (Note note : uploadNotes){
+        for (Note note : uploadNotes) {
             //заносим каждую заметку в базу
             HashMap<String, String> map = new HashMap<>();
-            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(note.getId())});
+            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(note.getId())});
 
             userCursor.moveToFirst();
             String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex("name")));
             //собираем данные
+
             String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex("shortName")));
             String text = String.valueOf(userCursor.getString(userCursor.getColumnIndex("text")));
             String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex("date")));
             String type = String.valueOf(userCursor.getString(userCursor.getColumnIndex("type")));
             String isNotifSet = String.valueOf(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")));
             String permToSync = String.valueOf(userCursor.getInt(userCursor.getColumnIndex("permToSync")));
-            String isChecked =  String.valueOf(userCursor.getString(userCursor.getColumnIndex("isChecked")));
+            String isChecked = String.valueOf(userCursor.getString(userCursor.getColumnIndex("isChecked")));
             String points = String.valueOf(userCursor.getString(userCursor.getColumnIndex("points")));
             String isCompleted = String.valueOf(userCursor.getString(userCursor.getColumnIndex("isCompleted")));
             String decodeQR = String.valueOf(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
-            String image = Arrays.toString(userCursor.getBlob(userCursor.getColumnIndex("image")));
+            String image = "null";
+
             //добавляем данные в map
             map.put("user_id", String.valueOf(getUserID()));
             map.put("name", name);
@@ -392,7 +357,8 @@ public class Notes extends Fragment {
             call.enqueue(new Callback<ServerResponse<PostResult>>() {
                 @Override
                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                    if (response.code() != 200) Log.e("UPLOAD NOTES", String.valueOf(response.raw()));
+                    if (response.code() != 200)
+                        Log.e("UPLOAD NOTES", String.valueOf(response.raw()));
                 }
 
                 @Override
@@ -406,13 +372,13 @@ public class Notes extends Fragment {
 
     }
 
-    private void clearNotes(){
+    private void clearNotes() {
         doRetrofit();
         Call<ServerResponse<Data>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
         call.enqueue(new Callback<ServerResponse<Data>>() {
             @Override
             public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     List<iooojik.app.klass.models.notesData.Note> notes =
                             response.body().getData().getNotes();
                     removeNotes(notes);
@@ -427,12 +393,13 @@ public class Notes extends Fragment {
     }
 
     private void removeNotes(List<iooojik.app.klass.models.notesData.Note> notes) {
-        for (iooojik.app.klass.models.notesData.Note note : notes){
+        for (iooojik.app.klass.models.notesData.Note note : notes) {
             Call<ServerResponse<PostResult>> call = api.removeNotes(AppСonstants.X_API_KEY, String.valueOf(note.getId()));
             call.enqueue(new Callback<ServerResponse<PostResult>>() {
                 @Override
                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                    if (response.code() != 200) Log.e("REMOVE NOTE", response.raw() + " " + note.getId());
+                    if (response.code() != 200)
+                        Log.e("REMOVE NOTE", response.raw() + " " + note.getId());
                 }
 
                 @Override
@@ -443,7 +410,7 @@ public class Notes extends Fragment {
         }
     }
 
-    private int getUserID(){
+    private int getUserID() {
         int userId = -1;
         /*
         mDBHelper = new Database(context);
@@ -460,22 +427,32 @@ public class Notes extends Fragment {
         return userId;
     }
 
-    private void downloadNotes(){
+    private void downloadNotes() {
         doRetrofit();
         Call<ServerResponse<Data>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
         call.enqueue(new Callback<ServerResponse<Data>>() {
             @Override
             public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     List<iooojik.app.klass.models.notesData.Note> notes =
                             response.body().getData().getNotes();
-                    for (iooojik.app.klass.models.notesData.Note note : notes){
+                    for (iooojik.app.klass.models.notesData.Note note : notes) {
                         boolean result = false;
-                        for (Note note2 : ITEMS){
-                            if (note2.getName().equals(note.getName())) {result = false; break;}
-                            else result = true;
+                        for (Note note2 : ITEMS) {
+                            if (note2.getName().equals(note.getName())) {
+                                result = false;
+                                break;
+                            } else result = true;
+                        }
+                        int id;
+                        if (ITEMS.size() == 0) {
+                            result = true;
+                            id = 1;
+                        } else {
+                            id = ITEMS.get(0).getId() + 1;
                         }
                         if (result) {
+
                             String name = note.getName();
                             //собираем данные
                             String shortName = note.getShortName();
@@ -508,10 +485,11 @@ public class Notes extends Fragment {
                             //запись
                             mDb.insert("Notes", null, cv);
 
-                            ITEMS.add(new Note(name, shortName, null, type,
-                                    ITEMS.get(0).getId() + 1, Integer.parseInt(note.getId())));
-                            NOTES_ADAPTER.notifyDataSetChanged();
+                            ITEMS.add(new Note(name, shortName, null, type, id, Integer.parseInt(note.getId())));
+
                         }
+                        Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_LONG).show();
+                        NOTES_ADAPTER.notifyDataSetChanged();
                     }
                 } else Log.e("GET NOTES", String.valueOf(response.raw()));
             }
@@ -521,12 +499,13 @@ public class Notes extends Fragment {
 
             }
         });
-        Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_LONG).show();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        fab.show();
         // Скрываем клавиатуру при открытии Navigation Drawer
         try {
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
@@ -535,19 +514,13 @@ public class Notes extends Fragment {
                 inputMethodManager.hideSoftInputFromWindow(requireActivity().getCurrentFocus().
                         getWindowToken(), 0);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.i("Notes", String.valueOf(e));
         }
 
-        synchronized (NOTES_ADAPTER){
+        synchronized (NOTES_ADAPTER) {
             NOTES_ADAPTER.notify();
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }
 

@@ -19,9 +19,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
+
+import static iooojik.app.klass.AppСonstants.TABLE_ID;
+import static iooojik.app.klass.AppСonstants.TABLE_TESTS;
 
 public class Tests extends Fragment implements View.OnClickListener{
 
@@ -57,7 +61,7 @@ public class Tests extends Fragment implements View.OnClickListener{
 
     private void loadAndSetThemes(){
         SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from Tests", null);
+        userCursor = mDb.rawQuery("Select * from " + TABLE_TESTS, null);
         userCursor.moveToFirst();
         String name, desc;
 
@@ -65,7 +69,7 @@ public class Tests extends Fragment implements View.OnClickListener{
         try {
             TEST_ITEMS.clear();
         } catch (Exception e){
-            Log.i("Notes", String.valueOf(e));
+            Log.i(TABLE_TESTS, String.valueOf(e));
         }
 
         while (!userCursor.isAfterLast()) {
@@ -74,22 +78,19 @@ public class Tests extends Fragment implements View.OnClickListener{
             //получение описания
             desc = String.valueOf(userCursor.getString(2));
             //получение количества правильных и неправильных ответов
-            float rightScore = 0, wrongScore = 0;
+            int userScore = 0, totalScore = 0;
 
-            rightScore = Float.parseFloat(userCursor.
-                    getString(userCursor.getColumnIndex("trueAnswers")));
-            wrongScore = Float.parseFloat(userCursor.
-                    getString(userCursor.getColumnIndex("wrongAnswers")));
+            userScore = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_USER_SCORE));
+            totalScore = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_TOTAL_SCORE));
 
-            int isPassedDB = userCursor.
-                    getInt(userCursor.getColumnIndex("isPassed"));
+            int isPassedDB = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_IS_PASSED));
             boolean isPassed = false;
             isPassed = isPassedDB == 1;
-            int id = userCursor.getInt(userCursor.getColumnIndex("_id"));
-            //добавляем тест в recyclerView
-            TEST_ITEMS.add(new TestTheme(name, desc, rightScore, wrongScore, isPassed, id));
-            userCursor.moveToNext();
 
+            int id = userCursor.getInt(userCursor.getColumnIndex(TABLE_ID));
+            //добавляем тест в recyclerView
+            TEST_ITEMS.add(new TestTheme(name, desc, userScore, totalScore, isPassed, id));
+            userCursor.moveToNext();
         }
         userCursor.close();
         RecyclerView recyclerView = VIEW.findViewById(R.id.test_items);

@@ -3,16 +3,18 @@ package iooojik.app.klass.tests;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -35,6 +37,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static iooojik.app.klass.AppСonstants.testDivider;
+
 
 public class TestEditor extends Fragment implements View.OnClickListener {
 
@@ -48,11 +52,73 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private String groupName, groupAuthor, groupAuthorName;
     private String firstSel = "Первый ответ", secondSel = "Второй ответ",
     thirdSel = "Третий ответ", fourthSel = "Четвёртый ответ";
+    private int time = 0, scorePerAnsw = 10;
+    private EditText minutes, score;
+    private CheckBox checkBox;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_test_editor, container, false);
+        context = getContext();
+        minutes = view.findViewById(R.id.edit_text_minutes);
+        checkBox = view.findViewById(R.id.check);
+        score = view.findViewById(R.id.edit_text_score);
+
+        score.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (score.getText().toString().trim().isEmpty()) scorePerAnsw = 10;
+                else scorePerAnsw = Integer.parseInt(score.getText().toString());
+            }
+        });
+
+
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                time = 0;
+                minutes.setText("");
+                minutes.setEnabled(false);
+            }else {
+                minutes.setEnabled(true);
+            }
+        });
+
+        minutes.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count > 0) checkBox.setEnabled(false); else checkBox.setEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!(minutes.getText().toString().trim().isEmpty())){
+                    try {
+                        time = Integer.parseInt(minutes.getText().toString().trim());
+                    } catch (Exception e){
+                        Snackbar.make(getView(), "Пожалуйста, введите корректную дату", Snackbar.LENGTH_LONG).show();
+                    }
+                } else {time = 0;}
+            }
+        });
+
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.show();
         fab.setOnClickListener(this);
@@ -60,8 +126,6 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         Button button = view.findViewById(R.id.collectTest);
         button.setOnClickListener(this);
         getGroupInfo();
-
-        context = getContext();
         return view;
     }
 
@@ -89,22 +153,24 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                         android.R.layout.simple_spinner_dropdown_item, trueAnsw);
                 spinner.setAdapter(adapter);
 
-                layout.setOnLongClickListener(v1 -> {
+                q.setOnLongClickListener(v1 -> {
                     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                    LinearLayout layout1 = new LinearLayout(context);
-                    TextView textView = new TextView(context);
-                    textView.setText("Вы действительно хотите удалить вопрос?");
-                    layout1.addView(textView);
-                    builder.setView(layout1);
+
+                    builder.setMessage("Удалить вопрос?");
+
                     builder.setPositiveButton("Да", (dialog, which) -> layout.removeView(q));
                     builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+                    builder.create().show();
                     return true;
                 });
                 questions.add(q);
                 layout.addView(q);
                 break;
             case R.id.collectTest:
-                CollectQuestionsAndSendThem();
+
+                if ((!(minutes.getText().toString().isEmpty()) || checkBox.isChecked()) && id != -1)
+                    uploadTest();
+                else Snackbar.make(getView(), "Не все поля заполнены", Snackbar.LENGTH_LONG).show();
                 break;
 
         }
@@ -118,7 +184,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         api = retrofit.create(Api.class);
     }
 
-    private void CollectQuestionsAndSendThem(){
+    private void uploadTest(){
         List<String> textQuestions = new ArrayList<>();
         List<String> trueAnswers = new ArrayList<>();
         List<String> textAnswers = new ArrayList<>();
@@ -157,17 +223,17 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         //объединяем вопросы
         StringBuilder builderQuestions = new StringBuilder();
         builderQuestions.append("'");
-        for (String question: textQuestions) builderQuestions.append(question).append("<br>");
+        for (String question: textQuestions) builderQuestions.append(question).append(testDivider);
         builderQuestions.append("'");
         //объединяем правильные оветы
         StringBuilder builderTrueAnswers = new StringBuilder();
         builderTrueAnswers.append("'");
-        for (String answ : trueAnswers) builderTrueAnswers.append(answ).append("<br>");
+        for (String answ : trueAnswers) builderTrueAnswers.append(answ).append(testDivider);
         builderTrueAnswers.append("'");
         //объединяем все ответы
         StringBuilder builderTextAnswers = new StringBuilder();
         builderTextAnswers.append("'");
-        for (String answ : textAnswers) builderTextAnswers.append(answ).append("<br>");
+        for (String answ : textAnswers) builderTextAnswers.append(answ).append(testDivider);
         builderTextAnswers.append("'");
 
         EditText name = view.findViewById(R.id.name);
@@ -181,11 +247,11 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         updateMap.put("author_email", groupAuthor);
         updateMap.put("author_name", groupAuthorName);
         updateMap.put("name", groupName);
-        updateMap.put("test", createSQLandSendToDatabase("'"+ name.getText().toString() + "'",
+        updateMap.put("test", createSQL("'"+ name.getText().toString() + "'",
                 "'"+ description.getText().toString() + "'",
                 builderQuestions.toString(),
                 builderTrueAnswers.toString(),
-                builderTextAnswers.toString()));
+                builderTextAnswers.toString(), textQuestions.size()));
 
         Call<ServerResponse<PostResult>> responseCall = api.updateTest(AppСonstants.X_API_KEY,
                 getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES,
@@ -211,13 +277,37 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         });
     }
 
-    private String createSQLandSendToDatabase(String name, String description, String textQuestions,
-                                              String trueAnswers, String textAnswers){
+    private String createSQL(String name, String description, String textQuestions,
+                                              String trueAnswers, String textAnswers, int size){
         String SQL = "";
+        SQL = "INSERT INTO Tests (" +
+                AppСonstants.TABLE_TESTS_NAME + ", " +
+                AppСonstants.TABLE_TESTS_DESCRIPTION + ", " +
+                AppСonstants.TABLE_TESTS_IS_PASSED + ", " +
+                AppСonstants.TABLE_TESTS_QUESTIONS + ", " +
+                AppСonstants.TABLE_TESTS_ANSWERS + ", " +
+                AppСonstants.TABLE_TESTS_TEXT_ANSWERS + ", " +
+                AppСonstants.TABLE_TESTS_TOTAL_SCORE + ", " +
+                AppСonstants.TABLE_TESTS_USER_SCORE + ", " +
+                AppСonstants.TABLE_TESTS_SCORE_QUEST + ", " +
+                AppСonstants.TABLE_TESTS_TIME + ", " +
+                AppСonstants.TABLE_TESTS_GROUP_ID +
+                ") "
 
-        SQL = "INSERT INTO Tests (name, description, isPassed, questions, answers, textAnswers, trueAnswers, wrongAnswers)" +
-                "VALUES (" + name + "," + description + "," + 0 + "," + textQuestions + "," + trueAnswers + "," + textAnswers + ","
-                + 0 + "," + 0 + ")";
+                +
+
+                "VALUES (" +
+                name + "," +
+                description + "," +
+                0 + "," +
+                textQuestions + "," +
+                trueAnswers + "," +
+                textAnswers + "," +
+                (scorePerAnsw * size) + "," +
+                0 + "," +
+                scorePerAnsw + "," +
+                time + "," +
+                id +")";
 
         return SQL;
     }

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,9 +84,18 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             holder.name.setText(note.getName());
             holder.desc.setText(note.getDescription());
 
-            Bitmap bitmap = note.getImage();
+            mDb = mDBHelper.getReadableDatabase();
 
-            if (bitmap != null) {
+            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
+                    new String[]{String.valueOf(note.getId())});
+            userCursor.moveToFirst();
+            if(!userCursor.isNull(userCursor.getColumnIndex("decodeQR"))){
+                Bitmap bitmap = null;
+                try {
+                    bitmap = encodeAsBitmap(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
+                } catch (WriterException e) {
+                    e.printStackTrace();
+                }
                 ImageView img = holder.imageView;
                 img.setMinimumHeight(150);
                 img.setMinimumWidth(150);
@@ -126,15 +140,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
                     return false;
                 });
-
             }
 
             if (note.getType().equals("shop")){
-                mDb = mDBHelper.getReadableDatabase();
 
-                userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
-                        new String[]{String.valueOf(note.getId())});
-                userCursor.moveToFirst();
 
                 if(userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1){
                     holder.completed.setVisibility(View.VISIBLE);
@@ -188,9 +197,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                             mDb = mDBHelper.getWritableDatabase();
 
                             mDb.delete("Notes", "_id=" + (note.getId()), null);
-
+                            int pos = Notes.ITEMS.indexOf(note);
                             Notes.ITEMS.remove(note);
-                            notifyItemRemoved(position);
+                            notifyItemRemoved(pos);
 
 
                         })
@@ -267,6 +276,29 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             notifyDataSetChanged();
         }
 
+    }
+
+    Bitmap encodeAsBitmap(String str) throws WriterException {
+        BitMatrix result;
+        try {
+            result = new MultiFormatWriter().encode(str,
+                    BarcodeFormat.QR_CODE, 200, 200, null);
+        } catch (IllegalArgumentException iae) {
+            // Unsupported format
+            return null;
+        }
+        int w = result.getWidth();
+        int h = result.getHeight();
+        int[] pixels = new int[w * h];
+        for (int y = 0; y < h; y++) {
+            int offset = y * w;
+            for (int x = 0; x < w; x++) {
+                pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, 200, 0, 0, w, h);
+        return bitmap;
     }
 
 }

@@ -2,41 +2,40 @@ package iooojik.app.klass.profile;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
-import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
@@ -47,8 +46,6 @@ import iooojik.app.klass.models.teacher.AddGroupResult;
 import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.teacher.GroupInfo;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -101,9 +98,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         }
         //
         getUserProfile();
-
-
-
+        setTopMenu();
         return view;
     }
 
@@ -174,7 +169,6 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     }
 
-
     private void getActiveTests() {
         //получаем к каким группам относится пользователь
         doRetrofit();
@@ -219,7 +213,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private void getGroupsFromDatabase(){
         fab.show();
-        fab.setImageResource(R.drawable.round_add_24);
+        fab.setImageResource(R.drawable.baseline_add_24);
         doRetrofit();
         Call<ServerResponse<DataGroup>> response = api.getGroups(AppСonstants.X_API_KEY, "author_email", email);
 
@@ -245,6 +239,21 @@ public class Profile extends Fragment implements View.OnClickListener {
             @Override
             public void onFailure(Call<ServerResponse<DataGroup>> call, Throwable t) {
                 Log.e("GETTING GROUPS",t.toString());
+            }
+        });
+    }
+
+    private void setTopMenu(){
+        MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+        materialToolbar.inflateMenu(R.menu.profile_menu_items);
+        materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.action_settings){
+                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                    navController.navigate(R.id.nav_settings);
+                }
+                return false;
             }
         });
     }
@@ -306,78 +315,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                     builder.create().show();
                 }
                 break;
-
-            case R.id.avatar:
-                Intent photoPicker = new Intent(Intent.ACTION_PICK);
-                photoPicker.setType("image/*");
-                startActivityForResult(photoPicker, 1);
-                break;
         }
     }
 
-    private void changeAvatar(File file){
-        doRetrofit();
-
-        RequestBody requestBody;
-        HashMap<String, RequestBody> map = new HashMap<>();
-        requestBody = RequestBody.create(MediaType.parse("text/plain"), email);
-
-        map.put("email", requestBody);
-        requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                preferences.getString(AppСonstants.USER_PASSWORD, ""));
-
-        map.put("password", requestBody);
-
-        RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-        /*
-        MultipartBody.Part part = MultipartBody.Part.createFormData(
-                preferences.getString(AppСonstants.USER_LOGIN, "avatar"),
-                file.getName(), fileReqBody);
-
-         */
-
-        map.put("Avatar", fileReqBody);
-
-        Call<PostResult> call = api.userUpdateAvatar(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
-
-        call.enqueue(new Callback<PostResult>() {
-            @Override
-            public void onResponse(Call<PostResult> call, Response<PostResult> response) {
-                if (response.code() == 200){
-                    Snackbar.make(getView(), "Аватар успешно изменён", Snackbar.LENGTH_LONG).show();
-                }
-                else Log.e("CHANGE AVATAR", String.valueOf(response.raw()));
-            }
-
-            @Override
-            public void onFailure(Call<PostResult> call, Throwable t) {
-                Log.e("CHANGE AVATAR", String.valueOf(t));
-            }
-        });
-
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case 1:
-                ImageView avatar = view.findViewById(R.id.avatar);
-                Uri img = data.getData();
-                File file = new File(img.getPath());
-                changeAvatar(file);
-
-                    /*
-                    Picasso.get().load(file)
-                            .resize(100, 100)
-                            .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
-
-                     */
-
-
-
-                break;
-        }
-    }
 }

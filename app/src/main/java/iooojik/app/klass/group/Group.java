@@ -3,7 +3,6 @@ package iooojik.app.klass.group;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -172,7 +171,7 @@ public class Group extends Fragment implements View.OnClickListener{
                 layout.setOrientation(LinearLayout.VERTICAL);
                 View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
                 TextInputEditText emailText = view1.findViewById(R.id.edit_text);
-                emailText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
                 TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
                 textInputLayout.setHint("Введите e-mail адрес");
                 textInputLayout.setHelperTextEnabled(false);
@@ -239,45 +238,49 @@ public class Group extends Fragment implements View.OnClickListener{
                 if (response.code() == 200){
 
                     Data data = response.body().getData();
-                    User user = data.getUser().get(0);
+                    if (data.getUser().size() > 0) {
+                        User user = data.getUser().get(0);
 
-                    String avatar = user.getAvatar();
-                    if (avatar == null || avatar.isEmpty()){
-                        avatar = "null";
-                    }
+                        String avatar = user.getAvatar();
+                        if (avatar == null || avatar.isEmpty()) {
+                            avatar = "null";
+                        }
 
-                    HashMap<String, String> map = new HashMap<>();
-                    map.put("full_name", user.getFullName());
-                    map.put("email", user.getEmail());
-                    map.put("group_id", String.valueOf(id));
-                    map.put("group_name", groupName);
-                    map.put("avatar", avatar);
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put("full_name", user.getFullName());
+                        map.put("email", user.getEmail());
+                        map.put("group_id", String.valueOf(id));
+                        map.put("group_name", groupName);
+                        map.put("avatar", avatar);
 
-                    Call<ServerResponse<PostResult>> response2 = api.addUserToGroup(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                        Call<ServerResponse<PostResult>> response2 = api.addUserToGroup(AppСonstants.X_API_KEY,
+                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
 
-                    response2.enqueue(new Callback<ServerResponse<PostResult>>() {
-                        @Override
-                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                            if (response.code() == 200) {
-                                Snackbar.make(view, "Пользователь был успешно добавлен", Snackbar.LENGTH_LONG).show();
-                                getGroupMates();
+                        response2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                if (response.code() == 200) {
+                                    Snackbar.make(view, "Пользователь был успешно добавлен", Snackbar.LENGTH_LONG).show();
+                                    getGroupMates();
+                                } else Log.e("ADD MATE", String.valueOf(response.raw()) + map);
                             }
-                            else Log.e("ADD MATE", String.valueOf(response.raw()) + map);
-                        }
 
-                        @Override
-                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                            Log.e("ADD MATE", String.valueOf(t));
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                                Log.e("ADD MATE", String.valueOf(t));
+                            }
+                        });
+                    } else {
+                        Snackbar.make(view, "Пользователь с указанным e-mail адресом не был найден.",
+                                Snackbar.LENGTH_LONG).show();
+                    }
 
 
 
                     } else {
                         Log.e("ttt", String.valueOf(response.raw()));
-                        Snackbar.make(view, "Пользователь с указанным e-mail адресом не был найден.",
-                                Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view, "Что-то пошло не так!",
+                            Snackbar.LENGTH_LONG).show();
                     }
             }
             @Override

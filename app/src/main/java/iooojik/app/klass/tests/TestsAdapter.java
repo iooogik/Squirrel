@@ -29,7 +29,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
     private LayoutInflater inflater;
     private List<TestTheme> tests;
-    Bundle bundle = new Bundle();
+    private Bundle bundle = new Bundle();
 
     TestsAdapter(Context context, List<TestTheme> tests){
         this.tests = tests;
@@ -49,24 +49,28 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
         TestTheme testTheme = tests.get(position);
         holder.name.setText(testTheme.getName());
         holder.desc.setText(testTheme.getDesc());
-        float rightScore = testTheme.getRightAnswers(), wrongScore = testTheme.getWrongAnswers();
 
+
+        //если тест пройден
         if(testTheme.isPassed()){
+            float rightScore = testTheme.getUserScore(), wrongScore = testTheme.getWrongAnswers();
+
             //находим диаграмму на активити
             holder.pieChart.setVisibility(View.VISIBLE);
 
             //добавляем данные в диаграмму
             List<Float> score = new ArrayList<>();
+
             score.add((rightScore/wrongScore)* 100);
             score.add(100 - (rightScore/wrongScore)* 100);
+
             //преобразуем в понятные для диаграммы данные
             List<PieEntry> entries = new ArrayList<PieEntry>();
-            for (int i = 0; i < score.size(); i++) {
-                entries.add(new PieEntry(score.get(i), i));
-            }
+            for (int i = 0; i < score.size(); i++) entries.add(new PieEntry(score.get(i), i));
+
 
             PieDataSet pieDataSet = new PieDataSet(entries, "");
-            pieDataSet.setSliceSpace(5);
+
             //устанавливаем цвета
             List<Integer> colors = new ArrayList<Integer>();
             int green = Color.parseColor("#56CF54");
@@ -75,7 +79,6 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             colors.add(red);
 
             pieDataSet.setColors(colors);
-            pieDataSet.setSelectionShift(15);
 
             PieData pieData = new PieData(pieDataSet);
             //анимация
@@ -90,7 +93,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
             holder.pieChart.setTransparentCircleRadius(0);
 
-            holder.pieChart.setHoleRadius(2);
+            holder.pieChart.setHoleRadius(0);
             holder.pieChart.setData(pieData);
 
             //процент правильных ответов
@@ -105,18 +108,15 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
                 FrameLayout quest_frame = activity.findViewById(R.id.test_frame);
                 quest_frame.setVisibility(View.VISIBLE);
 
-                bundle.putString("button name", testTheme.getName());
-                bundle.putInt("button ID", testTheme.getId());
+                bundle.putInt("test id", testTheme.getId());
 
                 Questions questions = new Questions();
                 questions.setArguments(bundle);
 
                 activity.getSupportFragmentManager().beginTransaction()
-
                         .setCustomAnimations(R.anim.nav_default_enter_anim,
                                 R.anim.nav_default_exit_anim).
-                        replace(R.id.test_frame, questions,
-                                "testFrame").commitAllowingStateLoss();
+                        replace(R.id.test_frame, questions, "testFrame").commitAllowingStateLoss();
 
             });
         }

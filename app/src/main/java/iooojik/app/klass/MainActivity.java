@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +22,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
+    public MaterialToolbar materialToolbar;
 
     // переменная с настройками приложения
     public SharedPreferences preferences;
@@ -71,12 +70,7 @@ public class MainActivity extends AppCompatActivity {
         getAdminToken();
 
         setContentView(R.layout.activity_main);
-
-        FrameLayout bottomSheet = findViewById(R.id.bottomSheet);
-        BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
-        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-
+        materialToolbar = findViewById(R.id.bar);
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //метод проверки на аутентификацию пользователя
@@ -129,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void isUserAuth(){
-        MaterialToolbar materialToolbar = findViewById(R.id.bar);
+
         //получаем токен пользователя
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         if(token.isEmpty() || preferences.getString(AppСonstants.USER_EMAIL, "").isEmpty()){
@@ -148,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createToolbar(){
-        //нижний тул-бар
-        MaterialToolbar materialToolbar = findViewById(R.id.bar);
 
         materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -161,24 +153,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
         // определение "домашнего" фрагмента
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile)
-                .setDrawerLayout(drawer).build();
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile).setDrawerLayout(drawer).build();
         // получение nav-контроллера
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
         NavigationUI.setupWithNavController(materialToolbar, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        // кнопка "назад" в тул-баре
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 
     private void needUpdate(){
         //проверяем текущую версию приложения, получив из бд актуальную и сравнив с установленной

@@ -320,8 +320,8 @@ public class Game extends Fragment implements View.OnClickListener{
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private void startTimer(){
-
         final TextView timer = view.findViewById(R.id.timer);
         running = true;
         seconds = 0;
@@ -331,7 +331,7 @@ public class Game extends Fragment implements View.OnClickListener{
                 if(running) {
                     int minutes = (seconds % 3600) / 60;
                     int secon = seconds % 60;
-                    @SuppressLint("DefaultLocale") String time = String.format("%02d:%02d", minutes, secon);
+                   String time = String.format("%02d:%02d", minutes, secon);
                     timer.setText(time);
                     seconds++;
                     chrono.postDelayed(this, 1000);

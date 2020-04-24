@@ -13,14 +13,12 @@ public class AppСonstants {
     public static final String APP_PREFERENCES_THEME = "Theme";
     // показывать ли доп. материалы в заметках
     public static final String APP_PREFERENCES_SHOW_BOOK_MATERIALS = "Show Book Materials";
-    //зарегистрирован ли пользователь
-    public static final String APP_PREFERENCES_IS_AUTH = "is User Passed Auth";
     // имя файла с бд
-    static String DB_NAME = "database.db";
+    static String DB_NAME = "data.db";
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 58;
+    static int DB_VERSION = 2;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -57,4 +55,22 @@ public class AppСonstants {
     static final String adminEmail = "test@test.com";
     static final String adminPassword = "123456";
 
+    public static final String testDivider = "{#$#}";
+
+    public static final int PICK_IMAGE_AVATAR = 9;
+
+
+    public static final String TABLE_TESTS = "Tests";
+    public static final String TABLE_ID = "_id";
+    public static final String TABLE_TESTS_NAME = "name";
+    public static final String TABLE_TESTS_DESCRIPTION = "description";
+    public static final String TABLE_TESTS_IS_PASSED = "isPassed";
+    public static final String TABLE_TESTS_QUESTIONS = "questions";
+    public static final String TABLE_TESTS_ANSWERS = "answers";
+    public static final String TABLE_TESTS_TEXT_ANSWERS = "textAnswers";
+    public static final String TABLE_TESTS_TIME = "time";
+    public static final String TABLE_TESTS_TOTAL_SCORE = "totalScore";
+    public static final String TABLE_TESTS_USER_SCORE = "userScore";
+    public static final String TABLE_TESTS_SCORE_QUEST = "scoreForQuest";
+    public static final String TABLE_TESTS_GROUP_ID = "group_id";
 }

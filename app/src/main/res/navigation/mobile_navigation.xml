@@ -88,6 +88,7 @@
         android:name="iooojik.app.klass.notes.Book"
         android:label="Справочные материалы"
         tools:layout="@layout/fragment_book" />
+
     <fragment
         android:id="@+id/nav_signUp"
         android:name="iooojik.app.klass.auth.SignUp"

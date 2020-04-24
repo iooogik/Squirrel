@@ -1,5 +1,6 @@
 package iooojik.app.klass.settings;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,8 +9,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,10 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -26,13 +35,28 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.util.HashMap;
+
+import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
+import iooojik.app.klass.models.ServerResponse;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIALS;
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
+import static iooojik.app.klass.AppСonstants.PICK_IMAGE_AVATAR;
 
 public class Settings extends Fragment implements View.OnClickListener{
 
@@ -41,6 +65,8 @@ public class Settings extends Fragment implements View.OnClickListener{
     private View view;
     private PackageInfo packageInfo;
     private SharedPreferences preferences;
+    private Context context;
+    private Api api;
 
 
     @Override
@@ -49,6 +75,7 @@ public class Settings extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_settings, container, false);
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
+        context = getContext();
         //получаем настройки
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);;
         //получаем packageInfo, чтобы узнать версию установленного приложения
@@ -238,6 +265,126 @@ public class Settings extends Fragment implements View.OnClickListener{
                 Intent openInst = new Intent(Intent.ACTION_VIEW, addressInst);
                 startActivity(openInst);
                 break;
+            case R.id.avatar:
+                //запрос на разрешение использование памяти
+                int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]
+                            {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                }
+                if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_PICK);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_AVATAR);
+                }
+                break;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case PICK_IMAGE_AVATAR:
+                Uri selectedImage = data.getData();
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                        null, null, null);
+                cursor.moveToFirst();
+                File file = new File(getRealPathFromURI(context, selectedImage));
+                /*
+                Bitmap bmp = BitmapFactory.decodeFile(file.getPath());
+                File convertedImage = new File(Environment.getExternalStorageDirectory()+"/convertedimg.png");
+
+                try {
+                    FileOutputStream outStream=new FileOutputStream(convertedImage);
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.flush();
+                    outStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                 */
+
+
+                if (file.getAbsoluteFile() != null){
+                    doRetrofit();
+                    RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+
+                    RequestBody requestBody;
+
+                    HashMap<String, RequestBody> map = new HashMap<>();
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_EMAIL,""));
+
+                    map.put("email", requestBody);
+
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_PASSWORD, ""));
+                    map.put("password", requestBody);
+
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_FULL_NAME, ""));
+                    map.put("full_name", requestBody);
+
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_ID, ""));
+                    map.put("id", requestBody);
+
+
+                    map.put("Avatar", fileReqBody);
+
+                    MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
+                            preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
+
+                    RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
+
+                    Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+
+                    postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                            if (response.code()== 200){
+                                ImageView avatar = view.findViewById(R.id.avatar);
+                                avatar.setImageURI(selectedImage);
+                            }else Log.e("UPDATE AVATAR", String.valueOf(response.raw() + " " + file.getName()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                            Log.e("UPDATE AVATAR", String.valueOf(t));
+                        }
+                    });
+                }
+
+                break;
+        }
+    }
+
+    private void doRetrofit(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
+    }
+
+    private static String getRealPathFromURI(Context context, Uri contentURI) {
+        String result = null;
+        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            if(idx >= 0) {
+                result = cursor.getString(idx);
+            }
+            cursor.close();
+        }
+        return result;
     }
 }

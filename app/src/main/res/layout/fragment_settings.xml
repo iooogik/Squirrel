@@ -18,9 +18,9 @@
             android:orientation="vertical" >
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_marginBottom="30dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="30dp">
 
                 <ImageView
                     android:id="@+id/avatar"
@@ -54,6 +54,23 @@
                     tools:text="@tools:sample/lorem[4:10]" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/exit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="@string/exitAcc"
+                android:textColor="@color/notCompleted" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/dividerColor"
+                android:layout_marginBottom="40dp"
+                />
 
             <Switch
                 android:id="@+id/book_items"
@@ -135,15 +152,6 @@
                     android:src="@drawable/instagram" />
 
             </LinearLayout>
-
-            <Button
-                android:id="@+id/exit"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/exitAcc"
-                android:layout_marginStart="@dimen/settings_margin"
-                android:textColor="@color/notCompleted" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/version"

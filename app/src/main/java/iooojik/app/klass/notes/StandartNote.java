@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,9 +27,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -86,6 +91,9 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         calendar = Calendar.getInstance();
         updateFragment();
 
+        MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+        materialToolbar.inflateMenu(R.menu.standart_note_menu);
+
         return view;
     }
 
@@ -132,9 +140,13 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         ImageView img = view.findViewById(R.id.qr_view);
         LinearLayout linearLayout = view.findViewById(R.id.layout_img);
 
-        if(!userCursor.isNull(userCursor.getColumnIndex("image"))){
+        if(!userCursor.isNull(userCursor.getColumnIndex("decodeQR"))){
             linearLayout.setVisibility(View.VISIBLE);
-            img.setImageBitmap(setImage());
+            try {
+                img.setImageBitmap(encodeAsBitmap(userCursor.getString(userCursor.getColumnIndex("decodeQR"))));
+            } catch (WriterException e) {
+                e.printStackTrace();
+            }
             img.setOnLongClickListener(v -> {
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
                 LinearLayout linearLayout1 = new LinearLayout(getContext());
@@ -164,13 +176,28 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
     }
 
-    private Bitmap setImage(){
-        // устанавливаем картинку на фрагмент
-        mDb = mDBHelper.getWritableDatabase();
-        userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
-        userCursor.moveToFirst();
-        byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
-        return BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
+
+    Bitmap encodeAsBitmap(String str) throws WriterException {
+        BitMatrix result;
+        try {
+            result = new MultiFormatWriter().encode(str,
+                    BarcodeFormat.QR_CODE, 200, 200, null);
+        } catch (IllegalArgumentException iae) {
+            // Unsupported format
+            return null;
+        }
+        int w = result.getWidth();
+        int h = result.getHeight();
+        int[] pixels = new int[w * h];
+        for (int y = 0; y < h; y++) {
+            int offset = y * w;
+            for (int x = 0; x < w; x++) {
+                pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, 200, 0, 0, w, h);
+        return bitmap;
     }
 
     @Override
@@ -338,11 +365,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        fab.hide();
-    }
 }
 
 

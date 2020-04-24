@@ -53,10 +53,10 @@ public interface Api {
 
     //обновлени пользовательской информации
     @Multipart
-    @POST("api/user/add")
-    Call<PostResult> userUpdateAvatar(@Header("X-API-KEY") String api_key,
-                                      @Header("X-TOKEN") String token,
-                                      @PartMap HashMap<String, RequestBody> map);
+    @POST("api/user/update")
+    Call<ServerResponse<PostResult>> userUpdateAvatar(@Header("X-API-KEY") String api_key,
+                                                      @Header("X-TOKEN") String token,
+                                                      @PartMap HashMap<String, RequestBody> map);
 
     @FormUrlEncoded
     @POST("api/groups/add")
