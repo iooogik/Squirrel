@@ -20,8 +20,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -68,6 +71,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     private boolean running = true;
     private int seconds;
     private int scorePerAnswer = 1;
+    private NavController navHostFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,6 +79,8 @@ public class Questions extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_questions, container, false);
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
+
+        navHostFragment = NavHostFragment.findNavController(this);
 
         questions = new ArrayList<>();
         answers = new ArrayList<>();
@@ -86,7 +92,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         getAnswers();
         getImages();
         setTest();
-        //setTimer();
+        setTimer();
         getScorePerAnswer();
         totalScore = questions.size() * scorePerAnswer;
         ImageView btn = view.findViewById(R.id.send_answers);
@@ -233,74 +239,38 @@ public class Questions extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.send_answers){
-            sendAnswers();
+            endTest(false);
+            navHostFragment.navigate(R.id.nav_tests);
         }
     }
 
-    private void sendAnswers(){
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-        final LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
+    private void endTest(boolean isTime){
 
-        View view1 = getLayoutInflater().inflate(R.layout.text_view, null, false);
-        TextView textView = view1.findViewById(R.id.tv);
-        textView.setText("Вы действительно хотите завершить выполнение теста?");
+        if (isTime){
 
-        layout.addView(view1);
-        builder.setView(layout);
-
-        builder.setPositiveButton("Да", (dialog, which) -> {
-            mDb = mDBHelper.getWritableDatabase();
-
-            userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS + " WHERE _id=?",
-                    new String[]{String.valueOf(getTestID())});
-            userCursor.moveToFirst();
-
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(AppСonstants.TABLE_TESTS_USER_SCORE, userScore);
-            contentValues.put(AppСonstants.TABLE_TESTS_IS_PASSED, 1);
-            mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id =" + (getTestID()), null);
-            FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
-
-            TestTheme testTheme = Tests.TEST_ITEMS.get(getTestID() - 1);
-            testTheme.setUserScore(userScore);
-            testTheme.setPassed(true);
-            Tests.TEST_ADAPTER.notifyDataSetChanged();
-            //отправка результатов
-
-            doRetrofit();
-            HashMap<String, String> map = new HashMap<>();
-            map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-            map.put("group_id", String.valueOf(userCursor.getInt(
-                    userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_GROUP_ID))));
-
-            map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
+            sendAnswers();
 
 
+        } else {
 
-            Call<ServerResponse<PostResult>> updateInfo = api.addResult(
-                    AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+            final LinearLayout layout = new LinearLayout(getContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
 
-            updateInfo.enqueue(new Callback<ServerResponse<PostResult>>() {
-                @Override
-                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                    if (response.code() != 200) Log.e("SENDING RESULT", String.valueOf(response.raw()));
-                }
+            View view1 = getLayoutInflater().inflate(R.layout.text_view, null, false);
+            TextView textView = view1.findViewById(R.id.tv);
 
-                @Override
-                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                    Log.e("SENDING RESULT", String.valueOf(t));
-                }
-            });
+            textView.setText("Вы действительно хотите завершить выполнение теста?");
 
+            layout.addView(view1);
+            builder.setView(layout);
 
-        });
+            builder.setPositiveButton("Да", (dialog, which) -> sendAnswers());
 
-        builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+            builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
 
-        builder.create().show();
+            builder.create().show();
+        }
     }
 
     private void doRetrofit(){
@@ -311,18 +281,68 @@ public class Questions extends Fragment implements View.OnClickListener{
         api = retrofit.create(Api.class);
     }
 
+    private void sendAnswers(){
+        mDb = mDBHelper.getWritableDatabase();
+
+        userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS + " WHERE _id=?",
+                new String[]{String.valueOf(getTestID())});
+        userCursor.moveToFirst();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(AppСonstants.TABLE_TESTS_USER_SCORE, userScore);
+        contentValues.put(AppСonstants.TABLE_TESTS_IS_PASSED, 1);
+        mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id =" + (getTestID()), null);
+        FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
+        frameLayout.removeAllViews();
+        frameLayout.setVisibility(View.GONE);
+
+        TestTheme testTheme = Tests.TEST_ITEMS.get(getTestID() - 1);
+        testTheme.setUserScore(userScore);
+        testTheme.setPassed(true);
+        Tests.TEST_ADAPTER.notifyDataSetChanged();
+        //отправка результатов
+
+        doRetrofit();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put("group_id", String.valueOf(userCursor.getInt(
+                userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_GROUP_ID))));
+
+        map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
+
+
+
+        Call<ServerResponse<PostResult>> updateInfo = api.addResult(
+                AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+
+        updateInfo.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code() != 200) Log.e("SENDING RESULT", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("SENDING RESULT", String.valueOf(t));
+            }
+        });
+    }
+
     @SuppressLint("DefaultLocale")
     private void setTimer(){
-
+        userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS + " WHERE _id=?",
+                new String[]{String.valueOf(getTestID())});
+        userCursor.moveToFirst();
         int time = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_TIME));
         TextView time_process = view.findViewById(R.id.timer);
         time_process.setVisibility(View.VISIBLE);
         running = true;
-        seconds = time;
+        seconds = time * 60;
+        Toast.makeText(getContext(), String.valueOf(seconds), Toast.LENGTH_LONG).show();
         chrono.post(new Runnable() {
             @Override
             public void run() {
-                if(running && seconds > 0) {
+                if(running && seconds != 0) {
                     int minutes = (seconds % 3600) / 60;
                     int secon = seconds % 60;
                     String time = String.format("%02d:%02d", minutes, secon);
@@ -331,7 +351,8 @@ public class Questions extends Fragment implements View.OnClickListener{
                     chrono.postDelayed(this, 1000);
                 } else {
                     running = false;
-                    sendAnswers();
+                    endTest(true);
+                    navHostFragment.navigate(R.id.nav_tests);
                 }
             }
         });

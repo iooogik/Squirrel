@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
+import androidx.annotation.NonNull;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -44,11 +45,19 @@ public class SignUp extends Fragment implements View.OnClickListener{
     private String accountType = "";
     private Api api;
     private SharedPreferences preferences;
+    private NavController navController;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        navController = NavHostFragment.findNavController(this);
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        //ещё одна проверка на авторизацию
+        String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
+        if (!(token.isEmpty())) navController.navigate(R.id.nav_profile);
+
         view = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         Button signIn = view.findViewById(R.id.signIn);
@@ -157,14 +166,11 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
                break;
             case R.id.signIn:
-                NavController navController = NavHostFragment.findNavController(this);
                 navController.navigate(R.id.nav_signIn);
         }
     }
 
     private void signIN(String uEmail, String uPassword, String type){
-
-        NavController navController = NavHostFragment.findNavController(this);
 
         doBase();
 

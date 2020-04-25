@@ -38,10 +38,20 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public SignIn() {}
 
     private View view;
+    private SharedPreferences preferences;
+    private NavController navController;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        navController = NavHostFragment.findNavController(this);
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        //ещё одна проверка на авторизацию
+        String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
+        if (!(token.isEmpty())) navController.navigate(R.id.nav_profile);
+
         view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);
@@ -68,7 +78,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
 
-                NavController navController = NavHostFragment.findNavController(this);
+
                 String uEmail = email.getText().toString().trim();
                 String uPassword = password.getText().toString().trim();
                 //проверка пароля и email
@@ -82,9 +92,6 @@ public class SignIn extends Fragment implements View.OnClickListener {
                     HashMap<String, String> uCredi = new HashMap<>();
                     uCredi.put("username", uEmail);
                     uCredi.put("password", uPassword);
-
-                    SharedPreferences preferences = getActivity().
-                            getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
                     Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
 

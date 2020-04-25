@@ -113,7 +113,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                     try {
                         time = Integer.parseInt(minutes.getText().toString().trim());
                     } catch (Exception e){
-                        Snackbar.make(getView(), "Пожалуйста, введите корректную дату", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getView(), "Пожалуйста, введите корректное время", Snackbar.LENGTH_LONG).show();
                     }
                 } else {time = 0;}
             }
@@ -196,19 +196,31 @@ public class TestEditor extends Fragment implements View.OnClickListener {
             //вопрос
             EditText editableQuestion = tempQuestion.findViewById(R.id.question);
             question = editableQuestion.getText().toString();
+            if (question.isEmpty()) question = "-";
             textQuestions.add(question);
+
             //первый ответ
             EditText firstAnsw = tempQuestion.findViewById(R.id.answ1);
-            textAnswers.add(firstAnsw.getText().toString());
+            String answer = firstAnsw.getText().toString();
+            if (answer.trim().isEmpty()) answer = "-";
+            textAnswers.add(answer);
+
             //второй ответ
             EditText secondAnsw = tempQuestion.findViewById(R.id.answ2);
-            textAnswers.add(secondAnsw.getText().toString());
+            answer = secondAnsw.getText().toString().trim();
+            if (answer.isEmpty()) answer = "-";
+            textAnswers.add(answer);
+
             //третий ответ
             EditText thirdAnsw = tempQuestion.findViewById(R.id.answ3);
-            textAnswers.add(thirdAnsw.getText().toString());
+            answer = thirdAnsw.getText().toString().trim();
+            if (answer.isEmpty()) answer = "-";
+            textAnswers.add(answer);
+
             //четвёртый ответ
             EditText fourthAnsw = tempQuestion.findViewById(R.id.answ4);
-            textAnswers.add(fourthAnsw.getText().toString());
+            if (answer.isEmpty()) answer = "-";
+            textAnswers.add(answer);
 
             //правильный ответ
             Spinner spinner = tempQuestion.findViewById(R.id.spinner);
