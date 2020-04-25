@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -26,6 +27,8 @@ import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.achievements.AchievementsData;
+import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,10 +43,11 @@ public class SignIn extends Fragment implements View.OnClickListener {
     private View view;
     private SharedPreferences preferences;
     private NavController navController;
+    private Api api;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         navController = NavHostFragment.findNavController(this);
@@ -87,7 +91,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
                             .baseUrl(AppСonstants.BASE_URL)
                             .addConverterFactory(GsonConverterFactory.create())
                             .build();
-                    Api api = retrofit.create(Api.class);
+                    api = retrofit.create(Api.class);
                     //данные пользователя
                     HashMap<String, String> uCredi = new HashMap<>();
                     uCredi.put("username", uEmail);
@@ -109,6 +113,10 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                                 preferences.edit().putString(AppСonstants.USER_PASSWORD, password.getText().toString()).apply();
                                 preferences.edit().putString(AppСonstants.USER_LOGIN, result.getUsername()).apply();
+
+
+                                //получение достижений и монеток пользователя
+                                getUserAchievements(uEmail);
 
                                 DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
                                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -140,5 +148,27 @@ public class SignIn extends Fragment implements View.OnClickListener {
                 navController2.navigate(R.id.nav_signUp);
                 break;
         }
+    }
+
+    private void getUserAchievements(String userEmail) {
+        Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
+                "user_email", userEmail);
+        call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
+                if (response.code() == 200){
+                    AchievementsData data = response.body().getData();
+                    AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
+                    preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
+                    preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
+                }
+                else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<AchievementsData>> call, Throwable t) {
+                Log.e("GET ACHIEVEMENTS", String.valueOf(t));
+            }
+        });
     }
 }

@@ -52,6 +52,9 @@ public class AppСonstants {
     public static String USER_ROLE = "USER_ROLE";
     public static String USER_FULL_NAME = "USER_FULL_NAME";
 
+    public static String USER_COINS = "USER_COINS";
+    public static String ACHIEVEMENTS_ID = "ACHIEVEMENTS_ID" ;
+
     static final String adminEmail = "test@test.com";
     static final String adminPassword = "123456";
 

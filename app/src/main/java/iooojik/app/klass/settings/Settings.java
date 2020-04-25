@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
+import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.PostResult;
@@ -67,6 +69,9 @@ public class Settings extends Fragment implements View.OnClickListener{
     private SharedPreferences preferences;
     private Context context;
     private Api api;
+    private Database mDBHelper;
+    private SQLiteDatabase mDb;
+    private Cursor userCursor;
 
 
     @Override
@@ -85,6 +90,10 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+        Button deleteTests = view.findViewById(R.id.delete_tests);
+        deleteTests.setOnClickListener(this);
+
         //установка тем
         setDarkTheme();
         //"чек" для того, чтобы убрать справочные материалы из заметок
@@ -95,6 +104,9 @@ public class Settings extends Fragment implements View.OnClickListener{
         setUserInformation();
         contacts();
         changeProfile();
+        mDBHelper = new Database(getContext());
+        mDBHelper.openDataBase();
+        mDBHelper.updateDataBase();
         return view;
     }
 
@@ -278,6 +290,18 @@ public class Settings extends Fragment implements View.OnClickListener{
                     intent.setAction(Intent.ACTION_PICK);
                     startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_AVATAR);
                 }
+                break;
+            case R.id.delete_tests:
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+                builder.setMessage("Вы действительно хотите удалить все тесты? \n" +
+                        "При очистке будут удалены и тесты, и результаты!");
+
+                builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+                builder.setPositiveButton("Удалить", (dialog, which) -> {
+                    mDb = mDBHelper.getWritableDatabase();
+                    mDb.execSQL("DELETE FROM Tests");
+                });
+                builder.show();
                 break;
         }
     }

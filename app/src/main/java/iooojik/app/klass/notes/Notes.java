@@ -55,7 +55,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Notes extends Fragment {
 
-    //Переменная для работы с БД
+    //Переменные для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor userCursor;
@@ -71,8 +71,7 @@ public class Notes extends Fragment {
 
     static List<Note> ITEMS = new ArrayList<>();
 
-    public Notes() {
-    }
+    public Notes() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

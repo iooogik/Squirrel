@@ -5,6 +5,7 @@ import java.util.HashMap;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.TestResults.DataTestResult;
+import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
@@ -88,8 +89,25 @@ public interface Api {
                                                 @FieldMap HashMap<String, String> map);
 
     @FormUrlEncoded
+    @POST("api/achievements_changes/add")
+    Call<ServerResponse<PostResult>> logAchievement(@Header("X-API-KEY") String api_key,
+                                               @Header("X-TOKEN") String token,
+                                               @FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/achievements_to_users/update")
+    Call<ServerResponse<PostResult>> updateAchievement(@Header("X-API-KEY") String api_key,
+                                                @Header("X-TOKEN") String token,
+                                                @FieldMap HashMap<String, String> map);
+
+
+    @FormUrlEncoded
     @POST("api/notes/delete")
     Call<ServerResponse<PostResult>> removeNotes(@Header("X-API-KEY") String api_key, @Field("_id") String id);
+
+    @GET("api/achievements_to_users/all?")
+    Call<ServerResponse<AchievementsData>> getAchievements(@Header("X-API-KEY") String api_key,
+                                                           @Query("field") String field, @Query("filter") String email);
 
     @GET("api/groups/all?")
     Call<ServerResponse<DataGroup>> getGroups(@Header("X-API-KEY") String api_key,

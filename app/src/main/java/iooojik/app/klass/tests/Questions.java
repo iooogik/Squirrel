@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -28,10 +27,14 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -240,7 +243,6 @@ public class Questions extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         if(v.getId() == R.id.send_answers){
             endTest(false);
-            navHostFragment.navigate(R.id.nav_tests);
         }
     }
 
@@ -249,7 +251,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         if (isTime){
 
             sendAnswers();
-
+            navHostFragment.navigate(R.id.nav_tests);
 
         } else {
 
@@ -265,7 +267,10 @@ public class Questions extends Fragment implements View.OnClickListener{
             layout.addView(view1);
             builder.setView(layout);
 
-            builder.setPositiveButton("Да", (dialog, which) -> sendAnswers());
+            builder.setPositiveButton("Да", (dialog, which) -> {
+                sendAnswers();
+                navHostFragment.navigate(R.id.nav_tests);
+            });
 
             builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
 
@@ -326,6 +331,83 @@ public class Questions extends Fragment implements View.OnClickListener{
                 Log.e("SENDING RESULT", String.valueOf(t));
             }
         });
+
+        //изменяем значения койнов
+        //если тест выполнен на 0-30%, то добавляем 1 койн, если на 31 - 60 %, то 3 койна,
+        // если на 61 - 75 %, то 4 койна, если 76 - 100%, то 5 койнов
+
+
+        HashMap<String, String> log = new HashMap<>();
+        log.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+
+        int percent = (userScore / totalScore) * 100;
+
+        int coins = preferences.getInt(AppСonstants.USER_COINS, 0);
+
+        if (percent <= 30) AppСonstants.USER_COINS += 1;
+        else if (percent >= 31 && percent <= 60) {
+            coins += 3;
+            log.put("achievement_change", "add " + 3 + " coins");
+        }
+        else if (percent >= 61 && percent <= 75) {
+            coins += 4;
+            log.put("achievement_change", "add " + 4 + " coins");
+        }
+        else if (percent >= 76 && percent <= 100) {
+            coins += 5;
+            log.put("achievement_change", "add " + 5 + " coins");
+        }
+
+        preferences.edit().putInt(AppСonstants.USER_COINS, coins).apply();
+
+        //получаем дату
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        String dateText = dateFormat.format(currentDate);
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String timeText = timeFormat.format(currentDate);
+
+        String full_date = dateText + " " + timeText;
+
+        log.put("date_change", full_date);
+
+        //логируем койны
+        Call<ServerResponse<PostResult>> call = api.logAchievement(AppСonstants.X_API_KEY,
+                AppСonstants.AUTH_SAVED_TOKEN, log);
+
+        call.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code() != 200) Log.e("LOG ACHIEVEMENT", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("LOG ACHIEVEMENT", String.valueOf(t));
+            }
+        });
+
+        //добавляем койны
+        HashMap<String, String> changes = new HashMap<>();
+        changes.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+        changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
+        changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+
+        Call<ServerResponse<PostResult>> call2 = api.updateAchievement(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
+
+        call2.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code() != 200) Log.e("ADD ACHIEVEMENT", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("ADD ACHIEVEMENT", String.valueOf(t));
+            }
+        });
+
     }
 
     @SuppressLint("DefaultLocale")
@@ -338,7 +420,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         time_process.setVisibility(View.VISIBLE);
         running = true;
         seconds = time * 60;
-        Toast.makeText(getContext(), String.valueOf(seconds), Toast.LENGTH_LONG).show();
+
         chrono.post(new Runnable() {
             @Override
             public void run() {

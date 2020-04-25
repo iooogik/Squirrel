@@ -287,7 +287,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                         HashMap<String, String> post = new HashMap<>();
                         post.put("author_email", email);
                         post.put("name", nameGroup);
-                        post.put("test", "q");
+                        post.put("test", "null");
                         post.put("author_name", fullName);
 
                         Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(

@@ -2,16 +2,12 @@ package iooojik.app.klass;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,12 +18,13 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.HashMap;
 
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.achievements.AchievementsData;
+import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
@@ -175,47 +172,6 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-
-    private void needUpdate(){
-        //проверяем текущую версию приложения, получив из бд актуальную и сравнив с установленной
-        try {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        //текущая версия
-        String currentVersion = packageInfo.versionName;
-
-    }
-
-    private void showUpdateDialog(String currVersion) {
-        //метод показывание всплывающего окна с просьбой обновить приложение
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-
-        View view = getLayoutInflater().inflate(R.layout.req_update_dialog, null, false);
-
-        TextView installedVersion = view.findViewById(R.id.installedVersion);
-        installedVersion.setText(String.format("%s%s", installedVersion.getText(), packageInfo.versionName));
-
-        TextView currentVersion = view.findViewById(R.id.currentVersion);
-        currentVersion.setText(String.format("%s%s", currentVersion.getText(), currVersion));
-
-
-
-
-        builder.setPositiveButton("Обновить", (dialog, which) -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(AppСonstants.url));
-            startActivity(browserIntent);
-        });
-
-        builder.setNegativeButton("Обновить позже", (dialog, which) -> dialog.cancel());
-
-        builder.setView(view);
-        builder.create().show();
-
-    }
-
     private void signIN(String uEmail, String uPassword){
 
         doBase();
@@ -236,13 +192,11 @@ public class MainActivity extends AppCompatActivity {
                     ServerResponse<Data> dataAuth = response.body();
                     Data result = dataAuth.getData();
                     preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
-
                     //сохраняем пользовательский токен
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
-
                     preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
                     preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
-
+                    getUserAchievements(uEmail);
                 }
                 else {
                     Log.e("Sign In", String.valueOf(response.raw()));
@@ -257,6 +211,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void getUserAchievements(String userEmail) {
+        Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
+                "user_email", userEmail);
+        call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
+                if (response.code() == 200){
+                    AchievementsData data = response.body().getData();
+                    AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
+                    preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
+                    preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
+                }
+                else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
+            }
 
+            @Override
+            public void onFailure(Call<ServerResponse<AchievementsData>> call, Throwable t) {
+                Log.e("GET ACHIEVEMENTS", String.valueOf(t));
+            }
+        });
+    }
 
 }

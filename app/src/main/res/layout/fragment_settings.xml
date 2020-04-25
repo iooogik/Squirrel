@@ -88,6 +88,14 @@
                 android:layout_marginStart="@dimen/settings_margin"
                 android:text="@string/darkTheme" />
 
+            <Button
+                android:id="@+id/delete_tests"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_margin="@dimen/fab_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Удалить тесты" />
+
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
