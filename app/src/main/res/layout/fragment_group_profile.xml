@@ -15,15 +15,13 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/colorAccent"
-            app:contentScrim="?attr/colorPrimary"
+            android:background="?attr/colorControlNormal"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <FrameLayout
                 android:id="@+id/backroundProfile"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/colorAccent">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -37,7 +35,6 @@
                         android:layout_gravity="start"
                         android:layout_marginStart="15dp"
                         android:text="group_name"
-                        android:textColor="@color/colorWhite"
                         android:textSize="45sp" />
 
                     <TextView
@@ -47,9 +44,8 @@
                         android:layout_gravity="start"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="25dp"
-                        android:textColor="@color/colorWhite"
-                        android:textSize="18sp"
-                        android:text="Учитель:" />
+                        android:text="Учитель:"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/teacher_email"
@@ -57,9 +53,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:layout_marginStart="15dp"
-                        android:textColor="@color/colorWhite"
-                        android:textSize="18sp"
-                        android:text="email:" />
+                        android:text="email:"
+                        android:textSize="18sp" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -72,21 +67,20 @@
                             android:layout_gravity="start"
                             android:layout_marginStart="15dp"
                             android:layout_marginTop="15dp"
-                            android:text="Тест доступен"
                             android:gravity="center"
-                            android:textColor="@color/colorWhite"
+                            android:text="Тест доступен"
                             android:textSize="14sp" />
 
                         <Button
                             android:id="@+id/execTest"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="30dp"
                             android:layout_gravity="center|end"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_marginStart="30dp"
+                            android:text="Получить тест"
                             android:textColor="@color/Completed"
-                            android:visibility="gone"
-                            android:text="Получить тест" />
+                            android:visibility="gone" />
                     </FrameLayout>
 
                 </LinearLayout>
@@ -100,6 +94,6 @@
         android:id="@+id/group_mates"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
