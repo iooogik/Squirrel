@@ -288,76 +288,66 @@ public class Settings extends Fragment implements View.OnClickListener{
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case PICK_IMAGE_AVATAR:
-                Uri selectedImage = data.getData();
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                        null, null, null);
-                cursor.moveToFirst();
-                File file = new File(getRealPathFromURI(context, selectedImage));
-                /*
-                Bitmap bmp = BitmapFactory.decodeFile(file.getPath());
-                File convertedImage = new File(Environment.getExternalStorageDirectory()+"/convertedimg.png");
+                if (data != null) {
+                    Uri selectedImage = data.getData();
+                    Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                            null, null, null);
+                    cursor.moveToFirst();
+                    File file = new File(getRealPathFromURI(context, selectedImage));
 
-                try {
-                    FileOutputStream outStream=new FileOutputStream(convertedImage);
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                    outStream.flush();
-                    outStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    if (file.getAbsoluteFile() != null) {
+                        doRetrofit();
 
-                 */
+                        RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
 
+                        RequestBody requestBody;
 
-                if (file.getAbsoluteFile() != null){
-                    doRetrofit();
-                    RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+                        HashMap<String, RequestBody> map = new HashMap<>();
+                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                                preferences.getString(AppСonstants.USER_EMAIL, ""));
 
-                    RequestBody requestBody;
+                        map.put("email", requestBody);
 
-                    HashMap<String, RequestBody> map = new HashMap<>();
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_EMAIL,""));
+                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                                preferences.getString(AppСonstants.USER_PASSWORD, ""));
+                        map.put("password", requestBody);
 
-                    map.put("email", requestBody);
+                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                                preferences.getString(AppСonstants.USER_FULL_NAME, ""));
+                        map.put("full_name", requestBody);
 
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_PASSWORD, ""));
-                    map.put("password", requestBody);
-
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_FULL_NAME, ""));
-                    map.put("full_name", requestBody);
-
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_ID, ""));
-                    map.put("id", requestBody);
+                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                                preferences.getString(AppСonstants.USER_ID, ""));
+                        map.put("id", requestBody);
 
 
-                    map.put("Avatar", fileReqBody);
+                        map.put("Avatar", fileReqBody);
 
-                    MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
-                            preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
+                        MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
+                                preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
 
-                    RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
+                        RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
 
-                    Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                        Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
+                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
 
-                    postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
-                        @Override
-                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                            if (response.code()== 200){
-                                ImageView avatar = view.findViewById(R.id.avatar);
-                                avatar.setImageURI(selectedImage);
-                            }else Log.e("UPDATE AVATAR", String.valueOf(response.raw() + " " + file.getName()));
-                        }
+                        postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                Log.e("tttt", String.valueOf(response.raw()));
+                                if (response.code() == 200) {
+                                    ImageView avatar = view.findViewById(R.id.avatar);
+                                    avatar.setImageURI(selectedImage);
+                                } else
+                                    Log.e("UPDATE AVATAR", String.valueOf(response.raw() + " " + file.getName()));
+                            }
 
-                        @Override
-                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                            Log.e("UPDATE AVATAR", String.valueOf(t));
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                                Log.e("UPDATE AVATAR", String.valueOf(t));
+                            }
+                        });
+                    }
                 }
 
                 break;

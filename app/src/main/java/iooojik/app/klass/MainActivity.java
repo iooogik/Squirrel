@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -164,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupWithNavController(materialToolbar, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
 
     }
 
