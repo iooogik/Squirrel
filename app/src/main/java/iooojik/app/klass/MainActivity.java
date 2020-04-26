@@ -20,8 +20,6 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.HashMap;
 
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.models.achievements.AchievementsData;
-import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.userData.Data;
 import retrofit2.Call;
@@ -182,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
                     preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
                     preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
-                    getUserAchievements(uEmail);
+
                 }
                 else {
                     Log.e("Sign In", String.valueOf(response.raw()));
@@ -195,28 +193,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void getUserAchievements(String userEmail) {
-        Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
-                "user_email", userEmail);
-        call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
-            @Override
-            public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
-                if (response.code() == 200){
-                    AchievementsData data = response.body().getData();
-                    AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
-                    preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
-                    preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
-                }
-                else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
-            }
-
-            @Override
-            public void onFailure(Call<ServerResponse<AchievementsData>> call, Throwable t) {
-                Log.e("GET ACHIEVEMENTS", String.valueOf(t));
-            }
-        });
     }
 
 }

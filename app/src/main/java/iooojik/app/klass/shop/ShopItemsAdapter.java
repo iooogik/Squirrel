@@ -83,6 +83,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
 
         holder.buy.setOnClickListener(v -> {
             int userCoins = preferences.getInt(AppСonstants.USER_COINS, 0);
+            if (userCoins - Integer.parseInt(shopItem.getPrice()) >= 0){
             preferences.edit().putInt(AppСonstants.USER_COINS, userCoins - Integer.parseInt(shopItem.getPrice())).apply();
             //обновляем количество койнов у пользователя
             doRetrofit();
@@ -205,7 +206,10 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
                 });
 
             }
+            }
+            else Snackbar.make(fragment.getView(), "Недостаточно средств", Snackbar.LENGTH_LONG).show();
         });
+
     }
 
     private void doRetrofit(){
