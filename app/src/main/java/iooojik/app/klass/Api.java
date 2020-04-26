@@ -108,8 +108,6 @@ public interface Api {
                                                        @Header("X-TOKEN") String token,
                                                        @FieldMap HashMap<String, String> map);
 
-
-
     @FormUrlEncoded
     @POST("api/notes/delete")
     Call<ServerResponse<PostResult>> removeNotes(@Header("X-API-KEY") String api_key, @Field("_id") String id);
