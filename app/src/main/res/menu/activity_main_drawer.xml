@@ -30,6 +30,11 @@
             android:icon="@drawable/augmented_reality"
             android:title="@string/ar" />
 
+        <item
+            android:id="@+id/nav_shop"
+            android:icon="@drawable/round_shopping_cart_24"
+            android:title="@string/shop" />
+
     </group>
 
 </menu>

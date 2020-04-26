@@ -141,6 +141,9 @@
         <action
             android:id="@+id/action_nav_profile_to_nav_news"
             app:destination="@id/nav_news" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_shop"
+            app:destination="@id/nav_shop" />
 
     </fragment>
     <fragment
@@ -194,5 +197,10 @@
             android:id="@+id/action_questions_to_nav_tests"
             app:destination="@id/nav_tests" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_shop"
+        android:name="iooojik.app.klass.shop.Shop"
+        android:label="@string/shop"
+        tools:layout="@layout/fragment_shop" />
 
 </navigation>

@@ -8,9 +8,13 @@
     <color name="color_secondary_text">#757575</color>
     <color name="dividerColor">#BDBDBD</color>
 
-    <color name="icons">#FFFFFF</color>
 
-    <color name="darkBackground">#212121</color>
+    <color name="colorBackground_light">#F3F3F3</color>
+    <color name="colorBackground_dark">#212121</color>
+
+    <color name="icons">#FFFFFF</color>
+    <color name="darkBackground">#303030</color>
+
     <color name="notCompleted">#FF5252</color>
     <color name="Completed">#56CF54</color>
     <color name="colorWhite">#FFFFFF</color>

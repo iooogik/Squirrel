@@ -67,38 +67,43 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private ImageView error;
     private View header;
+    private Thread preparations;
 
 
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
-        error = view.findViewById(R.id.errorImg);
-        error.setVisibility(View.GONE);
 
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         header = navigationView.getHeaderView(0);
         header.setPadding(0, 110, 0, 80);
 
-        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        //получаем fab и ставим слушатель на него
-        fab = getActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(this);
-
         //получение текущего фрагмента, чтобы использовать его в адаптере
         fragment = this;
         //контекст
         context = getContext();
+        //получаем fab и ставим слушатель на него
+        fab = getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        error = view.findViewById(R.id.errorImg);
+        error.setVisibility(View.GONE);
 
         //запрос на разрешение использования камеры
         int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, 1);
         }
-        //
-        getUserProfile();
-        setTopMenu();
+
+
+        preparations = new Thread(() -> {
+            getUserProfile();
+            setTopMenu();
+        });
+        preparations.start();
+
+
         return view;
     }
 
@@ -256,6 +261,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                 return false;
             }
         });
+        preparations.interrupt();
     }
 
     @Override

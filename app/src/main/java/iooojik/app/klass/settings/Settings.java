@@ -104,10 +104,16 @@ public class Settings extends Fragment implements View.OnClickListener{
         setUserInformation();
         contacts();
         changeProfile();
+        setCoins();
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         return view;
+    }
+
+    private void setCoins() {
+        TextView coins = view.findViewById(R.id.coins);
+        coins.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
     }
 
     private void changeProfile() {

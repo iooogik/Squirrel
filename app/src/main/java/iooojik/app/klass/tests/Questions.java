@@ -393,19 +393,19 @@ public class Questions extends Fragment implements View.OnClickListener{
         changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
         changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
 
-        Call<ServerResponse<PostResult>> call2 = api.updateAchievement(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
+            Call<ServerResponse<PostResult>> call2 = api.updateAchievement(AppСonstants.X_API_KEY,
+                    preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
 
         call2.enqueue(new Callback<ServerResponse<PostResult>>() {
-            @Override
-            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                if (response.code() != 200) Log.e("ADD ACHIEVEMENT", String.valueOf(response.raw()));
-            }
+                @Override
+                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                    if (response.code() != 200) Log.e("ADD ACHIEVEMENT", String.valueOf(response.raw()));
+                }
 
-            @Override
-            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                Log.e("ADD ACHIEVEMENT", String.valueOf(t));
-            }
+                @Override
+                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                    Log.e("ADD ACHIEVEMENT", String.valueOf(t));
+                }
         });
 
     }

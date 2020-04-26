@@ -3,14 +3,11 @@ package iooojik.app.klass;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -46,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
     public SharedPreferences preferences;
     //контроллер
     private NavController navController;
-    //packageInfo, чтобы получать текущую версию приложения
-    private PackageInfo packageInfo;
     private Api api;
 
     @Override
@@ -71,14 +66,11 @@ public class MainActivity extends AppCompatActivity {
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //метод проверки на аутентификацию пользователя
-        //проверка акутальной версии приложения
-        //needUpdate();
         isUserAuth();
         createToolbar();
-
     }
 
-    private void doBase(){
+    private void doRetrofit(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -87,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getAdminToken() {
-        doBase();
+        doRetrofit();
 
         HashMap<String, String> map = new HashMap<>();
         map.put("username", AppСonstants.adminEmail);
@@ -140,14 +132,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void createToolbar(){
 
-        materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.action_settings){
-                    navController.navigate(R.id.nav_settings);
-                }
-                return false;
+        materialToolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_settings){
+                navController.navigate(R.id.nav_settings);
             }
+            return false;
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -157,11 +146,8 @@ public class MainActivity extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile).setDrawerLayout(drawer).build();
         // получение nav-контроллера
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-
         NavigationUI.setupWithNavController(materialToolbar, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-
 
     }
 
@@ -174,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void signIN(String uEmail, String uPassword){
 
-        doBase();
+        doRetrofit();
 
         HashMap<String, String> uCredi = new HashMap<>();
         uCredi.put("username", uEmail);

@@ -10,7 +10,9 @@ import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.profileData.ProfileData;
+import iooojik.app.klass.models.promocode.PromoData;
 import iooojik.app.klass.models.pupil.DataPupilList;
+import iooojik.app.klass.models.shop.ShopData;
 import iooojik.app.klass.models.teacher.AddGroupResult;
 import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.userData.Data;
@@ -100,10 +102,32 @@ public interface Api {
                                                 @Header("X-TOKEN") String token,
                                                 @FieldMap HashMap<String, String> map);
 
+    @FormUrlEncoded
+    @POST("api/las_promo/update")
+    Call<ServerResponse<PostResult>> changeStatePromo(@Header("X-API-KEY") String api_key,
+                                                       @Header("X-TOKEN") String token,
+                                                       @FieldMap HashMap<String, String> map);
+
+
 
     @FormUrlEncoded
     @POST("api/notes/delete")
     Call<ServerResponse<PostResult>> removeNotes(@Header("X-API-KEY") String api_key, @Field("_id") String id);
+
+    @FormUrlEncoded
+    @POST("api/shop_logs/add")
+    Call<ServerResponse<PostResult>> logBuying(@Header("X-API-KEY") String api_key,
+                                               @Header("X-TOKEN") String token,
+                                               @FieldMap HashMap<String, String> map);
+
+    @GET("api/shop/all")
+    Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
+                                                @Header("X-TOKEN") String token);
+
+    @GET("api/las_promo/all?")
+    Call<ServerResponse<PromoData>> getPromo(@Header("X-API-KEY") String api_key,
+                                                @Header("X-TOKEN") String token,
+                                             @Query("field") String field, @Query("filter") String filter);
 
     @GET("api/achievements_to_users/all?")
     Call<ServerResponse<AchievementsData>> getAchievements(@Header("X-API-KEY") String api_key,

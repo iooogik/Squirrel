@@ -9,6 +9,7 @@
         <item name="imageButtonStyle">@style/CustomSmallButtons</item>
         <item name="colorPrimaryDark">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
+        <item name="background">@color/colorBackground_light</item>
         <item name="windowNoTitle">true</item>
 
         <!-- New MaterialComponents attributes. -->
@@ -41,6 +42,8 @@
         <item name="colorControlNormal">@color/darkBackground</item>
         <item name="android:windowBackground">@color/darkBackground</item>
         <item name="imageButtonStyle">@style/darkCustomSmallButtons</item>
+        <item name="background">@color/colorBackground_dark</item>
+
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
