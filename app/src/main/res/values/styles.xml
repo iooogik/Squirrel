@@ -3,34 +3,15 @@
     <style name="AppThemeLight" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="colorControlNormal">?attr/colorAccent</item>
         <item name="android:textColor">@color/color_primary_text</item>
         <item name="buttonTint">@color/colorAccent</item>
-        <item name="imageButtonStyle">@style/CustomSmallButtons</item>
         <item name="colorPrimaryDark">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="background">@color/colorBackground_light</item>
         <item name="windowNoTitle">true</item>
 
-        <!-- New MaterialComponents attributes. -->
-        <item name="colorPrimaryVariant">@color/colorPrimary</item>
-        <item name="colorSecondaryVariant">@color/color_primary_light</item>
-        <item name="colorOnError">@color/notCompleted</item>
-
-        <item name="scrimBackground">@color/mtrl_scrim_color</item>
-        <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1</item>
-        <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
-        <item name="textAppearanceHeadline3">@style/TextAppearance.MaterialComponents.Headline3</item>
-        <item name="textAppearanceHeadline4">@style/TextAppearance.MaterialComponents.Headline4</item>
-        <item name="textAppearanceHeadline5">@style/TextAppearance.MaterialComponents.Headline5</item>
-        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6</item>
-        <item name="textAppearanceSubtitle1">@style/TextAppearance.MaterialComponents.Subtitle1</item>
-        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2</item>
-        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
-        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
-        <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
-        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
-        <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
+        <item name="itemShapeFillColor">@color/colorWhite</item>
 
     </style>
 
@@ -39,42 +20,16 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimaryDark">@color/darkBackground</item>
         <item name="android:textColor">@color/colorWhite</item>
-        <item name="colorControlNormal">@color/darkBackground</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
         <item name="android:windowBackground">@color/darkBackground</item>
-        <item name="imageButtonStyle">@style/darkCustomSmallButtons</item>
         <item name="background">@color/colorBackground_dark</item>
+
+        <item name="itemShapeFillColor">@color/darkBackground</item>
+
 
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
-        <!-- New MaterialComponents attributes. -->
-        <item name="colorPrimaryVariant">@color/colorPrimary</item>
-        <item name="colorSecondaryVariant">@color/color_primary_light</item>
-        <item name="colorOnError">@color/notCompleted</item>
-
-        <item name="scrimBackground">@color/mtrl_scrim_color</item>
-        <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1</item>
-        <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
-        <item name="textAppearanceHeadline3">@style/TextAppearance.MaterialComponents.Headline3</item>
-        <item name="textAppearanceHeadline4">@style/TextAppearance.MaterialComponents.Headline4</item>
-        <item name="textAppearanceHeadline5">@style/TextAppearance.MaterialComponents.Headline5</item>
-        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6</item>
-        <item name="textAppearanceSubtitle1">@style/TextAppearance.MaterialComponents.Subtitle1</item>
-        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2</item>
-        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
-        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
-        <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
-        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
-        <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
-    </style>
-
-    <style name="darkCustomSmallButtons" parent="Widget.AppCompat.ImageButton">
-        <item name="android:tint">@color/colorAccent</item>
-    </style>
-
-    <style name="CustomSmallButtons" parent="Widget.AppCompat.ImageButton">
-        <item name="android:tint">@color/colorAccent</item>
     </style>
 
 </resources>

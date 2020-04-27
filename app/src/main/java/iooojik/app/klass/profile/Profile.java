@@ -7,23 +7,21 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -69,7 +67,6 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private ImageView error;
     private View header;
-    private Thread preparations;
 
 
 
@@ -98,13 +95,14 @@ public class Profile extends Fragment implements View.OnClickListener {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, 1);
         }
 
-
-        preparations = new Thread(() -> {
+        getActivity().runOnUiThread(() -> {
             getUserProfile();
-            setTopMenu();
+            //setTopMenu();
             getCoins(preferences.getString(AppСonstants.USER_EMAIL, ""));
         });
-        preparations.start();
+
+
+
 
 
         return view;
@@ -200,6 +198,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void getActiveTests() {
+        fab.hide();
         //получаем к каким группам относится пользователь
         doRetrofit();
         Call<ServerResponse<DataPupilList>> responseCall = api.getPupilActiveGroups(AppСonstants.X_API_KEY,
@@ -273,8 +272,14 @@ public class Profile extends Fragment implements View.OnClickListener {
         });
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+/*
     private void setTopMenu(){
         MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+
         materialToolbar.inflateMenu(R.menu.profile_menu_items);
         materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -286,8 +291,9 @@ public class Profile extends Fragment implements View.OnClickListener {
                 return false;
             }
         });
-        preparations.interrupt();
     }
+
+ */
 
     @Override
     public void onClick(View v) {

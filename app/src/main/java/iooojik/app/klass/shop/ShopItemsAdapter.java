@@ -153,48 +153,52 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
 
                             PromoData data = response.body().getData();
                             List<LasPromo> promo_codes = data.getLasPromo();
-                            LasPromo code = promo_codes.get(0);
+                            if (!promo_codes.isEmpty()) {
+                                LasPromo code = promo_codes.get(0);
 
-                            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                            builder.setTitle("Покупка");
-                            builder.setMessage("Поздравляем! Вы купили промо-код! После нажатия кнопки " +
-                                    "Получить, ваш промокод будет скопирован в буфер обмена. Чтобы активировать " +
-                                    "промо-код, зайдите в игру LifeAtSpace и вставьте промо-код в соотвествующее поле. " +
-                                    "Если вы промахнётесь/забудете активировать промо-код, то он будет аннулирован!");
+                                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                                builder.setTitle("Покупка");
+                                builder.setMessage("Поздравляем! Вы купили промо-код! После нажатия кнопки " +
+                                        "Получить, ваш промокод будет скопирован в буфер обмена. Чтобы активировать " +
+                                        "промо-код, зайдите в игру LifeAtSpace и вставьте промо-код в соотвествующее поле. " +
+                                        "Если вы промахнётесь/забудете активировать промо-код, то он будет аннулирован!");
 
-                            builder.setPositiveButton("Получить", (dialog, which) -> {
-                                ClipboardManager clipboard = (ClipboardManager)
-                                        context.getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("", code.getPromo());
-                                clipboard.setPrimaryClip(clip);
-                                Snackbar.make(fragment.getView(), "Получено!",
-                                        Snackbar.LENGTH_LONG).show();
+                                builder.setPositiveButton("Получить", (dialog, which) -> {
+                                    ClipboardManager clipboard = (ClipboardManager)
+                                            context.getSystemService(Context.CLIPBOARD_SERVICE);
+                                    ClipData clip = ClipData.newPlainText("", code.getPromo());
+                                    clipboard.setPrimaryClip(clip);
+                                    Snackbar.make(fragment.getView(), "Получено!",
+                                            Snackbar.LENGTH_LONG).show();
 
-                            });
-                            builder.create().show();
+                                });
+                                builder.create().show();
 
-                            //изменение полученного промо-кода на "неактивный"
-                            HashMap<String, String> buying = new HashMap<>();
-                            buying.put("_id", code.getId());
-                            buying.put("promo", code.getPromo());
-                            buying.put("activated", "1");
+                                //изменение полученного промо-кода на "неактивный"
+                                HashMap<String, String> buying = new HashMap<>();
+                                buying.put("_id", code.getId());
+                                buying.put("promo", code.getPromo());
+                                buying.put("activated", "1");
 
-                            Call<ServerResponse<PostResult>> changeState = api.changeStatePromo(AppСonstants.X_API_KEY,
-                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), buying);
+                                Call<ServerResponse<PostResult>> changeState = api.changeStatePromo(AppСonstants.X_API_KEY,
+                                        preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), buying);
 
-                            changeState.enqueue(new Callback<ServerResponse<PostResult>>() {
-                                @Override
-                                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                                    if (response.code() != 200)
-                                        Log.e("CALLBACK", String.valueOf(response.raw()));
-                                }
+                                changeState.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                    @Override
+                                    public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                        if (response.code() != 200)
+                                            Log.e("CALLBACK", String.valueOf(response.raw()));
+                                    }
 
-                                @Override
-                                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                                    @Override
+                                    public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
 
-                                }
-                            });
+                                    }
+                                });
 
+                            } else Snackbar.make(fragment.getView(),
+                                    "К сожалению, промо-коды закончились. Повторите попытку позже.",
+                                    Snackbar.LENGTH_LONG).show();
                         }
                         else Log.e("CALLBACK", String.valueOf(response.raw()));
                     }

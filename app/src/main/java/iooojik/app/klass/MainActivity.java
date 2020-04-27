@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         materialToolbar = findViewById(R.id.bar);
+        materialToolbar.setTitle(R.string.main);
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //метод проверки на аутентификацию пользователя
@@ -129,13 +133,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createToolbar(){
-
-        materialToolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_settings){
-                navController.navigate(R.id.nav_settings);
-            }
-            return false;
-        });
+        setSupportActionBar(materialToolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -195,4 +193,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu_items, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_settings:
+                navController.navigate(R.id.nav_settings);
+                return true;
+            case R.id.action_save:
+            case R.id.action_read_qr:
+            case R.id.action_notif:
+                return false;
+
+
+        }
+        return false;
+    }
 }

@@ -6,57 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="horizontal">
-
-
-        <ImageButton
-            android:id="@+id/buttonSave"
-            android:layout_width="@dimen/small_buttons"
-            android:layout_height="@dimen/small_buttons"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/round_save_24" />
-
-        <ImageButton
-            android:id="@+id/buttonShare"
-            android:layout_width="@dimen/small_buttons"
-            android:layout_height="@dimen/small_buttons"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/round_share_24" />
-
-        <ImageButton
-            android:id="@+id/buttonAlarm"
-            android:layout_width="@dimen/small_buttons"
-            android:layout_height="@dimen/small_buttons"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            android:scaleType="fitCenter"
-            android:src="@drawable/baseline_notifications_active_24" />
-
-        <ImageButton
-            android:id="@+id/buttonQR"
-            android:layout_width="@dimen/small_buttons"
-            android:layout_height="@dimen/small_buttons"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@drawable/small_buttons"
-            android:scaleType="fitCenter"
-            android:src="@drawable/scan" />
-
-    </LinearLayout>
-
     <View
         android:id="@+id/divider2"
         android:layout_width="match_parent"

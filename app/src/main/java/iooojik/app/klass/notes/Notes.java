@@ -13,6 +13,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -81,7 +84,7 @@ public class Notes extends Fragment {
         context = view.getContext();
         fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.baseline_add_24);
-
+        setHasOptionsMenu(true);
         startProcedures();
         enableBottomSheet();
         enableSearch();
@@ -520,6 +523,12 @@ public class Notes extends Fragment {
         synchronized (NOTES_ADAPTER) {
             NOTES_ADAPTER.notify();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
     }
 }
 

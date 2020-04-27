@@ -7,12 +7,7 @@
         android:icon="@drawable/round_save_24"
         app:showAsAction="always"
         />
-    <item
-        android:id="@+id/action_share"
-        android:title="Поделиться"
-        android:icon="@drawable/round_share_24"
-        app:showAsAction="always"
-        />
+
     <item
         android:id="@+id/action_notif"
         android:title="Установить уведомление"

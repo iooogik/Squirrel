@@ -5,9 +5,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +40,6 @@ public class Shop extends Fragment {
     private Api api;
     private Fragment fragment;
     private SharedPreferences preferences;
-    private Thread thread;
 
 
     @Override
@@ -45,10 +48,15 @@ public class Shop extends Fragment {
         view = inflater.inflate(R.layout.fragment_shop, container, false);
         context = getContext();
         fragment = this;
-        items = view.findViewById(R.id.items);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        thread = new Thread(this::getItems);
-        thread.start();
+
+        TextView balance = view.findViewById(R.id.balance);
+        balance.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+
+        items = view.findViewById(R.id.items);
+        getActivity().runOnUiThread(this::getItems);
+
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -89,6 +97,11 @@ public class Shop extends Fragment {
                 Log.e("GETTING SHOP ITEMS", String.valueOf(t));
             }
         });
-        thread.interrupt();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
     }
 }

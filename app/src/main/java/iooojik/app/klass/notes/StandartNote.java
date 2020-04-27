@@ -15,15 +15,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -62,6 +65,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     // "Календарь" для получения времени
     private Calendar calendar;
     private Context context;
+    private Menu menu;
     private FloatingActionButton fab;
 
 
@@ -77,16 +81,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         fab = getActivity().findViewById(R.id.fab);
         fab.hide();
+        setHasOptionsMenu(true);
 
-        ImageButton btnSave = view.findViewById(R.id.buttonSave);
-        ImageButton btnShare = view.findViewById(R.id.buttonShare);
-        ImageButton btnAlarm = view.findViewById(R.id.buttonAlarm);
-        ImageButton btnQR = view.findViewById(R.id.buttonQR);
-
-        btnSave.setOnClickListener(this);
-        btnShare.setOnClickListener(this);
-        btnAlarm.setOnClickListener(this);
-        btnQR.setOnClickListener(this);
         // получаем текущее состояние "календаря"
         calendar = Calendar.getInstance();
         updateFragment();
@@ -236,28 +232,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         mDb.update(databaseName, cv, "_id =" + (getButtonID()), null);
     }
 
-    private void share(){
-        // Делимся заметкой
-        TextView name = requireView().findViewById(R.id.editName);
-        TextView note = getView().findViewById(R.id.editNote);
-        TextView shortNote = getView().findViewById(R.id.shortNote);
-
-        LinearLayout linearLayout = getView().findViewById(R.id.layout_img);
-        String sendText;
-        if(linearLayout.getVisibility() == View.VISIBLE){
-            sendText = name.getText().toString() + "[/name]" +
-                    note.getText().toString() + "[/recycler_view_item_note]" +
-                    shortNote.getText().toString() + "[/shortNote]"
-                    + shortNote.getText().toString() + "[/QR]";
-        } else {
-            sendText = name.getText().toString() + "[/name]" +
-                    note.getText().toString() + "[/recycler_view_item_note]" +
-                    shortNote.getText().toString() + "[/shortNote]";
-        }
-
-
-    }
-
     @Override
     public void alarmDialog(final String title, final String text){
         // напоминание
@@ -319,52 +293,58 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     @Override
-    public void onClick(final View view) {
+    public void onClick(final View view) {}
 
-        final EditText name = requireActivity().findViewById(R.id.editName);
-        final EditText note = getActivity().findViewById(R.id.editNote);
-        EditText shortNote = getActivity().findViewById(R.id.shortNote);
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        this.menu = menu;
+        getActivity().getMenuInflater().inflate(R.menu.standart_note_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        final EditText name = view.findViewById(R.id.editName);
+        final EditText note = view.findViewById(R.id.editNote);
+        EditText shortNote = view.findViewById(R.id.shortNote);
 
         String nameNote = name.getText().toString();
         String Note = note.getText().toString();
         String shortText = shortNote.getText().toString();
 
-        if(view.getId() == R.id.buttonSave){
+        switch (item.getItemId()){
+            case R.id.action_notif:
+                alarmDialog(nameNote, shortText);
+                return true;
+            case R.id.action_save:
+                String dataName = "Notes";
+                updateData(dataName, nameNote, Note, shortText);
 
-            String dataName = "Notes";
-            updateData(dataName, nameNote, Note, shortText);
-
-
-            // Скрываем клавиатуру при открытии Navigation Drawer
-            try {
-                InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
-                        getSystemService(Activity.INPUT_METHOD_SERVICE);
-                if (inputMethodManager != null) {
-                    inputMethodManager.hideSoftInputFromWindow(requireActivity().getCurrentFocus().
-                            getWindowToken(), 0);
+                // Скрываем клавиатуру при открытии Navigation Drawer
+                try {
+                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
+                            getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    if (inputMethodManager != null) {
+                        inputMethodManager.hideSoftInputFromWindow(requireActivity().getCurrentFocus().
+                                getWindowToken(), 0);
+                    }
+                } catch (Exception e) {
+                    Log.i("StandartNotes", String.valueOf(e));
                 }
-            } catch (Exception e){
-                Log.i("StandartNotes", String.valueOf(e));
-            }
 
-            Snackbar.make(view, "Сохранено", Snackbar.LENGTH_LONG).show();
-
-        } else if(view.getId() == R.id.buttonShare){
-
-            if(note.getText().toString().length() <= 300) {
-                    share();
-            }
-        } else if (view.getId() == R.id.buttonAlarm){
-            alarmDialog(nameNote, shortText);
-        } else if(view.getId() == R.id.buttonQR){
-            Bundle args = new Bundle();
-            args.putInt("id", getButtonID());
-            Intent intent = new Intent(getContext(), BarcodeCaptureActivity.class);
-            intent.putExtras(args);
-            startActivity(intent);
+                Snackbar.make(view, "Сохранено", Snackbar.LENGTH_LONG).show();
+                return true;
+            case R.id.action_read_qr:
+                Bundle args = new Bundle();
+                args.putInt("id", getButtonID());
+                Intent intent = new Intent(getContext(), BarcodeCaptureActivity.class);
+                intent.putExtras(args);
+                startActivity(intent);
+                return true;
         }
+        return false;
     }
-
 }
 
 
