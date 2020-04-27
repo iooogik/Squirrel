@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
@@ -186,25 +188,26 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
             });
 
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragment.getActivity());
+            View bottomSheet = fragment.getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_delete, null);
+
+            bottomSheetDialog.setContentView(bottomSheet);
+
+            Button delete = bottomSheet.findViewById(R.id.delete);
+            delete.setOnClickListener(v -> {
+                mDb = mDBHelper.getWritableDatabase();
+                mDb.delete("Notes", "_id=" + (note.getId()), null);
+                int pos = Notes.ITEMS.indexOf(note);
+                Notes.ITEMS.remove(note);
+                notifyItemRemoved(pos);
+                bottomSheetDialog.hide();
+            });
+
+            Button cancel = bottomSheet.findViewById(R.id.cancel);
+            cancel.setOnClickListener(v -> bottomSheetDialog.hide());
+
             holder.frameLayout.setOnLongClickListener(v -> {
-
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(v.getContext());
-
-                builder.setTitle("Важное сообщение!")
-                        .setMessage("Вы действительно хотите удалить заметку?")
-                        .setPositiveButton("Удалить", (dialog, id) -> {
-
-                            mDb = mDBHelper.getWritableDatabase();
-
-                            mDb.delete("Notes", "_id=" + (note.getId()), null);
-                            int pos = Notes.ITEMS.indexOf(note);
-                            Notes.ITEMS.remove(note);
-                            notifyItemRemoved(pos);
-
-
-                        })
-                        .setNegativeButton("Нет", (dialog, which) -> dialog.cancel())
-                        .show();
+                bottomSheetDialog.show();
                 return true;
             });
         } else {

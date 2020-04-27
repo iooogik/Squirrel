@@ -64,8 +64,6 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                 }
             }
 
-
-
             if (!wasFound){
                 holder.progress.setVisibility(View.VISIBLE);
                 holder.text_result.setVisibility(View.VISIBLE);
@@ -81,6 +79,8 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                     .transform(new RoundedCornersTransformation(30, 5)).into(holder.img);
 
         }else holder.img.setImageResource(R.drawable.dark_baseline_account_circle_24);
+
+
 
     }
 
