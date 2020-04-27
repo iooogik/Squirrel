@@ -27,6 +27,7 @@ import java.util.HashMap;
 import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
@@ -231,9 +232,13 @@ public class SignUp extends Fragment implements View.OnClickListener{
             public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
                 if (response.code() == 200){
                     AchievementsData data = response.body().getData();
-                    AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
-                    preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
-                    preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
+                    if(data.getAchievementsToUsers().size() != 0) {
+                        AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
+                        preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
+                        preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
+                    } else {
+                        addFirstAchievement();
+                    }
                 }
                 else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
             }
@@ -244,4 +249,25 @@ public class SignUp extends Fragment implements View.OnClickListener{
             }
         });
     }
+
+    private void addFirstAchievement() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put("coins", "0");
+        Call<ServerResponse<PostResult>> addAchievement = api.addAchievement(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.STANDART_TOKEN, ""), map);
+
+        addAchievement.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code() != 200) Log.e("error", String.valueOf(response.raw() + preferences.getString(AppСonstants.USER_EMAIL, "")));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("error", String.valueOf(t));
+            }
+        });
+    }
+
 }

@@ -111,6 +111,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     private void getCoins(String userEmail) {
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
                 "user_email", userEmail);
+
         call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
             @Override
             public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {

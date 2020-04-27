@@ -118,6 +118,12 @@ public interface Api {
                                                @Header("X-TOKEN") String token,
                                                @FieldMap HashMap<String, String> map);
 
+    @FormUrlEncoded
+    @POST("api/achievements_to_users/add")
+    Call<ServerResponse<PostResult>> addAchievement(@Header("X-API-KEY") String api_key,
+                                               @Header("X-TOKEN") String token,
+                                               @FieldMap HashMap<String, String> map);
+
     @GET("api/shop/all")
     Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token);
