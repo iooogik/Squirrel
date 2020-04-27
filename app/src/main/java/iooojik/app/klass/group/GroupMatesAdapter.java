@@ -78,7 +78,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                     .resize(100, 100)
                     .transform(new RoundedCornersTransformation(30, 5)).into(holder.img);
 
-        }else holder.img.setImageResource(R.drawable.dark_baseline_account_circle_24);
+        }else holder.img.setImageResource(R.drawable.baseline_account_circle_24);
 
 
 

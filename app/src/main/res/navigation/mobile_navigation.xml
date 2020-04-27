@@ -49,7 +49,7 @@
 
     <fragment
         android:id="@+id/nav_planets_list"
-        android:name="iooojik.app.klass.astronomy.Planets"
+        android:name="iooojik.app.klass.subjects.astronomy.Planets"
         android:label="Планеты"
         tools:layout="@layout/fragment_planets"  >
         <action
@@ -59,13 +59,13 @@
 
     <fragment
         android:id="@+id/nav_planets_article"
-        android:name="iooojik.app.klass.astronomy.ScrollingArticle"
+        android:name="iooojik.app.klass.subjects.astronomy.ScrollingArticle"
         android:label="Статья"
         tools:layout="@layout/activity_scrolling_article"  />
 
     <fragment
         android:id="@+id/nav_geometry_list"
-        android:name="iooojik.app.klass.geometry.GeometricFigures"
+        android:name="iooojik.app.klass.subjects.geometry.GeometricFigures"
         android:label="Геометрические фигуры"
         tools:layout="@layout/fragment_geometric_figures" >
     </fragment>
@@ -81,7 +81,7 @@
         android:id="@+id/nav_checkList"
         android:name="iooojik.app.klass.notes.CheckList"
         android:label=""
-        tools:layout="@layout/fragment_check" />
+        tools:layout="@layout/fragment_check_list" />
 
     <fragment
         android:id="@+id/nav_book"

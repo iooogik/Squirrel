@@ -7,15 +7,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -97,14 +94,8 @@ public class Profile extends Fragment implements View.OnClickListener {
 
         getActivity().runOnUiThread(() -> {
             getUserProfile();
-            //setTopMenu();
             getCoins(preferences.getString(AppСonstants.USER_EMAIL, ""));
         });
-
-
-
-
-
         return view;
     }
 
@@ -163,7 +154,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                                 .resize(100, 100)
                                 .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
                     } else {
-                        avatar.setImageResource(R.drawable.dark_baseline_account_circle_24);
+                        avatar.setImageResource(R.drawable.baseline_account_circle_24);
                     }
 
                     TextView name = header.findViewById(R.id.textView);
@@ -272,29 +263,6 @@ public class Profile extends Fragment implements View.OnClickListener {
             }
         });
     }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-/*
-    private void setTopMenu(){
-        MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
-
-        materialToolbar.inflateMenu(R.menu.profile_menu_items);
-        materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.action_settings){
-                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-                    navController.navigate(R.id.nav_settings);
-                }
-                return false;
-            }
-        });
-    }
-
- */
 
     @Override
     public void onClick(View v) {

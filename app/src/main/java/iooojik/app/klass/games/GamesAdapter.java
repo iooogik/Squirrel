@@ -18,10 +18,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import iooojik.app.klass.R;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
 public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> {
@@ -49,7 +51,9 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Game game = games.get(position);
         holder.name.setText(game.getName());
-        holder.logo.setImageResource(game.getImageID());
+        Picasso.get().load(game.getImageID())
+                .resize(130, 130)
+                .transform(new RoundedCornersTransformation(30, 5)).into(holder.logo);
         if (game.gameID == R.id.nav_pairs){
             holder.itemView.setOnClickListener(v -> {
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);

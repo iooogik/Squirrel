@@ -14,14 +14,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -36,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 import iooojik.app.klass.Database;
 import iooojik.app.klass.NotificationReceiver;
@@ -66,19 +68,14 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_check, container, false);
-        //инициализация кнопок
-        ImageButton buttonTimeSet = view.findViewById(R.id.buttonShopAlarm);
-        buttonTimeSet.setOnClickListener(this);
-        ImageButton buttonSave = view.findViewById(R.id.buttonSave);
-        buttonSave.setOnClickListener(this);
+        view = inflater.inflate(R.layout.fragment_check_list, container, false);
 
         fab = getActivity().findViewById(R.id.fab);
 
         fab.setImageResource(R.drawable.baseline_add_24);
         fab.show();
         fab.setOnClickListener(this);
-
+        setHasOptionsMenu(true);
         //получение элементов чек-лсита
         getPoints();
 
@@ -102,7 +99,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     @Override
     public void updateData(String databaseName, String name, String note, String shortNote) {
         mDb = mDBHelper.getWritableDatabase();
-
+        setHasOptionsMenu(true);
         //код сохранения в бд
         ContentValues cv = new ContentValues();
         cv.put("name", name);
@@ -122,9 +119,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
                     getSystemService(Activity.INPUT_METHOD_SERVICE);
             if (inputMethodManager != null) {
-                inputMethodManager.hideSoftInputFromWindow(Objects.
-                        requireNonNull(getActivity().getCurrentFocus()).
-                        getWindowToken(), 0);
+                inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
             }
         } catch (Exception e){
             Log.i("StandartNotes", String.valueOf(e));
@@ -296,8 +291,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                     1, notificationIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
-            AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).
-                    getSystemService(ALARM_SERVICE);
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
 
 
             assert alarmManager != null;
@@ -327,11 +321,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.buttonShopAlarm){
-            //добавление уведомления
-            alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
-        }
-        else if (v.getId() == R.id.fab){
+        if (v.getId() == R.id.fab){
             //добавление элемента
             final LinearLayout MAIN_LAYOUT  = new LinearLayout(getContext());
             final LinearLayout LAYOUT_1 = new LinearLayout(getContext());
@@ -384,15 +374,28 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
             dlg.show();
 
-        } else if(v.getId() == R.id.buttonSave){
-            updateData("Notes", nameNote.getText().toString(),
-                    null, shortNote.getText().toString());
         }
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        fab.hide();
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.check_list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_notif:
+                alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
+                return true;
+            case R.id.action_save:
+                updateData("Notes", nameNote.getText().toString(),
+                        null, shortNote.getText().toString());
+                Snackbar.make(getView(), "Сохранено", Snackbar.LENGTH_LONG).show();
+                return true;
+        }
+        return false;
     }
 }

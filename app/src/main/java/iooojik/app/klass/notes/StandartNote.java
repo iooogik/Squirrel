@@ -65,7 +65,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     // "Календарь" для получения времени
     private Calendar calendar;
     private Context context;
-    private Menu menu;
     private FloatingActionButton fab;
 
 
@@ -299,7 +298,6 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        this.menu = menu;
         getActivity().getMenuInflater().inflate(R.menu.standart_note_menu, menu);
     }
 

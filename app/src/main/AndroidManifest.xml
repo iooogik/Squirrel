@@ -33,16 +33,16 @@
         </activity>
 
         <activity
-            android:name="iooojik.app.klass.astronomy.ScrollingArticle"
+            android:name=".subjects.astronomy.ScrollingArticle"
             android:theme="@style/AppThemeLight" />
 
         <activity android:name="iooojik.app.klass.notes.StandartNote"/>
 
-        <activity android:name="iooojik.app.klass.ar.ARcamera"/>
+        <activity android:name=".subjects.ar.ARcamera"/>
 
         <activity android:name="iooojik.app.klass.notes.Notes"/>
 
-        <activity android:name="iooojik.app.klass.astronomy.Planets"/>
+        <activity android:name=".subjects.astronomy.Planets"/>
 
         <activity android:name="iooojik.app.klass.qr.BarcodeCaptureActivity"/>
 

@@ -244,7 +244,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                     .resize(100, 100)
                     .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
         } else {
-            avatar.setImageResource(R.drawable.dark_baseline_account_circle_24);
+            avatar.setImageResource(R.drawable.baseline_account_circle_24);
         }
 
         name.setText(preferences.getString(AppСonstants.USER_FULL_NAME, ""));

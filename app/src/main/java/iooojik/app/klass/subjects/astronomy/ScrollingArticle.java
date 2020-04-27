@@ -1,4 +1,4 @@
-package iooojik.app.klass.astronomy;
+package iooojik.app.klass.subjects.astronomy;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,17 +8,20 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 
-public class ScrollingArticle extends Fragment implements View.OnClickListener{
+public class ScrollingArticle extends Fragment{
 
     private Cursor userCursor;
 
@@ -32,7 +35,6 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
         Bundle args = this.getArguments();
         assert args != null;
         int id = args.getInt("_id");
-
         Database mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
 
@@ -54,6 +56,7 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
         bitmap =  BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
 
         imageView.setImageBitmap(bitmap);
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -74,7 +77,8 @@ public class ScrollingArticle extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View v) {
-
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
     }
 }

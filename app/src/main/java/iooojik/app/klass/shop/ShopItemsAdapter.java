@@ -78,7 +78,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
                     .transform(new RoundedCornersTransformation(30, 5)).into(holder.logo);
         }
         else {
-            holder.logo.setImageResource(R.drawable.dark_baseline_account_circle_24);
+            holder.logo.setImageResource(R.drawable.baseline_account_circle_24);
         }
 
         holder.buy.setOnClickListener(v -> {

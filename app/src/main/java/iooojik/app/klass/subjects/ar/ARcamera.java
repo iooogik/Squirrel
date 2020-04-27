@@ -1,4 +1,4 @@
-package iooojik.app.klass.ar;
+package iooojik.app.klass.subjects.ar;
 
 import android.content.Intent;
 import android.os.Build;

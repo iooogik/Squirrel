@@ -61,7 +61,6 @@ public class Notes extends Fragment {
     //Переменные для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
-    private Cursor userCursor;
 
     private View view;
     private Context context;
@@ -92,7 +91,6 @@ public class Notes extends Fragment {
     }
 
     private void enableBottomSheet() {
-
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_notes, null);
 
@@ -124,9 +122,6 @@ public class Notes extends Fragment {
             bottomSheetDialog.show();
             fab.hide();
         });
-
-
-
     }
 
     private void enableSearch() {
@@ -301,6 +296,7 @@ public class Notes extends Fragment {
         List<Note> uploadNotes = new ArrayList<>();
         mDb = mDBHelper.getReadableDatabase();
 
+        Cursor userCursor;
         for (Note note : ITEMS) {
             int id = note.getId();
 

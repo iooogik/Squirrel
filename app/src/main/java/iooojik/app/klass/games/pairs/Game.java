@@ -33,9 +33,7 @@ import iooojik.app.klass.R;
 
 public class Game extends Fragment implements View.OnClickListener{
 
-    public Game() {
-        // Required empty public constructor
-    }
+    public Game() {}
 
     private View view;
     //высота и ширина таблицы
