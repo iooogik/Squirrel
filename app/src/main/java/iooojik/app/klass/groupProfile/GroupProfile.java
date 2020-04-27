@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 
 import iooojik.app.klass.Api;
@@ -121,29 +123,27 @@ public class GroupProfile extends Fragment {
                         test.setText("Тест доступен");
                         Button execTest = view.findViewById(R.id.execTest);
                         execTest.setVisibility(View.VISIBLE);
-                        execTest.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                try {
-                                    Database mDBHelper = new Database(getContext());
-                                    SQLiteDatabase mDb;
-                                    mDBHelper = new Database(getContext());
-                                    mDBHelper.openDataBase();
-                                    mDBHelper.updateDataBase();
+                        execTest.setOnClickListener(v -> {
+                            try {
+                                Database mDBHelper = new Database(getContext());
+                                SQLiteDatabase mDb;
+                                mDBHelper = new Database(getContext());
+                                mDBHelper.openDataBase();
+                                mDBHelper.updateDataBase();
 
-                                    mDb = mDBHelper.getWritableDatabase();
-                                    mDb.execSQL(group.getTest());
+                                mDb = mDBHelper.getWritableDatabase();
+                                mDb.execSQL(group.getTest());
 
-                                    Cursor cursor = mDb.rawQuery("Select * from Tests", null);
-                                    cursor.moveToLast();
-                                    ContentValues contentValues = new ContentValues();
-                                    contentValues.put("group_id", Integer.parseInt(group.getId()));
-                                    mDb.update("Tests", contentValues, "_id=" + (cursor.getPosition() + 1), null);
-                                } catch (Exception e) {
-                                    Log.i("LOAD TEST", String.valueOf(e));
-                                }
-
+                                Cursor cursor = mDb.rawQuery("Select * from Tests", null);
+                                cursor.moveToLast();
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put("group_id", Integer.parseInt(group.getId()));
+                                mDb.update("Tests", contentValues, "_id=" + (cursor.getPosition() + 1), null);
+                                Snackbar.make(getView(), "Тест получен!", Snackbar.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                Log.i("LOAD TEST", String.valueOf(e));
                             }
+
                         });
                     }else {
                         test.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
