@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -45,7 +46,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class Group extends Fragment implements View.OnClickListener{
+public class Group extends Fragment{
 
     public Group() {}
 
@@ -65,8 +66,6 @@ public class Group extends Fragment implements View.OnClickListener{
     private FloatingActionButton fab;
     //апи
     private Api api;
-    //текущий фрагмент
-    private Fragment fragment;
     //список одногруппников
     private List<Mate> mates;
     //настройки
@@ -85,18 +84,14 @@ public class Group extends Fragment implements View.OnClickListener{
         //получение списка одноклассников
         getGroupMates();
 
+        //адаптер с одногруппникми и информацией о прохождении теста
         RecyclerView groupmates = view.findViewById(R.id.groupmates);
         groupmates.setLayoutManager(new LinearLayoutManager(context));
         groupmates.setAdapter(groupmatesAdapter);
-        //конпка с открытием редактора тестов
-        Button testEditor = view.findViewById(R.id.testEditor);
-        testEditor.setOnClickListener(this);
-        fragment = this;
 
         fab = getActivity().findViewById(R.id.fab);
         fab.show();
-        fab.setOnClickListener(this);
-
+        enableBottomSheet();
         return view;
     }
 
@@ -170,75 +165,7 @@ public class Group extends Fragment implements View.OnClickListener{
         id = args.getInt("id");
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.fab:
-                /*
-                 * MaterialAlertDialogBuilder для добавления нового ученика в группу
-                 * 1. пользователь вводит email и полное имя ученика, если он есть в базе, то
-                 * он добавляется в список и, соответсвенно, в бд
-                 */
-
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                LinearLayout layout = new LinearLayout(context);
-                layout.setOrientation(LinearLayout.VERTICAL);
-                @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
-                TextInputEditText emailText = view1.findViewById(R.id.edit_text);
-
-                TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-                textInputLayout.setHint("Введите e-mail адрес");
-                textInputLayout.setHelperTextEnabled(false);
-                textInputLayout.setCounterEnabled(false);
-
-                layout.addView(view1);
-
-                builder.setPositiveButton("Добавить", (dialog, which) -> {
-                    String email = emailText.getText().toString().trim();
-                    boolean result = false;
-
-                    //проверяем, есть ли пользовтель в группе
-                    if (mates.size() == 0 && !email.equals(groupAuthor)) {
-                        result = true;
-                    }else {
-
-                        for (Mate mate : mates) {
-                            if (email.equals(mate.getEmail())) {
-                                result = false;
-                                break;
-                            } else result = true;
-                        }
-
-                    }
-
-                    //получаем пользовательскую информацию по email
-                    //если код == 200, то заносим пользователя в группу
-                    //иначе выдаём сообщение об ошибке
-
-                    if (result){
-                        addNewUser(email);
-                    }
-                    else Snackbar.make(view, "Пользователь с указанным email-адресом уже есть в группе", Snackbar.LENGTH_LONG).show();
-
-                });
-
-                builder.setView(layout);
-                builder.create().show();
-                break;
-            case R.id.testEditor:
-                //редактор тестов
-                Bundle bundle = new Bundle();
-                bundle.putInt("id", id);
-                bundle.putInt("groupID", groupID);
-                bundle.putString("groupAuthor", groupAuthor);
-                bundle.putString("groupAuthorName", groupAuthorName);
-                bundle.putString("groupName", groupName);
-                NavController navController = NavHostFragment.findNavController(this);
-                navController.navigate(R.id.nav_testEditor, bundle);
-        }
-    }
-
-    private void addNewUser(String email) {
+    private void addNewUserWeb(String email) {
         //получение информации о добавляемом пользователе
 
         doRetrofit();
@@ -303,4 +230,155 @@ public class Group extends Fragment implements View.OnClickListener{
             }
         });
     }
+
+    private void addUser(){
+        /*
+         * MaterialAlertDialogBuilder для добавления нового ученика в группу
+         * 1. пользователь вводит email и полное имя ученика, если он есть в базе, то
+         * он добавляется в список и, соответсвенно, в бд
+         */
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
+        TextInputEditText emailText = view1.findViewById(R.id.edit_text);
+
+        TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
+        textInputLayout.setHint("Введите e-mail адрес");
+        textInputLayout.setHelperTextEnabled(false);
+        textInputLayout.setCounterEnabled(false);
+
+        layout.addView(view1);
+
+        builder.setPositiveButton("Добавить", (dialog, which) -> {
+            String email = emailText.getText().toString().trim();
+            boolean result = false;
+
+            //проверяем, есть ли пользовтель в группе
+            if (mates.size() == 0 && !email.equals(groupAuthor)) {
+                result = true;
+            }else {
+
+                for (Mate mate : mates) {
+                    if (email.equals(mate.getEmail())) {
+                        result = false;
+                        break;
+                    } else result = true;
+                }
+
+            }
+
+            //получаем пользовательскую информацию по email
+            //если код == 200, то заносим пользователя в группу
+            //иначе выдаём сообщение об ошибке
+
+            if (result){
+                addNewUserWeb(email);
+            }
+            else Snackbar.make(view, "Пользователь с указанным email-адресом уже есть в группе", Snackbar.LENGTH_LONG).show();
+
+            fab.show();
+
+        });
+        builder.setOnCancelListener(dialog -> fab.show());
+        builder.setView(layout);
+        builder.create().show();
+    }
+
+    @SuppressLint("InflateParams")
+    private void enableBottomSheet() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
+        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_group_editor, null);
+
+        bottomSheetDialog.setContentView(bottomSheet);
+
+        Button add = bottomSheet.findViewById(R.id.add);
+        add.setOnClickListener(v -> {
+            addUser();
+            bottomSheetDialog.hide();
+        });
+
+        Button sync = bottomSheet.findViewById(R.id.test_editor);
+        sync.setOnClickListener(v -> {
+            //редактор тестов
+            Bundle bundle = new Bundle();
+            bundle.putInt("id", id);
+            bundle.putInt("groupID", groupID);
+            bundle.putString("groupAuthor", groupAuthor);
+            bundle.putString("groupAuthorName", groupAuthorName);
+            bundle.putString("groupName", groupName);
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.nav_testEditor, bundle);
+            bottomSheetDialog.hide();
+        });
+
+
+        Button download = bottomSheet.findViewById(R.id.add_message);
+        download.setOnClickListener(v -> {
+            addMessageToGroup();
+            bottomSheetDialog.hide();
+        });
+
+        bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
+
+
+        fab.setOnClickListener(v -> {
+            bottomSheetDialog.show();
+            fab.hide();
+        });
+
+    }
+
+    private void addMessageToGroup() {
+        //создаём окно для ввода сообщения
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+        builder.setTitle("Добавить сообщение");
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
+        TextInputEditText messageText = view1.findViewById(R.id.edit_text);
+        messageText.setMaxLines(10);
+
+        TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
+        textInputLayout.setHint("Введите ваше сообщение");
+        textInputLayout.setHelperTextEnabled(false);
+        textInputLayout.setCounterEnabled(false);
+
+        layout.addView(view1);
+
+        builder.setView(layout);
+
+        //слушатели
+        builder.setPositiveButton("Добавить", (dialog, which) -> {
+
+            //запрос
+            HashMap<String, String> map = new HashMap<>();
+            map.put("group_id", String.valueOf(id));
+            map.put("message", messageText.getText().toString());
+            Call<ServerResponse<PostResult>> addMessageCall = api.addGroupMessage(AppСonstants.X_API_KEY,
+                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+            addMessageCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                @Override
+                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                    if (response.code() == 200) Snackbar.make(getView(), "Добавлено", Snackbar.LENGTH_LONG).show();
+                    else {
+                        Log.e("ADD GROUP MESSAGE", String.valueOf(response.raw()));
+                        Snackbar.make(getView(), "К сожалению, произошла ошибка", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                    Log.e("ADD GROUP MESSAGE", String.valueOf(t));
+                    Snackbar.make(getView(), "К сожалению, произошла ошибка", Snackbar.LENGTH_LONG).show();
+                }
+            });
+        });
+
+        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+        builder.create().show();
+        fab.show();
+    }
+
 }

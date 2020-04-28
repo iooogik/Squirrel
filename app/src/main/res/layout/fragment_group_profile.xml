@@ -33,7 +33,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="@dimen/fab_margin"
                         android:text="group_name"
                         android:textSize="45sp" />
 
@@ -42,7 +42,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="@dimen/fab_margin"
                         android:layout_marginTop="25dp"
                         android:text="Учитель:"
                         android:textSize="18sp" />
@@ -52,9 +52,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="@dimen/fab_margin"
                         android:text="email:"
                         android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/teacher_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/fab_margin"
+                        android:text="Сообщение от преподавателя: "
+                        android:textColor="@color/colorAccent" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -65,7 +73,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
-                            android:layout_marginStart="15dp"
+                            android:layout_marginStart="@dimen/fab_margin"
                             android:layout_marginTop="15dp"
                             android:gravity="center"
                             android:text="Тест доступен"
@@ -81,6 +89,7 @@
                             android:text="Получить тест"
                             android:textColor="@color/Completed"
                             android:visibility="gone" />
+
                     </FrameLayout>
 
                 </LinearLayout>

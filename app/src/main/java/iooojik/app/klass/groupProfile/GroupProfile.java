@@ -29,6 +29,8 @@ import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.group.GroupMatesAdapter;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.groups_messages.DataMessage;
+import iooojik.app.klass.models.groups_messages.MessagesToGroup;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mate;
 import retrofit2.Call;
@@ -65,7 +67,7 @@ public class GroupProfile extends Fragment {
         groupN.setText(groupName);
         getGroupInformation();
         getTestTeacherInfo();
-
+        getGroupMessage();
     }
 
     private void getGroupInformation() {
@@ -175,4 +177,30 @@ public class GroupProfile extends Fragment {
         groupID = bundle.getString("groupID");
         groupName = bundle.getString("groupName");
     }
+
+    private void getGroupMessage(){
+        //метод получения сообщения от учителя
+        doRetrofit();
+        Call<ServerResponse<DataMessage>> call = api.getGroupMessage(AppСonstants.X_API_KEY,
+                sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", groupID);
+
+        call.enqueue(new Callback<ServerResponse<DataMessage>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataMessage>> call, Response<ServerResponse<DataMessage>> response) {
+                if (response.code() == 200){
+                    DataMessage dataMessage = response.body().getData();
+                    List<MessagesToGroup> list = dataMessage.getMessagesToGroups();
+                    MessagesToGroup message = list.get(0);
+                    TextView textView = view.findViewById(R.id.teacher_message);
+                    textView.setText(String.format("%s\n    %s", textView.getText().toString(), message.getMessage()));
+                }else Log.e("GETTING MESSAGE", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataMessage>> call, Throwable t) {
+                Log.e("GETTING MESSAGE", String.valueOf(t));
+            }
+        });
+    }
+
 }

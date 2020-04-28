@@ -8,6 +8,7 @@ import iooojik.app.klass.models.TestResults.DataTestResult;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.getToken.DataToken;
+import iooojik.app.klass.models.groups_messages.DataMessage;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.notesData.NotesData;
 import iooojik.app.klass.models.paramUsers.ParamData;
@@ -131,6 +132,13 @@ public interface Api {
                                                @Header("X-TOKEN") String token,
                                                @FieldMap HashMap<String, String> map);
 
+    //добавление сообщения для группы
+    @FormUrlEncoded
+    @POST("api/messages_to_groups/add")
+    Call<ServerResponse<PostResult>> addGroupMessage(@Header("X-API-KEY") String api_key,
+                                                    @Header("X-TOKEN") String token,
+                                                    @FieldMap HashMap<String, String> map);
+
     //получение item-ов в магазине
     @GET("api/shop/all")
     Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
@@ -191,4 +199,12 @@ public interface Api {
                                                        @Header("X-TOKEN") String token,
                                                        @Query("field") String field,
                                                        @Query("filter") String filter);
+
+    //получение сообщений для группы
+    @GET("api/messages_to_groups/all?")
+    Call<ServerResponse<DataMessage>> getGroupMessage(@Header("X-API-KEY") String api_key,
+                                                      @Header("X-TOKEN") String token,
+                                                      @Query("field") String field,
+                                                      @Query("filter") String filter);
+
 }
