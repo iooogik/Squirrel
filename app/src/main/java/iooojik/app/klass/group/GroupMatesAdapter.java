@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +49,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
         Mate mate = mates.get(position);
         if (testsResults != null){
             boolean wasFound = false;
+            //ищем ученика с его результами
             for (TestsResult testResult: testsResults) {
                 if (testResult.getUserEmail().equals(mate.getEmail())){
                     //ставим результат и показываем его
@@ -67,6 +69,14 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                 holder.text_result.setText("Тест ещё не был пройден");
                 holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
             }
+
+            holder.layout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return false;
+                }
+            });
+
         }
         holder.email.setText(mate.getEmail());
         holder.name.setText(mate.getFullName());
@@ -92,6 +102,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
         ImageView img;
         LinearLayout progress;
         TextView text_result;
+        ConstraintLayout layout;
 
 
         ViewHolder(@NonNull View itemView) {
@@ -101,6 +112,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
             email = itemView.findViewById(R.id.textView2);
             progress = itemView.findViewById(R.id.linearLayout_result);
             text_result = itemView.findViewById(R.id.text_tint);
+            layout = itemView.findViewById(R.id.constraint);
         }
     }
 }
