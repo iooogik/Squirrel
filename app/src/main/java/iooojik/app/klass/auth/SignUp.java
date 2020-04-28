@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
@@ -32,7 +31,7 @@ import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.authorization.SignUpResult;
-import iooojik.app.klass.models.userData.Data;
+import iooojik.app.klass.models.userData.UserData;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -145,7 +144,6 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 Call<SignUpResult> authResponse = api.userRegistration(AppСonstants.X_API_KEY,
                                 preferences.getString(AppСonstants.STANDART_TOKEN, ""),
                                 map, group);
-                String finalGroup = group;
                 authResponse.enqueue(new Callback<SignUpResult>() {
                     @SuppressLint("CommitPrefEdits")
                     @Override
@@ -153,11 +151,8 @@ public class SignUp extends Fragment implements View.OnClickListener{
                         if (response.code() == 200) {
                             SignUpResult dataAuth = response.body();
                             preferences.edit().putString(AppСonstants.USER_LOGIN, login);
-                            String type = "";
-                            if (finalGroup.equals("[5]")) type = "teacher";
-                            else type = "pupil";
 
-                            if (dataAuth.getStatus()) signIN(uEmail, uPassword, type);
+                            if (dataAuth.getStatus()) signIN(uEmail, uPassword);
                         } else Log.e("Sign Up", String.valueOf(response.raw()));
                     }
 
@@ -173,7 +168,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void signIN(String uEmail, String uPassword, String type){
+    private void signIN(String uEmail, String uPassword){
         //авторизация пользователя
         doRetrofit();
 
@@ -181,16 +176,16 @@ public class SignUp extends Fragment implements View.OnClickListener{
         uCredi.put("username", uEmail);
         uCredi.put("password", uPassword);
 
-        Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
+        Call<ServerResponse<UserData>> authResponse = api.UserLogin(uCredi);
 
-        authResponse.enqueue(new Callback<ServerResponse<Data>>() {
+        authResponse.enqueue(new Callback<ServerResponse<UserData>>() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+            public void onResponse(Call<ServerResponse<UserData>> call, Response<ServerResponse<UserData>> response) {
                 if (response.code() == 200) {
                     //получаем данные с сервера
-                    ServerResponse<Data> dataAuth = response.body();
-                    Data result = dataAuth.getData();
+                    ServerResponse<UserData> dataAuth = response.body();
+                    UserData result = dataAuth.getData();
 
                     //сохраняем пользовательский токен
                     preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
@@ -216,7 +211,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<UserData>> call, Throwable t) {
                 Log.e("Sign In", String.valueOf(t));
                 Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
             }
@@ -260,7 +255,8 @@ public class SignUp extends Fragment implements View.OnClickListener{
         addAchievement.enqueue(new Callback<ServerResponse<PostResult>>() {
             @Override
             public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                if (response.code() != 200) Log.e("error", String.valueOf(response.raw() + preferences.getString(AppСonstants.USER_EMAIL, "")));
+                if (response.code() != 200) Log.e("error", response.raw() +
+                        preferences.getString(AppСonstants.USER_EMAIL, ""));
             }
 
             @Override

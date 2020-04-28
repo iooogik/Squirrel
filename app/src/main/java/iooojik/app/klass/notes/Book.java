@@ -1,6 +1,7 @@
 package iooojik.app.klass.notes;
 
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -72,7 +73,7 @@ public class Book extends Fragment implements View.OnClickListener {
 
     private void getImagesAndDescriptions(int position){
         SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
-        Cursor userCursor = mDb.rawQuery("Select * from Formulaes",
+        @SuppressLint("Recycle") Cursor userCursor = mDb.rawQuery("Select * from Formulaes",
                 null);
         userCursor.moveToPosition(position);
         try {
@@ -93,7 +94,7 @@ public class Book extends Fragment implements View.OnClickListener {
     }
 
     private void setInformation(int pos){
-        View view1 = getLayoutInflater().inflate(R.layout.recycler_view_book_item, null, false);
+        @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.recycler_view_book_item, null, false);
         FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
         ImageView imageView = frameLayout.findViewById(R.id.formulae);
         TextView tv = frameLayout.findViewById(R.id.description);

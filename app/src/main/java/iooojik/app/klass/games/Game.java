@@ -1,11 +1,11 @@
 package iooojik.app.klass.games;
 
 public class Game {
-    String name;
-    int imageID;
+    private String name;
+    private int imageID;
     int gameID;
 
-    public Game(String name, int imageID, int gameID) {
+    Game(String name, int imageID, int gameID) {
         this.name = name;
         this.imageID = imageID;
         this.gameID = gameID;
@@ -15,11 +15,11 @@ public class Game {
         return name;
     }
 
-    public int getImageID() {
+    int getImageID() {
         return imageID;
     }
 
-    public int getGameID() {
+    int getGameID() {
         return gameID;
     }
 }

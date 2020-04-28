@@ -3,7 +3,7 @@ package iooojik.app.klass.models.matesList;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Mates {
+public class Mate {
 
     @SerializedName("_id")
     @Expose

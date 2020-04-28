@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.getToken.DataToken;
-import iooojik.app.klass.models.userData.Data;
+import iooojik.app.klass.models.userData.UserData;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -163,15 +163,15 @@ public class MainActivity extends AppCompatActivity {
         uCredi.put("username", uEmail);
         uCredi.put("password", uPassword);
         //выполняем запрос
-        Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
-        authResponse.enqueue(new Callback<ServerResponse<Data>>() {
+        Call<ServerResponse<UserData>> authResponse = api.UserLogin(uCredi);
+        authResponse.enqueue(new Callback<ServerResponse<UserData>>() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+            public void onResponse(Call<ServerResponse<UserData>> call, Response<ServerResponse<UserData>> response) {
                 if (response.code() == 200) {
                     //получаем данные с сервера
-                    ServerResponse<Data> dataAuth = response.body();
-                    Data result = dataAuth.getData();
+                    ServerResponse<UserData> dataAuth = response.body();
+                    UserData result = dataAuth.getData();
                     preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                     //сохраняем пользовательские данные
                     //токен
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<UserData>> call, Throwable t) {
                 Log.e("Sign In", String.valueOf(t));
             }
         });

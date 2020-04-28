@@ -1,5 +1,6 @@
 package iooojik.app.klass.groupProfile;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,7 +30,7 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.group.GroupMatesAdapter;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
-import iooojik.app.klass.models.matesList.Mates;
+import iooojik.app.klass.models.matesList.Mate;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,7 +45,6 @@ public class GroupProfile extends Fragment {
     private String groupName = "", groupID = "";
     private Api api;
     private Context context;
-    private Fragment fragment;
     private SharedPreferences sharedPreferences;
     private Group group;
 
@@ -54,7 +54,6 @@ public class GroupProfile extends Fragment {
         view = inflater.inflate(R.layout.fragment_group_profile, container, false);
         sharedPreferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = getContext();
-        fragment = this;
         setInformation();
         return view;
 
@@ -79,8 +78,8 @@ public class GroupProfile extends Fragment {
             public void onResponse(Call<ServerResponse<DataUsersToGroup>> call, Response<ServerResponse<DataUsersToGroup>> response) {
                 if(response.code() == 200) {
                     ServerResponse<DataUsersToGroup> result = response.body();
-                    List<Mates> mates = result.getData().getMates();
-                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates, null);
+                    List<Mate> mates = result.getData().getMates();
+                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mates, null);
                     RecyclerView recyclerView = view.findViewById(R.id.group_mates);
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                     recyclerView.setAdapter(groupmatesAdapter);
@@ -134,7 +133,7 @@ public class GroupProfile extends Fragment {
                                 mDb = mDBHelper.getWritableDatabase();
                                 mDb.execSQL(group.getTest());
 
-                                Cursor cursor = mDb.rawQuery("Select * from Tests", null);
+                                @SuppressLint("Recycle") Cursor cursor = mDb.rawQuery("Select * from Tests", null);
                                 cursor.moveToLast();
                                 ContentValues contentValues = new ContentValues();
                                 contentValues.put("group_id", Integer.parseInt(group.getId()));

@@ -9,13 +9,15 @@ import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
+import iooojik.app.klass.models.notesData.NotesData;
+import iooojik.app.klass.models.paramUsers.ParamData;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.promocode.PromoData;
 import iooojik.app.klass.models.pupil.DataPupilList;
 import iooojik.app.klass.models.shop.ShopData;
 import iooojik.app.klass.models.teacher.AddGroupResult;
 import iooojik.app.klass.models.teacher.DataGroup;
-import iooojik.app.klass.models.userData.Data;
+import iooojik.app.klass.models.userData.UserData;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -36,7 +38,7 @@ public interface Api {
     //авторизация
     @FormUrlEncoded
     @POST("api/user/login")
-    Call<ServerResponse<Data>> UserLogin(@FieldMap HashMap<String, String> map);
+    Call<ServerResponse<UserData>> UserLogin(@FieldMap HashMap<String, String> map);
 
     //распределение по классам
     @FormUrlEncoded
@@ -152,14 +154,14 @@ public interface Api {
 
     //получение списка заметок
     @GET("api/notes/all?")
-    Call<ServerResponse<iooojik.app.klass.models.notesData.Data>> getNotes(@Header("X-API-KEY") String api_key,
-                                                                           @Query("field") String field, @Query("filter") String filter);
+    Call<ServerResponse<NotesData>> getNotes(@Header("X-API-KEY") String api_key,
+                                             @Query("field") String field, @Query("filter") String filter);
 
     //получение пользовательских параметров
     @GET("api/user/all")
-    Call<ServerResponse<iooojik.app.klass.models.paramUsers.Data>> getParamUser(@Header("X-API-KEY") String api_key,
-                                                                                @Header("X-TOKEN") String token,
-                                                                                @Query("field") String field, @Query("filter") String email);
+    Call<ServerResponse<ParamData>> getParamUser(@Header("X-API-KEY") String api_key,
+                                                 @Header("X-TOKEN") String token,
+                                                 @Query("field") String field, @Query("filter") String email);
     //запрос на детализацию профиля
     @GET("api/user/detail")
     Call<ServerResponse<ProfileData>> getUserDetail(@Header("X-API-KEY") String api_key,

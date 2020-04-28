@@ -1,5 +1,6 @@
 package iooojik.app.klass.group;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,9 +35,9 @@ import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.TestResults.DataTestResult;
 import iooojik.app.klass.models.TestResults.TestsResult;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
-import iooojik.app.klass.models.matesList.Mates;
-import iooojik.app.klass.models.paramUsers.Data;
-import iooojik.app.klass.models.paramUsers.User;
+import iooojik.app.klass.models.matesList.Mate;
+import iooojik.app.klass.models.paramUsers.ParamData;
+import iooojik.app.klass.models.paramUsers.UserParams;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,7 +68,7 @@ public class Group extends Fragment implements View.OnClickListener{
     //текущий фрагмент
     private Fragment fragment;
     //список одногруппников
-    private List<Mates> mates;
+    private List<Mate> mates;
     //настройки
     private SharedPreferences preferences;
 
@@ -130,7 +131,7 @@ public class Group extends Fragment implements View.OnClickListener{
                                 //ставим адаптер
                                 DataTestResult result = response.body().getData();
                                 List<TestsResult> testsResults = result.getTestsResult();
-                                groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates, testsResults);
+                                groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults);
                                 RecyclerView recyclerView = view.findViewById(R.id.groupmates);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                                 recyclerView.setAdapter(groupmatesAdapter);
@@ -182,7 +183,7 @@ public class Group extends Fragment implements View.OnClickListener{
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                 LinearLayout layout = new LinearLayout(context);
                 layout.setOrientation(LinearLayout.VERTICAL);
-                View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
+                @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
                 TextInputEditText emailText = view1.findViewById(R.id.edit_text);
 
                 TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
@@ -201,7 +202,7 @@ public class Group extends Fragment implements View.OnClickListener{
                         result = true;
                     }else {
 
-                        for (Mates mate : mates) {
+                        for (Mate mate : mates) {
                             if (email.equals(mate.getEmail())) {
                                 result = false;
                                 break;
@@ -242,26 +243,26 @@ public class Group extends Fragment implements View.OnClickListener{
 
         doRetrofit();
 
-        Call<ServerResponse<Data>> call = api.getParamUser(AppСonstants.X_API_KEY,
+        Call<ServerResponse<ParamData>> call = api.getParamUser(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),"email", email);
 
-        call.enqueue(new Callback<ServerResponse<Data>>() {
+        call.enqueue(new Callback<ServerResponse<ParamData>>() {
             @Override
-            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+            public void onResponse(Call<ServerResponse<ParamData>> call, Response<ServerResponse<ParamData>> response) {
                 if (response.code() == 200){
 
-                    Data data = response.body().getData();
-                    if (data.getUser().size() > 0) {
-                        User user = data.getUser().get(0);
+                    ParamData paramData = response.body().getData();
+                    if (paramData.getUserParams().size() > 0) {
+                        UserParams userParams = paramData.getUserParams().get(0);
 
-                        String avatar = user.getAvatar();
+                        String avatar = userParams.getAvatar();
                         if (avatar == null || avatar.isEmpty()) {
                             avatar = "null";
                         }
 
                         HashMap<String, String> map = new HashMap<>();
-                        map.put("full_name", user.getFullName());
-                        map.put("email", user.getEmail());
+                        map.put("full_name", userParams.getFullName());
+                        map.put("email", userParams.getEmail());
                         map.put("group_id", String.valueOf(id));
                         map.put("group_name", groupName);
                         map.put("avatar", avatar);
@@ -297,7 +298,7 @@ public class Group extends Fragment implements View.OnClickListener{
                     }
             }
             @Override
-            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<ParamData>> call, Throwable t) {
 
             }
         });

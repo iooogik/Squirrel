@@ -1,6 +1,7 @@
 package iooojik.app.klass.notes;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -60,7 +61,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     //"Календарь" для получения даты от пользователя
     private Calendar calendar = Calendar.getInstance();
     private EditText nameNote, shortNote;
-    private FloatingActionButton fab;
 
     public CheckList() {}
 
@@ -70,7 +70,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_check_list, container, false);
 
-        fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
 
         fab.setImageResource(R.drawable.baseline_add_24);
         fab.show();
@@ -138,7 +138,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
         final String TEMP;
         String tempBool;
-        Cursor userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
+        @SuppressLint("Recycle") Cursor userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
         userCursor.moveToFirst();
         nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
         shortNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
@@ -162,7 +162,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             boolean[] booleans = new boolean[tempArrBool.length];
 
             for (int i = 0; i < tempArrBool.length; i++) {
-                booleans[i] = Boolean.valueOf(tempArrBool[i]);
+                booleans[i] = Boolean.parseBoolean(tempArrBool[i]);
                 Booleans.add(booleans[i]);
 
                 Items.add(tempArr[i]);
@@ -188,7 +188,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     private void addCheck(boolean state, String nameCheck){
         //"слушатель" для нажатого элемента списка
         LinearLayout linear = view.findViewById(R.id.markedScroll);
-        View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
+        @SuppressLint("InflateParams") View view2 = getLayoutInflater().inflate(R.layout.item_check, null);
         final CheckBox CHECK = view2.findViewById(R.id.checkBox);
         final EditText EDIT_SHOP_NAME = view.findViewById(R.id.editNameShopNote);
         CHECK.setChecked(state);
@@ -211,7 +211,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
 
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
             LinearLayout linearLayout = new LinearLayout(getContext());
-            View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
+            @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
             TextInputEditText editText = view1.findViewById(R.id.edit_text);
             TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
             textInputLayout.setHint("Введите новое имя");

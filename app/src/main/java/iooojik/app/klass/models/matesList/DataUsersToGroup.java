@@ -9,13 +9,13 @@ public class DataUsersToGroup {
 
     @SerializedName("users_to_group")
     @Expose
-    private List<Mates> mates = null;
+    private List<Mate> mates = null;
 
-    public List<Mates> getMates() {
+    public List<Mate> getMates() {
         return mates;
     }
 
-    public void setMates(List<Mates> mates) {
+    public void setMates(List<Mate> mates) {
         this.mates = mates;
     }
 

@@ -40,7 +40,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.recycler_view_item_test, parent, false);//поиск элемента списка
-        return new TestsAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @SuppressLint("DefaultLocale")
@@ -60,15 +60,12 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
             //добавляем данные в диаграмму
             List<Float> score = new ArrayList<>();
-
             score.add((rightScore/wrongScore)* 100);
             score.add(100 - (rightScore/wrongScore)* 100);
 
             //преобразуем в понятные для диаграммы данные
             List<PieEntry> entries = new ArrayList<PieEntry>();
             for (int i = 0; i < score.size(); i++) entries.add(new PieEntry(score.get(i), i));
-
-
             PieDataSet pieDataSet = new PieDataSet(entries, "");
 
             //устанавливаем цвета
@@ -77,7 +74,6 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             int red = Color.parseColor("#FF5252");
             colors.add(green);
             colors.add(red);
-
             pieDataSet.setColors(colors);
 
             PieData pieData = new PieData(pieDataSet);
@@ -128,7 +124,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder{
         final TextView name;
         final TextView desc;
         final TextView result;

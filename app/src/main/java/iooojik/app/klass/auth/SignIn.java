@@ -30,7 +30,7 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
-import iooojik.app.klass.models.userData.Data;
+import iooojik.app.klass.models.userData.UserData;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -107,16 +107,16 @@ public class SignIn extends Fragment implements View.OnClickListener {
                     uCredi.put("username", uEmail);
                     uCredi.put("password", uPassword);
 
-                    Call<ServerResponse<Data>> authResponse = api.UserLogin(uCredi);
+                    Call<ServerResponse<UserData>> authResponse = api.UserLogin(uCredi);
 
-                    authResponse.enqueue(new Callback<ServerResponse<Data>>() {
+                    authResponse.enqueue(new Callback<ServerResponse<UserData>>() {
                         @SuppressLint("CommitPrefEdits")
                         @Override
-                        public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+                        public void onResponse(Call<ServerResponse<UserData>> call, Response<ServerResponse<UserData>> response) {
                             if (response.code() == 200) {
                                 //получаем данные с сервера
-                                ServerResponse<Data> dataAuth = response.body();
-                                Data result = dataAuth.getData();
+                                ServerResponse<UserData> dataAuth = response.body();
+                                UserData result = dataAuth.getData();
 
                                 //сохраняем пользовательский токен
                                 preferences.edit().putString(AppСonstants.AUTH_SAVED_TOKEN, dataAuth.getToken()).apply();
@@ -139,7 +139,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
                         }
 
                         @Override
-                        public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+                        public void onFailure(Call<ServerResponse<UserData>> call, Throwable t) {
                             Log.e("Sign In", String.valueOf(t));
                             Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.",
                                     Snackbar.LENGTH_LONG).show();

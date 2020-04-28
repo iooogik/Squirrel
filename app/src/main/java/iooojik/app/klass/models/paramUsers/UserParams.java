@@ -1,9 +1,13 @@
-package iooojik.app.klass.models.userData;
+package iooojik.app.klass.models.paramUsers;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Data {
+import java.util.List;
+
+import iooojik.app.klass.models.profileData.Group;
+
+public class UserParams {
     @SerializedName("id")
     @Expose
     private String id;
@@ -33,7 +37,7 @@ public class Data {
     private String lastLogin;
     @SerializedName("last_activity")
     @Expose
-    private String lastActivity;
+    private Object lastActivity;
     @SerializedName("date_created")
     @Expose
     private String dateCreated;
@@ -55,6 +59,12 @@ public class Data {
     @SerializedName("ip_address")
     @Expose
     private String ipAddress;
+    @SerializedName("avatar_thumbnail")
+    @Expose
+    private String avatarThumbnail;
+    @SerializedName("group")
+    @Expose
+    private List<Group> group = null;
 
     public String getId() {
         return id;
@@ -128,11 +138,11 @@ public class Data {
         this.lastLogin = lastLogin;
     }
 
-    public String getLastActivity() {
+    public Object getLastActivity() {
         return lastActivity;
     }
 
-    public void setLastActivity(String lastActivity) {
+    public void setLastActivity(Object lastActivity) {
         this.lastActivity = lastActivity;
     }
 
@@ -190,5 +200,21 @@ public class Data {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public String getAvatarThumbnail() {
+        return avatarThumbnail;
+    }
+
+    public void setAvatarThumbnail(String avatarThumbnail) {
+        this.avatarThumbnail = avatarThumbnail;
+    }
+
+    public List<Group> getGroup() {
+        return group;
+    }
+
+    public void setGroup(List<Group> group) {
+        this.group = group;
     }
 }

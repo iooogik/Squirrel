@@ -49,7 +49,7 @@ import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.models.notesData.Data;
+import iooojik.app.klass.models.notesData.NotesData;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -373,10 +373,10 @@ public class Notes extends Fragment {
 
     private void clearNotes() {
         doRetrofit();
-        Call<ServerResponse<Data>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
-        call.enqueue(new Callback<ServerResponse<Data>>() {
+        Call<ServerResponse<NotesData>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
+        call.enqueue(new Callback<ServerResponse<NotesData>>() {
             @Override
-            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+            public void onResponse(Call<ServerResponse<NotesData>> call, Response<ServerResponse<NotesData>> response) {
                 if (response.code() == 200) {
                     List<iooojik.app.klass.models.notesData.Note> notes =
                             response.body().getData().getNotes();
@@ -385,7 +385,7 @@ public class Notes extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<NotesData>> call, Throwable t) {
 
             }
         });
@@ -428,10 +428,10 @@ public class Notes extends Fragment {
 
     private void downloadNotes() {
         doRetrofit();
-        Call<ServerResponse<Data>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
-        call.enqueue(new Callback<ServerResponse<Data>>() {
+        Call<ServerResponse<NotesData>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
+        call.enqueue(new Callback<ServerResponse<NotesData>>() {
             @Override
-            public void onResponse(Call<ServerResponse<Data>> call, Response<ServerResponse<Data>> response) {
+            public void onResponse(Call<ServerResponse<NotesData>> call, Response<ServerResponse<NotesData>> response) {
                 if (response.code() == 200) {
                     List<iooojik.app.klass.models.notesData.Note> notes =
                             response.body().getData().getNotes();
@@ -494,7 +494,7 @@ public class Notes extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<NotesData>> call, Throwable t) {
 
             }
         });
