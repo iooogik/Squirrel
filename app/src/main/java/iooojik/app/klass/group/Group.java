@@ -70,6 +70,7 @@ public class Group extends Fragment{
     private List<Mate> mates;
     //настройки
     private SharedPreferences preferences;
+    private Fragment fragment;
 
 
     @Override
@@ -83,6 +84,8 @@ public class Group extends Fragment{
         context = getContext();
         //получение списка одноклассников
         getGroupMates();
+
+        fragment = this;
 
         //адаптер с одногруппникми и информацией о прохождении теста
         RecyclerView groupmates = view.findViewById(R.id.groupmates);
@@ -126,7 +129,7 @@ public class Group extends Fragment{
                                 //ставим адаптер
                                 DataTestResult result = response.body().getData();
                                 List<TestsResult> testsResults = result.getTestsResult();
-                                groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults);
+                                groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults, fragment, true);
                                 RecyclerView recyclerView = view.findViewById(R.id.groupmates);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                                 recyclerView.setAdapter(groupmatesAdapter);

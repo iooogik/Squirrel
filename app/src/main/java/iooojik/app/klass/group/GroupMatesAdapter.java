@@ -1,9 +1,11 @@
 package iooojik.app.klass.group;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,17 +13,28 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
+import iooojik.app.klass.models.PostResult;
+import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.TestResults.TestsResult;
 import iooojik.app.klass.models.matesList.Mate;
+import iooojik.app.klass.notes.Notes;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.ViewHolder> {
 
@@ -29,11 +42,17 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     private List<Mate> mates;
     private List<TestsResult> testsResults;
     private LayoutInflater inflater;
+    private Api api;
+    private Fragment fragment;
+    private boolean isTeacher;
 
-    public GroupMatesAdapter(Context context, List<Mate> mates, List<TestsResult> testsResults) {
+    public GroupMatesAdapter(Context context, List<Mate> mates, List<TestsResult> testsResults,
+                             Fragment fragment, boolean isTeacher) {
         this.context = context;
         this.mates = mates;
         this.testsResults = testsResults;
+        this.fragment = fragment;
+        this.isTeacher = isTeacher;
         inflater = LayoutInflater.from(context);
     }
 
@@ -70,12 +89,41 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                 holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
             }
 
-            holder.layout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
+            if (isTeacher) {
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragment.getActivity());
+                View bottomSheet = fragment.getActivity().getLayoutInflater().
+                        inflate(R.layout.bottom_sheet_delete, null);
+
+                bottomSheetDialog.setContentView(bottomSheet);
+
+                Button delete = bottomSheet.findViewById(R.id.delete);
+                delete.setOnClickListener(v -> {
+                    doRetrofit();
+                    Call<ServerResponse<PostResult>> deleteUser = api.removeMate(AppСonstants.X_API_KEY, mate.getId());
+                    deleteUser.enqueue(new Callback<ServerResponse<PostResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                            if (response.code() != 200)
+                                Log.e("Deleting user", String.valueOf(response.raw()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                            Log.e("Deleting user", String.valueOf(t));
+                        }
+                    });
+                    mates.remove(mate);
+                    notifyDataSetChanged();
+                });
+
+                Button cancel = bottomSheet.findViewById(R.id.cancel);
+                cancel.setOnClickListener(v -> bottomSheetDialog.hide());
+
+                holder.layout.setOnLongClickListener(v -> {
+                    bottomSheetDialog.show();
                     return false;
-                }
-            });
+                });
+            }
 
         }
         holder.email.setText(mate.getEmail());
@@ -89,6 +137,15 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
 
 
 
+    }
+
+    private void doRetrofit(){
+        //базовый метод ретрофита
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
     }
 
     @Override

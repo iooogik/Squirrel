@@ -49,6 +49,7 @@ public class GroupProfile extends Fragment {
     private Context context;
     private SharedPreferences sharedPreferences;
     private Group group;
+    private Fragment fragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,7 +82,7 @@ public class GroupProfile extends Fragment {
                 if(response.code() == 200) {
                     ServerResponse<DataUsersToGroup> result = response.body();
                     List<Mate> mates = result.getData().getMates();
-                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mates, null);
+                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mates, null, fragment, false);
                     RecyclerView recyclerView = view.findViewById(R.id.group_mates);
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                     recyclerView.setAdapter(groupmatesAdapter);

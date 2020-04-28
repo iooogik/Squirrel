@@ -138,6 +138,11 @@ public interface Api {
     Call<ServerResponse<PostResult>> addGroupMessage(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
+    //удаление пользователя из списка
+    @FormUrlEncoded
+    @POST("api/notes/delete")
+    Call<ServerResponse<PostResult>> removeMate(@Header("X-API-KEY") String api_key, @Field("_id") String id);
+
 
     //получение item-ов в магазине
     @GET("api/shop/all")
