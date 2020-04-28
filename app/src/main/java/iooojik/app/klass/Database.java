@@ -15,7 +15,7 @@ import static iooojik.app.klass.AppСonstants.DB_NAME;
 import static iooojik.app.klass.AppСonstants.DB_PATH;
 import static iooojik.app.klass.AppСonstants.DB_VERSION;
 
-// класс для работы с файлом бд
+// класс для работы с локальной бд
 
 public class Database extends SQLiteOpenHelper {
 

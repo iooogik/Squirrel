@@ -37,32 +37,39 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+//авторизация
 public class SignIn extends Fragment implements View.OnClickListener {
 
     public SignIn() {}
 
     private View view;
+    //настройки
     private SharedPreferences preferences;
+    //контроллер
     private NavController navController;
+    //апи
     private Api api;
 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_sign_in, container, false);
 
+        //получение контроллера
         navController = NavHostFragment.findNavController(this);
+        //инициализация настроке
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //ещё одна проверка на авторизацию
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         if (!(token.isEmpty())) navController.navigate(R.id.nav_profile);
 
-        view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);
-        signIn.setOnClickListener(this);
         //кнопка перехода на регистрационную форму
         Button reg = view.findViewById(R.id.registr);
+        //слушатели на кнопки
+        signIn.setOnClickListener(this);
         reg.setOnClickListener(this);
         //скрываем fab
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -74,11 +81,13 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login:
-                /**
+                /*
                  * Обработка нажатия кнопки "Войти"
                  * 1. проверяем, не пустые ли поля с email и password
-                 * 2. выполняем авторизацию, если она не удалась, то вызываем Snackbar c сообщением "Что-то пошло не так. Попробуйте снова."
-                 * если авторизация прошла успешно, то переходим на главный фрагмент, показываем нижний toolbar и разблокируем шторку
+                 * 2. выполняем авторизацию, если она не удалась, то вызываем Snackbar
+                 * c сообщением "Что-то пошло не так. Попробуйте снова."
+                 * если авторизация прошла успешно, то переходим на главный фрагмент,
+                 * показываем нижний toolbar и разблокируем шторку
                  */
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
@@ -124,14 +133,16 @@ public class SignIn extends Fragment implements View.OnClickListener {
                             }
                             else {
                                 Log.e("Sign In", String.valueOf(response.raw()));
-                                Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.",
+                                        Snackbar.LENGTH_LONG).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ServerResponse<Data>> call, Throwable t) {
                             Log.e("Sign In", String.valueOf(t));
-                            Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getView(), "Что-то пошло не так. Попробуйте снова.",
+                                    Snackbar.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -146,12 +157,15 @@ public class SignIn extends Fragment implements View.OnClickListener {
     }
 
     private void getUserAchievements(String userEmail) {
+        //запрос на получение пользовательских "достижений"
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
                 "user_email", userEmail);
         call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
             @Override
             public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
                 if (response.code() == 200){
+                    //если пользователя ещё нет в таблице с достижениями, то заносим его туда,
+                    //иначе сохраняем параметры в preferences
                     AchievementsData data = response.body().getData();
                     if(data.getAchievementsToUsers().size() != 0) {
                         AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
@@ -160,12 +174,10 @@ public class SignIn extends Fragment implements View.OnClickListener {
                     } else {
                         addFirstAchievement();
                     }
-
-
+                    //показываем шторку и перемещаемся на главный фрагмент
                     DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
                     mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                     navController.navigate(R.id.nav_profile);
-
                     MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
                     materialToolbar.setVisibility(View.VISIBLE);
 
@@ -181,6 +193,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
     }
 
     private void addFirstAchievement() {
+        //запрос на добавление пользователя в таблицу с достижениями
         HashMap<String, String> map = new HashMap<>();
         map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
         map.put("coins", "0");
@@ -189,8 +202,10 @@ public class SignIn extends Fragment implements View.OnClickListener {
 
         addAchievement.enqueue(new Callback<ServerResponse<PostResult>>() {
             @Override
-            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                if (response.code() != 200) Log.e("error", String.valueOf(response.raw() + preferences.getString(AppСonstants.USER_EMAIL, "")));
+            public void onResponse(Call<ServerResponse<PostResult>> call,
+                                   Response<ServerResponse<PostResult>> response) {
+                if (response.code() != 200) Log.e("error", response.raw()
+                        + preferences.getString(AppСonstants.USER_EMAIL, ""));
             }
 
             @Override

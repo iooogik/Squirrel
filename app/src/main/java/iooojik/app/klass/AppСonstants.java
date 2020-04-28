@@ -2,7 +2,7 @@ package iooojik.app.klass;
 
 import android.annotation.SuppressLint;
 import android.hardware.Camera;
-
+//класс с константами
 public class AppСonstants {
 
     // идентификатор уведомления
@@ -36,34 +36,47 @@ public class AppСonstants {
     public static final String TAG = "OpenCameraSource";
     public static final int DUMMY_TEXTURE_NAME = 100;
     public static final float ASPECT_RATIO_TOLERANCE = 0.01f;
-    //страница в google play market
-    static String url = "https://play.google.com/store/apps/details?id=iooogik.app.modelling";
-    //
+
+    //базовый url, чтобы получать данные с сервера
     public static final String BASE_URL = "http://195.19.44.146/service/";
+    //url, чтобы получать пользовательские картинки
     public static final String IMAGE_URL = "http://195.19.44.146/service/uploads/user/";
+    //ключ апи
     public static final String X_API_KEY = "33CD9CAE7D5D15F7E435A26BBFF81A4E";
+    //названия настроек
+    //пользовательский токен
     public static String AUTH_SAVED_TOKEN = "AUTH_TOKEN";
+    //админский токен
     public static String STANDART_TOKEN = "STANDART_TOKEN";
+    //пользовательский id
     public static String USER_ID = "USER_ID";
+    //пользовательский пароль
     public static String USER_PASSWORD = "USER_PASSWORD";
+    //логин пользователя
     public static String USER_LOGIN = "USER_LOGIN";
+    //email пользователя
     public static String USER_EMAIL = "USER_EMAIL";
+    //аватар
     public static String USER_AVATAR = "USER_AVATAR";
+    //тип аккаунта
     public static String USER_ROLE = "USER_ROLE";
+    //полное имя пользователя
     public static String USER_FULL_NAME = "USER_FULL_NAME";
-
+    //количество койнов пользователя
     public static String USER_COINS = "USER_COINS";
+    //id "достижений" пользователя
     public static String ACHIEVEMENTS_ID = "ACHIEVEMENTS_ID" ;
-
+    //админский email
     static final String adminEmail = "test@test.com";
+    //админский пароль
     static final String adminPassword = "123456";
-
+    //специальный символ для тестов
     public static final String testDivider = "{#$#}";
-
+    //переменная, индентифицируящая выбранную пользователем картинку
     public static final int PICK_IMAGE_AVATAR = 9;
-
-
+    //табоица с тестами
     public static final String TABLE_TESTS = "Tests";
+    //название колонок в табоице Tests////////////////////////////////////////////////////
     public static final String TABLE_ID = "_id";
     public static final String TABLE_TESTS_NAME = "name";
     public static final String TABLE_TESTS_DESCRIPTION = "description";
@@ -76,4 +89,5 @@ public class AppСonstants {
     public static final String TABLE_TESTS_USER_SCORE = "userScore";
     public static final String TABLE_TESTS_SCORE_QUEST = "scoreForQuest";
     public static final String TABLE_TESTS_GROUP_ID = "group_id";
+    ///////////////////////////////////////////////////////////////////////////////////
 }

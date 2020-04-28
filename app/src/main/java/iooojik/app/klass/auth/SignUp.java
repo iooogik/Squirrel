@@ -41,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class SignUp extends Fragment implements View.OnClickListener{
-
+    //регистрация пользователя
     public SignUp() {}
 
     private View view;
@@ -54,47 +54,45 @@ public class SignUp extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        view = inflater.inflate(R.layout.fragment_sign_up, container, false);
+        //получение настроек и контроллера
         navController = NavHostFragment.findNavController(this);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //ещё одна проверка на авторизацию
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         if (!(token.isEmpty())) navController.navigate(R.id.nav_profile);
 
-        view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-
+        //инициализация кнопок
         Button signIn = view.findViewById(R.id.signIn);
-        signIn.setOnClickListener(this);
-        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         Button signUp = view.findViewById(R.id.sign_up);
+        //слушатели на кнопки
+        signIn.setOnClickListener(this);
         signUp.setOnClickListener(this);
-        //слушатель, чтобы получить тип аккаунта
 
+
+        //слушатель, чтобы получить тип аккаунта
         RadioButton radioButton1 = view.findViewById(R.id.teacher);
         RadioButton radioButton2 = view.findViewById(R.id.pupil);
-        radioButton1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    accountType = "Teacher";
-                    radioButton2.setChecked(false);
-                }
+        radioButton1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                //учительский профиль
+                accountType = "Teacher";
+                radioButton2.setChecked(false);
             }
         });
 
-        radioButton2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    accountType = "Pupil";
-                    radioButton1.setChecked(false);
-                }
+        radioButton2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                //ученический профиль
+                accountType = "Pupil";
+                radioButton1.setChecked(false);
             }
         });
         return view;
     }
 
-    private void doBase(){
+    private void doRetrofit(){
+        //базовый метод для работы с retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -106,25 +104,26 @@ public class SignUp extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.sign_up:
+                doRetrofit();
+                //инициализация заполненный полей
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
                 EditText name = view.findViewById(R.id.name);
                 EditText surname = view.findViewById(R.id.surname);
-                doBase();
 
-                SharedPreferences pref = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-
-                /**
-                 * 1. проверяем, не пустые ли поля, если не все поля заполнены, то выводим сообщение: "Не все поля заполнены"
-                 * 2. проводим регистрацию, в случае неудачи выводим сообщение: "Что-то пошло не так. Попробуйте снова."
+                /*
+                 * 1. проверяем, не пустые ли поля, если не все поля заполнены,
+                 * то выводим сообщение: "Не все поля заполнены"
+                 * 2. проводим регистрацию, в случае неудачи выводим сообщение:
+                 *  "Что-то пошло не так. Попробуйте снова."
                  */
 
+                //заполняем переменные значениями из соотвествующих полей
                 String uEmail = email.getText().toString().trim(); //email
                 String uPassword = password.getText().toString().trim(); //password
                 String uFullName = name.getText().toString().trim() + " "
                         + surname.getText().toString().trim(); //full name
-
+                //собираем логин
                 int id = uEmail.indexOf("@");
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < id; i++) {
@@ -141,10 +140,11 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 String group = "[4]";
                 if (accountType.equals("Teacher")) group = "[5]";
                 else group = "[6]";  //id группы (типа аккаунта)
-                Call<SignUpResult> authResponse = api.userRegistration(AppСonstants.X_API_KEY,
-                                pref.getString(AppСonstants.STANDART_TOKEN, ""),
-                                map, group);
 
+                //запрос на регистрацию
+                Call<SignUpResult> authResponse = api.userRegistration(AppСonstants.X_API_KEY,
+                                preferences.getString(AppСonstants.STANDART_TOKEN, ""),
+                                map, group);
                 String finalGroup = group;
                 authResponse.enqueue(new Callback<SignUpResult>() {
                     @SuppressLint("CommitPrefEdits")
@@ -174,8 +174,8 @@ public class SignUp extends Fragment implements View.OnClickListener{
     }
 
     private void signIN(String uEmail, String uPassword, String type){
-
-        doBase();
+        //авторизация пользователя
+        doRetrofit();
 
         HashMap<String, String> uCredi = new HashMap<>();
         uCredi.put("username", uEmail);
@@ -197,7 +197,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
                     preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                     preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
                     preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
-
+                    //получение достижений пользователя
                     getUserAchievements(uEmail);
 
                     DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);

@@ -49,17 +49,26 @@ public class Group extends Fragment implements View.OnClickListener{
     public Group() {}
 
     private View view;
+    //id группы
     private int groupID = -1;
+    //название группы
     private String groupName;
+    //уитель
     private String groupAuthor;
     private String groupAuthorName;
     private int id = -1;
     private Context context;
+    //адаптер
     private GroupMatesAdapter groupmatesAdapter;
+    //fab
     private FloatingActionButton fab;
+    //апи
     private Api api;
+    //текущий фрагмент
     private Fragment fragment;
+    //список одногруппников
     private List<Mates> mates;
+    //настройки
     private SharedPreferences preferences;
 
 
@@ -91,6 +100,7 @@ public class Group extends Fragment implements View.OnClickListener{
     }
 
     private void doRetrofit(){
+        //базовый метод ретрофита
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -117,6 +127,7 @@ public class Group extends Fragment implements View.OnClickListener{
                         @Override
                         public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
                             if (response.code() == 200){
+                                //ставим адаптер
                                 DataTestResult result = response.body().getData();
                                 List<TestsResult> testsResults = result.getTestsResult();
                                 groupmatesAdapter = new GroupMatesAdapter(context, fragment, mates, testsResults);
@@ -149,6 +160,7 @@ public class Group extends Fragment implements View.OnClickListener{
     }
 
     private void getGroupInfo(){
+        //получаем информацию о группе из предыдущего фрагмента
         Bundle args = this.getArguments();
         groupID = args.getInt("groupID");
         groupAuthor = args.getString("groupAuthor");
@@ -161,7 +173,8 @@ public class Group extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fab:
-                /**MaterialAlertDialogBuilder для добавления нового ученика в группу
+                /*
+                 * MaterialAlertDialogBuilder для добавления нового ученика в группу
                  * 1. пользователь вводит email и полное имя ученика, если он есть в базе, то
                  * он добавляется в список и, соответсвенно, в бд
                  */
@@ -278,7 +291,7 @@ public class Group extends Fragment implements View.OnClickListener{
 
 
                     } else {
-                        Log.e("ttt", String.valueOf(response.raw()));
+                        Log.e("ADD MATE", String.valueOf(response.raw()));
                         Snackbar.make(view, "Что-то пошло не так!",
                             Snackbar.LENGTH_LONG).show();
                     }

@@ -30,10 +30,8 @@ import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
 public interface Api {
-    @Headers({
-            "X-API-KEY: " + AppСonstants.X_API_KEY,
-            "Content-Type: application/x-www-form-urlencoded"
-    })
+    @Headers({"X-API-KEY: " + AppСonstants.X_API_KEY,
+            "Content-Type: application/x-www-form-urlencoded"})
 
     //авторизация
     @FormUrlEncoded
@@ -60,13 +58,13 @@ public interface Api {
     Call<ServerResponse<PostResult>> userUpdateAvatar(@Header("X-API-KEY") String api_key,
                                                       @Header("X-TOKEN") String token,
                                                       @PartMap HashMap<String, RequestBody> map);
-
+    //добавление группы(класса)
     @FormUrlEncoded
     @POST("api/groups/add")
     Call<ServerResponse<AddGroupResult>> addGroup(@Header("X-API-KEY") String api_key,
                                                   @Header("X-TOKEN") String token,
                                                   @FieldMap HashMap<String, String> map);
-
+    //обновление тестов
     @FormUrlEncoded
     @POST("api/groups/update")
     Call<ServerResponse<PostResult>> updateTest(@Header("X-API-KEY") String api_key,
@@ -84,98 +82,111 @@ public interface Api {
     Call<ServerResponse<PostResult>> uploadNotes(@Header("X-API-KEY") String api_key, @Header("X-TOKEN") String token,
                                   @FieldMap HashMap<String, String> map);
 
+    //добавление результата о выполнении теста
     @FormUrlEncoded
     @POST("api/tests_result/add")
     Call<ServerResponse<PostResult>> addResult(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token,
                                                 @FieldMap HashMap<String, String> map);
 
+    //логирование получения "достижения"
     @FormUrlEncoded
     @POST("api/achievements_changes/add")
     Call<ServerResponse<PostResult>> logAchievement(@Header("X-API-KEY") String api_key,
                                                @Header("X-TOKEN") String token,
                                                @FieldMap HashMap<String, String> map);
 
+    //обновление "достижений"
     @FormUrlEncoded
     @POST("api/achievements_to_users/update")
     Call<ServerResponse<PostResult>> updateAchievement(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token,
                                                 @FieldMap HashMap<String, String> map);
 
+    //обновление промо-кода для лас
     @FormUrlEncoded
     @POST("api/las_promo/update")
     Call<ServerResponse<PostResult>> changeStatePromo(@Header("X-API-KEY") String api_key,
                                                        @Header("X-TOKEN") String token,
                                                        @FieldMap HashMap<String, String> map);
 
+    //удаление всех пользовательских заметок из базы
     @FormUrlEncoded
     @POST("api/notes/delete")
     Call<ServerResponse<PostResult>> removeNotes(@Header("X-API-KEY") String api_key, @Field("_id") String id);
 
+    //логирование покупки в магазине
     @FormUrlEncoded
     @POST("api/shop_logs/add")
     Call<ServerResponse<PostResult>> logBuying(@Header("X-API-KEY") String api_key,
                                                @Header("X-TOKEN") String token,
                                                @FieldMap HashMap<String, String> map);
 
+    //добавление "достижения"
     @FormUrlEncoded
     @POST("api/achievements_to_users/add")
     Call<ServerResponse<PostResult>> addAchievement(@Header("X-API-KEY") String api_key,
                                                @Header("X-TOKEN") String token,
                                                @FieldMap HashMap<String, String> map);
 
+    //получение item-ов в магазине
     @GET("api/shop/all")
     Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token);
 
+
+    //получение промо-кодов
     @GET("api/las_promo/all?")
     Call<ServerResponse<PromoData>> getPromo(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token,
                                              @Query("field") String field, @Query("filter") String filter);
 
+    //получение всех "достижений" пользователя
     @GET("api/achievements_to_users/all?")
     Call<ServerResponse<AchievementsData>> getAchievements(@Header("X-API-KEY") String api_key,
                                                            @Query("field") String field, @Query("filter") String email);
-
+    //получение списка групп
     @GET("api/groups/all?")
     Call<ServerResponse<DataGroup>> getGroups(@Header("X-API-KEY") String api_key,
                                               @Query("field") String field, @Query("filter") String email);
 
+    //получение списка заметок
     @GET("api/notes/all?")
     Call<ServerResponse<iooojik.app.klass.models.notesData.Data>> getNotes(@Header("X-API-KEY") String api_key,
                                                                            @Query("field") String field, @Query("filter") String filter);
 
+    //получение пользовательских параметров
     @GET("api/user/all")
     Call<ServerResponse<iooojik.app.klass.models.paramUsers.Data>> getParamUser(@Header("X-API-KEY") String api_key,
                                                                                 @Header("X-TOKEN") String token,
                                                                                 @Query("field") String field, @Query("filter") String email);
-
+    //запрос на детализацию профиля
     @GET("api/user/detail")
     Call<ServerResponse<ProfileData>> getUserDetail(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @Query("id") int id);
 
+    //получение "одноклассников"
     @GET("api/users_to_group/all?")
     Call<ServerResponse<DataUsersToGroup>> getMatesList(@Header("X-API-KEY") String api_key,
                                                         @Query("field") String field, @Query("filter") String group_id);
 
+    //получени
     @GET("api/users_to_group/all?")
     Call<ServerResponse<DataPupilList>> getPupilActiveGroups(@Header("X-API-KEY") String api_key,
                                                              @Header("X-TOKEN") String token,
                                                              @Query("field") String field,
                                                              @Query("filter") String email);
-
+    //детализация группы
     @GET("api/groups/detail?")
     Call<ServerResponse<iooojik.app.klass.groupProfile.DataGroup>> groupDetail(@Header("X-API-KEY") String api_key,
                                                                                @Header("X-TOKEN") String token,
                                                                                @Query("_id") int id);
 
+    //получение результатов теста
     @GET("api/tests_result/all?")
     Call<ServerResponse<DataTestResult>> getTestResults(@Header("X-API-KEY") String api_key,
                                                        @Header("X-TOKEN") String token,
                                                        @Query("field") String field,
                                                        @Query("filter") String filter);
-
-
-
 }

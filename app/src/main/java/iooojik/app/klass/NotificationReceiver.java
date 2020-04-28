@@ -17,11 +17,9 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         // получение NotificationManager
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
-
         // Идентификатор канала
         String CHANNEL_ID = "Уведомления";
         //получаем версию sdk
