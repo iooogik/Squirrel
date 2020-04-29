@@ -28,7 +28,6 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.TestResults.TestsResult;
 import iooojik.app.klass.models.matesList.Mate;
-import iooojik.app.klass.notes.Notes;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -114,6 +113,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                     });
                     mates.remove(mate);
                     notifyDataSetChanged();
+                    bottomSheetDialog.hide();
                 });
 
                 Button cancel = bottomSheet.findViewById(R.id.cancel);

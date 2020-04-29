@@ -140,7 +140,7 @@ public interface Api {
                                                     @FieldMap HashMap<String, String> map);
     //удаление пользователя из списка
     @FormUrlEncoded
-    @POST("api/notes/delete")
+    @POST("api/users_to_group/delete")
     Call<ServerResponse<PostResult>> removeMate(@Header("X-API-KEY") String api_key, @Field("_id") String id);
 
 
