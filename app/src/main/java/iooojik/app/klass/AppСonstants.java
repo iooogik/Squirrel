@@ -90,4 +90,6 @@ public class AppСonstants {
     public static final String TABLE_TESTS_SCORE_QUEST = "scoreForQuest";
     public static final String TABLE_TESTS_GROUP_ID = "group_id";
     ///////////////////////////////////////////////////////////////////////////////////
+    //id группы, в которой находится пользователь
+    public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";
 }

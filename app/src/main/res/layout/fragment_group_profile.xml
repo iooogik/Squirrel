@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -91,6 +91,16 @@
                             android:visibility="gone" />
 
                     </FrameLayout>
+
+                    <Button
+                        android:id="@+id/leave_group"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/notCompleted"
+                        android:layout_gravity="end"
+                        android:layout_margin="@dimen/fab_margin"
+                        android:text="Покинуть группу" />
 
                 </LinearLayout>
             </FrameLayout>

@@ -16,9 +16,12 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
@@ -28,6 +31,7 @@ import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.group.GroupMatesAdapter;
+import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.groups_messages.DataMessage;
 import iooojik.app.klass.models.groups_messages.MessagesToGroup;
@@ -39,7 +43,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class GroupProfile extends Fragment {
+public class GroupProfile extends Fragment implements View.OnClickListener{
 
     public GroupProfile() {}
 
@@ -50,6 +54,7 @@ public class GroupProfile extends Fragment {
     private SharedPreferences sharedPreferences;
     private Group group;
     private Fragment fragment;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +63,9 @@ public class GroupProfile extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = getContext();
         setInformation();
+        Button leave = view.findViewById(R.id.leave_group);
+        navController = NavHostFragment.findNavController(this);
+        leave.setOnClickListener(this);
         return view;
 
     }
@@ -82,6 +90,12 @@ public class GroupProfile extends Fragment {
                 if(response.code() == 200) {
                     ServerResponse<DataUsersToGroup> result = response.body();
                     List<Mate> mates = result.getData().getMates();
+                    for (Mate mate : mates){
+                        if (mate.getEmail().equals(sharedPreferences.getString(AppСonstants.USER_EMAIL, ""))){
+                            sharedPreferences.edit().putString(AppСonstants.USER_CURR_GROUP_ID, mate.getId()).apply();
+                            break;
+                        }
+                    }
                     GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mates, null, fragment, false);
                     RecyclerView recyclerView = view.findViewById(R.id.group_mates);
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -204,4 +218,36 @@ public class GroupProfile extends Fragment {
         });
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.leave_group:
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                builder.setMessage("Покинуть группу?");
+                builder.setPositiveButton("Покинуть", (dialog, which) -> leaveGroup());
+                builder.setNegativeButton("Остаться", (dialog, which) -> dialog.cancel());
+                builder.create().show();
+                break;
+        }
+    }
+
+    private void leaveGroup(){
+        doRetrofit();
+        Call<ServerResponse<PostResult>> deleteUser = api.removeMate(AppСonstants.X_API_KEY,
+                sharedPreferences.getString(AppСonstants.USER_CURR_GROUP_ID, ""));
+        deleteUser.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code() == 200){
+                    navController.navigate(R.id.nav_profile);
+                }
+                else Log.e("Deleting user", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("Deleting user", String.valueOf(t));
+            }
+        });
+    }
 }
