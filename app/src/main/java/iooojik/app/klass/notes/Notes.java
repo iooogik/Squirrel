@@ -84,9 +84,12 @@ public class Notes extends Fragment {
         fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.baseline_add_24);
         setHasOptionsMenu(true);
-        startProcedures();
-        enableBottomSheet();
-        enableSearch();
+        getActivity().runOnUiThread(() -> {
+            startProcedures();
+            enableBottomSheet();
+            enableSearch();
+        });
+
         return view;
     }
 
@@ -155,12 +158,12 @@ public class Notes extends Fragment {
         } catch (Exception e) {
             Log.i("Notes", String.valueOf(e));
         }
-        updProjects();
+        updateNotes();
 
     }
 
     //обновление проектов на активити
-    private void updProjects() {
+    private void updateNotes() {
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
         Cursor userCursor = mDb.rawQuery("Select * from Notes", null);

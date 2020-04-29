@@ -202,5 +202,14 @@
         android:name="iooojik.app.klass.shop.Shop"
         android:label="@string/shop"
         tools:layout="@layout/fragment_shop" />
+    <fragment
+        android:id="@+id/nav_todoList"
+        android:name="iooojik.app.klass.todo.TodoList"
+        android:label="ToDo лист"
+        tools:layout="@layout/fragment_todo_list" >
+        <action
+            android:id="@+id/action_todoList_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
 
 </navigation>

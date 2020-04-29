@@ -18,7 +18,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 2;
+    static int DB_VERSION = 3;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -92,4 +92,8 @@ public class AppСonstants {
     ///////////////////////////////////////////////////////////////////////////////////
     //id группы, в которой находится пользователь
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";
+    //названия колонок в таблце TodoList
+    public static  final String TABLE_TODO_NAME = "todo_list";
+    public static  final String TABLE_TODO_TEXT = "text";
+    public static  final String TABLE_TODO_CHECKED = "checked";
 }
