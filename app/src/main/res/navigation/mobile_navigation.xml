@@ -43,7 +43,7 @@
 
     <fragment
         android:id="@+id/nav_las"
-        android:name="iooojik.app.klass.games.las.LifeAtSpace"
+        android:name="iooojik.app.klass.gameObjects.las.LifeAtSpace"
         android:label="Игра от издателя"
         tools:layout="@layout/fragment_test" />
 
@@ -162,7 +162,7 @@
         android:label="Редактор теста" />
     <fragment
         android:id="@+id/nav_games"
-        android:name="iooojik.app.klass.games.Games"
+        android:name="iooojik.app.klass.gameObjects.Games"
         android:label="Переменка"
         tools:layout="@layout/fragment_games" >
         <action
@@ -176,7 +176,7 @@
 
     <fragment
         android:id="@+id/nav_pairs"
-        android:name="iooojik.app.klass.games.pairs.Game"
+        android:name="iooojik.app.klass.gameObjects.pairs.GamePairs"
         tools:layout="@layout/fragment_pairs_game"
         android:label="Pairs" />
     <fragment

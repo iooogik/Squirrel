@@ -28,13 +28,13 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> {
 
-    private List<Game> games;
+    private List<GameObject> gameObjects;
     private Context context;
     private LayoutInflater inflater;
     private Fragment fragment;
 
-    GamesAdapter(List<Game> games, Context context, Fragment fragment) {
-        this.games = games;
+    GamesAdapter(List<GameObject> gameObjects, Context context, Fragment fragment) {
+        this.gameObjects = gameObjects;
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.fragment = fragment;
@@ -49,12 +49,12 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Game game = games.get(position);
-        holder.name.setText(game.getName());
-        Picasso.get().load(game.getImageID())
+        GameObject gameObject = gameObjects.get(position);
+        holder.name.setText(gameObject.getName());
+        Picasso.get().load(gameObject.getImageID())
                 .resize(130, 130)
                 .transform(new RoundedCornersTransformation(30, 5)).into(holder.logo);
-        if (game.gameID == R.id.nav_pairs){
+        if (gameObject.gameID == R.id.nav_pairs){
             holder.itemView.setOnClickListener(v -> {
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                 LinearLayout linearLayout = new LinearLayout(context);
@@ -94,14 +94,14 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> 
         } else {
             holder.itemView.setOnClickListener(v -> {
                 NavController navController = NavHostFragment.findNavController(fragment);
-                navController.navigate(game.getGameID());
+                navController.navigate(gameObject.getGameID());
             });
         }
     }
 
     @Override
     public int getItemCount() {
-        return games.size();
+        return gameObjects.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

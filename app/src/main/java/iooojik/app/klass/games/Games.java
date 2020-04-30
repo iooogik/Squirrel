@@ -30,13 +30,13 @@ public class Games extends Fragment {
         View view = inflater.inflate(R.layout.fragment_games, container, false);
         RecyclerView games = view.findViewById(R.id.games);
         Context context = getContext();
-        List<Game> gamesList = new ArrayList<>();
+        List<GameObject> gamesList = new ArrayList<>();
 
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
 
-        gamesList.add(new Game("Life at space", R.drawable.las_logo, R.id.nav_las));
-        gamesList.add(new Game("Поиск пар", R.drawable.pairs_logo, R.id.nav_pairs));
+        gamesList.add(new GameObject("Life at space", R.drawable.las_logo, R.id.nav_las));
+        gamesList.add(new GameObject("Поиск пар", R.drawable.pairs_logo, R.id.nav_pairs));
 
         games.setLayoutManager(new LinearLayoutManager(getContext()));
 
