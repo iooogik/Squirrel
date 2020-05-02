@@ -32,12 +32,11 @@ import static iooojik.app.klass.AppСonstants.TABLE_TESTS;
 
 public class Tests extends Fragment implements View.OnClickListener{
 
-    static View VIEW;
+    private View view;
 
     //Переменная для работы с БД
     private Database mDBHelper;
 
-    private Cursor userCursor;
     static TestsAdapter TEST_ADAPTER;
     static List<TestTheme> TEST_ITEMS;
 
@@ -48,7 +47,7 @@ public class Tests extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        VIEW = inflater.inflate(R.layout.fragment_test, container, false);
+        view = inflater.inflate(R.layout.fragment_test, container, false);
 
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
@@ -59,12 +58,12 @@ public class Tests extends Fragment implements View.OnClickListener{
         mDBHelper.updateDataBase();
         setHasOptionsMenu(true);
         loadAndSetThemes();
-        return VIEW;
+        return view;
     }
 
     private void loadAndSetThemes(){
         SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from " + TABLE_TESTS, null);
+        Cursor userCursor = mDb.rawQuery("Select * from " + TABLE_TESTS, null);
         userCursor.moveToFirst();
         String name, desc;
 
@@ -96,7 +95,7 @@ public class Tests extends Fragment implements View.OnClickListener{
             userCursor.moveToNext();
         }
         userCursor.close();
-        RecyclerView recyclerView = VIEW.findViewById(R.id.test_items);
+        RecyclerView recyclerView = view.findViewById(R.id.test_items);
         TEST_ADAPTER = new TestsAdapter(getContext(), TEST_ITEMS);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(TEST_ADAPTER);

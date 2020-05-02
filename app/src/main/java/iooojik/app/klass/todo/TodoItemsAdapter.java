@@ -1,5 +1,6 @@
 package iooojik.app.klass.todo;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -7,10 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.List;
 
@@ -22,16 +27,16 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
 
     private List<ToDoItem> items;
     private LayoutInflater inflater;
-    private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor cursor;
-    private Context context;
+    private Database mDBHelper;
+    private Fragment fragment;
 
-    public TodoItemsAdapter(List<ToDoItem> items, Context context) {
+    TodoItemsAdapter(List<ToDoItem> items, Context context, Fragment fragment) {
         this.items = items;
-        this.context = context;
         this.inflater = LayoutInflater.from(context);
-        mDBHelper = new Database(this.context);
+        this.fragment = fragment;
+        mDBHelper = new Database(context);
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         mDb = mDBHelper.getWritableDatabase();
@@ -46,6 +51,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ToDoItem item = items.get(position);
         cursor.moveToPosition(item.getId() - 1);
@@ -58,6 +64,28 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
             contentValues.put(AppСonstants.TABLE_TODO_CHECKED, String.valueOf(isChecked));
             mDb.update(AppСonstants.TABLE_TODO_NAME, contentValues, "_id=" + item.getId(), null);
         });
+
+        //удаление заметки
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragment.getActivity());
+        View bottomSheet = fragment.getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_delete, null);
+
+        bottomSheetDialog.setContentView(bottomSheet);
+
+        Button delete = bottomSheet.findViewById(R.id.delete);
+        delete.setOnClickListener(v -> {
+
+            mDb = mDBHelper.getWritableDatabase();
+            mDb.delete("todo_list", "_id=" + (item.getId()), null);
+            items.remove(item);
+            notifyItemRemoved(position);
+            bottomSheetDialog.hide();
+        });
+
+        Button cancel = bottomSheet.findViewById(R.id.cancel);
+        cancel.setOnClickListener(v -> bottomSheetDialog.hide());
+
+        holder.checkBox.setOnLongClickListener(v -> { bottomSheetDialog.show(); return true; });
+
     }
 
     @Override

@@ -8,11 +8,12 @@ public class DataGroup {
     @Expose
     private Group groups;
 
-    public Group getGroups() {
+    public DataGroup(Group groups) {
+        this.groups = groups;
+    }
+
+    Group getGroups() {
         return groups;
     }
 
-    public void setGroups(Group groups) {
-        this.groups = groups;
-    }
 }

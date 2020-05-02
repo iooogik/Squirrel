@@ -34,7 +34,6 @@ public class Shop extends Fragment {
 
     public Shop() {}
 
-    private View view;
     private Context context;
     private RecyclerView items;
     private Api api;
@@ -45,7 +44,7 @@ public class Shop extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_shop, container, false);
+        View view = inflater.inflate(R.layout.fragment_shop, container, false);
         context = getContext();
         fragment = this;
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);

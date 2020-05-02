@@ -64,12 +64,12 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
             score.add(100 - (rightScore/wrongScore)* 100);
 
             //преобразуем в понятные для диаграммы данные
-            List<PieEntry> entries = new ArrayList<PieEntry>();
+            List<PieEntry> entries = new ArrayList<>();
             for (int i = 0; i < score.size(); i++) entries.add(new PieEntry(score.get(i), i));
             PieDataSet pieDataSet = new PieDataSet(entries, "");
 
             //устанавливаем цвета
-            List<Integer> colors = new ArrayList<Integer>();
+            List<Integer> colors = new ArrayList<>();
             int green = Color.parseColor("#56CF54");
             int red = Color.parseColor("#FF5252");
             colors.add(green);

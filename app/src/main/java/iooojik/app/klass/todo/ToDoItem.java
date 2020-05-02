@@ -1,9 +1,9 @@
 package iooojik.app.klass.todo;
 
 public class ToDoItem {
-    String text;
-    boolean checked;
-    int id;
+    private String text;
+    private boolean checked;
+    private int id;
 
     ToDoItem(String text, boolean checked, int id) {
         this.text = text;
@@ -27,11 +27,8 @@ public class ToDoItem {
         this.text = text;
     }
 
-    public boolean getChecked() {
+    boolean getChecked() {
         return checked;
     }
 
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
 }

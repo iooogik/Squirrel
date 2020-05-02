@@ -27,8 +27,6 @@ public class AppСonstants {
     public static final String AutoFocus = "AutoFocus";
     //фонарик
     public static final String UseFlash = "UseFlash";
-    //сам QR-объект
-    public static final String BarcodeObject = "Barcode";
     @SuppressLint("InlinedApi")
     public static final int CAMERA_FACING_BACK = Camera.CameraInfo.CAMERA_FACING_BACK;
     @SuppressLint("InlinedApi")
@@ -94,7 +92,6 @@ public class AppСonstants {
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";
     //названия колонок в таблце TodoList
     public static  final String TABLE_TODO_NAME = "todo_list";
-    public static  final String TABLE_TODO_TEXT = "text";
     public static  final String TABLE_TODO_CHECKED = "checked";
     public static  final String SHOW_GROUP_ID = "SHOW_GROUP_ID";
 }

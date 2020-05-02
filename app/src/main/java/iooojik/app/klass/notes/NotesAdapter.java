@@ -197,7 +197,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 delete.setOnClickListener(v -> {
                     mDb = mDBHelper.getWritableDatabase();
                     mDb.delete("Notes", "_id=" + (note.getId()), null);
-                    Notes.ITEMS.remove(note);
+                    notes.remove(note);
+                    notesFiltered.remove(note);
                     notifyItemRemoved(position);
                     bottomSheetDialog.hide();
                 });

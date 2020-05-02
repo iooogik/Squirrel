@@ -22,14 +22,12 @@ import iooojik.app.klass.models.teacher.GroupInfo;
 
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
 
-    private Context context;
     private List<GroupInfo> classGroupInfos;
     private Fragment fragment;
     private LayoutInflater inflater;
     private SharedPreferences preferences;
 
     GroupsAdapter(Context context, List<GroupInfo> classGroupInfos, Fragment fragment){
-        this.context = context;
         this.classGroupInfos = classGroupInfos;
         this.fragment = fragment;
         this.inflater = LayoutInflater.from(context);
@@ -54,26 +52,15 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
 
         holder.groupName.setText(String.format("%s %s", holder.groupName.getText().toString(), groupInfo.getName()));
         holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(), String.valueOf(groupInfo.getId())));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putInt("id", Integer.parseInt(groupInfo.getId()));
-                bundle.putString("groupAuthor", groupInfo.getAuthorEmail());
-                bundle.putString("groupName", groupInfo.getName());
-                bundle.putString("groupAuthorName", groupInfo.getAuthor_name());
-                NavController navController = NavHostFragment.findNavController(fragment);
-                navController.navigate(R.id.nav_group, bundle);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("id", Integer.parseInt(groupInfo.getId()));
+            bundle.putString("groupAuthor", groupInfo.getAuthorEmail());
+            bundle.putString("groupName", groupInfo.getName());
+            bundle.putString("groupAuthorName", groupInfo.getAuthor_name());
+            NavController navController = NavHostFragment.findNavController(fragment);
+            navController.navigate(R.id.nav_group, bundle);
         });
-
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return false;
-            }
-        });
-
     }
 
     @Override

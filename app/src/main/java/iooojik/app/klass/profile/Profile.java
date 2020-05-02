@@ -267,60 +267,57 @@ public class Profile extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         String teacherRole = "teacher";
-        switch (v.getId()){
-            case R.id.fab:
-                //добавление класса в учительский профиль
-                if(userRole.equals(teacherRole)){
-                    MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                    View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
-                    TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-                    textInputLayout.setHint("Введите класс");
-                    textInputLayout.setCounterMaxLength(3);
-                    EditText name = view1.findViewById(R.id.edit_text);
+        if (v.getId() == R.id.fab) {//добавление класса в учительский профиль
+            if (userRole.equals(teacherRole)) {
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
+                TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
+                textInputLayout.setHint("Введите класс");
+                textInputLayout.setCounterMaxLength(3);
+                EditText name = view1.findViewById(R.id.edit_text);
 
-                    builder.setView(view1);
+                builder.setView(view1);
 
-                    builder.setPositiveButton("Добавить", (dialog, which) -> {
-                        //заносим в базу данных
-                        doRetrofit();
+                builder.setPositiveButton("Добавить", (dialog, which) -> {
+                    //заносим в базу данных
+                    doRetrofit();
 
-                        error.setVisibility(View.GONE);
-                        TextView warn = view.findViewById(R.id.nothing);
-                        warn.setVisibility(View.GONE);
+                    error.setVisibility(View.GONE);
+                    TextView warn = view.findViewById(R.id.nothing);
+                    warn.setVisibility(View.GONE);
 
-                        String nameGroup = name.getText().toString();
+                    String nameGroup = name.getText().toString();
 
-                        HashMap<String, String> post = new HashMap<>();
-                        post.put("author_email", email);
-                        post.put("name", nameGroup);
-                        post.put("test", "null");
-                        post.put("author_name", fullName);
+                    HashMap<String, String> post = new HashMap<>();
+                    post.put("author_email", email);
+                    post.put("name", nameGroup);
+                    post.put("test", "null");
+                    post.put("author_name", fullName);
 
-                        Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
-                                AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                                post);
+                    Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
+                            AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                            post);
 
-                        responseCall.enqueue(new Callback<ServerResponse<AddGroupResult>>() {
-                            @Override
-                            public void onResponse(Call<ServerResponse<AddGroupResult>> call, Response<ServerResponse<AddGroupResult>> response) {
-                                if (response.code() != 200){
-                                    Log.e("Add Group", String.valueOf(response.raw()));
-                                }else {
-                                    getGroupsFromDatabase();
-                                }
+                    responseCall.enqueue(new Callback<ServerResponse<AddGroupResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<AddGroupResult>> call, Response<ServerResponse<AddGroupResult>> response) {
+                            if (response.code() != 200) {
+                                Log.e("Add Group", String.valueOf(response.raw()));
+                            } else {
+                                getGroupsFromDatabase();
                             }
+                        }
 
-                            @Override
-                            public void onFailure(Call<ServerResponse<AddGroupResult>> call, Throwable t) {
-                                Log.e("Add Group", String.valueOf(t));
-                            }
-                        });
-
+                        @Override
+                        public void onFailure(Call<ServerResponse<AddGroupResult>> call, Throwable t) {
+                            Log.e("Add Group", String.valueOf(t));
+                        }
                     });
-                    builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
-                    builder.create().show();
-                }
-                break;
+
+                });
+                builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+                builder.create().show();
+            }
         }
     }
 

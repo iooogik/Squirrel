@@ -3,7 +3,6 @@ package iooojik.app.klass.todo;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -33,15 +32,13 @@ public class TodoList extends Fragment implements View.OnClickListener{
     public TodoList() {}
 
     private View view;
-    private FloatingActionButton fab;
     private Context context;
     private Fragment fragment;
-    private SharedPreferences preferences;
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private Cursor cursor;
     private TodoItemsAdapter adapter;
-    List<ToDoItem> items;
+    private List<ToDoItem> items;
 
     @Override
     @SuppressLint("Recycle")
@@ -49,15 +46,13 @@ public class TodoList extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_todo_list, container, false);
 
-        fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.baseline_add_24);
         fab.show();
         fab.setOnClickListener(this);
         context = getContext();
         fragment = this;
         items = new ArrayList<>();
-        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
 
         getActivity().runOnUiThread(() -> {
             mDBHelper = new Database(getContext());
@@ -80,20 +75,21 @@ public class TodoList extends Fragment implements View.OnClickListener{
             cursor.moveToNext();
         }
 
-        adapter = new TodoItemsAdapter(items, context);
+        adapter = new TodoItemsAdapter(items, context, fragment);
         RecyclerView recyclerView = view.findViewById(R.id.todo_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
     }
 
+    @SuppressLint("InflateParams")
     private void addPoint(){
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
 
         final LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        //ввод пункта
+        //ввод названия пункта
         View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
         TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
         textInputLayout.setHint("Введите название пункта");
@@ -109,7 +105,9 @@ public class TodoList extends Fragment implements View.OnClickListener{
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("text", text);
                 contentValues.put("checked", "false");
-                items.add(new ToDoItem(text, false, items.get(items.size() - 1).getId() + 1));
+                if (items.size() != 0) {
+                    items.add(new ToDoItem(text, false, items.get(items.size() - 1).getId() + 1));
+                } else items.add(new ToDoItem(text, false, 0));
                 mDb.insert(AppСonstants.TABLE_TODO_NAME, null, contentValues);
                 adapter.notifyDataSetChanged();
             }
@@ -125,10 +123,8 @@ public class TodoList extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.fab:
-                addPoint();
-                break;
+        if (v.getId() == R.id.fab) {
+            addPoint();
         }
     }
 }

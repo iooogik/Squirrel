@@ -9,7 +9,7 @@ public class TestTheme {
     private int id;
 
 
-    public TestTheme(String name, String desc, int userScore, int wrongAnswers, boolean isPassed, int id) {
+    TestTheme(String name, String desc, int userScore, int wrongAnswers, boolean isPassed, int id) {
         this.name = name;
         this.desc = desc;
         this.userScore = userScore;
@@ -18,20 +18,12 @@ public class TestTheme {
         this.id = id;
     }
 
-    public int getUserScore() {
+    int getUserScore() {
         return userScore;
     }
 
-    public void setUserScore(int userScore) {
-        this.userScore = userScore;
-    }
-
-    public int getWrongAnswers() {
+    int getWrongAnswers() {
         return wrongAnswers;
-    }
-
-    public void setWrongAnswers(int wrongAnswers) {
-        this.wrongAnswers = wrongAnswers;
     }
 
     public void setId(int id) {
@@ -42,12 +34,8 @@ public class TestTheme {
         return id;
     }
 
-    public boolean isPassed() {
+    boolean isPassed() {
         return isPassed;
-    }
-
-    public void setPassed(boolean passed) {
-        isPassed = passed;
     }
 
     public String getName() {
@@ -58,11 +46,8 @@ public class TestTheme {
         this.name = name;
     }
 
-    public String getDesc() {
+    String getDesc() {
         return desc;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
 }

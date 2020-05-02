@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -71,7 +70,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     private int totalScore = 0;
     private Api api;
     private SharedPreferences preferences;
-    private final Handler chrono = new Handler();;
+    private final Handler chrono = new Handler();
     private boolean running = true;
     private int seconds;
     private int scorePerAnswer = 1;
@@ -119,7 +118,8 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private void getImages() {
         mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from picturesToQuestions WHERE test_id=?", new String[]{String.valueOf(getTestID())});
+        userCursor =  mDb.rawQuery("Select * from picturesToQuestions WHERE test_id=?",
+                new String[]{String.valueOf(getTestID())});
         userCursor.moveToFirst();
         Bitmap bitmap;
         while (!userCursor.isAfterLast()){
@@ -131,6 +131,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     }
 
+    @SuppressLint("InflateParams")
     private void setTest(){
         List<String> temp = answers;
 
@@ -247,6 +248,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         }
     }
 
+    @SuppressLint("InflateParams")
     private void endTest(boolean isTime){
 
         if (isTime){
@@ -298,14 +300,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         contentValues.put(AppСonstants.TABLE_TESTS_USER_SCORE, userScore);
         contentValues.put(AppСonstants.TABLE_TESTS_IS_PASSED, 1);
         mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id =" + (getTestID()), null);
-        FrameLayout frameLayout = Tests.VIEW.findViewById(R.id.test_frame);
-        frameLayout.removeAllViews();
-        frameLayout.setVisibility(View.GONE);
 
-        TestTheme testTheme = Tests.TEST_ITEMS.get(getTestID() - 1);
-        testTheme.setUserScore(userScore);
-        testTheme.setPassed(true);
-        Tests.TEST_ADAPTER.notifyDataSetChanged();
         //отправка результатов
 
         doRetrofit();

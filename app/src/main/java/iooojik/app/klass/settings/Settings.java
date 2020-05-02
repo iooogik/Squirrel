@@ -1,10 +1,10 @@
 package iooojik.app.klass.settings;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -51,7 +50,6 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,7 +72,6 @@ public class Settings extends Fragment implements View.OnClickListener{
     private Api api;
     private Database mDBHelper;
     private SQLiteDatabase mDb;
-    private Cursor userCursor;
 
 
     @Override
@@ -85,7 +82,7 @@ public class Settings extends Fragment implements View.OnClickListener{
         floatingActionButton.hide();
         context = getContext();
         //получаем настройки
-        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);;
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //получаем packageInfo, чтобы узнать версию установленного приложения
         try {
             packageInfo = getActivity().getPackageManager().
@@ -144,16 +141,13 @@ public class Settings extends Fragment implements View.OnClickListener{
 
         Intent intent = new Intent(getContext(), MainActivity.class);
 
-        darkTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    preferences.edit().putInt(APP_PREFERENCES_THEME, 1).apply();
-                }else {
-                    preferences.edit().putInt(APP_PREFERENCES_THEME, 0).apply();
-                }
-                startActivity(intent);
+        darkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                preferences.edit().putInt(APP_PREFERENCES_THEME, 1).apply();
+            }else {
+                preferences.edit().putInt(APP_PREFERENCES_THEME, 0).apply();
             }
+            startActivity(intent);
         });
     }
 
@@ -194,30 +188,22 @@ public class Settings extends Fragment implements View.OnClickListener{
 
     private void deAuth(){
         Button exit = view.findViewById(R.id.exit);
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        exit.setOnClickListener(v -> {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
 
-                builder.setTitle("Важное сообщение!");
-                builder.setMessage("При выходе все ваши заметки будут удалены, результаты тестов сброшены." +
-                        "Вы действительно хотите выйти?");
+            builder.setTitle("Важное сообщение!");
+            builder.setMessage("При выходе все ваши заметки будут удалены, результаты тестов сброшены." +
+                    "Вы действительно хотите выйти?");
 
-                builder.setPositiveButton("Выйти", (dialog, which) -> {
-                    preferences.edit().clear().apply();
+            builder.setPositiveButton("Выйти", (dialog, which) -> {
+                preferences.edit().clear().apply();
 
-                    startActivity(new Intent(getContext(), MainActivity.class));
-                });
+                startActivity(new Intent(getContext(), MainActivity.class));
+            });
 
-                builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+            builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
 
-                builder.create().show();
-            }
+            builder.create().show();
         });
 
     }
@@ -320,74 +306,73 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("Recycle")
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case PICK_IMAGE_AVATAR:
-                if (data != null) {
-                    Uri selectedImage = data.getData();
-                    Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                            null, null, null);
-                    cursor.moveToFirst();
-                    File file = new File(getRealPathFromURI(context, selectedImage));
+        if (requestCode == PICK_IMAGE_AVATAR) {
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                        null, null, null);
+                cursor.moveToFirst();
+                File file = new File(getRealPathFromURI(context, selectedImage));
 
-                    if (file.getAbsoluteFile() != null) {
-                        doRetrofit();
+                if (file.getAbsoluteFile() != null) {
+                    doRetrofit();
 
-                        RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+                    RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
 
-                        RequestBody requestBody;
+                    RequestBody requestBody;
 
-                        HashMap<String, RequestBody> map = new HashMap<>();
-                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                                preferences.getString(AppСonstants.USER_EMAIL, ""));
+                    HashMap<String, RequestBody> map = new HashMap<>();
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_EMAIL, ""));
 
-                        map.put("email", requestBody);
+                    map.put("email", requestBody);
 
-                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                                preferences.getString(AppСonstants.USER_PASSWORD, ""));
-                        map.put("password", requestBody);
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_PASSWORD, ""));
+                    map.put("password", requestBody);
 
-                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                                preferences.getString(AppСonstants.USER_FULL_NAME, ""));
-                        map.put("full_name", requestBody);
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_FULL_NAME, ""));
+                    map.put("full_name", requestBody);
 
-                        requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                                preferences.getString(AppСonstants.USER_ID, ""));
-                        map.put("id", requestBody);
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_ID, ""));
+                    map.put("id", requestBody);
 
 
-                        map.put("Avatar", fileReqBody);
+                    map.put("Avatar", fileReqBody);
 
-                        MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
-                                preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
+                    //MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
+                           // preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
 
-                        RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
+                    //RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
 
-                        Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
-                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                    Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
 
-                        postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
-                            @Override
-                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                                Log.e("tttt", String.valueOf(response.raw()));
-                                if (response.code() == 200) {
-                                    ImageView avatar = view.findViewById(R.id.avatar);
-                                    avatar.setImageURI(selectedImage);
-                                } else
-                                    Log.e("UPDATE AVATAR", String.valueOf(response.raw() + " " + file.getName()));
-                            }
+                    postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<PostResult>> call,
+                                               Response<ServerResponse<PostResult>> response) {
 
-                            @Override
-                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                                Log.e("UPDATE AVATAR", String.valueOf(t));
-                            }
-                        });
-                    }
+                            if (response.code() == 200) {
+                                ImageView avatar = view.findViewById(R.id.avatar);
+                                avatar.setImageURI(selectedImage);
+                            } else
+                                Log.e("UPDATE AVATAR", response.raw() + " " + file.getName());
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                            Log.e("UPDATE AVATAR", String.valueOf(t));
+                        }
+                    });
                 }
-
-                break;
+            }
         }
     }
 

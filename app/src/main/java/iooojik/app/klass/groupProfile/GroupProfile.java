@@ -45,8 +45,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class GroupProfile extends Fragment implements View.OnClickListener{
 
-    public GroupProfile() {}
-
     private View view;
     private String groupName = "", groupID = "";
     private Api api;
@@ -62,6 +60,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_group_profile, container, false);
         sharedPreferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = getContext();
+        fragment = this;
         setInformation();
         Button leave = view.findViewById(R.id.leave_group);
         navController = NavHostFragment.findNavController(this);
@@ -225,14 +224,12 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.leave_group:
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                builder.setMessage("Покинуть группу?");
-                builder.setPositiveButton("Покинуть", (dialog, which) -> leaveGroup());
-                builder.setNegativeButton("Остаться", (dialog, which) -> dialog.cancel());
-                builder.create().show();
-                break;
+        if (v.getId() == R.id.leave_group) {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+            builder.setMessage("Покинуть группу?");
+            builder.setPositiveButton("Покинуть", (dialog, which) -> leaveGroup());
+            builder.setNegativeButton("Остаться", (dialog, which) -> dialog.cancel());
+            builder.create().show();
         }
     }
 

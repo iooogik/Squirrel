@@ -1,5 +1,6 @@
 package iooojik.app.klass.notes;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -73,7 +74,7 @@ public class Notes extends Fragment {
     private FloatingActionButton fab;
     private Cursor userCursor;
 
-    static List<Note> ITEMS = new ArrayList<>();
+    private List<Note> ITEMS = new ArrayList<>();
 
     public Notes() {}
 
@@ -89,6 +90,7 @@ public class Notes extends Fragment {
         return view;
     }
 
+    @SuppressLint("InflateParams")
     private void enableBottomSheet() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_notes, null);
@@ -181,6 +183,7 @@ public class Notes extends Fragment {
         recyclerView.setAdapter(NOTES_ADAPTER);
     }
 
+    @SuppressLint("InflateParams")
     private void addNote() {
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
@@ -274,6 +277,7 @@ public class Notes extends Fragment {
         api = retrofit.create(Api.class);
     }
 
+    @SuppressLint("Recycle")
     private void uploadNotes() {
         //получаем id каждой заметки из списка ITEMS и узнаём, можно ли добавлять картинку в базу
         List<Note> uploadNotes = new ArrayList<>();
@@ -441,7 +445,7 @@ public class Notes extends Fragment {
 
                                 String decodeQR;
                                 ContentValues cv = new ContentValues();
-                                if (!onlineNote.getDecodeQR().toString().equals("null")) {
+                                if (!onlineNote.getDecodeQR().equals("null")) {
                                     decodeQR = onlineNote.getDecodeQR();
                                     cv.put("decodeQR", decodeQR);
                                 }

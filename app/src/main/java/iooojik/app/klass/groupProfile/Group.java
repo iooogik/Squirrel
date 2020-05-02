@@ -28,7 +28,7 @@ public class Group {
         this.id = id;
     }
 
-    public String getAuthorEmail() {
+    String getAuthorEmail() {
         return authorEmail;
     }
 
@@ -36,7 +36,7 @@ public class Group {
         this.authorEmail = authorEmail;
     }
 
-    public String getAuthorName() {
+    String getAuthorName() {
         return authorName;
     }
 
