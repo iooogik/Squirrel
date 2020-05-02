@@ -30,11 +30,11 @@
                 <ImageView
                     android:id="@+id/imageView3"
                     android:layout_width="match_parent"
-                    android:layout_gravity="center"
                     android:layout_height="200dp"
+                    android:layout_gravity="center"
                     android:maxHeight="205dp"
                     android:minHeight="205dp"
-                    android:scaleType="fitStart"
+                    android:scaleType="centerInside"
                     android:src="@drawable/demo_logo" />
 
                 <TextView

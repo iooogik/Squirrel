@@ -21,29 +21,46 @@
         tools:ignore="GoogleAppIndexingWarning">
 
 
-        <activity android:name="iooojik.app.klass.MainActivity">
+        <activity
+            android:name="iooojik.app.klass.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".subjects.astronomy.ScrollingArticle"
-            android:theme="@style/AppThemeLight" />
+            android:theme="@style/AppThemeLight"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
-        <activity android:name="iooojik.app.klass.notes.StandartNote"/>
+        <activity android:name="iooojik.app.klass.notes.StandartNote"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
-        <activity android:name=".subjects.ar.ARcamera"/>
+        <activity android:name=".subjects.ar.ARcamera"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
-        <activity android:name="iooojik.app.klass.notes.Notes"/>
+        <activity android:name="iooojik.app.klass.notes.Notes"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
-        <activity android:name=".subjects.astronomy.Planets"/>
+        <activity android:name=".subjects.astronomy.Planets"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
-        <activity android:name="iooojik.app.klass.qr.BarcodeCaptureActivity"/>
+        <activity android:name="iooojik.app.klass.qr.BarcodeCaptureActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
-        <receiver android:name="iooojik.app.klass.NotificationReceiver" android:enabled="true"/>
+        <receiver android:name="iooojik.app.klass.NotificationReceiver"
+            android:enabled="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
     </application>
 
