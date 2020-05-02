@@ -96,4 +96,5 @@ public class AppСonstants {
     public static  final String TABLE_TODO_NAME = "todo_list";
     public static  final String TABLE_TODO_TEXT = "text";
     public static  final String TABLE_TODO_CHECKED = "checked";
+    public static  final String SHOW_GROUP_ID = "SHOW_GROUP_ID";
 }

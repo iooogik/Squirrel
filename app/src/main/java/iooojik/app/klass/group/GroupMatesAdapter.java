@@ -45,6 +45,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     private Fragment fragment;
     private boolean isTeacher;
 
+
     public GroupMatesAdapter(Context context, List<Mate> mates, List<TestsResult> testsResults,
                              Fragment fragment, boolean isTeacher) {
         this.context = context;
@@ -65,6 +66,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Mate mate = mates.get(position);
+
         if (testsResults != null){
             boolean wasFound = false;
             //ищем ученика с его результами
@@ -154,11 +156,9 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView name;
-        TextView email;
+        TextView name, email, text_result;
         ImageView img;
         LinearLayout progress;
-        TextView text_result;
         ConstraintLayout layout;
 
 

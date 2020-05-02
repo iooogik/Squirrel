@@ -28,7 +28,7 @@ public class Games extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_games, container, false);
-        RecyclerView games = view.findViewById(R.id.games);
+        RecyclerView games = view.findViewById(R.id.gameObjects);
         Context context = getContext();
         List<GameObject> gamesList = new ArrayList<>();
 

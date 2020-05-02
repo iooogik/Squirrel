@@ -70,6 +70,7 @@ public class Notes extends Fragment {
     private SharedPreferences preferences;
 
     private FloatingActionButton fab;
+    private Cursor userCursor;
 
     static List<Note> ITEMS = new ArrayList<>();
 
@@ -84,11 +85,6 @@ public class Notes extends Fragment {
         fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.baseline_add_24);
         setHasOptionsMenu(true);
-        getActivity().runOnUiThread(() -> {
-            startProcedures();
-            enableBottomSheet();
-            enableSearch();
-        });
 
         return view;
     }
@@ -166,7 +162,7 @@ public class Notes extends Fragment {
     private void updateNotes() {
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
-        Cursor userCursor = mDb.rawQuery("Select * from Notes", null);
+        userCursor = mDb.rawQuery("Select * from Notes", null);
         userCursor.moveToFirst();
 
         String name, desc, type;
@@ -464,10 +460,16 @@ public class Notes extends Fragment {
 
                             String points = note.getPoints();
                             String isCompleted = note.getIsCompleted();
-                            String decodeQR = note.getDecodeQR();
+
+                            String decodeQR;
+                            ContentValues cv = new ContentValues();
+                            if (!note.getDecodeQR().toString().equals("null")) {
+                                decodeQR = note.getDecodeQR();
+                                cv.put("decodeQR", decodeQR);
+                            }
 
                             mDb = mDBHelper.getWritableDatabase();
-                            ContentValues cv = new ContentValues();
+
 
                             cv.put("name", name);
                             cv.put("shortName", shortName);
@@ -477,7 +479,7 @@ public class Notes extends Fragment {
                             cv.put("permToSync", 1);
                             cv.put("points", points);
                             cv.put("isCompleted", isCompleted);
-                            cv.put("decodeQR", decodeQR);
+
                             //получение даты
                             Date currentDate = new Date();
                             DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
@@ -487,12 +489,21 @@ public class Notes extends Fragment {
                             //запись
                             mDb.insert("Notes", null, cv);
 
-                            ITEMS.add(new Note(name, shortName, null, type, id, Integer.parseInt(note.getId())));
+                            mDb = mDBHelper.getWritableDatabase();
+
+                            userCursor = mDb.rawQuery("Select * from Notes", null);
+                            userCursor.moveToLast();
+                            int ident = userCursor.getInt(userCursor.getColumnIndex("_id"));
+                            ITEMS.add(new Note(name, shortName, null, type, id, ident));
+                            NOTES_ADAPTER.notifyDataSetChanged();
 
                         }
-                        Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_LONG).show();
-                        NOTES_ADAPTER.notifyDataSetChanged();
+                        Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_SHORT).show();
+                        fab.show();
                     }
+
+                    ITEMS.clear();
+                    updateNotes();
                 } else Log.e("GET NOTES", String.valueOf(response.raw()));
             }
 
@@ -520,9 +531,17 @@ public class Notes extends Fragment {
             Log.i("Notes", String.valueOf(e));
         }
 
+        getActivity().runOnUiThread(() -> {
+            startProcedures();
+            enableBottomSheet();
+            enableSearch();
+        });
+
         synchronized (NOTES_ADAPTER) {
             NOTES_ADAPTER.notify();
         }
+
+
     }
 
     @Override

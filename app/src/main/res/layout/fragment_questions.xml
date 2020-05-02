@@ -1,47 +1,51 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".tests.Questions">
 
-    <FrameLayout
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/send_answers"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="Завершить тест"
+        android:textColor="@color/Completed"
+        android:backgroundTint="?attr/itemShapeFillColor"
+        app:icon="@drawable/round_check_circle_24"
 
-        <TextView
-            android:id="@+id/timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            />
+        app:iconTint="@color/Completed" />
 
-        <ImageView
-            android:id="@+id/send_answers"
-            android:layout_width="@dimen/small_buttons"
-            android:layout_height="@dimen/small_buttons"
-            android:layout_gravity="end"
-            android:layout_marginLeft="@dimen/fab_margin"
-            android:layout_marginTop="@dimen/fab_margin"
-            android:layout_marginRight="@dimen/fab_margin"
-            android:scaleType="fitCenter"
-            android:src="@drawable/round_check_circle_24"
-            android:tint="@color/Completed" />
-    </FrameLayout>
-
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp">
+        android:paddingBottom="60dp"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/scrollQuestThemes"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin">
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+            <LinearLayout
+                android:id="@+id/scrollQuestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/fab_margin" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+</FrameLayout>

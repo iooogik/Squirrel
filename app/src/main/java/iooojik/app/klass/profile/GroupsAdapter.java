@@ -1,6 +1,7 @@
 package iooojik.app.klass.profile;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.teacher.GroupInfo;
 
@@ -24,12 +26,15 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     private List<GroupInfo> classGroupInfos;
     private Fragment fragment;
     private LayoutInflater inflater;
+    private SharedPreferences preferences;
 
     GroupsAdapter(Context context, List<GroupInfo> classGroupInfos, Fragment fragment){
         this.context = context;
         this.classGroupInfos = classGroupInfos;
         this.fragment = fragment;
         this.inflater = LayoutInflater.from(context);
+        preferences = context.getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+
     }
 
     @NonNull
@@ -42,6 +47,10 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         GroupInfo groupInfo = classGroupInfos.get(position);
+        if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1){
+            holder.groupID.setVisibility(View.VISIBLE);
+        } else holder.groupID.setVisibility(View.INVISIBLE);
+
 
         holder.groupName.setText(String.format("%s %s", holder.groupName.getText().toString(), groupInfo.getName()));
         holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(), String.valueOf(groupInfo.getId())));

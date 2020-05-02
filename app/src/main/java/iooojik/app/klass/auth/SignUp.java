@@ -103,65 +103,72 @@ public class SignUp extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.sign_up:
-                doRetrofit();
                 //инициализация заполненный полей
                 EditText email = view.findViewById(R.id.email);
                 EditText password = view.findViewById(R.id.password);
                 EditText name = view.findViewById(R.id.name);
                 EditText surname = view.findViewById(R.id.surname);
 
-                /*
-                 * 1. проверяем, не пустые ли поля, если не все поля заполнены,
-                 * то выводим сообщение: "Не все поля заполнены"
-                 * 2. проводим регистрацию, в случае неудачи выводим сообщение:
-                 *  "Что-то пошло не так. Попробуйте снова."
-                 */
+                if (password.getText().toString().trim().length() < 6)
+                    Snackbar.make(view, "Минимальная длина пароля - 6 символов", Snackbar.LENGTH_SHORT).show();
 
-                //заполняем переменные значениями из соотвествующих полей
-                String uEmail = email.getText().toString().trim(); //email
-                String uPassword = password.getText().toString().trim(); //password
-                String uFullName = name.getText().toString().trim() + " "
-                        + surname.getText().toString().trim(); //full name
-                //собираем логин
-                int id = uEmail.indexOf("@");
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < id; i++) {
-                    builder.append(uEmail.charAt(i));
-                } //получение логина
-                String login = builder.toString(); // login
+                else {
 
-                HashMap<String, String> map = new HashMap<>();
-                map.put("username", login);
-                map.put("email", uEmail);
-                map.put("password", uPassword);
-                map.put("full_name", uFullName);
+                    doRetrofit();
 
-                String group = "[4]";
-                if (accountType.equals("Teacher")) group = "[5]";
-                else group = "[6]";  //id группы (типа аккаунта)
 
-                //запрос на регистрацию
-                Call<SignUpResult> authResponse = api.userRegistration(AppСonstants.X_API_KEY,
-                                preferences.getString(AppСonstants.STANDART_TOKEN, ""),
-                                map, group);
-                authResponse.enqueue(new Callback<SignUpResult>() {
-                    @SuppressLint("CommitPrefEdits")
-                    @Override
-                    public void onResponse(Call<SignUpResult> call, Response<SignUpResult> response) {
-                        if (response.code() == 200) {
-                            SignUpResult dataAuth = response.body();
-                            preferences.edit().putString(AppСonstants.USER_LOGIN, login);
+                    /*
+                     * 1. проверяем, не пустые ли поля, если не все поля заполнены,
+                     * то выводим сообщение: "Не все поля заполнены"
+                     * 2. проводим регистрацию, в случае неудачи выводим сообщение:
+                     *  "Что-то пошло не так. Попробуйте снова."
+                     */
 
-                            if (dataAuth.getStatus()) signIN(uEmail, uPassword);
-                        } else Log.e("Sign Up", String.valueOf(response.raw()));
-                    }
+                    //заполняем переменные значениями из соотвествующих полей
+                    String uEmail = email.getText().toString().trim(); //email
+                    String uPassword = password.getText().toString().trim(); //password
+                    String uFullName = name.getText().toString().trim() + " "
+                            + surname.getText().toString().trim(); //full name
+                    //собираем логин
+                    int id = uEmail.indexOf("@");
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < id; i++) {
+                        builder.append(uEmail.charAt(i));
+                    } //получение логина
+                    String login = builder.toString(); // login
 
-                    @Override
-                    public void onFailure(Call<SignUpResult> call, Throwable t) {
-                        Log.e("Sign Up", String.valueOf(t));
-                    }
-                });
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("username", login);
+                    map.put("email", uEmail);
+                    map.put("password", uPassword);
+                    map.put("full_name", uFullName);
 
+                    String group = "[4]";
+                    if (accountType.equals("Teacher")) group = "[5]";
+                    else group = "[6]";  //id группы (типа аккаунта)
+
+                    //запрос на регистрацию
+                    Call<SignUpResult> authResponse = api.userRegistration(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.STANDART_TOKEN, ""),
+                            map, group);
+                    authResponse.enqueue(new Callback<SignUpResult>() {
+                        @SuppressLint("CommitPrefEdits")
+                        @Override
+                        public void onResponse(Call<SignUpResult> call, Response<SignUpResult> response) {
+                            if (response.code() == 200) {
+                                SignUpResult dataAuth = response.body();
+                                preferences.edit().putString(AppСonstants.USER_LOGIN, login);
+
+                                if (dataAuth.getStatus()) signIN(uEmail, uPassword);
+                            } else Log.e("Sign Up", String.valueOf(response.raw()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<SignUpResult> call, Throwable t) {
+                            Log.e("Sign Up", String.valueOf(t));
+                        }
+                    });
+                }
                break;
             case R.id.signIn:
                 navController.navigate(R.id.nav_signIn);

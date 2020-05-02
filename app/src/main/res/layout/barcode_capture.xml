@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -11,21 +12,32 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
 
-      <Button
-          android:id="@+id/saveQR"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="bottom"
-          android:layout_marginEnd="30dp"
-          android:layout_marginStart="30dp"
-          android:layout_marginBottom="10dp"
-          android:text="@string/СохранитьQR" />
-    </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="?attr/colorAccent"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:visibility="visible"
+        app:tint="?attr/itemShapeFillColor"
+        app:borderWidth="0dp"
+        app:srcCompat="@drawable/baseline_arrow_back_24"
+        />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/saveQR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/saveQRbutton"
+        android:textColor="@color/colorWhite"
+        app:backgroundTint="?attr/colorAccent"
+        app:icon="@drawable/round_save_24"
+        app:iconTint="@color/colorWhite"
+        app:layout_anchor="@id/app_bar" />
 
     <iooojik.app.klass.camera.CameraSourcePreview
         android:id="@+id/preview"
@@ -40,7 +52,6 @@
     </iooojik.app.klass.camera.CameraSourcePreview>
 
   </FrameLayout>
-
 
 
 </LinearLayout>

@@ -111,14 +111,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/fab_margin"
-                        android:text="Количество балов \n за 1 правильный ответ:" />
+                        android:text="Количество баллов \n за 1 правильный ответ:" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:hint="балов"
+                        android:hint="баллов"
                         android:layout_margin="10dp">
 
                         <com.google.android.material.textfield.TextInputEditText

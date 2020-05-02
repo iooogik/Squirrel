@@ -94,7 +94,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
             //процент правильных ответов
             TextView textView = holder.result.findViewById(R.id.result);
-            textView.setText(String.format("Тест был на пройден на %d%%",
+            textView.setText(String.format("Тест пройден на %d%%",
                     Math.round((rightScore / wrongScore) * 100)));
 
         } else {

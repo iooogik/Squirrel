@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -98,8 +99,8 @@ public class Questions extends Fragment implements View.OnClickListener{
         setTimer();
         getScorePerAnswer();
         totalScore = questions.size() * scorePerAnswer;
-        ImageView btn = view.findViewById(R.id.send_answers);
-        btn.setOnClickListener(this);
+        Button completed = view.findViewById(R.id.send_answers);
+        completed.setOnClickListener(this);
 
         return view;
     }
@@ -201,7 +202,7 @@ public class Questions extends Fragment implements View.OnClickListener{
             temp.subList(0, 4).clear();
 
             //установка на активити
-            LinearLayout linearLayout = view.findViewById(R.id.scrollQuestThemes);
+            LinearLayout linearLayout = view.findViewById(R.id.scrollQuestions);
             linearLayout.addView(view1);
         }
         temp.clear();

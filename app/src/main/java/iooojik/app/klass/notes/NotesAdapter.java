@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,126 +91,128 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
             userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
                     new String[]{String.valueOf(note.getId())});
+
+
             userCursor.moveToFirst();
-            if(!userCursor.isNull(userCursor.getColumnIndex("decodeQR"))){
-                Bitmap bitmap = null;
-                try {
-                    bitmap = encodeAsBitmap(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
-                } catch (WriterException e) {
-                    e.printStackTrace();
-                }
-                ImageView img = holder.imageView;
-                img.setMinimumHeight(150);
-                img.setMinimumWidth(150);
-                img.setImageBitmap(bitmap);
+            Log.e("ttt", String.valueOf(userCursor.getCount()));
+            if (userCursor.getCount() != 0) {
+                if (!userCursor.isNull(userCursor.getColumnIndex("decodeQR"))) {
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = encodeAsBitmap(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
+                    } catch (WriterException e) {
+                        e.printStackTrace();
+                    }
+                    ImageView img = holder.imageView;
+                    img.setMinimumHeight(150);
+                    img.setMinimumWidth(150);
+                    img.setImageBitmap(bitmap);
 
-                img.setOnLongClickListener(view -> {
+                    img.setOnLongClickListener(view -> {
 
-                    MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                    TextView textView = new TextView(builder.getContext());
-                    textView.setText("Вы действительно хотите удалить  QR-код?");
-                    LinearLayout layout = new LinearLayout(context);
-                    layout.setOrientation(LinearLayout.VERTICAL);
-                    layout.addView(textView);
-                    builder.setView(layout);
+                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                        TextView textView = new TextView(builder.getContext());
+                        textView.setText("Вы действительно хотите удалить  QR-код?");
+                        LinearLayout layout = new LinearLayout(context);
+                        layout.setOrientation(LinearLayout.VERTICAL);
+                        layout.addView(textView);
+                        builder.setView(layout);
 
-                    builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                        builder.setPositiveButton("Да", (dialogInterface, i) -> {
                             mDb = mDBHelper.getReadableDatabase();
 
-                            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
+                            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?",
                                     new String[]{String.valueOf(note.getId())});
                             userCursor.moveToFirst();
 
-                            if(userCursor.getBlob(userCursor.getColumnIndex("image")) != null){
+                            if (userCursor.getBlob(userCursor.getColumnIndex("image")) != null) {
                                 ContentValues contentValues = new ContentValues();
                                 contentValues.put("image", (byte[]) null);
-                                mDb.update("Notes", contentValues, "_id="+ position, null);
+                                mDb.update("Notes", contentValues, "_id=" + position, null);
                             }
-                        }
+                        });
+
+                        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+
+                        builder.create().show();
+
+
+                        return false;
                     });
+                }
 
-                    builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-
-                    builder.create().show();
+                if (note.getType().equals("shop")) {
 
 
-                    return false;
+                    if (userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1) {
+                        holder.completed.setVisibility(View.VISIBLE);
+                    } else if (userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 0) {
+                        holder.completed.setVisibility(View.GONE);
+                    }
+                }
+
+                mDb = mDBHelper.getReadableDatabase();
+
+                userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?",
+                        new String[]{String.valueOf(note.getId())});
+                userCursor.moveToFirst();
+
+                if (userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 1) {
+                    holder.isNotifSet.setVisibility(View.VISIBLE);
+                } else if (userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 0) {
+                    holder.isNotifSet.setVisibility(View.GONE);
+                }
+
+                //слушатель для открытия фрагмента с заметкой
+                holder.frameLayout.setOnClickListener(v -> {
+                    bundle.putString("button name", note.getName());
+                    bundle.putInt("button ID", note.getId());
+
+                    switch (note.getType()) {
+                        case "shop":
+                            navHostFragment.navigate(R.id.nav_checkList, bundle);
+                            break;
+                        case "standart":
+                            navHostFragment.navigate(R.id.nav_standart_note, bundle);
+                            break;
+                        case "book":
+                            navHostFragment.navigate(R.id.nav_book, bundle);
+                            break;
+                        default:
+                            Snackbar.make(holder.itemView, "Error", Snackbar.LENGTH_LONG).show();
+                            break;
+                    }
+
+                });
+
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragment.getActivity());
+                View bottomSheet = fragment.getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_delete, null);
+
+                bottomSheetDialog.setContentView(bottomSheet);
+
+                Button delete = bottomSheet.findViewById(R.id.delete);
+                delete.setOnClickListener(v -> {
+                    mDb = mDBHelper.getWritableDatabase();
+                    mDb.delete("Notes", "_id=" + (note.getId()), null);
+                    Notes.ITEMS.remove(note);
+                    notifyItemRemoved(position);
+                    bottomSheetDialog.hide();
+                });
+
+                Button cancel = bottomSheet.findViewById(R.id.cancel);
+                cancel.setOnClickListener(v -> bottomSheetDialog.hide());
+
+                holder.frameLayout.setOnLongClickListener(v -> {
+                    bottomSheetDialog.show();
+                    return true;
                 });
             }
 
-            if (note.getType().equals("shop")){
-
-
-                if(userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1){
-                    holder.completed.setVisibility(View.VISIBLE);
-                }else if(userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 0){
-                    holder.completed.setVisibility(View.GONE);
-                }
-            }
-
-            mDb = mDBHelper.getReadableDatabase();
-
-            userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
-                    new String[]{String.valueOf(note.getId())});
-            userCursor.moveToFirst();
-
-            if(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 1){
-                holder.isNotifSet.setVisibility(View.VISIBLE);
-            }else if(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 0){
-                holder.isNotifSet.setVisibility(View.GONE);
-            }
-
-            //слушатель для открытия фрагмента с заметкой
-            holder.frameLayout.setOnClickListener(v -> {
-                bundle.putString("button name", note.getName());
-                bundle.putInt("button ID", note.getId());
-
-                switch (note.getType()) {
-                    case "shop":
-                        navHostFragment.navigate(R.id.nav_checkList, bundle);
-                        break;
-                    case "standart":
-                        navHostFragment.navigate(R.id.nav_standart_note, bundle);
-                        break;
-                    case "book":
-                        navHostFragment.navigate(R.id.nav_book, bundle);
-                        break;
-                    default:
-                        Snackbar.make(holder.itemView, "Error", Snackbar.LENGTH_LONG).show();
-                        break;
-                }
-
-            });
-
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragment.getActivity());
-            View bottomSheet = fragment.getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_delete, null);
-
-            bottomSheetDialog.setContentView(bottomSheet);
-
-            Button delete = bottomSheet.findViewById(R.id.delete);
-            delete.setOnClickListener(v -> {
-                mDb = mDBHelper.getWritableDatabase();
-                mDb.delete("Notes", "_id=" + (note.getId()), null);
-                int pos = Notes.ITEMS.indexOf(note);
-                Notes.ITEMS.remove(note);
-                notifyItemRemoved(pos);
-                bottomSheetDialog.hide();
-            });
-
-            Button cancel = bottomSheet.findViewById(R.id.cancel);
-            cancel.setOnClickListener(v -> bottomSheetDialog.hide());
-
-            holder.frameLayout.setOnLongClickListener(v -> {
-                bottomSheetDialog.show();
-                return true;
-            });
         } else {
             holder.frameLayout.setVisibility(View.GONE);
         }

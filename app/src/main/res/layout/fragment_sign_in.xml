@@ -75,8 +75,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:textColor="@color/colorAccent"
-            android:textSize="12sp"
-            android:text="@string/createNewAccountButton" />
+            android:textSize="10sp"
+            android:text="@string/createNewAccountButton"
+            tools:ignore="SmallSp" />
 
     </LinearLayout>
 </FrameLayout>

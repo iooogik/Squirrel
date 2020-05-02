@@ -54,7 +54,7 @@
 
 
     <!-- buttons strings-->
-    <string name="saveQRbutton">Сохранить в \'Заметки\' текст и QR</string>
+    <string name="saveQRbutton">Сохранить QR</string>
     <string name="showSolarSystemButton">Посмотреть Солнечную систему в AR</string>
     <string name="findARSurfaceButton">Заново найти поверхность</string>
     <string name="saveAndContinueButton">Сохранить и продолжить</string>

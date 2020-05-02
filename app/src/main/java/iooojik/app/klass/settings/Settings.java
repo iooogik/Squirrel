@@ -93,10 +93,13 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
         Button deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
+        load();
+        return view;
+    }
 
+    private void load(){
         //установка тем
         setDarkTheme();
         //"чек" для того, чтобы убрать справочные материалы из заметок
@@ -108,11 +111,11 @@ public class Settings extends Fragment implements View.OnClickListener{
         contacts();
         changeProfile();
         setCoins();
+        showGroupID();
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         setHasOptionsMenu(true);
-        return view;
     }
 
     private void setCoins() {
@@ -416,5 +419,17 @@ public class Settings extends Fragment implements View.OnClickListener{
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
+    }
+
+    private void showGroupID(){
+        Switch showID = view.findViewById(R.id.showGroupID);
+
+        if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1) showID.setChecked(true);
+
+        showID.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) preferences.edit().putInt(AppСonstants.SHOW_GROUP_ID, 1).apply();
+            else preferences.edit().putInt(AppСonstants.SHOW_GROUP_ID, 0).apply();
+        });
+
     }
 }

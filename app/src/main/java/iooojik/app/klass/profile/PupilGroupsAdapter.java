@@ -1,6 +1,7 @@
 package iooojik.app.klass.profile;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,21 +16,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.pupil.PupilGroups;
 
 public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.ViewHolder> {
 
-    public List<PupilGroups> pupilGroups;
+    private List<PupilGroups> pupilGroups;
     public Fragment fragment;
     public Context context;
     public LayoutInflater inflater;
+    private SharedPreferences preferences;
 
-    public PupilGroupsAdapter(List<PupilGroups> pupilGroups, Fragment fragment, Context context) {
+
+    PupilGroupsAdapter(List<PupilGroups> pupilGroups, Fragment fragment, Context context) {
         this.pupilGroups = pupilGroups;
         this.fragment = fragment;
         this.context = context;
         this.inflater = LayoutInflater.from(context);
+        preferences = context.getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -42,6 +47,9 @@ public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PupilGroups pupilGroup = pupilGroups.get(position);
+        if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1){
+            holder.groupID.setVisibility(View.VISIBLE);
+        } else holder.groupID.setVisibility(View.INVISIBLE);
         holder.groupName.setText(pupilGroup.getGroup_name());
 
         holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(),
@@ -50,12 +58,9 @@ public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.
         Bundle args = new Bundle();
         args.putString("groupID", pupilGroup.getGroupId());
         args.putString("groupName", pupilGroup.getGroup_name());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = NavHostFragment.findNavController(fragment);
-                navController.navigate(R.id.groupProfile, args);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(fragment);
+            navController.navigate(R.id.groupProfile, args);
         });
 
     }

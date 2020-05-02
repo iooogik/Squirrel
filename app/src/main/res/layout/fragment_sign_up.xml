@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/itemShapeFillColor"
     tools:context=".auth.SignIn">
 
@@ -45,6 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:hint="@string/typePasswordHint"
+            app:counterEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             >
 
@@ -140,7 +142,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:text="Создать новый аккаунт" />
+            android:text="Зарегистрироваться" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/signIn"
@@ -148,8 +150,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
-            android:text="Войти"
-            android:textColor="@color/colorAccent" />
+            android:textSize="8sp"
+            android:text="У меня уже есть аккаунт"
+            android:textColor="@color/colorAccent"
+            tools:ignore="SmallSp" />
 
     </LinearLayout>
 

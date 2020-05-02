@@ -42,12 +42,6 @@
         tools:layout="@layout/fragment_settings" />
 
     <fragment
-        android:id="@+id/nav_las"
-        android:name="iooojik.app.klass.gameObjects.las.LifeAtSpace"
-        android:label="Игра от издателя"
-        tools:layout="@layout/fragment_test" />
-
-    <fragment
         android:id="@+id/nav_planets_list"
         android:name="iooojik.app.klass.subjects.astronomy.Planets"
         android:label="Планеты"
@@ -144,6 +138,9 @@
         <action
             android:id="@+id/action_nav_profile_to_nav_shop"
             app:destination="@id/nav_shop" />
+        <action
+            android:id="@+id/action_nav_profile_to_games"
+            app:destination="@id/nav_games" />
 
     </fragment>
     <fragment
@@ -160,25 +157,7 @@
         android:name="iooojik.app.klass.tests.TestEditor"
         tools:layout="@layout/fragment_test_editor"
         android:label="Редактор теста" />
-    <fragment
-        android:id="@+id/nav_games"
-        android:name="iooojik.app.klass.gameObjects.Games"
-        android:label="Переменка"
-        tools:layout="@layout/fragment_games" >
-        <action
-            android:id="@+id/action_games2_to_nav_las"
-            app:destination="@id/nav_las" />
-        <action
-            android:id="@+id/action_nav_games_to_nav_pairs"
-            app:destination="@id/nav_pairs" />
 
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_pairs"
-        android:name="iooojik.app.klass.gameObjects.pairs.GamePairs"
-        tools:layout="@layout/fragment_pairs_game"
-        android:label="Pairs" />
     <fragment
         android:id="@+id/groupProfile"
         android:name="iooojik.app.klass.groupProfile.GroupProfile"
@@ -211,5 +190,26 @@
             android:id="@+id/action_todoList_to_nav_profile"
             app:destination="@id/nav_profile" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_games"
+        android:name="iooojik.app.klass.games.Games"
+        android:label="Games" >
+        <action
+            android:id="@+id/action_games_to_lifeAtSpace"
+            app:destination="@id/nav_las" />
+        <action
+            android:id="@+id/action_games_to_gamePairs"
+            app:destination="@id/nav_pairs" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_las"
+        android:name="iooojik.app.klass.games.las.LifeAtSpace"
+        android:label="LifeAtSpace" />
+    <fragment
+        android:id="@+id/nav_pairs"
+        android:name="iooojik.app.klass.games.pairs.GamePairs"
+        android:label="GamePairs" />
 
 </navigation>

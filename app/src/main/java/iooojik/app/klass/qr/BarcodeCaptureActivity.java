@@ -38,7 +38,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,6 +51,8 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -110,19 +111,15 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         }
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
-
-        Snackbar.make(mGraphicOverlay, "Нажмите на найденный QR-код, чтобы сохранить его.",
-                Snackbar.LENGTH_LONG)
-                .show();
-
-        Button savePict = findViewById(R.id.saveQR);
-        savePict.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GraphicOverlay graphicOverlay = findViewById(R.id.graphicOverlay);
-                onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
-            }
+        @SuppressLint("CutPasteId")
+        ExtendedFloatingActionButton savePict = findViewById(R.id.saveQR);
+        savePict.setOnClickListener(v -> {
+            GraphicOverlay graphicOverlay = findViewById(R.id.graphicOverlay);
+            onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
         });
+
+        FloatingActionButton back = findViewById(R.id.back);
+        back.setOnClickListener(v -> BarcodeCaptureActivity.super.onBackPressed());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
