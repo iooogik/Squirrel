@@ -49,7 +49,7 @@ import static android.content.Context.ALARM_SERVICE;
 
 
 
-public class CheckList extends Fragment implements View.OnClickListener, NoteInterface {
+public class CheckList extends Fragment implements View.OnClickListener {
     //переменная для работы с бд
     private Database mDBHelper;
     private SQLiteDatabase mDb;
@@ -69,7 +69,6 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_check_list, container, false);
-
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
 
         fab.setImageResource(R.drawable.baseline_add_24);
@@ -82,29 +81,22 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         return view;
     }
 
-    @Override
-    public int getButtonID(){
+    private int getButtonID(){
         //получение id нажатой "кнопки"
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("button ID");
     }
 
-    @Override
-    public String getButtonName(){return null;}
+    private String getButtonName(){return null;}
 
-    @Override
-    public void updateFragment() {}
-
-    @Override
-    public void updateData(String databaseName, String name, String note, String shortNote) {
+    private void updateData(String name, String shortNote) {
         mDb = mDBHelper.getWritableDatabase();
         setHasOptionsMenu(true);
         //код сохранения в бд
         ContentValues cv = new ContentValues();
         cv.put("name", name);
         cv.put("shortName", shortNote);
-        cv.put("text", note);
         //получение даты
         Date currentDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
@@ -112,7 +104,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id =" + (getButtonID()), null);
+        mDb.update("Notes", cv, "_id =" + (getButtonID()), null);
 
         // Скрываем клавиатуру при открытии Navigation Drawer
         try {
@@ -201,7 +193,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
             for (boolean aBoolean : Booleans) {
                 sendBool.append(aBoolean).append("\n");
             }
-            updateShopNotes("Notes", EDIT_SHOP_NAME.getText().toString(),
+            updateShopNotes(EDIT_SHOP_NAME.getText().toString(),
                     sendBool.toString());
             isCompleted(!Booleans.contains(false));
         });
@@ -241,8 +233,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         linear.addView(view2);
     }
 
-    @Override
-    public void updateShopNotes(String databaseName, String name, String booleans){
+    private void updateShopNotes(String name, String booleans){
         mDb = mDBHelper.getWritableDatabase();
         //код сохранения в бд
         ContentValues cv = new ContentValues();
@@ -255,11 +246,10 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update(databaseName, cv, "_id=" + (getButtonID()), null);
+        mDb.update("Notes", cv, "_id=" + (getButtonID()), null);
     }
 
-    @Override
-    public void alarmDialog(final String title, final String text) {
+    private void alarmDialog(final String title, final String text) {
         //создание уведомления
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -381,7 +371,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.check_list_menu, menu);
+        getActivity().getMenuInflater().inflate(R.menu.menu_check_list, menu);
     }
 
     @Override
@@ -391,8 +381,7 @@ public class CheckList extends Fragment implements View.OnClickListener, NoteInt
                 alarmDialog(nameNote.getText().toString(), shortNote.getText().toString());
                 return true;
             case R.id.action_save:
-                updateData("Notes", nameNote.getText().toString(),
-                        null, shortNote.getText().toString());
+                updateData(nameNote.getText().toString(), shortNote.getText().toString());
                 Snackbar.make(getView(), "Сохранено", Snackbar.LENGTH_LONG).show();
                 return true;
         }

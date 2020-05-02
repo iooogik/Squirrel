@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_save"
+        android:title="Сохранить"
+        android:icon="@drawable/round_save_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/action_notif"
+        android:title="Установить уведомление"
+        android:icon="@drawable/baseline_notifications_active_24"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/action_read_qr"
+        android:title="Сканировать QR-код"
+        android:icon="@drawable/scan"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/textSettings"
+        android:title="Размер шрифта"
+        android:icon="@drawable/round_format_size_24"
+        app:showAsAction="always"
+        />
+
+</menu>

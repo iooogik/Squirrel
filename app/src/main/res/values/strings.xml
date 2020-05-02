@@ -4,7 +4,7 @@
     <!-- menu items -->
     <string name="profile">Профиль</string>
     <string name="main">Главная</string>
-    <string name="notes">Заметки</string>
+    <string name="onlineNotes">Заметки</string>
     <string name="tests">Тесты</string>
     <string name="contacts">Контакты</string>
     <string name="settings">Настройки</string>
@@ -113,6 +113,7 @@
     <string name="todo">TODO</string>
     <string name="shop">Магазин</string>
     <string name="buy">Купить</string>
+    <string name="search">Search</string>
     <!-- other strings end-->
 
 

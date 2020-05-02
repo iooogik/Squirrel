@@ -1,15 +1,14 @@
 package iooojik.app.klass.notes;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +46,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     private LayoutInflater inflater;
     private List<Note> notes;
+    private List<Note> notesFiltered;
     //Переменные для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
@@ -54,14 +54,15 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     private Fragment fragment;
     private Context context;
     private Cursor userCursor;
-    private Filter filter;
+    private Filter mFilter;
 
     NotesAdapter(Context context, List<Note> notes, Fragment fragment){
         this.notes = notes;
+        this.notesFiltered = notes;
         this.inflater = LayoutInflater.from(context);
         this.fragment = fragment;
         this.context = context;
-        filter = new ItemFilter();
+        mFilter = new ItemFilter();
     }
 
 
@@ -73,17 +74,20 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public void onBindViewHolder(@NonNull NotesAdapter.ViewHolder holder, int position) {
         mDBHelper = new Database(context);
         mDBHelper.openDataBase();
         //получение и установка данных в элемент
         Note note = notes.get(position);
+        //настройки
         SharedPreferences settings = context.getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         int val = settings.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
-
+        //контроллер для перехода между фрагментами
         NavController navHostFragment = NavHostFragment.findNavController(fragment);
 
         if (!(note.getName().equals("Математические формулы") && val == 1)) {
+            //ставим название и описание картинки
             holder.name.setText(note.getName());
             holder.desc.setText(note.getDescription());
 
@@ -92,10 +96,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
                     new String[]{String.valueOf(note.getId())});
 
-
             userCursor.moveToFirst();
-            Log.e("ttt", String.valueOf(userCursor.getCount()));
+
             if (userCursor.getCount() != 0) {
+                //если есть qr-код, то показываем его
                 if (!userCursor.isNull(userCursor.getColumnIndex("decodeQR"))) {
                     Bitmap bitmap = null;
                     try {
@@ -112,7 +116,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
                         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                         TextView textView = new TextView(builder.getContext());
-                        textView.setText("Вы действительно хотите удалить  QR-код?");
+                        textView.setText(R.string.deleteQR);
                         LinearLayout layout = new LinearLayout(context);
                         layout.setOrientation(LinearLayout.VERTICAL);
                         layout.addView(textView);
@@ -132,11 +136,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                             }
                         });
 
-                        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                        builder.setNegativeButton("Нет", (dialogInterface, i) -> {
 
-                            }
                         });
 
                         builder.create().show();
@@ -145,10 +146,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         return false;
                     });
                 }
-
+                //устанавливаем соответсвующий значок заметкаим с типом shop
                 if (note.getType().equals("shop")) {
-
-
                     if (userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1) {
                         holder.completed.setVisibility(View.VISIBLE);
                     } else if (userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 0) {
@@ -161,13 +160,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?",
                         new String[]{String.valueOf(note.getId())});
                 userCursor.moveToFirst();
-
+                //узнаем было ли установлено уведомление
                 if (userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 1) {
                     holder.isNotifSet.setVisibility(View.VISIBLE);
                 } else if (userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 0) {
                     holder.isNotifSet.setVisibility(View.GONE);
                 }
-
                 //слушатель для открытия фрагмента с заметкой
                 holder.frameLayout.setOnClickListener(v -> {
                     bundle.putString("button name", note.getName());
@@ -189,7 +187,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                     }
 
                 });
-
+                //удаление заметки
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragment.getActivity());
                 View bottomSheet = fragment.getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_delete, null);
 
@@ -240,51 +238,56 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         }
     }
 
+
     Filter getFilter() {
-        return filter;
+        return mFilter;
     }
 
     private class ItemFilter extends Filter {
+        //фильтрация строки поиска
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-
+            //текст из поисковой строки
             String filterString = constraint.toString().toLowerCase();
-
-
+            //результаты поиска
             FilterResults results = new FilterResults();
+            //если строка пустая, то показываем всё, иначе показываем найденные элементы
+            if (filterString.isEmpty()){
+                results.values = notesFiltered;
+                results.count = notesFiltered.size();
+            } else {
 
-            final List<Note> list = notes;
-            int count = list.size();
-            final List<Note> nlist = new ArrayList<Note>(count);
+                int count = notes.size();
+                final ArrayList<Note> mListResult = new ArrayList<>();
 
+                String name;
 
+                for (int i = 0; i < count; i++) {
 
-            String filterableString;
-
-            for (int i = 0; i < count; i++) {
-                filterableString = list.get(i).getName();
-
-                if (filterableString.toLowerCase().contains(filterString)) {
-                    nlist.add(list.get(i));
+                    Note note = notes.get(i);
+                    name = note.getName();
+                    if (name.toLowerCase().contains(filterString)) {
+                        mListResult.add(note);
+                    }
                 }
-            }
 
-            results.values = nlist;
-            results.count = nlist.size();
+                results.values = mListResult;
+                results.count = mListResult.size();
+
+            }
 
             return results;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        protected void publishResults(CharSequence constraint, Filter.FilterResults results) {
             notes = (ArrayList<Note>) results.values;
             notifyDataSetChanged();
         }
-
     }
 
-    Bitmap encodeAsBitmap(String str) throws WriterException {
+    private Bitmap encodeAsBitmap(String str) throws WriterException {
         BitMatrix result;
         try {
             result = new MultiFormatWriter().encode(str,

@@ -36,6 +36,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:endIconMode="clear_text"
                     android:layout_margin="10dp"
                     android:hint="@string/typeEmailHint">
 
@@ -54,6 +55,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:endIconMode="password_toggle"
                     android:layout_margin="10dp"
                     android:hint="@string/typePasswordHint"
                     app:counterEnabled="true">
@@ -73,6 +75,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:endIconMode="clear_text"
                     android:layout_margin="10dp"
                     android:hint="@string/typeSurnameHint">
 
@@ -91,6 +94,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:endIconMode="clear_text"
                     android:layout_margin="10dp"
                     android:hint="@string/typeNameHint">
 

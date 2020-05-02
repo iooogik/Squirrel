@@ -9,8 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,8 +21,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,6 +50,7 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.notesData.NotesData;
+import iooojik.app.klass.models.notesData.OnlineNote;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -85,7 +86,6 @@ public class Notes extends Fragment {
         fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.baseline_add_24);
         setHasOptionsMenu(true);
-
         return view;
     }
 
@@ -99,12 +99,14 @@ public class Notes extends Fragment {
         add.setOnClickListener(v -> {
             addNote();
             bottomSheetDialog.hide();
+            fab.show();
         });
 
         Button sync = bottomSheet.findViewById(R.id.sync);
         sync.setOnClickListener(v -> {
             uploadNotes();
             bottomSheetDialog.hide();
+            fab.show();
         });
 
 
@@ -112,6 +114,7 @@ public class Notes extends Fragment {
         download.setOnClickListener(v -> {
             downloadNotes();
             bottomSheetDialog.hide();
+            fab.show();
         });
 
         bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
@@ -120,26 +123,6 @@ public class Notes extends Fragment {
         fab.setOnClickListener(v -> {
             bottomSheetDialog.show();
             fab.hide();
-        });
-    }
-
-    private void enableSearch() {
-        EditText filter = view.findViewById(R.id.search);
-        filter.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                NOTES_ADAPTER.getFilter().filter(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
         });
     }
 
@@ -280,6 +263,7 @@ public class Notes extends Fragment {
                     }
                 });
         builder.create().show();
+        fab.show();
     }
 
     private void doRetrofit() {
@@ -331,6 +315,8 @@ public class Notes extends Fragment {
             String points = String.valueOf(userCursor.getString(userCursor.getColumnIndex("points")));
             String isCompleted = String.valueOf(userCursor.getString(userCursor.getColumnIndex("isCompleted")));
             String decodeQR = String.valueOf(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
+            String typeface = String.valueOf(userCursor.getString(userCursor.getColumnIndex("typeface")));
+            String fontSize = String.valueOf(userCursor.getString(userCursor.getColumnIndex("fontSize")));
             String image = "null";
 
             //добавляем данные в map
@@ -347,6 +333,8 @@ public class Notes extends Fragment {
             map.put("isCompleted", isCompleted);
             map.put("decodeQR", decodeQR);
             map.put("image", image);
+            map.put("typeface", typeface);
+            map.put("fontSize", fontSize);
             //отправляем данные
             Call<ServerResponse<PostResult>> call = api.uploadNotes(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
@@ -377,9 +365,8 @@ public class Notes extends Fragment {
             @Override
             public void onResponse(Call<ServerResponse<NotesData>> call, Response<ServerResponse<NotesData>> response) {
                 if (response.code() == 200) {
-                    List<iooojik.app.klass.models.notesData.Note> notes =
-                            response.body().getData().getNotes();
-                    removeNotes(notes);
+                    List<OnlineNote> onlineNotes = response.body().getData().getOnlineNotes();
+                    if (response.body().getData().getOnlineNotes() != null) removeNotes(onlineNotes);
                 }
             }
 
@@ -390,14 +377,14 @@ public class Notes extends Fragment {
         });
     }
 
-    private void removeNotes(List<iooojik.app.klass.models.notesData.Note> notes) {
-        for (iooojik.app.klass.models.notesData.Note note : notes) {
-            Call<ServerResponse<PostResult>> call = api.removeNotes(AppСonstants.X_API_KEY, String.valueOf(note.getId()));
+    private void removeNotes(List<OnlineNote> onlineNotes) {
+        for (OnlineNote onlineNote : onlineNotes) {
+            Call<ServerResponse<PostResult>> call = api.removeNotes(AppСonstants.X_API_KEY, String.valueOf(onlineNote.getId()));
             call.enqueue(new Callback<ServerResponse<PostResult>>() {
                 @Override
                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
                     if (response.code() != 200)
-                        Log.e("REMOVE NOTE", response.raw() + " " + note.getId());
+                        Log.e("REMOVE NOTE", response.raw() + " " + onlineNote.getId());
                 }
 
                 @Override
@@ -410,18 +397,7 @@ public class Notes extends Fragment {
 
     private int getUserID() {
         int userId = -1;
-        /*
-        mDBHelper = new Database(context);
-        mDBHelper = new Database(context);
-        mDBHelper.openDataBase();
-        mDBHelper.updateDataBase();
-        mDb = mDBHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from Profile WHERE _id=?", new String[]{String.valueOf(0)});
-        userCursor.moveToFirst();
-
-         */
-
-        userId = Integer.parseInt(preferences.getString(AppСonstants.USER_ID, ""));
+        userId = Integer.valueOf(preferences.getString(AppСonstants.USER_ID, ""));
         return userId;
     }
 
@@ -432,74 +408,77 @@ public class Notes extends Fragment {
             @Override
             public void onResponse(Call<ServerResponse<NotesData>> call, Response<ServerResponse<NotesData>> response) {
                 if (response.code() == 200) {
-                    List<iooojik.app.klass.models.notesData.Note> notes =
-                            response.body().getData().getNotes();
-                    for (iooojik.app.klass.models.notesData.Note note : notes) {
-                        boolean result = false;
-                        for (Note note2 : ITEMS) {
-                            if (note2.getName().equals(note.getName())) {
-                                result = false;
-                                break;
-                            } else result = true;
-                        }
-                        int id;
-                        if (ITEMS.size() == 0) {
-                            result = true;
-                            id = 1;
-                        } else {
-                            id = ITEMS.get(0).getId() + 1;
-                        }
-                        if (result) {
+                    List<OnlineNote> onlineNotes = response.body().getData().getOnlineNotes();
 
-                            String name = note.getName();
-                            //собираем данные
-                            String shortName = note.getShortName();
-                            String text = note.getText();
+                    if (onlineNotes != null) {
 
-                            String type = note.getType();
-
-                            String points = note.getPoints();
-                            String isCompleted = note.getIsCompleted();
-
-                            String decodeQR;
-                            ContentValues cv = new ContentValues();
-                            if (!note.getDecodeQR().toString().equals("null")) {
-                                decodeQR = note.getDecodeQR();
-                                cv.put("decodeQR", decodeQR);
+                        for (OnlineNote onlineNote : onlineNotes) {
+                            boolean result = false;
+                            for (Note note2 : ITEMS) {
+                                if (note2.getName().equals(onlineNote.getName())) {
+                                    result = false;
+                                    break;
+                                } else result = true;
                             }
+                            int id;
+                            if (ITEMS.size() == 0) {
+                                result = true;
+                                id = 1;
+                            } else {
+                                id = ITEMS.get(0).getId() + 1;
+                            }
+                            if (result) {
 
-                            mDb = mDBHelper.getWritableDatabase();
+                                String name = onlineNote.getName();
+                                //собираем данные
+                                String shortName = onlineNote.getShortName();
+                                String text = onlineNote.getText();
+
+                                String type = onlineNote.getType();
+
+                                String points = onlineNote.getPoints();
+                                String isCompleted = onlineNote.getIsCompleted();
+
+                                String decodeQR;
+                                ContentValues cv = new ContentValues();
+                                if (!onlineNote.getDecodeQR().toString().equals("null")) {
+                                    decodeQR = onlineNote.getDecodeQR();
+                                    cv.put("decodeQR", decodeQR);
+                                }
+
+                                mDb = mDBHelper.getWritableDatabase();
 
 
-                            cv.put("name", name);
-                            cv.put("shortName", shortName);
-                            cv.put("text", text);
-                            cv.put("type", type);
-                            cv.put("isNotifSet", 0);
-                            cv.put("permToSync", 1);
-                            cv.put("points", points);
-                            cv.put("isCompleted", isCompleted);
+                                cv.put("name", name);
+                                cv.put("shortName", shortName);
+                                cv.put("text", text);
+                                cv.put("type", type);
+                                cv.put("isNotifSet", 0);
+                                cv.put("permToSync", 1);
+                                cv.put("points", points);
+                                cv.put("isCompleted", isCompleted);
 
-                            //получение даты
-                            Date currentDate = new Date();
-                            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
-                                    Locale.getDefault());
-                            String dateText = dateFormat.format(currentDate);
-                            cv.put("date", dateText);
-                            //запись
-                            mDb.insert("Notes", null, cv);
+                                //получение даты
+                                Date currentDate = new Date();
+                                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
+                                        Locale.getDefault());
+                                String dateText = dateFormat.format(currentDate);
+                                cv.put("date", dateText);
+                                //запись
+                                mDb.insert("Notes", null, cv);
 
-                            mDb = mDBHelper.getWritableDatabase();
+                                mDb = mDBHelper.getWritableDatabase();
 
-                            userCursor = mDb.rawQuery("Select * from Notes", null);
-                            userCursor.moveToLast();
-                            int ident = userCursor.getInt(userCursor.getColumnIndex("_id"));
-                            ITEMS.add(new Note(name, shortName, null, type, id, ident));
-                            NOTES_ADAPTER.notifyDataSetChanged();
+                                userCursor = mDb.rawQuery("Select * from Notes", null);
+                                userCursor.moveToLast();
+                                int ident = userCursor.getInt(userCursor.getColumnIndex("_id"));
+                                ITEMS.add(new Note(name, shortName, null, type, id, ident));
+                                NOTES_ADAPTER.notifyDataSetChanged();
 
+                            }
+                            Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_SHORT).show();
+                            fab.show();
                         }
-                        Snackbar.make(view, "Вы успешно загрузили заметки!", Snackbar.LENGTH_SHORT).show();
-                        fab.show();
                     }
 
                     ITEMS.clear();
@@ -534,7 +513,6 @@ public class Notes extends Fragment {
         getActivity().runOnUiThread(() -> {
             startProcedures();
             enableBottomSheet();
-            enableSearch();
         });
 
         synchronized (NOTES_ADAPTER) {
@@ -548,6 +526,20 @@ public class Notes extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_notes, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                NOTES_ADAPTER.getFilter().filter(newText);
+                return false;
+            }
+        });
     }
 }
 

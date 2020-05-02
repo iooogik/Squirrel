@@ -6,15 +6,15 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class NotesData {
-    @SerializedName("Notes")
+    @SerializedName("notes")
     @Expose
-    private List<Note> notes = null;
+    private List<OnlineNote> onlineNotes = null;
 
-    public List<Note> getNotes() {
-        return notes;
+    public List<OnlineNote> getOnlineNotes() {
+        return onlineNotes;
     }
 
-    public void setNotes(List<Note> notes) {
-        this.notes = notes;
+    public void setOnlineNotes(List<OnlineNote> onlineNotes) {
+        this.onlineNotes = onlineNotes;
     }
 }

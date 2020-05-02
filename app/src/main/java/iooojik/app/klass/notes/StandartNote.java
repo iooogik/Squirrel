@@ -1,5 +1,6 @@
 package iooojik.app.klass.notes;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -12,7 +13,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +25,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -53,7 +60,7 @@ import iooojik.app.klass.qr.BarcodeCaptureActivity;
 import static android.content.Context.ALARM_SERVICE;
 
 
-public class StandartNote extends Fragment implements View.OnClickListener, NoteInterface {
+public class StandartNote extends Fragment{
     // пустой контсруктор
     public StandartNote(){}
 
@@ -61,11 +68,13 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     // переменные для работы с бд
     private Database mDBHelper;
     private SQLiteDatabase mDb;
-    private Cursor userCursor;
     // "Календарь" для получения времени
     private Calendar calendar;
     private Context context;
-    private FloatingActionButton fab;
+    private BottomSheetDialog openTextSettings;
+    private EditText noteText;
+    private int textSize = -1;
+    private int typeFace = Typeface.NORMAL;
 
 
     @Override
@@ -74,21 +83,21 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         super.onCreate(savedInstanceState);
         // получаем кнопки и "ставим" на них слушатели
 
-        view = inflater.inflate(R.layout.fragment_standart_note,
-                container, false);
+        view = inflater.inflate(R.layout.fragment_standart_note, container, false);
         context = view.getContext();
 
-        fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.hide();
         setHasOptionsMenu(true);
 
         // получаем текущее состояние "календаря"
         calendar = Calendar.getInstance();
-        updateFragment();
-
+        noteText = view.findViewById(R.id.editNote);
         MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
-        materialToolbar.inflateMenu(R.menu.standart_note_menu);
+        materialToolbar.inflateMenu(R.menu.menu_standart_note);
 
+        updateFragment();
+        textSettings();
         return view;
     }
 
@@ -104,8 +113,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         super.onResume();
     }
 
-    @Override
-    public void updateFragment(){
+    @SuppressLint("Recycle")
+    private void updateFragment(){
         /*
           Обновляем содержимое фрагмента
           "Открываем" бд
@@ -121,7 +130,7 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
 
         mDb = mDBHelper.getReadableDatabase();
 
-        userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
+        Cursor userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
         userCursor.moveToFirst();
         // перемещаем курсор
 
@@ -164,15 +173,14 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
             });
             decodedQR.setText(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
         }
+
+        textSize = userCursor.getInt(userCursor.getColumnIndex("fontSize"));
+        typeFace = userCursor.getInt(userCursor.getColumnIndex("typeface"));
+        noteText.setTextSize(textSize);
+        noteText.setTypeface(null, typeFace);
     }
 
-    @Override
-    public void updateShopNotes(String databaseName, String name, String booleans) {
-
-    }
-
-
-    Bitmap encodeAsBitmap(String str) throws WriterException {
+    private Bitmap encodeAsBitmap(String str) throws WriterException {
         BitMatrix result;
         try {
             result = new MultiFormatWriter().encode(str,
@@ -195,24 +203,14 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         return bitmap;
     }
 
-    @Override
-    public int getButtonID(){
+    private int getButtonID(){
         // получаем id заметки
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("button ID");
     }
 
-    @Override
-    public String getButtonName(){
-        // получаем название заметки
-        Bundle arguments = this.getArguments();
-        assert arguments != null;
-        return arguments.getString("button name");
-    }
-
-    @Override
-    public void updateData(String databaseName, String name, String note, String shortNote){
+    private void updateData(String databaseName, String name, String note, String shortNote){
         mDb = mDBHelper.getWritableDatabase();
 
         //код сохранения в бд
@@ -220,6 +218,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         cv.put("name", name);
         cv.put("shortName", shortNote);
         cv.put("text", note);
+        cv.put("typeface", typeFace);
+        cv.put("fontSize", textSize);
 
         Date currentDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
@@ -231,8 +231,8 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
         mDb.update(databaseName, cv, "_id =" + (getButtonID()), null);
     }
 
-    @Override
-    public void alarmDialog(final String title, final String text){
+    @SuppressLint("ShortAlarm")
+    private void alarmDialog(final String title, final String text){
         // напоминание
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -292,13 +292,10 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
     }
 
     @Override
-    public void onClick(final View view) {}
-
-    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.standart_note_menu, menu);
+        getActivity().getMenuInflater().inflate(R.menu.menu_standart_note, menu);
     }
 
     @Override
@@ -340,8 +337,70 @@ public class StandartNote extends Fragment implements View.OnClickListener, Note
                 intent.putExtras(args);
                 startActivity(intent);
                 return true;
+            case R.id.textSettings:
+                openTextSettings.show();
+                return true;
         }
         return false;
+    }
+
+    @SuppressLint("InflateParams")
+    private void textSettings(){
+        openTextSettings = new BottomSheetDialog(getActivity());
+        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_text_settings, null);
+        openTextSettings.setContentView(bottomSheet);
+        EditText fontSize = bottomSheet.findViewById(R.id.font_size);
+
+        fontSize.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s != null && Float.parseFloat(s.toString()) > 0) {
+                    noteText.setTextSize(Float.parseFloat(s.toString()));
+                    textSize = Integer.parseInt(s.toString());
+                }
+                else noteText.setTextSize(14.0f);
+            }
+        });
+
+        String[] list_items = new String[]{"Обычный", "Полужирный", "Курсив", "Полужирный + Курсив"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.list_item, list_items);
+        AutoCompleteTextView spinner = bottomSheet.findViewById(R.id.drop_down);
+        spinner.setAdapter(adapter);
+
+
+        spinner.setOnItemClickListener((parent, view, position, id) -> {
+
+            switch (position){
+                case 0:
+                    typeFace = Typeface.NORMAL;
+                    break;
+                case 1:
+                    typeFace += Typeface.BOLD;
+                    break;
+                case 2:
+                    typeFace += Typeface.ITALIC;
+                    break;
+                case 3:
+                    typeFace += Typeface.BOLD_ITALIC;
+                    break;
+            }
+
+            noteText.setTypeface(null, typeFace);
+
+        });
+
+
     }
 }
 

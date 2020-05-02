@@ -37,7 +37,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.notes.StandartNote"
+        <activity android:name="iooojik.app.klass.onlineNotes.StandartNote"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
@@ -45,7 +45,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.notes.Notes"
+        <activity android:name="iooojik.app.klass.onlineNotes.Notes"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 

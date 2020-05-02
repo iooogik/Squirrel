@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="iooojik.app.klass.notes.CheckList">
+    tools:context="iooojik.app.klass.onlineNotes.CheckList">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_shop_input_layout"

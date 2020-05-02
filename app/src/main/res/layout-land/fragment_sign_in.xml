@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/itemShapeFillColor"
     android:orientation="vertical"
     tools:context=".auth.SignIn">
@@ -30,6 +31,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:endIconMode="clear_text"
                 android:layout_margin="10dp"
                 android:hint="@string/typeEmailHint">
 
@@ -48,6 +50,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:endIconMode="password_toggle"
                 android:layout_margin="10dp"
                 android:hint="@string/typePasswordHint">
 

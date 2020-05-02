@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    tools:context=".notes.Notes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -15,15 +14,7 @@
         android:layout_margin="10dp"
         android:hint="@string/searchHint"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
