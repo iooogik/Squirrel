@@ -19,7 +19,7 @@
             android:layout_marginBottom="5dp"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             app:icon="@drawable/baseline_add_24"
-            android:text="Добавить ученика" />
+            android:text="@string/addPupil" />
 
         <Button
             android:id="@+id/test_editor"
@@ -28,7 +28,7 @@
             android:layout_marginBottom="5dp"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             app:icon="@drawable/round_edit_24"
-            android:text="Открыть редактор тестов" />
+            android:text="@string/openEditor" />
 
         <Button
             android:id="@+id/add_message"
@@ -37,7 +37,7 @@
             android:layout_marginBottom="5dp"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             app:icon="@drawable/round_add_comment_24"
-            android:text="Добавить сообщение для группы" />
+            android:text="@string/addMessageToGroup" />
 
     </LinearLayout>
 </FrameLayout>

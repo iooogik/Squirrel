@@ -114,6 +114,28 @@
     <string name="shop">Магазин</string>
     <string name="buy">Купить</string>
     <string name="search">Search</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+    <string name="addPupil">Добавить ученика</string>
+    <string name="openEditor">Открыть редактор тестов</string>
+    <string name="addMessageToGroup">Добавить сообщение для группы</string>
+    <string name="add">Добавить</string>
+    <string name="sync">Синхронизировать</string>
+    <string name="download">Загрузить</string>
+    <string name="fontSize">Размер шрифта</string>
+    <string name="teacher">Учитель:</string>
+    <string name="email">email:</string>
+    <string name="teacherMessage">Сообщение от преподавателя:</string>
+    <string name="testAvailable">Тест доступен</string>
+    <string name="getTest">Получить тест</string>
+    <string name="listPupil">Список учащихся:</string>
+    <string name="endTest">Завершить тест</string>
+    <string name="sendTest">Отправить тест</string>
+    <string name="timerOff">Отключить таймер</string>
+    <string name="scorePerAnsw">Количество баллов \n за 1 правильный ответ:</string>
+    <string name="scores">баллов</string>
+    <string name="min">мин</string>
+    <string name="timeTest">Время прохождения теста:</string>
     <!-- other strings end-->
 
 

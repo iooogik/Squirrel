@@ -67,7 +67,8 @@
                     android:layout_gravity="center_horizontal"
                     android:minWidth="150dp"
                     android:minHeight="150dp"
-                    tools:src="@tools:sample/avatars" />
+                    tools:src="@tools:sample/avatars"
+                    android:contentDescription="@string/todo" />
 
                 <TextView
                     android:id="@+id/decodedqr"
@@ -86,7 +87,8 @@
                 android:hint="@string/noteHint"
                 android:inputType="textMultiLine"
                 android:textAlignment="viewStart"
-                android:textColorHint="@color/secondary_text" />
+                android:textColorHint="@color/secondary_text"
+                android:autofillHints="" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

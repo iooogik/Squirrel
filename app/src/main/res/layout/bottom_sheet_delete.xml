@@ -15,16 +15,18 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="340dp"
             android:layout_height="wrap_content"
-            android:text="Удалить"
+            android:text="@string/delete"
             android:textColor="@color/notCompleted"
-            app:icon="@drawable/baseline_delete_forever_24" />
+            app:icon="@drawable/baseline_delete_forever_24"
+            app:iconTint="@color/notCompleted" />
 
         <Button
             android:id="@+id/cancel"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="340dp"
             android:layout_height="wrap_content"
-            android:text="Отмена"
+            android:text="@string/cancel"
+            app:iconTint="@color/color_secondary_text"
             app:icon="@drawable/baseline_cancel_24"
             android:textColor="@color/color_secondary_text" />
     </LinearLayout>

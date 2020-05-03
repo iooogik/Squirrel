@@ -1,6 +1,7 @@
 package iooojik.app.klass.profile;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -61,8 +62,6 @@ public class Profile extends Fragment implements View.OnClickListener {
     private SharedPreferences preferences;
     private Api api;
     private String email, fullName;
-
-    private ImageView error;
     private View header;
 
 
@@ -83,8 +82,6 @@ public class Profile extends Fragment implements View.OnClickListener {
         fab = getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(this);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        error = view.findViewById(R.id.errorImg);
-        error.setVisibility(View.GONE);
 
         //запрос на разрешение использования камеры
         int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
@@ -171,7 +168,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                             break;
                         case "pupil":
                             preferences.edit().putString(AppСonstants.USER_ROLE, "pupil").apply();
-                            getActiveTests();
+                            getPupilGroups();
                             break;
                     }
 
@@ -189,7 +186,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     }
 
-    private void getActiveTests() {
+    private void getPupilGroups() {
         fab.hide();
         //получаем к каким группам относится пользователь
         doRetrofit();
@@ -203,15 +200,16 @@ public class Profile extends Fragment implements View.OnClickListener {
                 if (response.code() == 200){
                     DataPupilList dataPupilList = response.body().getData();
                     List<PupilGroups> pupilGroups = dataPupilList.getPupilGroups();
-                    PupilGroupsAdapter groupsAdapter = new PupilGroupsAdapter(pupilGroups, fragment, context);
-                    if (pupilGroups.size() != 0) {
-                        TextView warn = view.findViewById(R.id.nothing);
-                        warn.setVisibility(View.GONE);
+                    if (pupilGroups.size() == 0){
+                        TextView notif = view.findViewById(R.id.notif_text);
+                        notif.setVisibility(View.VISIBLE);
+                        notif.setText("Вы ещё не присодинились ни к одной группе");
+                    } else {
+                        PupilGroupsAdapter groupsAdapter = new PupilGroupsAdapter(pupilGroups, fragment, context);
+                        RecyclerView recyclerView = view.findViewById(R.id.classes);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                        recyclerView.setAdapter(groupsAdapter);
                     }
-
-                    RecyclerView recyclerView = view.findViewById(R.id.classes);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    recyclerView.setAdapter(groupsAdapter);
                 }else {
                     Log.e("GET PUPIL GROUPS", String.valueOf(response.raw()));
                 }
@@ -244,14 +242,16 @@ public class Profile extends Fragment implements View.OnClickListener {
                 if(response.code() == 200) {
                     ServerResponse<DataGroup> result = response.body();
                     List<GroupInfo> groupInforms = result.getData().getGroupInfos();
-                    if (groupInforms.size() != 0) {
-                        TextView warn = view.findViewById(R.id.nothing);
-                        warn.setVisibility(View.GONE);
+                    if (groupInforms.size() == 0) {
+                        TextView notif = view.findViewById(R.id.notif_text);
+                        notif.setVisibility(View.VISIBLE);
+                        notif.setText("Вы ещё не присодинились ни к одной группе");
+                    } else {
+                        groupsAdapter = new GroupsAdapter(context, groupInforms, fragment);
+                        RecyclerView recyclerView = view.findViewById(R.id.classes);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                        recyclerView.setAdapter(groupsAdapter);
                     }
-                    groupsAdapter = new GroupsAdapter(context, groupInforms, fragment);
-                    RecyclerView recyclerView = view.findViewById(R.id.classes);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    recyclerView.setAdapter(groupsAdapter);
 
                 } else {
                     Log.e("GETTING GROUPS", response.raw() + "");
@@ -265,6 +265,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public void onClick(View v) {
         String teacherRole = "teacher";
         if (v.getId() == R.id.fab) {//добавление класса в учительский профиль
@@ -281,11 +282,6 @@ public class Profile extends Fragment implements View.OnClickListener {
                 builder.setPositiveButton("Добавить", (dialog, which) -> {
                     //заносим в базу данных
                     doRetrofit();
-
-                    error.setVisibility(View.GONE);
-                    TextView warn = view.findViewById(R.id.nothing);
-                    warn.setVisibility(View.GONE);
-
                     String nameGroup = name.getText().toString();
 
                     HashMap<String, String> post = new HashMap<>();

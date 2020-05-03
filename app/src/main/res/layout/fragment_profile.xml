@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/notif_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:textAlignment="textStart"
+        android:textSize="18sp"
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested"
@@ -20,28 +29,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/nothing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="140dp"
-                android:text="Здесь пока ничего нет"
-                android:textAlignment="center"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:textColor="@color/colorAccent"
-                android:textSize="35sp" />
-
-            <ImageView
-                android:id="@+id/errorImg"
-                android:layout_gravity="center"
-                android:minHeight="200dp"
-                android:minWidth="200dp"
-                android:visibility="gone"
-                android:layout_marginTop="140dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/round_cloud_off_24" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/classes"
@@ -58,4 +45,4 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

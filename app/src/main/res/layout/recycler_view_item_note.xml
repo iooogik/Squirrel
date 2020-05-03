@@ -10,9 +10,10 @@
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginTop="4dp"
         >
 
         <LinearLayout
@@ -47,9 +48,8 @@
                         android:layout_width="@dimen/small_buttons"
                         android:layout_height="@dimen/small_buttons"
                         android:layout_gravity="end"
-                        android:layout_margin="10dp"
+                        android:layout_marginTop="10dp"
                         android:tint="@color/Completed"
-                        android:visibility="gone"
                         app:srcCompat="@drawable/round_check_circle_24" />
 
                     <ImageView
@@ -61,7 +61,6 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="10dp"
                         android:tint="@color/notCompleted"
-                        android:visibility="gone"
                         app:srcCompat="@drawable/baseline_notifications_active_24" />
                 </LinearLayout>
 

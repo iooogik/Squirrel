@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
@@ -152,8 +151,6 @@ public class Group extends Fragment{
             public void onFailure(Call<ServerResponse<DataUsersToGroup>> call, Throwable t) {
                 Log.e("GETTING MATES",t.toString());
                 fab.hide();
-                ImageView error = view.findViewById(R.id.errorImg);
-                error.setVisibility(View.VISIBLE);
             }
         });
     }

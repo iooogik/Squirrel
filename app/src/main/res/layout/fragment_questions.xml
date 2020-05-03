@@ -12,11 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/fab_margin"
-        android:text="Завершить тест"
+        android:text="@string/endTest"
         android:textColor="@color/Completed"
         android:backgroundTint="?attr/itemShapeFillColor"
         app:icon="@drawable/round_check_circle_24"
-
         app:iconTint="@color/Completed" />
 
     <LinearLayout

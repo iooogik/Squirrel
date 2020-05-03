@@ -4,67 +4,64 @@
     android:layout_height="match_parent"
     android:background="@drawable/back">
 
-    <FrameLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/textView7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="@string/LifeAtSpace"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:textSize="36sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/textView7"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/LifeAtSpace"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="36sp"
-                    android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:maxHeight="205dp"
+                android:minHeight="205dp"
+                android:scaleType="fitStart"
+                android:src="@drawable/demo_logo"
+                android:contentDescription="@string/todo" />
 
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_height="200dp"
-                    android:maxHeight="205dp"
-                    android:minHeight="205dp"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/demo_logo" />
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="@string/las_desc"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite" />
 
-                <TextView
-                    android:id="@+id/textView8"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
-                    android:text="@string/las_desc"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorWhite" />
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="15dp"
+                android:text="@string/dowloadLAS"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite" />
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="15dp"
-                    android:text="@string/dowloadLAS"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorWhite" />
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="30dp"
+                android:src="@drawable/las_qr"
+                android:contentDescription="@string/todo" />
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="30dp"
-                    android:src="@drawable/las_qr" />
-
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>

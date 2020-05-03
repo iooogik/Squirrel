@@ -23,7 +23,7 @@
             android:layout_marginBottom="5dp"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             app:icon="@drawable/baseline_add_24"
-            android:text="Добавить" />
+            android:text="@string/add" />
 
         <Button
             android:id="@+id/sync"
@@ -32,7 +32,7 @@
             android:layout_marginBottom="5dp"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             app:icon="@drawable/round_cloud_upload_24"
-            android:text="Синхронизировать" />
+            android:text="@string/sync" />
 
         <Button
             android:id="@+id/download"
@@ -41,6 +41,6 @@
             android:layout_marginBottom="5dp"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             app:icon="@drawable/round_cloud_download_24"
-            android:text="Загрузить" />
+            android:text="@string/download" />
     </LinearLayout>
 </FrameLayout>

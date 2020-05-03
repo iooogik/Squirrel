@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Отправить тест" />
+                android:text="@string/sendTest" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/text_input_layout"
@@ -72,7 +72,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="@dimen/fab_margin"
                         android:layout_marginStart="@dimen/fab_margin"
-                        android:text="Время прохождения теста:" />
+                        android:text="@string/timeTest" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -81,7 +81,7 @@
                         android:gravity="center_vertical"
                         android:layout_marginEnd="@dimen/fab_margin"
                         android:layout_gravity="end"
-                        android:hint="мин">
+                        android:hint="@string/min">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edit_text_minutes"
@@ -99,7 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/fab_margin"
-                    android:text="Отключить таймер" />
+                    android:text="@string/timerOff" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -111,14 +111,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/fab_margin"
-                        android:text="Количество баллов \n за 1 правильный ответ:" />
+                        android:text="@string/scorePerAnsw" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:hint="баллов"
+                        android:hint="@string/scores"
                         android:layout_margin="10dp">
 
                         <com.google.android.material.textfield.TextInputEditText

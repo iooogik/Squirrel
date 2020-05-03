@@ -13,7 +13,8 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/dark_baseline_account_circle_24" />
+        tools:srcCompat="@drawable/baseline_account_circle_24"
+        android:contentDescription="@string/todo" />
 
     <TextView
         android:id="@+id/textView"

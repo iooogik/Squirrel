@@ -6,22 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="@string/searchHint"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-        />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="3dp"
-        android:layout_marginTop="15dp"
         android:layout_marginRight="3dp"
         android:layout_marginBottom="3dp"
         tools:itemCount="0" />
