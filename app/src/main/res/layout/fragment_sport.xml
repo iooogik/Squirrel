@@ -6,10 +6,11 @@
 
     <Button
         android:id="@+id/stop"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Начать" />
+        android:layout_marginTop="@dimen/fab_margin"
+        android:text="Получить койны" />
 
     <fragment
         android:id="@+id/map"
