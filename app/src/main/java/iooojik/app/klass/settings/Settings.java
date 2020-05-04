@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -422,23 +421,23 @@ public class Settings extends Fragment implements View.OnClickListener{
     @SuppressLint("InflateParams")
     private void showWeather(){
 
+        //переключатель
         Switch show = view.findViewById(R.id.showWeatherSwitch);
         if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0) show.setChecked(false);
         else show.setChecked(true);
 
-        show.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
-                else preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
-            }
+        //слушатель на переключатель
+        show.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
+            else preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
         });
 
         if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1) {
-
+            //получение погоды
             weather = new BottomSheetDialog(getActivity());
             View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_weather, null);
 
+            //координаты
             String lat = preferences.getString(AppСonstants.USER_LAT, "");
             String lon = preferences.getString(AppСonstants.USER_LON, "");
 
@@ -473,14 +472,14 @@ public class Settings extends Fragment implements View.OnClickListener{
 
     @SuppressLint("DefaultLocale")
     private void setWeatherInfo(View bottomSheet, WeatherData weatherData) {
-        TextView town = bottomSheet.findViewById(R.id.town);
-        TextView condition = bottomSheet.findViewById(R.id.condition);
-        TextView pressure = bottomSheet.findViewById(R.id.pressure);
-        TextView humidity = bottomSheet.findViewById(R.id.humidity);
-        TextView windInfo = bottomSheet.findViewById(R.id.wind);
-        TextView temp = bottomSheet.findViewById(R.id.temperature);
+        TextView town = bottomSheet.findViewById(R.id.town); //город
+        TextView condition = bottomSheet.findViewById(R.id.condition); //условия
+        TextView pressure = bottomSheet.findViewById(R.id.pressure); //давление
+        TextView humidity = bottomSheet.findViewById(R.id.humidity); //влажность
+        TextView windInfo = bottomSheet.findViewById(R.id.wind); //ветер
+        TextView temp = bottomSheet.findViewById(R.id.temperature); //температура
 
-
+        //устанавливаем информацию
         Main mainInfo = weatherData.getMain();
         temp.setText(String.format("%s%s", String.valueOf(Math.round(mainInfo.getTemp() - 273)), temp.getText().toString()));
         pressure.setText(String.format("%s мм рт. ст.", String.valueOf(Math.round(mainInfo.getPressure() / 1.33))));
@@ -489,7 +488,7 @@ public class Settings extends Fragment implements View.OnClickListener{
         windInfo.setText(String.format("%s м/с", String.valueOf(wind.getSpeed())));
 
         Weather weather = weatherData.getWeather().get(0);
-
+        //переводим погодные условия и показываем перевод
         TranslateApi translateApi;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.YANDEX_TRANSLATE_BASE_URL)

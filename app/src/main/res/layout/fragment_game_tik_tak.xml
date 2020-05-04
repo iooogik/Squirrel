@@ -9,23 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_margin="15dp"
-            android:orientation="vertical">
-            <ImageButton
-                android:id="@+id/menuButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="50dp"
-                android:minHeight="50dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/round_menu_24" />
-
-        </LinearLayout>
-
         <GridLayout
             android:id="@+id/CellsLayout"
             android:layout_width="wrap_content"

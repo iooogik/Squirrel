@@ -2,7 +2,6 @@ package iooojik.app.klass.games.pairs;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -29,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 import iooojik.app.klass.R;
-import iooojik.app.klass.games.Cell;
+import iooojik.app.klass.games.cells.Cell;
 
 
 public class GamePairs extends Fragment implements View.OnClickListener{
@@ -186,7 +185,7 @@ public class GamePairs extends Fragment implements View.OnClickListener{
     private void isGameEnd(){
         if(guessedPairs == (HEIGHT*WIDTH)/2){
             running = false;
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
             builder.setTitle("Поздравляю! Вы нашли все пары!");
             TextView time = view.findViewById(R.id.timer);
 

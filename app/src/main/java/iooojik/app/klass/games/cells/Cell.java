@@ -1,4 +1,4 @@
-package iooojik.app.klass.games;
+package iooojik.app.klass.games.cells;
 
 import android.widget.ImageButton;
 
