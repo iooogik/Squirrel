@@ -2,11 +2,13 @@
   <dictionary name="mypc">
     <words>
       <w>answ</w>
+      <w>appid</w>
       <w>astonomy</w>
       <w>astro</w>
       <w>backround</w>
       <w>bbff</w>
       <w>chrono</w>
+      <w>coord</w>
       <w>credi</w>
       <w>decodedqr</w>
       <w>dowload</w>
@@ -27,6 +29,7 @@
       <w>npupil</w>
       <w>nteacher</w>
       <w>omodels</w>
+      <w>openweathermap</w>
       <w>pansws</w>
       <w>pquests</w>
       <w>projectframe</w>
@@ -41,7 +44,10 @@
       <w>sceneform</w>
       <w>standart</w>
       <w>stndrt</w>
+      <w>tiktaktoe</w>
+      <w>trnsl</w>
       <w>videogame</w>
+      <w>yandex</w>
       <w>сonstants</w>
     </words>
   </dictionary>
