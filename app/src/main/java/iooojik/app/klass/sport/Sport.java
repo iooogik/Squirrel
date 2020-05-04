@@ -24,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashMap;
 
@@ -189,7 +190,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                 }
             });
         }
-
+        Snackbar.make(getView(), "Получено " + coins + " койнов", Snackbar.LENGTH_SHORT).show();
     }
 
     private void doRetrofit(){
