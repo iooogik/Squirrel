@@ -99,6 +99,10 @@ public class Settings extends Fragment implements View.OnClickListener{
         }
         Button deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
+
+        Button deleteNotes = view.findViewById(R.id.delete_notes);
+        deleteNotes.setOnClickListener(this);
+
         Button showBottomWeather = view.findViewById(R.id.showWeather);
         showBottomWeather.setOnClickListener(this);
 
@@ -282,10 +286,22 @@ public class Settings extends Fragment implements View.OnClickListener{
                     mDb = mDBHelper.getWritableDatabase();
                     mDb.execSQL("DELETE FROM Tests");
                 });
-                builder.show();
+                builder.create().show();
                 break;
             case R.id.showWeather:
                 weather.show();
+                break;
+            case R.id.delete_notes:
+                MaterialAlertDialogBuilder builder2 = new MaterialAlertDialogBuilder(getContext());
+                builder2.setMessage("Вы действительно хотите удалить все заметки? \n" +
+                        "При очистке будут удалены и обычные заметки, и справочники!");
+
+                builder2.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+                builder2.setPositiveButton("Удалить", (dialog, which) -> {
+                    mDb = mDBHelper.getWritableDatabase();
+                    mDb.execSQL("DELETE FROM Notes");
+                });
+                builder2.create().show();
                 break;
         }
     }
