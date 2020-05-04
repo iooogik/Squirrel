@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".settings.Settings">
 
@@ -15,92 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/itemShapeFillColor"
-
-                android:orientation="vertical">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="30dp">
-
-                    <ImageView
-                        android:id="@+id/avatar"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        tools:srcCompat="@drawable/dark_baseline_account_circle_24" />
-
-                    <TextView
-                        android:id="@+id/name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/email"
-                        app:layout_constraintStart_toEndOf="@+id/avatar"
-                        tools:text="@tools:sample/full_names" />
-
-                    <TextView
-                        android:id="@+id/email"
-                        android:layout_width="285dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/avatar"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.050"
-                        app:layout_constraintStart_toEndOf="@+id/avatar"
-                        tools:text="@tools:sample/lorem[4:10]" />
-
-                    <TextView
-                        android:id="@+id/coins"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="44dp"
-                        android:text="0"
-                        app:layout_constraintBottom_toTopOf="@+id/email"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView5"
-                        app:layout_constraintHorizontal_bias="0.964"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/imageView5"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/coins"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.2" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <Button
-                    android:id="@+id/exit"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/settings_margin"
-                    android:text="@string/exitAcc"
-                    android:textColor="@color/notCompleted" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/divider3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?attr/colorAccent"
-                android:layout_marginBottom="40dp"
-                />
 
             <Switch
                 android:id="@+id/book_items"
@@ -126,6 +39,14 @@
                 android:layout_marginStart="@dimen/settings_margin"
                 android:text="Показывать id группы" />
 
+            <Switch
+                android:id="@+id/showWeatherSwitch"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="Показывать уведомление о погоде" />
+
             <Button
                 android:id="@+id/delete_tests"
                 style="@style/Widget.MaterialComponents.Button"
@@ -133,6 +54,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Удалить тесты" />
+
+            <Button
+                android:id="@+id/showWeather"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:text="Показать погоду" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -198,6 +129,15 @@
                     android:src="@drawable/instagram" />
 
             </LinearLayout>
+
+            <Button
+                android:id="@+id/exit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="@string/exitAcc"
+                android:textColor="@color/notCompleted" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/version"

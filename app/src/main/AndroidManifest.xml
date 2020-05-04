@@ -8,6 +8,8 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
 
 
     <application
@@ -37,7 +39,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.onlineNotes.StandartNote"
+        <activity android:name="iooojik.app.klass.notes.StandartNote"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
@@ -45,7 +47,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.onlineNotes.Notes"
+        <activity android:name="iooojik.app.klass.notes.Notes"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 

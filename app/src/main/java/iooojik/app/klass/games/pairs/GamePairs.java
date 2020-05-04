@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import iooojik.app.klass.R;
+import iooojik.app.klass.games.Cell;
 
 
 public class GamePairs extends Fragment implements View.OnClickListener{

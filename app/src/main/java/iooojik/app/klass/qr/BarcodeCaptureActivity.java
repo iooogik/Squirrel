@@ -91,6 +91,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
     private Cursor userCursor;
 
 
+    @SuppressLint("CutPasteId")
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -99,7 +100,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
-
+        //запрос на разрешение использования камеры
+        int permissionStatus = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
+        if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(getParent(), new String[] {Manifest.permission.CAMERA}, 1);
+        }
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.

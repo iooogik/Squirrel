@@ -99,7 +99,7 @@
         android:id="@+id/nav_profile"
         android:name="iooojik.app.klass.profile.Profile"
         tools:layout="@layout/fragment_profile"
-        android:label="Главная" >
+        android:label="Профиль" >
         <action
             android:id="@+id/action_nav_profile_to_group"
             app:destination="@id/nav_group" />
@@ -194,22 +194,32 @@
     <fragment
         android:id="@+id/nav_games"
         android:name="iooojik.app.klass.games.Games"
-        android:label="Games" >
+        android:label="Переменка" >
         <action
             android:id="@+id/action_games_to_lifeAtSpace"
             app:destination="@id/nav_las" />
         <action
             android:id="@+id/action_games_to_gamePairs"
             app:destination="@id/nav_pairs" />
+        <action
+            android:id="@+id/action_nav_games_to_gameTikTak"
+            app:destination="@id/nav_gameTikTak" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_las"
         android:name="iooojik.app.klass.games.las.LifeAtSpace"
         android:label="LifeAtSpace" />
+
     <fragment
         android:id="@+id/nav_pairs"
         android:name="iooojik.app.klass.games.pairs.GamePairs"
         android:label="GamePairs" />
+
+    <fragment
+        android:id="@+id/nav_gameTikTak"
+        android:name="iooojik.app.klass.games.tiktaktoe.GameTikTak"
+        android:label="Крестики-нолики"
+        tools:layout="@layout/fragment_game_tik_tak" />
 
 </navigation>

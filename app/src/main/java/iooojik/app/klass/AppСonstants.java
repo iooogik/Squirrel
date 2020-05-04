@@ -2,6 +2,7 @@ package iooojik.app.klass;
 
 import android.annotation.SuppressLint;
 import android.hardware.Camera;
+
 //класс с константами
 public class AppСonstants {
 
@@ -94,4 +95,14 @@ public class AppСonstants {
     public static  final String TABLE_TODO_NAME = "todo_list";
     public static  final String TABLE_TODO_CHECKED = "checked";
     public static  final String SHOW_GROUP_ID = "SHOW_GROUP_ID";
+    //weather api key
+    public static final String WEATHER_BASE_URL = "http://api.openweathermap.org/data/2.5/";
+    public static final String WEATHER_API_KEY = "d98807cde5d96afd3382d7d8ef923ea6";
+    public static final String CURRENT_DATE = "CURRENT_DATE";
+    public static final String USER_LAT = "USER_LAT";
+    public static final String USER_LON = "USER_LON";
+    public static final String SHOW_WEATHER_NOTIF = "SHOW_WEATHER_NOTIF";
+    public static final String YANDEX_TRANSLATE_API_KEY = "trnsl.1.1.20200504T150254Z.de2d9abf855314c5.22a15b3c1fad2d9bdb3e676aa3abf9d3ec67dbc0";
+    public static final String YANDEX_TRANSLATE_BASE_URL = "https://translate.yandex.net/";
+
 }

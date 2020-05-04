@@ -49,6 +49,7 @@
                         android:layout_height="@dimen/small_buttons"
                         android:layout_gravity="end"
                         android:layout_marginTop="10dp"
+                        android:visibility="gone"
                         android:tint="@color/Completed"
                         app:srcCompat="@drawable/round_check_circle_24" />
 
@@ -59,6 +60,7 @@
                         android:layout_gravity="end"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="5dp"
+                        android:visibility="gone"
                         android:layout_marginRight="10dp"
                         android:tint="@color/notCompleted"
                         app:srcCompat="@drawable/baseline_notifications_active_24" />

@@ -37,6 +37,7 @@ public class Games extends Fragment {
 
         gamesList.add(new GameObject("Life at space", R.drawable.las_logo, R.id.nav_las));
         gamesList.add(new GameObject("Поиск пар", R.drawable.pairs_logo, R.id.nav_pairs));
+        gamesList.add(new GameObject("Крестики-нолики", R.drawable.pairs_logo, R.id.nav_gameTikTak));
 
         games.setLayoutManager(new LinearLayoutManager(getContext()));
 

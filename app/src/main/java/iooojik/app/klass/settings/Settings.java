@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -33,10 +34,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.HashMap;
@@ -46,9 +47,15 @@ import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
+import iooojik.app.klass.TranslateApi;
+import iooojik.app.klass.WeatherApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import iooojik.app.klass.models.translation.TranslationResponse;
+import iooojik.app.klass.models.weather.Main;
+import iooojik.app.klass.models.weather.Weather;
+import iooojik.app.klass.models.weather.WeatherData;
+import iooojik.app.klass.models.weather.Wind;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -72,6 +79,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     private Api api;
     private Database mDBHelper;
     private SQLiteDatabase mDb;
+    private BottomSheetDialog weather;
 
 
     @Override
@@ -85,14 +93,17 @@ public class Settings extends Fragment implements View.OnClickListener{
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //получаем packageInfo, чтобы узнать версию установленного приложения
         try {
-            packageInfo = getActivity().getPackageManager().
-                    getPackageInfo(getActivity().getPackageName(), 0);
+            packageInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
         Button deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
-        load();
+        Button showBottomWeather = view.findViewById(R.id.showWeather);
+        showBottomWeather.setOnClickListener(this);
+
+        getActivity().runOnUiThread(this::load);
+
         return view;
     }
 
@@ -104,25 +115,14 @@ public class Settings extends Fragment implements View.OnClickListener{
         //установка текущей версии
         setCurrentVersion();
         deAuth();
-        setUserInformation();
         contacts();
-        changeProfile();
-        setCoins();
         showGroupID();
+        showWeather();
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
         setHasOptionsMenu(true);
-    }
 
-    private void setCoins() {
-        TextView coins = view.findViewById(R.id.coins);
-        coins.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
-    }
-
-    private void changeProfile() {
-        ImageView avatar = view.findViewById(R.id.avatar);
-        avatar.setOnClickListener(this);
     }
 
     private void setDarkTheme() {
@@ -222,24 +222,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         instagram.setOnClickListener(this);
     }
 
-    private void setUserInformation() {
-        ImageView avatar = view.findViewById(R.id.avatar);
-        TextView name = view.findViewById(R.id.name);
-        TextView email = view.findViewById(R.id.email);
-
-        if (!preferences.getString(AppСonstants.USER_AVATAR, "").isEmpty()) {
-
-            Picasso.get().load(preferences.getString(AppСonstants.USER_AVATAR, ""))
-                    .resize(100, 100)
-                    .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
-        } else {
-            avatar.setImageResource(R.drawable.baseline_account_circle_24);
-        }
-
-        name.setText(preferences.getString(AppСonstants.USER_FULL_NAME, ""));
-        email.setText(preferences.getString(AppСonstants.USER_EMAIL, ""));
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -301,6 +283,9 @@ public class Settings extends Fragment implements View.OnClickListener{
                     mDb.execSQL("DELETE FROM Tests");
                 });
                 builder.show();
+                break;
+            case R.id.showWeather:
+                weather.show();
                 break;
         }
     }
@@ -415,6 +400,165 @@ public class Settings extends Fragment implements View.OnClickListener{
             if (isChecked) preferences.edit().putInt(AppСonstants.SHOW_GROUP_ID, 1).apply();
             else preferences.edit().putInt(AppСonstants.SHOW_GROUP_ID, 0).apply();
         });
+
+    }
+
+    @SuppressLint("InflateParams")
+    private void showWeather(){
+
+        Switch show = view.findViewById(R.id.showWeatherSwitch);
+        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0) show.setChecked(false);
+        else show.setChecked(true);
+
+        show.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
+                else preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
+            }
+        });
+
+        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1) {
+
+            weather = new BottomSheetDialog(getActivity());
+            View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_weather, null);
+
+            String lat = preferences.getString(AppСonstants.USER_LAT, "");
+            String lon = preferences.getString(AppСonstants.USER_LON, "");
+
+            WeatherApi weatherApi;
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(AppСonstants.WEATHER_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            weatherApi = retrofit.create(WeatherApi.class);
+
+            //запрос
+            Call<WeatherData> getWeatherCall = weatherApi.getWeather(lat, lon, AppСonstants.WEATHER_API_KEY);
+
+            getWeatherCall.enqueue(new Callback<WeatherData>() {
+                @Override
+                public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
+
+                    if (response.code() == 200) {
+                        setWeatherInfo(bottomSheet, response.body());
+                    } else Log.e("GETTING WEATHER", String.valueOf(response.raw()));
+                }
+
+                @Override
+                public void onFailure(Call<WeatherData> call, Throwable t) {
+                    Log.e("GETTING WEATHER", String.valueOf(t));
+                }
+            });
+
+            weather.setContentView(bottomSheet);
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void setWeatherInfo(View bottomSheet, WeatherData weatherData) {
+        TextView town = bottomSheet.findViewById(R.id.town);
+        TextView condition = bottomSheet.findViewById(R.id.condition);
+        TextView pressure = bottomSheet.findViewById(R.id.pressure);
+        TextView humidity = bottomSheet.findViewById(R.id.humidity);
+        TextView windInfo = bottomSheet.findViewById(R.id.wind);
+        TextView temp = bottomSheet.findViewById(R.id.temperature);
+
+
+        Main mainInfo = weatherData.getMain();
+        temp.setText(String.format("%s%s", String.valueOf(Math.round(mainInfo.getTemp() - 273)), temp.getText().toString()));
+        pressure.setText(String.format("%s мм рт. ст.", String.valueOf(Math.round(mainInfo.getPressure() / 1.33))));
+        humidity.setText(String.format("%d%%", mainInfo.getHumidity()));
+        Wind wind = weatherData.getWind();
+        windInfo.setText(String.format("%s м/с", String.valueOf(wind.getSpeed())));
+
+        Weather weather = weatherData.getWeather().get(0);
+
+        TranslateApi translateApi;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.YANDEX_TRANSLATE_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        translateApi = retrofit.create(TranslateApi.class);
+
+        Call<TranslationResponse> translationResponseCall = translateApi.translate(AppСonstants.YANDEX_TRANSLATE_API_KEY,
+                weatherData.getName() + "," + weather.getDescription(), "en-ru","plain");
+
+        translationResponseCall.enqueue(new Callback<TranslationResponse>() {
+            @Override
+            public void onResponse(Call<TranslationResponse> call, Response<TranslationResponse> response) {
+                if (response.code() == 200){
+                    String[] translations = response.body().getText().get(0).split(",");
+                    town.setText(translations[0]);
+                    condition.setText(translations[1]);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TranslationResponse> call, Throwable t) {
+
+            }
+        });
+
+        String conditionIcon = weather.getIcon();
+        ImageView conditionImage = bottomSheet.findViewById(R.id.weather_image);
+        //сопоставляем погоду и иконки
+        switch (conditionIcon){
+            case "01d":
+                conditionImage.setImageResource(R.drawable.x01d_clear_sky);
+                break;
+            case "01n":
+                conditionImage.setImageResource(R.drawable.x01n_clear_sky);
+                break;
+            case "02d":
+                conditionImage.setImageResource(R.drawable.x02d_few_clouds);
+                break;
+            case "02n":
+                conditionImage.setImageResource(R.drawable.x02n_few_clouds);
+                break;
+            case "03d":
+                conditionImage.setImageResource(R.drawable.x03d_scattered_clouds);
+                break;
+            case "03n":
+                conditionImage.setImageResource(R.drawable.x03n_scattered_clouds);
+                break;
+            case "04d":
+                conditionImage.setImageResource(R.drawable.x04d_broken_clouds);
+                break;
+            case "04n":
+                conditionImage.setImageResource(R.drawable.x04n_broken_clouds);
+                break;
+            case "09d":
+                conditionImage.setImageResource(R.drawable.x09d_shower_rain);
+                break;
+            case "09n":
+                conditionImage.setImageResource(R.drawable.x09n_shower_rain);
+                break;
+            case "10d":
+                conditionImage.setImageResource(R.drawable.x10d_rain);
+                break;
+            case "10n":
+                conditionImage.setImageResource(R.drawable.x10n_rain);
+                break;
+            case "11d":
+                conditionImage.setImageResource(R.drawable.x11d_thunderstorm);
+                break;
+            case "11n":
+                conditionImage.setImageResource(R.drawable.x11n_thunderstorm);
+                break;
+            case "13d":
+                conditionImage.setImageResource(R.drawable.x13d_snow);
+                break;
+            case "13n":
+                conditionImage.setImageResource(R.drawable.x13n_snow);
+                break;
+            case "50d":
+                conditionImage.setImageResource(R.drawable.x50d_mist);
+                break;
+            case "50n":
+                conditionImage.setImageResource(R.drawable.x50n_mist);
+                break;
+        }
 
     }
 }
