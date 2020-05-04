@@ -41,13 +41,13 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.util.HashMap;
 
-import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
-import iooojik.app.klass.TranslateApi;
-import iooojik.app.klass.WeatherApi;
+import iooojik.app.klass.api.Api;
+import iooojik.app.klass.api.TranslateApi;
+import iooojik.app.klass.api.WeatherApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.translation.TranslationResponse;

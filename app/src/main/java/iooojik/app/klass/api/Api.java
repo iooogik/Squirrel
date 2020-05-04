@@ -1,7 +1,8 @@
-package iooojik.app.klass;
+package iooojik.app.klass.api;
 
 import java.util.HashMap;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.TestResults.DataTestResult;

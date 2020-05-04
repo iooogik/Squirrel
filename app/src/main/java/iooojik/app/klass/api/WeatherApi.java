@@ -1,4 +1,4 @@
-package iooojik.app.klass;
+package iooojik.app.klass.api;
 
 import iooojik.app.klass.models.weather.WeatherData;
 import retrofit2.Call;

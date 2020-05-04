@@ -38,10 +38,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
+import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import retrofit2.Call;

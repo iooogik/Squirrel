@@ -36,10 +36,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
-import iooojik.app.klass.WeatherApi;
+import iooojik.app.klass.api.Api;
+import iooojik.app.klass.api.WeatherApi;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;

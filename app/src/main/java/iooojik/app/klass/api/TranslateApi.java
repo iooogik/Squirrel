@@ -1,4 +1,4 @@
-package iooojik.app.klass;
+package iooojik.app.klass.api;
 
 import iooojik.app.klass.models.translation.TranslationResponse;
 import retrofit2.Call;

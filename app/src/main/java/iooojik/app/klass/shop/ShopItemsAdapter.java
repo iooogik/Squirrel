@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import iooojik.app.klass.Api;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
+import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.promocode.LasPromo;

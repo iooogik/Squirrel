@@ -141,6 +141,9 @@
         <action
             android:id="@+id/action_nav_profile_to_games"
             app:destination="@id/nav_games" />
+        <action
+            android:id="@+id/action_nav_profile_to_sport"
+            app:destination="@id/nav_sport" />
 
     </fragment>
     <fragment
@@ -221,5 +224,11 @@
         android:name="iooojik.app.klass.games.tiktaktoe.GameTikTak"
         android:label="Крестики-нолики"
         tools:layout="@layout/fragment_game_tik_tak" />
+
+    <fragment
+        android:id="@+id/nav_sport"
+        android:name="iooojik.app.klass.sport.Sport"
+        android:label="Спорт"
+        tools:layout="@layout/fragment_sport" />
 
 </navigation>
