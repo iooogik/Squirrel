@@ -1,44 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/background"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     android:orientation="vertical">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/add"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        android:layout_width="340dp"
         android:layout_height="wrap_content"
-        android:background="?attr/background"
-        android:gravity="center"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/add"
-            android:layout_width="340dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-            app:icon="@drawable/baseline_add_24"
-            android:text="@string/addPupil" />
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="center"
+        android:text="@string/addPupil"
+        app:icon="@drawable/baseline_add_24" />
 
-        <Button
-            android:id="@+id/test_editor"
-            android:layout_width="340dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-            app:icon="@drawable/round_edit_24"
-            android:text="@string/openEditor" />
+    <Button
+        android:id="@+id/test_editor"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="@string/openEditor"
+        android:layout_gravity="center"
+        app:icon="@drawable/round_edit_24" />
 
-        <Button
-            android:id="@+id/add_message"
-            android:layout_width="340dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-            app:icon="@drawable/round_add_comment_24"
-            android:text="@string/addMessageToGroup" />
+    <Button
+        android:id="@+id/add_message"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="@string/addMessageToGroup"
+        android:layout_gravity="center"
+        app:icon="@drawable/round_add_comment_24" />
 
-    </LinearLayout>
-</FrameLayout>
+</LinearLayout>

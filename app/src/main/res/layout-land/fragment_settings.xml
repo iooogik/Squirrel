@@ -10,7 +10,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_margin"
-                android:text="Показывать id группы" />
+                android:text="@string/showGroupID" />
 
             <Switch
                 android:id="@+id/showWeatherSwitchPerDay"
@@ -47,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_margin"
-                android:text="Показывать уведомление о погоде 1 раз в день" />
+                android:text="@string/showWeatherNotif1Day" />
 
             <Switch
                 android:id="@+id/showWeatherSwitchAlways"
@@ -55,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_margin"
-                android:text="Показывать уведомление о погоде при каждом запуске приложения" />
+                android:text="@string/showWeatherSwitchAlways" />
 
             <Button
                 android:id="@+id/delete_tests"
@@ -63,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
-                android:text="Удалить все тесты" />
+                android:text="@string/deleteAllTests" />
 
             <Button
                 android:id="@+id/delete_notes"
@@ -73,7 +74,7 @@
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_marginEnd="@dimen/fab_margin"
                 android:layout_marginBottom="@dimen/fab_margin"
-                android:text="Удалить все заметки" />
+                android:text="@string/deleteAllNotes" />
 
             <Button
                 android:id="@+id/showWeather"
@@ -83,7 +84,7 @@
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_marginEnd="@dimen/fab_margin"
                 android:layout_marginBottom="@dimen/fab_margin"
-                android:text="Показать погоду" />
+                android:text="@string/ShowWeather" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

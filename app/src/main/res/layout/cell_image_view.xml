@@ -6,4 +6,5 @@
     android:background="@drawable/rect_rounded_corners"
     android:textSize="36sp"
     android:layout_margin="2dp"
-    android:textStyle="bold" />
+    android:textStyle="bold"
+    android:contentDescription="@string/todo" />

@@ -6,4 +6,5 @@
     android:background="@color/colorWhite"
     android:textSize="36sp"
     android:layout_margin="2dp"
-    android:textStyle="bold" />
+    android:textStyle="bold"
+    android:contentDescription="@string/todo" />

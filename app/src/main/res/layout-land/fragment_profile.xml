@@ -13,7 +13,8 @@
         android:layout_height="match_parent"
         android:background="?attr/background"
         android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:id="@+id/scroll"
@@ -39,7 +40,8 @@
                         android:layout_marginStart="8dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        tools:srcCompat="@drawable/baseline_account_circle_24" />
+                        tools:srcCompat="@drawable/baseline_account_circle_24"
+                        android:contentDescription="@string/todo" />
 
                     <TextView
                         android:id="@+id/name"
@@ -68,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="44dp"
-                        android:text="0"
+                        android:text="@string/_0"
                         app:layout_constraintBottom_toTopOf="@+id/email"
                         app:layout_constraintEnd_toStartOf="@+id/imageView5"
                         app:layout_constraintHorizontal_bias="0.964"
@@ -83,7 +85,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.2" />
+                        app:layout_constraintVertical_bias="0.2"
+                        android:contentDescription="@string/todo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

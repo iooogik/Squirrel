@@ -9,7 +9,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,15 +21,13 @@
                 android:id="@+id/privatepolicy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/fab_margin"
-                android:text="TextView" />
+                android:layout_margin="@dimen/fab_margin"/>
 
             <TextView
                 android:id="@+id/termsconditions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/fab_margin"
-                android:text="TextView" />
+                android:layout_margin="@dimen/fab_margin" />
         </LinearLayout>
     </ScrollView>
 

@@ -14,7 +14,7 @@
         android:layout_marginLeft="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
         android:layout_marginTop="4dp"
-        >
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:id="@+id/background"
@@ -51,7 +51,8 @@
                         android:layout_marginTop="10dp"
                         android:visibility="gone"
                         android:tint="@color/Completed"
-                        app:srcCompat="@drawable/round_check_circle_24" />
+                        app:srcCompat="@drawable/round_check_circle_24"
+                        android:contentDescription="@string/todo" />
 
                     <ImageView
                         android:id="@+id/notif"
@@ -63,7 +64,8 @@
                         android:visibility="gone"
                         android:layout_marginRight="10dp"
                         android:tint="@color/notCompleted"
-                        app:srcCompat="@drawable/baseline_notifications_active_24" />
+                        app:srcCompat="@drawable/baseline_notifications_active_24"
+                        android:contentDescription="@string/todo" />
                 </LinearLayout>
 
             </FrameLayout>
@@ -85,7 +87,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_margin="10dp"
-                    tools:srcCompat="@tools:sample/avatars" />
+                    tools:srcCompat="@tools:sample/avatars"
+                    android:contentDescription="@string/todo" />
 
             </FrameLayout>
 
@@ -97,7 +100,7 @@
                 android:textColor="@color/colorAccent"
                 android:layout_marginStart="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="id " />
+                android:text="@string/id" />
 
         </LinearLayout>
 

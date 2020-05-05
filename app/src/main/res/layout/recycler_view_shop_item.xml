@@ -16,7 +16,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        android:contentDescription="@string/todo" />
 
     <TextView
         android:id="@+id/item_name"
@@ -55,7 +55,7 @@
             android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Цена: "
+            android:text="@string/price"
             android:textSize="18sp" />
 
         <TextView
@@ -63,13 +63,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:text="0"
+            android:text="@string/_0"
             android:textSize="18sp" />
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/coins" />
+            app:srcCompat="@drawable/coins"
+            android:contentDescription="@string/todo" />
 
     </LinearLayout>
 

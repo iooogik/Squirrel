@@ -123,7 +123,6 @@
     <string name="ar">AR</string>
     <string name="profileTheme">Тема для профиля:</string>
     <string name="searchHint">Поиск</string>
-    <string name="todo">TODO</string>
     <string name="shop">Магазин</string>
     <string name="buy">Купить</string>
     <string name="search">Search</string>
@@ -249,6 +248,20 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="idGroup">id группы:</string>
     <string name="sport">Спорт</string>
     <string name="todoList">ToDo лист</string>
+    <string name="activateCase">Активировать кейс</string>
+    <string name="c">°C</string>
+    <string name="question">Вопрос</string>
+    <string name="trueAnswer">Выберите правильный ответ:</string>
+    <string name="id">id</string>
+    <string name="todo">image</string>
+    <string name="price">Цена:</string>
+    <string name="_0">0</string>
+    <string name="showGroupID">Показывать id группы</string>
+    <string name="showWeatherNotif1Day">Показывать уведомление о погоде 1 раз в день</string>
+    <string name="showWeatherSwitchAlways">Показывать уведомление о погоде при каждом запуске приложения</string>
+    <string name="deleteAllTests">Удалить все тесты</string>
+    <string name="deleteAllNotes">Удалить все заметки</string>
+    <string name="ShowWeather">Показать погоду</string>
     <!-- other strings end-->
 
 

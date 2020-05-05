@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="9dp"
         android:layout_marginTop="16dp"
-        android:text="town"
         custom:layout_constraintStart_toStartOf="parent"
         custom:layout_constraintTop_toTopOf="parent" />
 
@@ -30,7 +29,7 @@
             android:layout_height="64dp"
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
-            android:text="°C"
+            android:text="@string/c"
             android:layout_gravity="center_vertical"
             android:textSize="40sp" />
 
@@ -39,7 +38,8 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/todo" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,21 +51,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_margin"
-                android:text="wind" />
+                />
 
             <TextView
                 android:id="@+id/humidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_margin"
-                android:text="humidity" />
+                />
 
             <TextView
                 android:id="@+id/pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_margin"
-                android:text="pressure" />
+                 />
         </LinearLayout>
     </LinearLayout>
 
@@ -75,6 +75,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_gravity="center_horizontal"
-        android:text="condition" />
+        />
 
 </LinearLayout>

@@ -6,46 +6,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".subjects.ar.ARcamera">
 
-    <FrameLayout
+    <fragment
+        android:id="@+id/ar_fragment"
+        android:name="com.google.ar.sceneform.ux.ArFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="FragmentTagUsage" />
 
-        <fragment
-            android:id="@+id/ar_fragment"
-            android:name="com.google.ar.sceneform.ux.ArFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="@color/colorAccent"
+            app:borderWidth="0dp"
+            app:maxImageSize="25dp"
+            app:srcCompat="@drawable/baseline_arrow_back_24"
+            app:tint="@color/colorWhite" />
+
+        <TextView
+            android:id="@+id/findARsurf"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:orientation="horizontal">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_margin="@dimen/fab_margin"
-                app:backgroundTint="@color/colorAccent"
-                app:tint="@color/colorWhite"
-                app:borderWidth="0dp"
-                app:maxImageSize="25dp"
-                app:srcCompat="@drawable/baseline_arrow_back_24" />
-
-            <TextView
-                android:id="@+id/findARsurf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="90dp"
-                android:layout_marginBottom="@dimen/fab_margin"
-                android:layout_marginEnd="@dimen/fab_margin"
-                android:text="@string/findARSurfaceButton"
-                android:textColor="@color/colorWhite" />
-        </LinearLayout>
-
-    </FrameLayout>
+            android:layout_marginStart="90dp"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:text="@string/findARSurfaceButton"
+            android:textColor="@color/colorWhite" />
+    </LinearLayout>
 
 </FrameLayout>
