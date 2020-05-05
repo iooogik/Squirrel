@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/nav_notes"
-        android:name="iooojik.app.klass.noteObjects.Notes"
+        android:name="iooojik.app.klass.notes.Notes"
         android:label="Заметки"
         tools:layout="@layout/fragment_notes" >
         <action
@@ -39,7 +39,11 @@
         android:id="@+id/nav_settings"
         android:name="iooojik.app.klass.settings.Settings"
         android:label="Настройки"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_nav_settings_to_privatePolicy"
+            app:destination="@id/nav_policy" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_planets_list"
@@ -66,20 +70,20 @@
 
     <fragment
         android:id="@+id/nav_standart_note"
-        android:name="iooojik.app.klass.noteObjects.StandartNote"
+        android:name="iooojik.app.klass.notes.StandartNote"
         android:label=""
         tools:layout="@layout/fragment_standart_note" >
     </fragment>
 
     <fragment
         android:id="@+id/nav_checkList"
-        android:name="iooojik.app.klass.noteObjects.CheckList"
+        android:name="iooojik.app.klass.notes.CheckList"
         android:label=""
         tools:layout="@layout/fragment_check_list" />
 
     <fragment
         android:id="@+id/nav_book"
-        android:name="iooojik.app.klass.noteObjects.Book"
+        android:name="iooojik.app.klass.notes.Book"
         android:label="Справочные материалы"
         tools:layout="@layout/fragment_book" />
 
@@ -230,5 +234,10 @@
         android:name="iooojik.app.klass.sport.Sport"
         android:label="Спорт"
         tools:layout="@layout/fragment_sport" />
+    <fragment
+        android:id="@+id/nav_policy"
+        android:label=""
+        android:name="iooojik.app.klass.settings.private_policy.PrivatePolicy"
+        tools:layout="@layout/fragment_private_policy" />
 
 </navigation>

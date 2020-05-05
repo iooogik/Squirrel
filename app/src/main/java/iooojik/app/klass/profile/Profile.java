@@ -161,8 +161,9 @@ public class Profile extends Fragment implements View.OnClickListener {
         preferences.edit().putString(AppСonstants.USER_LON, String.valueOf(location.getLongitude())).apply();
 
         //проверяем, показывалось ли сегодня уведомление с погодой
-        if (!preferences.getString(AppСonstants.CURRENT_DATE, "").equals(dateText)
-                && preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1) {
+        if ((!preferences.getString(AppСonstants.CURRENT_DATE, "").equals(dateText)
+                && (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1))
+                || preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0) == 1) {
             //заносим текущую дату, для последующих проверок
             preferences.edit().putString(AppСonstants.CURRENT_DATE, dateText).apply();
             //ретрофит
@@ -182,7 +183,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
                     if (response.code() == 200) {
                         //показываем уведомление
-                        showWeather(response.body());
+                        showWeatherDialog(response.body());
                     } else Log.e("GETTING WEATHER", String.valueOf(response.raw()));
                 }
 
@@ -197,7 +198,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     @SuppressLint("InflateParams")
-    private void showWeather(WeatherData weatherData){
+    private void showWeatherDialog(WeatherData weatherData){
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
         //получаем готовую view
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.weather_notification, null, false);
@@ -291,7 +292,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
         //устанавливаем информацию и показываем уведомление
         message.setText(messageText);
-        secondMessage.setText("Вы можете посмотреть актуальную погоду в настроках, нажав кнопку 'Запросить погоду'.");
+        secondMessage.setText("Вы можете посмотреть актуальную погоду в настроках, нажав кнопку 'Показать погоду'.");
         builder.setNegativeButton("Хорошо", (dialog, which) -> dialog.cancel());
         builder.setView(dialogView);
         builder.create().show();
@@ -494,8 +495,9 @@ public class Profile extends Fragment implements View.OnClickListener {
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                 View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
                 TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-                textInputLayout.setHint("Введите класс");
-                textInputLayout.setCounterMaxLength(3);
+                textInputLayout.setHint("Название группы");
+                textInputLayout.setCounterEnabled(false);
+                textInputLayout.setHelperTextEnabled(false);
                 EditText name = view1.findViewById(R.id.edit_text);
 
                 builder.setView(view1);

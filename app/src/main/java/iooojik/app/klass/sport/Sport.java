@@ -136,7 +136,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                         distance+=startLocation.distanceTo(location);
                         int speed = (int) location.getSpeed();
                         distanceText.setText(String.format("%sкм", String.format("%.3f %n", distance / 1000)));
-                        speedText.setText(String.valueOf(speed));
+                        speedText.setText(String.format("%s км/ч", String.valueOf(speed)));
                         coins.setText(String.valueOf(Math.round((distance/1000)/3) * 3));
                         seconds = 0;
                     }

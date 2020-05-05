@@ -18,7 +18,6 @@
         android:id="@+id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/secondary_text"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginStart="@dimen/fab_margin" />
 
@@ -26,6 +25,7 @@
         android:id="@+id/secondary_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/color_secondary_text"
         android:textSize="10sp"
         android:layout_margin="@dimen/fab_margin"
         tools:ignore="SmallSp" />

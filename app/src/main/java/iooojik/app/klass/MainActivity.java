@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //обработка нажатий в верхнем меню
@@ -204,10 +203,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_save:
             case R.id.action_read_qr:
             case R.id.action_notif:
+            case R.id.action_translate:
                 return false;
         }
         return false;
     }
-
-
 }

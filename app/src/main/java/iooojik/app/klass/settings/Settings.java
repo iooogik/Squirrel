@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -104,6 +107,9 @@ public class Settings extends Fragment implements View.OnClickListener{
 
         Button showBottomWeather = view.findViewById(R.id.showWeather);
         showBottomWeather.setOnClickListener(this);
+
+        TextView policy = view.findViewById(R.id.policy);
+        policy.setOnClickListener(this);
 
         getActivity().runOnUiThread(this::load);
 
@@ -302,6 +308,9 @@ public class Settings extends Fragment implements View.OnClickListener{
                 });
                 builder2.create().show();
                 break;
+            case R.id.policy:
+                NavController navHostFragment = NavHostFragment.findNavController(this);
+                navHostFragment.navigate(R.id.nav_policy);
         }
     }
 
@@ -422,14 +431,45 @@ public class Settings extends Fragment implements View.OnClickListener{
     private void showWeather(){
 
         //переключатель
-        Switch show = view.findViewById(R.id.showWeatherSwitch);
-        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0) show.setChecked(false);
-        else show.setChecked(true);
+        Switch show = view.findViewById(R.id.showWeatherSwitchPerDay);
+        Switch showAlways = view.findViewById(R.id.showWeatherSwitchAlways);
+        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1){
+            show.setChecked(true);
+            showAlways.setChecked(false);
+        } else if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0
+        && preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0) == 0){
+            show.setChecked(false);
+            showAlways.setChecked(false);
+        } else if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0 &&
+        preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0) == 1){
+            show.setChecked(false);
+            showAlways.setChecked(true);
+        }
 
-        //слушатель на переключатель
-        show.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
-            else preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
+        show.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    showAlways.setChecked(false);
+                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
+                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
+                }else {
+                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
+                }
+            }
+        });
+
+        showAlways.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    show.setChecked(false);
+                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 1).apply();
+                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
+                }else {
+                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
+                }
+            }
         });
 
         if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1) {

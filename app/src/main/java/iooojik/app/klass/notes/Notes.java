@@ -527,6 +527,21 @@ public class Notes extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
+                    getSystemService(Activity.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(requireActivity().getCurrentFocus().
+                        getWindowToken(), 0);
+            }
+        } catch (Exception e) {
+            Log.i("Notes", String.valueOf(e));
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();

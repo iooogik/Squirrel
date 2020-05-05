@@ -40,12 +40,20 @@
                 android:text="Показывать id группы" />
 
             <Switch
-                android:id="@+id/showWeatherSwitch"
+            android:id="@+id/showWeatherSwitchPerDay"
+            style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/settings_margin"
+            android:text="Показывать уведомление о погоде 1 раз в день" />
+
+            <Switch
+                android:id="@+id/showWeatherSwitchAlways"
                 style="@style/Widget.MaterialComponents.CompoundButton.Switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_margin"
-                android:text="Показывать уведомление о погоде" />
+                android:text="Показывать уведомление о погоде при каждом запуске приложения" />
 
             <Button
                 android:id="@+id/delete_tests"
@@ -155,6 +163,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_margin"
                 android:text="@string/installedVersion" />
+
+            <TextView
+                android:id="@+id/policy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/settings_margin"
+                android:text="@string/privatePolicy"
+                android:textAlignment="center"
+                android:textColor="#8C8B8B"
+                android:textSize="12sp" />
 
         </LinearLayout>
     </ScrollView>
