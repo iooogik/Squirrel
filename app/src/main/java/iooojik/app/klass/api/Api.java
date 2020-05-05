@@ -8,6 +8,7 @@ import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.TestResults.DataTestResult;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.authorization.SignUpResult;
+import iooojik.app.klass.models.bonusCrate.CratesData;
 import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.groups_messages.DataMessage;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
@@ -155,10 +156,31 @@ public interface Api {
     Call<ServerResponse<PostResult>> removeGroup(@Header("X-API-KEY") String api_key, @Field("_id") String id);
 
 
+    //получение информации о кейсах
+    @FormUrlEncoded
+    @POST("api/bonus_crates_to_users/add")
+    Call<ServerResponse<PostResult>> addCrate(@Header("X-API-KEY") String api_key,
+                                              @Header("X-TOKEN") String token,
+                                              @FieldMap HashMap<String, String> map);
+
+    //получение информации о кейсах
+    @FormUrlEncoded
+    @POST("api/bonus_crates_to_users/update")
+    Call<ServerResponse<PostResult>> updateCrateInfo(@Header("X-API-KEY") String api_key,
+                                                     @Header("X-TOKEN") String token,
+                                                     @FieldMap HashMap<String, String> map);
+
+
+
     //получение item-ов в магазине
     @GET("api/shop/all")
     Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token);
+    //получение информации о кейсах
+    @GET("api/bonus_crates_to_users/all?")
+    Call<ServerResponse<CratesData>> getCrates(@Header("X-API-KEY") String api_key,
+                                               @Header("X-TOKEN") String token,
+                                               @Query("field") String field, @Query("filter") String filter);
 
 
     //получение промо-кодов

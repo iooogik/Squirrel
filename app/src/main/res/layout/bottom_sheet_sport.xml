@@ -75,8 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/michroma"
-                android:textSize="18sp"
-                android:text="@string/youGetCoins" />
+                android:text="@string/youGetCoins"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/coins"
@@ -89,18 +89,32 @@
                 android:fontFamily="@font/michroma"
                 android:textAlignment="center"
                 android:textAllCaps="false"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/stop"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:text="@string/getCoins" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/stop"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:text="@string/getCoins" />
+
+        <Button
+            android:id="@+id/open_case"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:text="Активировать кейс" />
+
+    </LinearLayout>
 
 </LinearLayout>

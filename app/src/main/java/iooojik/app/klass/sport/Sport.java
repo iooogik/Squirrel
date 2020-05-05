@@ -20,10 +20,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -81,6 +85,9 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_sport, null);
         Button stop = bottomSheet.findViewById(R.id.stop);
         stop.setOnClickListener(this);
+
+        Button openCase = bottomSheet.findViewById(R.id.open_case);
+        openCase.setOnClickListener(this);
 
         speedText = bottomSheet.findViewById(R.id.speed);
         distanceText = bottomSheet.findViewById(R.id.distance);
@@ -150,6 +157,9 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         map = googleMap;
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setMyLocationEnabled(true);
+        map.setIndoorEnabled(true);
+        if (preferences.getInt(AppСonstants.APP_PREFERENCES_THEME, R.style.AppThemeLight) == R.style.AppThemeDark)
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.dark_map_style));
     }
 
     @Override
@@ -167,7 +177,34 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                 bottomSheetDialog.show();
                 fab.hide();
                 break;
+            case R.id.open_case:
+                //получаем рандомные координаты в радиусе 1км и строим маршрут до этих координат
+                double lat = startLocation.getLatitude();
+                double lon = startLocation.getLongitude();
+
+                double k = getRandomIntegerBetweenRange(0, 4);
+                int chance = (int) getRandomIntegerBetweenRange(1, 2);
+                if (chance == 2) k *= (-1);
+                lat = lat + (k/100);
+
+                k = getRandomIntegerBetweenRange(0, 4);
+                chance = (int) getRandomIntegerBetweenRange(1, 2);
+                if (chance == 2) k *= (-1);
+                lon = lon + (k/100);
+
+                LatLng latLng = new LatLng(lat, lon);
+                map.addMarker(new MarkerOptions().position(latLng).title("кейс").
+                        snippet("Поскорее найдите меня!").icon(BitmapDescriptorFactory.fromResource(R.drawable.small_crate)));
+
+                map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                break;
         }
+    }
+
+    public static double getRandomIntegerBetweenRange(double min, double max){
+        double x = (int)(Math.random()*((max-min)+1))+min;
+        return x;
     }
 
     private void updateCoins(int coins){

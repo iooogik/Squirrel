@@ -140,7 +140,7 @@
     <string name="ok_ru">Хорошо</string>
     <string name="google_maps_api_key">AIzaSyByhLOinHzF_1FGubCaXQAX4AJfVWo3qdc</string>
     <string name="passedDistance">Пройденное расстояние:</string>
-    <string name="speed">Cкорость:</string>
+    <string name="speed">Скорость:</string>
     <string name="getCoins">Получить койны</string>
     <string name="youGetCoins">Вы получите койнов:</string>
     <string name="privatePolicy">Политика конфиденциальности и условия использования</string>
@@ -247,6 +247,8 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
       </string>
     <string name="group">Группа:</string>
     <string name="idGroup">id группы:</string>
+    <string name="sport">Спорт</string>
+    <string name="todoList">ToDo лист</string>
     <!-- other strings end-->
 
 

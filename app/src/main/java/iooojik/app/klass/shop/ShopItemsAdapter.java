@@ -33,10 +33,10 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.bonusCrate.CratesData;
 import iooojik.app.klass.models.promocode.LasPromo;
 import iooojik.app.klass.models.promocode.PromoData;
 import iooojik.app.klass.models.shop.ShopItem;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,11 +73,10 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
         holder.name.setText(shopItem.getName());
         holder.description.setText(shopItem.getDescription());
         holder.price.setText(shopItem.getPrice());
+
         if (!shopItem.getLogoURL().trim().isEmpty()) {
-            Picasso.get().load(shopItem.getLogoURL()).resize(100, 100)
-                    .transform(new RoundedCornersTransformation(30, 5)).into(holder.logo);
-        }
-        else {
+            Picasso.get().load(String.valueOf(shopItem.getLogoURL())).into(holder.logo);
+        } else {
             holder.logo.setImageResource(R.drawable.baseline_account_circle_24);
         }
 
@@ -85,6 +84,8 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
             int userCoins = preferences.getInt(AppСonstants.USER_COINS, 0);
             if (userCoins - Integer.parseInt(shopItem.getPrice()) >= 0){
             preferences.edit().putInt(AppСonstants.USER_COINS, userCoins - Integer.parseInt(shopItem.getPrice())).apply();
+            TextView balance = fragment.getView().findViewById(R.id.balance);
+            balance.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
             //обновляем количество койнов у пользователя
             doRetrofit();
             HashMap<String, String> changes = new HashMap<>();
@@ -210,10 +211,80 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
                 });
 
             }
+            else if (shopItem.getItemType().equals("bonus_crate")){
+                fragment.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doRetrofit();
+                        Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
+                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "user_email",
+                                preferences.getString(AppСonstants.USER_EMAIL, ""));
+                        getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse<CratesData>> call, Response<ServerResponse<CratesData>> response) {
+                                if (response.code() == 200){
+                                    CratesData data = response.body().getData();
+                                    if (data.getBonusCratesToUsers().size() == 0){
+                                        addCrateInfo();
+                                    }else {
+                                        updateCrateInfo(data.getBonusCratesToUsers().get(0).getId(), data.getBonusCratesToUsers().get(0).getCount());
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ServerResponse<CratesData>> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                });
+            }
             }
             else Snackbar.make(fragment.getView(), "Недостаточно средств", Snackbar.LENGTH_LONG).show();
         });
 
+    }
+
+    private void addCrateInfo() {
+        doRetrofit();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put("count", "1");
+        Call<ServerResponse<PostResult>> call = api.addCrate(AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                map);
+        call.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void updateCrateInfo(String id, String count) {
+        doRetrofit();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("_id", id);
+        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put("count", String.valueOf(Integer.valueOf(count) + 1));
+        Call<ServerResponse<PostResult>> call = api.updateCrateInfo(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+        call.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+            }
+        });
     }
 
     private void doRetrofit(){
