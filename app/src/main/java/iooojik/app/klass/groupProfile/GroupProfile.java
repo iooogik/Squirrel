@@ -81,7 +81,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     private void getGroupInformation() {
         doRetrofit();
         //получаем список одноклассников
-        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, "group_id", groupID);
+        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, AppСonstants.GROUP_ID_FIELD, groupID);
 
         response.enqueue(new Callback<ServerResponse<DataUsersToGroup>>() {
             @Override
@@ -149,11 +149,11 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                                 mDb = mDBHelper.getWritableDatabase();
                                 mDb.execSQL(group.getTest());
 
-                                @SuppressLint("Recycle") Cursor cursor = mDb.rawQuery("Select * from Tests", null);
+                                @SuppressLint("Recycle") Cursor cursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS, null);
                                 cursor.moveToLast();
                                 ContentValues contentValues = new ContentValues();
-                                contentValues.put("group_id", Integer.parseInt(group.getId()));
-                                mDb.update("Tests", contentValues, "_id=" + (cursor.getPosition() + 1), null);
+                                contentValues.put(AppСonstants.GROUP_ID_FIELD, Integer.parseInt(group.getId()));
+                                mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id=" + (cursor.getPosition() + 1), null);
                                 Snackbar.make(getView(), "Тест получен!", Snackbar.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 Log.i("LOAD TEST", String.valueOf(e));
@@ -196,7 +196,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         //метод получения сообщения от учителя
         doRetrofit();
         Call<ServerResponse<DataMessage>> call = api.getGroupMessage(AppСonstants.X_API_KEY,
-                sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", groupID);
+                sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, groupID);
 
         call.enqueue(new Callback<ServerResponse<DataMessage>>() {
             @Override

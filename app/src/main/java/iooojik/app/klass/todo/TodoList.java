@@ -69,9 +69,9 @@ public class TodoList extends Fragment implements View.OnClickListener{
 
     private void loadPoints(){
         while (!cursor.isAfterLast()){
-            items.add(new ToDoItem(cursor.getString(cursor.getColumnIndex("text")),
-                    Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex("checked"))),
-                    cursor.getInt(cursor.getColumnIndex("_id"))));
+            items.add(new ToDoItem(cursor.getString(cursor.getColumnIndex(AppСonstants.TABLE_TEXT)),
+                    Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(AppСonstants.TABLE_TODO_CHECKED))),
+                    cursor.getInt(cursor.getColumnIndex(AppСonstants.TABLE_ID))));
             cursor.moveToNext();
         }
 
@@ -103,8 +103,8 @@ public class TodoList extends Fragment implements View.OnClickListener{
             String text = namePoint.getText().toString();
             if (!text.trim().isEmpty()){
                 ContentValues contentValues = new ContentValues();
-                contentValues.put("text", text);
-                contentValues.put("checked", "false");
+                contentValues.put(AppСonstants.TABLE_TEXT, text);
+                contentValues.put(AppСonstants.TABLE_TODO_CHECKED, "false");
                 if (items.size() != 0) {
                     items.add(new ToDoItem(text, false, items.get(items.size() - 1).getId() + 1));
                 } else items.add(new ToDoItem(text, false, 0));
@@ -113,7 +113,7 @@ public class TodoList extends Fragment implements View.OnClickListener{
             }
         });
 
-        builder.setNegativeButton("Отменить", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
 
         builder.create().show();
 

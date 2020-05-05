@@ -111,7 +111,7 @@ public class Group extends Fragment{
 
         //получаем список учеников(их полное имя и email) из бд
         doRetrofit();
-        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, "group_id", String.valueOf(id));
+        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
 
         response.enqueue(new Callback<ServerResponse<DataUsersToGroup>>() {
             @Override
@@ -121,7 +121,7 @@ public class Group extends Fragment{
                     mates = result.getData().getMates();
 
                     Call<ServerResponse<DataTestResult>> call2 = api.getTestResults(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", String.valueOf(id));
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
                     call2.enqueue(new Callback<ServerResponse<DataTestResult>>() {
                         @Override
                         public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
@@ -172,7 +172,7 @@ public class Group extends Fragment{
         doRetrofit();
 
         Call<ServerResponse<ParamData>> call = api.getParamUser(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),"email", email);
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),AppСonstants.EMAIL_FIELD, email);
 
         call.enqueue(new Callback<ServerResponse<ParamData>>() {
             @Override
@@ -189,11 +189,11 @@ public class Group extends Fragment{
                         }
 
                         HashMap<String, String> map = new HashMap<>();
-                        map.put("full_name", userParams.getFullName());
-                        map.put("email", userParams.getEmail());
-                        map.put("group_id", String.valueOf(id));
-                        map.put("group_name", groupName);
-                        map.put("avatar", avatar);
+                        map.put(AppСonstants.FULL_NAME_FIELD, userParams.getFullName());
+                        map.put(AppСonstants.EMAIL_FIELD, userParams.getEmail());
+                        map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+                        map.put(AppСonstants.GROUP_NAME_FIELD, groupName);
+                        map.put(AppСonstants.AVATAR_FIELD, avatar);
 
                         Call<ServerResponse<PostResult>> response2 = api.addUserToGroup(AppСonstants.X_API_KEY,
                                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
@@ -355,8 +355,8 @@ public class Group extends Fragment{
 
             //запрос
             HashMap<String, String> map = new HashMap<>();
-            map.put("group_id", String.valueOf(id));
-            map.put("message", messageText.getText().toString());
+            map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+            map.put(AppСonstants.MESSAGE_FIELD, messageText.getText().toString());
             Call<ServerResponse<PostResult>> addMessageCall = api.addGroupMessage(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
             addMessageCall.enqueue(new Callback<ServerResponse<PostResult>>() {

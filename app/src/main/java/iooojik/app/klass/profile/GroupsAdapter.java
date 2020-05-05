@@ -1,5 +1,6 @@
 package iooojik.app.klass.profile;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -61,6 +62,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         GroupInfo groupInfo = classGroupInfos.get(position);
         if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1){
@@ -119,7 +121,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         });
         //удаляем результаты учеников, принадлежащих этой группе
         Call<ServerResponse<DataTestResult>> response = api.getTestResults(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", String.valueOf(groupInfo.getId()));
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(groupInfo.getId()));
         response.enqueue(new Callback<ServerResponse<DataTestResult>>() {
             @Override
             public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
@@ -150,7 +152,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
             }
         });
         //удаляем привязку учеников к группе
-        Call<ServerResponse<DataUsersToGroup>> responseCall = api.getMatesList(AppСonstants.X_API_KEY, "group_id", groupInfo.getId());
+        Call<ServerResponse<DataUsersToGroup>> responseCall = api.getMatesList(AppСonstants.X_API_KEY, AppСonstants.GROUP_ID_FIELD, groupInfo.getId());
         responseCall.enqueue(new Callback<ServerResponse<DataUsersToGroup>>() {
             @Override
             public void onResponse(Call<ServerResponse<DataUsersToGroup>> call, Response<ServerResponse<DataUsersToGroup>> response) {

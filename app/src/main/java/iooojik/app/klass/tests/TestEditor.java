@@ -343,17 +343,17 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                                               String trueAnswers, String textAnswers, int size){
         String SQL = "";
         SQL = "INSERT INTO Tests (" +
-                AppСonstants.TABLE_TESTS_NAME + ", " +
-                AppСonstants.TABLE_TESTS_DESCRIPTION + ", " +
-                AppСonstants.TABLE_TESTS_IS_PASSED + ", " +
-                AppСonstants.TABLE_TESTS_QUESTIONS + ", " +
-                AppСonstants.TABLE_TESTS_ANSWERS + ", " +
-                AppСonstants.TABLE_TESTS_TEXT_ANSWERS + ", " +
-                AppСonstants.TABLE_TESTS_TOTAL_SCORE + ", " +
-                AppСonstants.TABLE_TESTS_USER_SCORE + ", " +
-                AppСonstants.TABLE_TESTS_SCORE_QUEST + ", " +
-                AppСonstants.TABLE_TESTS_TIME + ", " +
-                AppСonstants.TABLE_TESTS_GROUP_ID +
+                AppСonstants.TABLE_NAME + ", " +
+                AppСonstants.TABLE_DESCRIPTION + ", " +
+                AppСonstants.TABLE_IS_PASSED + ", " +
+                AppСonstants.TABLE_QUESTIONS + ", " +
+                AppСonstants.TABLE_ANSWERS + ", " +
+                AppСonstants.TABLE_TEXT_ANSWERS + ", " +
+                AppСonstants.TABLE_TOTAL_SCORE + ", " +
+                AppСonstants.TABLE_USER_SCORE + ", " +
+                AppСonstants.TABLE_SCORE_QUEST + ", " +
+                AppСonstants.TABLE_TIME + ", " +
+                AppСonstants.TABLE_GROUP_ID +
                 ") "
 
                 +

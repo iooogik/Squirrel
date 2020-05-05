@@ -71,10 +71,10 @@ public class Book extends Fragment implements View.OnClickListener {
         }
     }
 
+    @SuppressLint("Recycle")
     private void getImagesAndDescriptions(int position){
         SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor userCursor = mDb.rawQuery("Select * from Formulaes",
-                null);
+        Cursor userCursor = mDb.rawQuery("Select * from Formulaes", null);
         userCursor.moveToPosition(position);
         try {
             //получение описания

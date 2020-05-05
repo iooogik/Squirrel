@@ -225,7 +225,7 @@
 
     <fragment
         android:id="@+id/nav_sport"
-        android:name="iooojik.app.klass.sport.Sport"
+        android:name="iooojik.app.klass.coinsSearch.CoinsSearch"
         android:label="Спорт"
         tools:layout="@layout/fragment_sport" />
     <fragment

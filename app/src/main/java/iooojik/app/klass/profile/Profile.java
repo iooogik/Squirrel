@@ -294,7 +294,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         //устанавливаем информацию и показываем уведомление
         message.setText(messageText);
         secondMessage.setText("Вы можете посмотреть актуальную погоду в настроках, нажав кнопку 'Показать погоду'.");
-        builder.setNegativeButton("Хорошо", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton(R.string.ok_ru, (dialog, which) -> dialog.cancel());
         builder.setView(dialogView);
         builder.create().show();
     }
@@ -307,7 +307,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     private void getCoins(String userEmail) {
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
-                "user_email", userEmail);
+                AppСonstants.USER_EMAIL_FIELD, userEmail);
 
         call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
             @Override
@@ -416,7 +416,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         doRetrofit();
         Call<ServerResponse<DataPupilList>> responseCall = api.getPupilActiveGroups(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                "email", email);
+                AppСonstants.EMAIL_FIELD, email);
 
         responseCall.enqueue(new Callback<ServerResponse<DataPupilList>>() {
             @Override
@@ -458,7 +458,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         fab.show();
         fab.setImageResource(R.drawable.baseline_add_24);
         doRetrofit();
-        Call<ServerResponse<DataGroup>> response = api.getGroups(AppСonstants.X_API_KEY, "author_email", email);
+        Call<ServerResponse<DataGroup>> response = api.getGroups(AppСonstants.X_API_KEY, AppСonstants.AUTHOR_EMAIL_FIELD, email);
 
         response.enqueue(new Callback<ServerResponse<DataGroup>>() {
             @Override
@@ -493,7 +493,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     private void getBonusCases(){
         doRetrofit();
         Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "user_email",
+            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
                 preferences.getString(AppСonstants.USER_EMAIL, ""));
         getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
             @Override

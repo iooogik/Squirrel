@@ -37,8 +37,7 @@ public class Tests extends Fragment implements View.OnClickListener{
     //Переменная для работы с БД
     private Database mDBHelper;
 
-    static TestsAdapter TEST_ADAPTER;
-    static List<TestTheme> TEST_ITEMS;
+    private static List<TestTheme> TEST_ITEMS;
 
 
     public Tests() {}
@@ -82,10 +81,10 @@ public class Tests extends Fragment implements View.OnClickListener{
             //получение количества правильных и неправильных ответов
             int userScore = 0, totalScore = 0;
 
-            userScore = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_USER_SCORE));
-            totalScore = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_TOTAL_SCORE));
+            userScore = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_USER_SCORE));
+            totalScore = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TOTAL_SCORE));
 
-            int isPassedDB = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_IS_PASSED));
+            int isPassedDB = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_IS_PASSED));
             boolean isPassed = false;
             isPassed = isPassedDB == 1;
 
@@ -96,7 +95,7 @@ public class Tests extends Fragment implements View.OnClickListener{
         }
         userCursor.close();
         RecyclerView recyclerView = view.findViewById(R.id.test_items);
-        TEST_ADAPTER = new TestsAdapter(getContext(), TEST_ITEMS);
+        TestsAdapter TEST_ADAPTER = new TestsAdapter(getContext(), TEST_ITEMS);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(TEST_ADAPTER);
     }

@@ -22,9 +22,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -33,12 +31,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -85,9 +81,8 @@ public class Settings extends Fragment implements View.OnClickListener{
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private BottomSheetDialog weather;
-    private Switch darkTheme, show_book_mat, showID, show, showAlways;
-    private Button deleteTests, deleteNotes, showBottomWeather;
-    private TextView version;
+    private Switch show;
+    private Switch showAlways;
 
 
     @Override
@@ -105,16 +100,14 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        deleteTests = view.findViewById(R.id.delete_tests);
+        Button deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
 
-        deleteNotes = view.findViewById(R.id.delete_notes);
+        Button deleteNotes = view.findViewById(R.id.delete_notes);
         deleteNotes.setOnClickListener(this);
 
-        showBottomWeather = view.findViewById(R.id.showWeather);
+        Button showBottomWeather = view.findViewById(R.id.showWeather);
         showBottomWeather.setOnClickListener(this);
-
-        version = view.findViewById(R.id.version);
 
         TextView policy = view.findViewById(R.id.policy);
         policy.setOnClickListener(this);
@@ -143,7 +136,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void setDarkTheme() {
-        darkTheme = view.findViewById(R.id.darkTheme);
+        Switch darkTheme = view.findViewById(R.id.darkTheme);
 
         if (preferences.contains(APP_PREFERENCES_THEME)) {
             // Получаем число из настроек
@@ -157,70 +150,14 @@ public class Settings extends Fragment implements View.OnClickListener{
         }
 
         darkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            MaterialToolbar toolbar = getActivity().findViewById(R.id.bar);
-            LinearLayout layout = view.findViewById(R.id.mainLayout);
-            DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
             if (isChecked){
 
-                getActivity().runOnUiThread(() -> {
-                    preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeDark).apply();
-                    //getActivity().setTheme(R.style.AppThemeDark);
-                    //getContext().setTheme(R.style.AppThemeDark);
-
-                    //mDrawerLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_dark));
-
-                    /*
-                    mDrawerLayout.setScrimColor(ContextCompat.getColor(getContext(), R.color.colorBackground_dark));
-                    preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeDark).apply();
-                    getActivity().setTheme(R.style.AppThemeDark);
-                    toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_dark));
-                    layout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_dark));
-
-                    darkTheme.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                    show_book_mat.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                    showID.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                    show.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                    showAlways.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-
-                    deleteTests.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-                    deleteNotes.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-                    showBottomWeather.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-
-                    version.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-
-                     */
-                });
+                getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeDark).apply());
 
             }else {
 
-                getActivity().runOnUiThread(() -> {
-                    preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeLight).apply();
-                    //getActivity().setTheme(R.style.AppThemeLight);
-                    //getContext().setTheme(R.style.AppThemeLight);
-                    //mDrawerLayout.setBackgroundColor(Color.MAGENTA);
-
-                    /*
-                    mDrawerLayout.setScrimColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
-                    preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeLight).apply();
-                    getActivity().setTheme(R.style.AppThemeLight);
-                    toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
-                    layout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
-
-                    darkTheme.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-                    show_book_mat.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-                    showID.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-                    show.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-                    showAlways.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-
-                    deleteTests.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                    deleteNotes.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                    showBottomWeather.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-
-                    version.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
-
-                     */
-                });
+                getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeLight).apply());
 
             }
 
@@ -231,7 +168,7 @@ public class Settings extends Fragment implements View.OnClickListener{
 
     private void setShowBookMaterials() {
         //убираем справочные материалы из заметок
-        show_book_mat = view.findViewById(R.id.book_items);
+        Switch show_book_mat = view.findViewById(R.id.book_items);
 
         if (preferences.contains(APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
             // Получаем число из настроек
@@ -358,7 +295,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                 builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
                 builder.setPositiveButton("Удалить", (dialog, which) -> {
                     mDb = mDBHelper.getWritableDatabase();
-                    mDb.execSQL("DELETE FROM Tests");
+                    mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
                 });
                 builder.create().show();
                 break;
@@ -373,7 +310,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                 builder2.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
                 builder2.setPositiveButton("Удалить", (dialog, which) -> {
                     mDb = mDBHelper.getWritableDatabase();
-                    mDb.execSQL("DELETE FROM Notes");
+                    mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
                 });
                 builder2.create().show();
                 break;
@@ -485,7 +422,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void showGroupID(){
-        showID = view.findViewById(R.id.showGroupID);
+        Switch showID = view.findViewById(R.id.showGroupID);
 
         if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1) showID.setChecked(true);
 
@@ -515,29 +452,23 @@ public class Settings extends Fragment implements View.OnClickListener{
             showAlways.setChecked(true);
         }
 
-        show.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    showAlways.setChecked(false);
-                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
-                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
-                }else {
-                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
-                }
+        show.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                showAlways.setChecked(false);
+                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
+                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
+            }else {
+                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
             }
         });
 
-        showAlways.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    show.setChecked(false);
-                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 1).apply();
-                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
-                }else {
-                    preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
-                }
+        showAlways.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                show.setChecked(false);
+                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 1).apply();
+                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
+            }else {
+                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
             }
         });
 

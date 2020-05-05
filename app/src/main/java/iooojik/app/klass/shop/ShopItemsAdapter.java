@@ -89,9 +89,9 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
             //обновляем количество койнов у пользователя
             doRetrofit();
             HashMap<String, String> changes = new HashMap<>();
-            changes.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-            changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
-            changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+            changes.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+            changes.put(AppСonstants.ID_FIELD, String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
+            changes.put(AppСonstants.COINS_FIELD, String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
 
             Call<ServerResponse<PostResult>> call = api.updateAchievement(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
@@ -120,9 +120,9 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
             String date = dateText + " " + timeText;
 
             HashMap<String, String> map = new HashMap<>();
-            map.put("date", date);
-            map.put("item_id", shopItem.getItemId());
-            map.put("log", "Совершена покупка " + shopItem.getName() + "за " + shopItem.getPrice());
+            map.put(AppСonstants.DATE_FIELD, date);
+            map.put(AppСonstants.ITEM_ID_FIELD, shopItem.getItemId());
+            map.put(AppСonstants.LOG_FIELD, "Совершена покупка " + shopItem.getName() + "за " + shopItem.getPrice());
 
             Call<ServerResponse<PostResult>> logCall = api.logBuying(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
@@ -143,7 +143,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
             if (shopItem.getItemType().equals("las_promo")){
                 Call<ServerResponse<PromoData>> getPromo = api.getPromo(AppСonstants.X_API_KEY,
                         preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                        "activated", "0");
+                        AppСonstants.ACTIVATED_FIELD, "0");
                 getPromo.enqueue(new Callback<ServerResponse<PromoData>>() {
                     @Override
                     public void onResponse(Call<ServerResponse<PromoData>> call,
@@ -177,9 +177,9 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
 
                                 //изменение полученного промо-кода на "неактивный"
                                 HashMap<String, String> buying = new HashMap<>();
-                                buying.put("_id", code.getId());
-                                buying.put("promo", code.getPromo());
-                                buying.put("activated", "1");
+                                buying.put(AppСonstants.ID_FIELD, code.getId());
+                                buying.put(AppСonstants.PROMO_FIELD, code.getPromo());
+                                buying.put(AppСonstants.ACTIVATED_FIELD, "1");
 
                                 Call<ServerResponse<PostResult>> changeState = api.changeStatePromo(AppСonstants.X_API_KEY,
                                         preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), buying);
@@ -217,7 +217,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
                     preferences.edit().putString(AppСonstants.CASES, String.valueOf(Integer.valueOf(
                             preferences.getString(AppСonstants.CASES, "0" )) + 1)).apply();
                     Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "user_email",
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
                             preferences.getString(AppСonstants.USER_EMAIL, ""));
                     getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
                         @Override
@@ -248,8 +248,8 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
     private void addCrateInfo() {
         doRetrofit();
         HashMap<String, String> map = new HashMap<>();
-        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-        map.put("count", "1");
+        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put(AppСonstants.COUNT_FIELD, "1");
         Call<ServerResponse<PostResult>> call = api.addCrate(AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
                 map);
         call.enqueue(new Callback<ServerResponse<PostResult>>() {
@@ -268,9 +268,9 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
     private void updateCrateInfo(String id, String count) {
         doRetrofit();
         HashMap<String, String> map = new HashMap<>();
-        map.put("_id", id);
-        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-        map.put("count", String.valueOf(Integer.valueOf(count) + 1));
+        map.put(AppСonstants.ID_FIELD, id);
+        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put(AppСonstants.COUNT_FIELD, String.valueOf(Integer.valueOf(count) + 1));
         Call<ServerResponse<PostResult>> call = api.updateCrateInfo(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
         call.enqueue(new Callback<ServerResponse<PostResult>>() {

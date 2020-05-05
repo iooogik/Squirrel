@@ -137,7 +137,7 @@ public class Notes extends Fragment {
         try {
             ITEMS.clear();
         } catch (Exception e) {
-            Log.i("Notes", String.valueOf(e));
+            Log.i(AppСonstants.TABLE_NOTES, String.valueOf(e));
         }
         updateNotes();
 
@@ -147,7 +147,7 @@ public class Notes extends Fragment {
     private void updateNotes() {
         //добавление новых проектов
         mDb = mDBHelper.getReadableDatabase();
-        userCursor = mDb.rawQuery("Select * from Notes", null);
+        userCursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_NOTES, null);
         userCursor.moveToFirst();
 
         String name, desc, type;
@@ -160,7 +160,7 @@ public class Notes extends Fragment {
 
             desc = String.valueOf(userCursor.getString(2));
 
-            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
+            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex(AppСonstants.TABLE_IMAGE));
 
             if (bytesImg != null) {
                 bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
@@ -168,7 +168,7 @@ public class Notes extends Fragment {
 
             if (name != null || type != null)
                 ITEMS.add(new NoteObject(name, desc, bitmap, type,
-                        userCursor.getInt(userCursor.getColumnIndex("_id")), -1));
+                        userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_ID)), -1));
 
             userCursor.moveToNext();
 
@@ -215,8 +215,7 @@ public class Notes extends Fragment {
         layout1.addView(view2);
         builder.setView(layout1);
 
-        final String DB_TYPE_STNDRT = "standart";
-        final String DB_TYPE_SHOP = "shop";
+
         int id = 0;
         if (ITEMS.size() != 0) {
             NoteObject noteObject = ITEMS.get(ITEMS.size() - 1);
@@ -229,34 +228,34 @@ public class Notes extends Fragment {
                     if (!nameNote.getText().toString().isEmpty() &&
                             !spinner.getText().toString().isEmpty()) {
                         String name = nameNote.getText().toString();
-                        String shortNote = "короткое описание";
+                        String shortNote = "";
                         String text = "Новая заметка";
                         String type = "";
                         mDb = mDBHelper.getWritableDatabase();
 
                         if (spinner.getText().toString().equals(standartTextNote)) {
-                            type = DB_TYPE_STNDRT;
+                            type = AppСonstants.TABLE_DB_TYPE_STNDRT;
                         } else if (spinner.getText().toString().equals(marckedList)) {
-                            type = DB_TYPE_SHOP;
+                            type = AppСonstants.TABLE_DB_TYPE_SHOP;
                         }
 
                         //добавление в бд и обновление адаптера
                         ContentValues cv = new ContentValues();
-                        cv.put("_id", finalId);
-                        cv.put("name", name);
-                        cv.put("shortName", shortNote);
-                        cv.put("text", text);
-                        cv.put("type", type);
-                        cv.put("isNotifSet", 0);
-                        cv.put("permToSync", 1);
+                        cv.put(AppСonstants.TABLE_ID, finalId);
+                        cv.put(AppСonstants.TABLE_NAME, name);
+                        cv.put(AppСonstants.TABLE_SHORT_NOTE, shortNote);
+                        cv.put(AppСonstants.TABLE_TEXT, text);
+                        cv.put(AppСonstants.TABLE_TYPE, type);
+                        cv.put(AppСonstants.TABLE_IS_NOTIF_SET, 0);
+                        cv.put(AppСonstants.TABLE_PERM_TO_SYNC, 1);
                         //получение даты
                         Date currentDate = new Date();
                         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
                                 Locale.getDefault());
                         String dateText = dateFormat.format(currentDate);
-                        cv.put("date", dateText);
+                        cv.put(AppСonstants.DATE_FIELD, dateText);
                         //запись
-                        mDb.insert("Notes", null, cv);
+                        mDb.insert(AppСonstants.TABLE_NOTES, null, cv);
 
                         ITEMS.add(new NoteObject(name, shortNote, null, type, finalId, -1));
                         NOTES_ADAPTER.notifyDataSetChanged();
@@ -287,10 +286,10 @@ public class Notes extends Fragment {
         for (NoteObject noteObject : ITEMS) {
             int id = noteObject.getId();
 
-            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(id)});
+            userCursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_NOTES + " WHERE _id=?", new String[]{String.valueOf(id)});
             userCursor.moveToFirst();
 
-            if (userCursor.getInt(userCursor.getColumnIndex("permToSync")) == 1) {
+            if (userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_PERM_TO_SYNC)) == 1) {
                 uploadNoteObjects.add(noteObject);
             }
         }
@@ -303,42 +302,43 @@ public class Notes extends Fragment {
         for (NoteObject noteObject : uploadNoteObjects) {
             //заносим каждую заметку в базу
             HashMap<String, String> map = new HashMap<>();
-            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(noteObject.getId())});
+            userCursor = mDb.rawQuery("Select * from "+ AppСonstants.TABLE_NOTES +" WHERE _id=?",
+                    new String[]{String.valueOf(noteObject.getId())});
 
             userCursor.moveToFirst();
-            String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex("name")));
+        String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME)));
             //собираем данные
 
-            String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex("shortName")));
-            String text = String.valueOf(userCursor.getString(userCursor.getColumnIndex("text")));
-            String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex("date")));
-            String type = String.valueOf(userCursor.getString(userCursor.getColumnIndex("type")));
-            String isNotifSet = String.valueOf(userCursor.getInt(userCursor.getColumnIndex("isNotifSet")));
-            String permToSync = String.valueOf(userCursor.getInt(userCursor.getColumnIndex("permToSync")));
-            String isChecked = String.valueOf(userCursor.getString(userCursor.getColumnIndex("isChecked")));
-            String points = String.valueOf(userCursor.getString(userCursor.getColumnIndex("points")));
-            String isCompleted = String.valueOf(userCursor.getString(userCursor.getColumnIndex("isCompleted")));
-            String decodeQR = String.valueOf(userCursor.getString(userCursor.getColumnIndex("decodeQR")));
-            String typeface = String.valueOf(userCursor.getString(userCursor.getColumnIndex("typeface")));
-            String fontSize = String.valueOf(userCursor.getString(userCursor.getColumnIndex("fontSize")));
+            String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_SHORT_NOTE)));
+            String text = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT)));
+        String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.DATE_FIELD)));
+            String type = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TYPE)));
+            String isNotifSet = String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_IS_NOTIF_SET)));
+            String permToSync = String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_PERM_TO_SYNC)));
+            String isChecked = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_IS_CHECKED)));
+            String points = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_POINTS)));
+            String isCompleted = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_IS_COMPLETED)));
+            String decodeQR = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_DECODE_QR)));
+            String typeface = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TYPEFACE)));
+            String fontSize = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_FONT_SIZE)));
             String image = "null";
 
             //добавляем данные в map
-            map.put("user_id", String.valueOf(getUserID()));
-            map.put("name", name);
-            map.put("shortName", shortName);
-            map.put("text", text);
-            map.put("date", date);
-            map.put("type", type);
-            map.put("isNotifSet", isNotifSet);
-            map.put("permToSync", permToSync);
-            map.put("isChecked", isChecked);
-            map.put("points", points);
-            map.put("isCompleted", isCompleted);
-            map.put("decodeQR", decodeQR);
-            map.put("image", image);
-            map.put("typeface", typeface);
-            map.put("fontSize", fontSize);
+            map.put(AppСonstants.USER_ID_FIELD, String.valueOf(getUserID()));
+            map.put(AppСonstants.TABLE_NAME, name);
+            map.put(AppСonstants.TABLE_SHORT_NOTE, shortName);
+            map.put(AppСonstants.TABLE_TEXT, text);
+            map.put(AppСonstants.DATE_FIELD, date);
+            map.put(AppСonstants.TABLE_TYPE, type);
+            map.put(AppСonstants.TABLE_IS_NOTIF_SET, isNotifSet);
+            map.put(AppСonstants.TABLE_PERM_TO_SYNC, permToSync);
+            map.put(AppСonstants.TABLE_IS_CHECKED, isChecked);
+            map.put(AppСonstants.TABLE_POINTS, points);
+            map.put(AppСonstants.TABLE_IS_COMPLETED, isCompleted);
+            map.put(AppСonstants.TABLE_DECODE_QR, decodeQR);
+            map.put(AppСonstants.TABLE_IMAGE, image);
+            map.put(AppСonstants.TABLE_TYPEFACE, typeface);
+            map.put(AppСonstants.TABLE_FONT_SIZE, fontSize);
             //отправляем данные
             Call<ServerResponse<PostResult>> call = api.uploadNotes(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
@@ -364,7 +364,7 @@ public class Notes extends Fragment {
 
     private void clearNotes() {
         doRetrofit();
-        Call<ServerResponse<NotesData>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
+        Call<ServerResponse<NotesData>> call = api.getNotes(AppСonstants.X_API_KEY, AppСonstants.USER_ID_FIELD, String.valueOf(getUserID()));
         call.enqueue(new Callback<ServerResponse<NotesData>>() {
             @Override
             public void onResponse(Call<ServerResponse<NotesData>> call, Response<ServerResponse<NotesData>> response) {
@@ -407,7 +407,7 @@ public class Notes extends Fragment {
 
     private void downloadNotes() {
         doRetrofit();
-        Call<ServerResponse<NotesData>> call = api.getNotes(AppСonstants.X_API_KEY, "user_id", String.valueOf(getUserID()));
+        Call<ServerResponse<NotesData>> call = api.getNotes(AppСonstants.X_API_KEY, AppСonstants.USER_ID_FIELD, String.valueOf(getUserID()));
         call.enqueue(new Callback<ServerResponse<NotesData>>() {
             @Override
             public void onResponse(Call<ServerResponse<NotesData>> call, Response<ServerResponse<NotesData>> response) {
@@ -447,35 +447,35 @@ public class Notes extends Fragment {
                                 ContentValues cv = new ContentValues();
                                 if (!onlineNote.getDecodeQR().equals("null")) {
                                     decodeQR = onlineNote.getDecodeQR();
-                                    cv.put("decodeQR", decodeQR);
+                                    cv.put(AppСonstants.TABLE_DECODE_QR, decodeQR);
                                 }
 
                                 mDb = mDBHelper.getWritableDatabase();
 
 
-                                cv.put("name", name);
-                                cv.put("shortName", shortName);
-                                cv.put("text", text);
-                                cv.put("type", type);
-                                cv.put("isNotifSet", 0);
-                                cv.put("permToSync", 1);
-                                cv.put("points", points);
-                                cv.put("isCompleted", isCompleted);
+                                cv.put(AppСonstants.TABLE_NAME, name);
+                                cv.put(AppСonstants.TABLE_SHORT_NOTE, shortName);
+                                cv.put(AppСonstants.TABLE_TEXT, text);
+                                cv.put(AppСonstants.TABLE_TYPE, type);
+                                cv.put(AppСonstants.TABLE_IS_NOTIF_SET, 0);
+                                cv.put(AppСonstants.TABLE_PERM_TO_SYNC, 1);
+                                cv.put(AppСonstants.TABLE_POINTS, points);
+                                cv.put(AppСonstants.TABLE_IS_COMPLETED, isCompleted);
 
                                 //получение даты
                                 Date currentDate = new Date();
                                 DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy",
                                         Locale.getDefault());
                                 String dateText = dateFormat.format(currentDate);
-                                cv.put("date", dateText);
+                                cv.put(AppСonstants.DATE_FIELD, dateText);
                                 //запись
-                                mDb.insert("Notes", null, cv);
+                                mDb.insert(AppСonstants.TABLE_NOTES, null, cv);
 
                                 mDb = mDBHelper.getWritableDatabase();
 
-                                userCursor = mDb.rawQuery("Select * from Notes", null);
+                                userCursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_NOTES, null);
                                 userCursor.moveToLast();
-                                int ident = userCursor.getInt(userCursor.getColumnIndex("_id"));
+                                int ident = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_ID));
                                 ITEMS.add(new NoteObject(name, shortName, null, type, id, ident));
                                 NOTES_ADAPTER.notifyDataSetChanged();
 
@@ -511,7 +511,7 @@ public class Notes extends Fragment {
                         getWindowToken(), 0);
             }
         } catch (Exception e) {
-            Log.i("Notes", String.valueOf(e));
+            Log.i(AppСonstants.TABLE_NOTES, String.valueOf(e));
         }
 
         getActivity().runOnUiThread(() -> {
@@ -537,7 +537,7 @@ public class Notes extends Fragment {
                         getWindowToken(), 0);
             }
         } catch (Exception e) {
-            Log.i("Notes", String.valueOf(e));
+            Log.i(AppСonstants.TABLE_NOTES, String.valueOf(e));
         }
     }
 

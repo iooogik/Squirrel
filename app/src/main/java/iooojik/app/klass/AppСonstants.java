@@ -73,27 +73,42 @@ public class AppСonstants {
     public static final String testDivider = "{#$#}";
     //переменная, индентифицируящая выбранную пользователем картинку
     public static final int PICK_IMAGE_AVATAR = 9;
-    //табоица с тестами
+    //таблицы
     public static final String TABLE_TESTS = "Tests";
-    //название колонок в табоице Tests////////////////////////////////////////////////////
+    public static final String TABLE_NOTES = "Notes";
+    //название колонок ////////////////////////////////////////////////////
     public static final String TABLE_ID = "_id";
-    public static final String TABLE_TESTS_NAME = "name";
-    public static final String TABLE_TESTS_DESCRIPTION = "description";
-    public static final String TABLE_TESTS_IS_PASSED = "isPassed";
-    public static final String TABLE_TESTS_QUESTIONS = "questions";
-    public static final String TABLE_TESTS_ANSWERS = "answers";
-    public static final String TABLE_TESTS_TEXT_ANSWERS = "textAnswers";
-    public static final String TABLE_TESTS_TIME = "time";
-    public static final String TABLE_TESTS_TOTAL_SCORE = "totalScore";
-    public static final String TABLE_TESTS_USER_SCORE = "userScore";
-    public static final String TABLE_TESTS_SCORE_QUEST = "scoreForQuest";
-    public static final String TABLE_TESTS_GROUP_ID = "group_id";
+    public static final String TABLE_NAME = "name";
+    public static final String TABLE_DESCRIPTION = "description";
+    public static final String TABLE_IS_PASSED = "isPassed";
+    public static final String TABLE_QUESTIONS = "questions";
+    public static final String TABLE_ANSWERS = "answers";
+    public static final String TABLE_TEXT_ANSWERS = "textAnswers";
+    public static final String TABLE_TIME = "time";
+    public static final String TABLE_TOTAL_SCORE = "totalScore";
+    public static final String TABLE_USER_SCORE = "userScore";
+    public static final String TABLE_SCORE_QUEST = "scoreForQuest";
+    public static final String TABLE_GROUP_ID = "group_id";
+    public static final String TABLE_IMAGE = "image";
+    public static final String TABLE_PERM_TO_SYNC = "permToSync";
+    public static final String TABLE_IS_NOTIF_SET = "isNotifSet";
+    public static final String TABLE_SHORT_NOTE = "shortNote";
+    public static final String TABLE_TYPE = "type";
+    public static final String TABLE_DB_TYPE_SHOP = "shop";
+    public static final String TABLE_DB_TYPE_STNDRT = "standart";
+    public static final String TABLE_IS_CHECKED = "isChecked";
+    public static final String TABLE_POINTS = "points";
+    public static final String TABLE_IS_COMPLETED = "isCompleted";
+    public static final String TABLE_DECODE_QR = "decodeQR";
+    public static final String TABLE_TYPEFACE = "typeface";
+    public static final String TABLE_FONT_SIZE = "fontSize";
     ///////////////////////////////////////////////////////////////////////////////////
     //id группы, в которой находится пользователь
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";
     //названия колонок в таблце TodoList
     public static  final String TABLE_TODO_NAME = "todo_list";
     public static  final String TABLE_TODO_CHECKED = "checked";
+    public static  final String TABLE_TEXT = "text";
     public static  final String SHOW_GROUP_ID = "SHOW_GROUP_ID";
     //weather api key
     public static final String WEATHER_BASE_URL = "http://api.openweathermap.org/data/2.5/";
@@ -105,11 +120,28 @@ public class AppСonstants {
     public static final String SHOW_WEATHER_NOTIF_ALWAYS = "SHOW_WEATHER_NOTIF_ALWAYS";
     public static final String YANDEX_TRANSLATE_API_KEY = "trnsl.1.1.20200504T150254Z.de2d9abf855314c5.22a15b3c1fad2d9bdb3e676aa3abf9d3ec67dbc0";
     public static final String YANDEX_TRANSLATE_BASE_URL = "https://translate.yandex.net/";
-    public static final String GOOGLE_MAPS_BASE_URL = "https://maps.googleapis.com/maps/";
 
     public static String CASES = "CASES";
 
     //online-db fields
     public static final String USER_EMAIL_FIELD = "user_email";
+    public static final String ID_FIELD = "_id";
+    public static final String COINS_FIELD = "coins";
+    public static final String LAT_FIELD = "latitude";
+    public static final String LOT_FIELD = "longitude";
+    public static final String COUNT_FIELD = "count";
+    public static final String DATE_FIELD = "date";
+    public static final String ITEM_ID_FIELD = "item_id";
+    public static final String LOG_FIELD = "log";
+    public static final String ACTIVATED_FIELD = "activated";
+    public static final String PROMO_FIELD = "promo";
+    public static final String GROUP_ID_FIELD = "group_id";
+    public static final String EMAIL_FIELD = "email";
+    public static final String AUTHOR_EMAIL_FIELD = "author_email";
+    public static final String USER_ID_FIELD = "user_id";
+    public static final String FULL_NAME_FIELD = "full_name";
+    public static final String GROUP_NAME_FIELD = "group_name";
+    public static final String AVATAR_FIELD = "avatar";
+    public static final String MESSAGE_FIELD = "message";
 
 }

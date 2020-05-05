@@ -112,7 +112,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
         userCursor.moveToFirst();
 
-        scorePerAnswer = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_SCORE_QUEST));
+        scorePerAnswer = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_SCORE_QUEST));
 
     }
 
@@ -218,11 +218,11 @@ public class Questions extends Fragment implements View.OnClickListener{
     private void getAnswers(){
         mDb = mDBHelper.getReadableDatabase();
 
-        String TEMPansws = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_TEXT_ANSWERS));
+        String TEMPansws = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT_ANSWERS));
 
         answers.addAll(Arrays.asList(TEMPansws.split(Pattern.quote(testDivider))));
 
-        TEMPansws = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_ANSWERS));
+        TEMPansws = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_ANSWERS));
 
         isTrue.addAll(Arrays.asList(TEMPansws.split(Pattern.quote(testDivider))));
         System.out.println(answers + " " + answers.size());
@@ -236,7 +236,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
         userCursor.moveToFirst();
 
-        String TEMP_quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_QUESTIONS));
+        String TEMP_quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_QUESTIONS));
         String[] quests = TEMP_quests.split(Pattern.quote(testDivider));
         questions.addAll(Arrays.asList(quests));
     }
@@ -297,8 +297,8 @@ public class Questions extends Fragment implements View.OnClickListener{
         userCursor.moveToFirst();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(AppСonstants.TABLE_TESTS_USER_SCORE, userScore);
-        contentValues.put(AppСonstants.TABLE_TESTS_IS_PASSED, 1);
+        contentValues.put(AppСonstants.TABLE_USER_SCORE, userScore);
+        contentValues.put(AppСonstants.TABLE_IS_PASSED, 1);
         mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id =" + (getTestID()), null);
 
         //отправка результатов
@@ -307,7 +307,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         HashMap<String, String> map = new HashMap<>();
         map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
         map.put("group_id", String.valueOf(userCursor.getInt(
-                userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_GROUP_ID))));
+                userCursor.getColumnIndex(AppСonstants.TABLE_GROUP_ID))));
 
         map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
 
@@ -411,7 +411,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS + " WHERE _id=?",
                 new String[]{String.valueOf(getTestID())});
         userCursor.moveToFirst();
-        int time = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TESTS_TIME));
+        int time = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_TIME));
         TextView time_process = view.findViewById(R.id.timer);
         time_process.setVisibility(View.VISIBLE);
         running = true;

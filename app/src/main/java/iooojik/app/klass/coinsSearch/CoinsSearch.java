@@ -1,4 +1,4 @@
-package iooojik.app.klass.sport;
+package iooojik.app.klass.coinsSearch;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -53,16 +53,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickListener {
+public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
-    public Sport() {}
+    public CoinsSearch() {}
 
     private GoogleMap map;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location startLocation, caseLocation;
     private float distance = 0;
-    private int openedCases = 0;
     private SharedPreferences preferences;
     private Api api;
     private BottomSheetDialog bottomSheetDialog;
@@ -115,7 +114,8 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         //проверяем наличие разрешения на использование геолокации пользователя
         int permissionStatus = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         //если нет разрешения, то запрашиваем его, иначе показываем погоду
-        if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         else {
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             //слушатель, отслеживающий изменение координат пользователя
@@ -158,15 +158,14 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
             };
 
             //получаем координаты из GPS или из сети
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0*1000, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0*1000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3*1000, 3, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3*1000, 3, locationListener);
         }
     }
 
     private void checkCaseLocation(Location location) {
         //проверяем был ли найден кейс
         //координаты кейса
-        //Toast.makeText(getContext(), String.valueOf(caseLocation == null), Toast.LENGTH_LONG).show();
         if (caseLocation != null) {
             double caseLat = caseLocation.getLatitude();
             double caseLot = caseLocation.getLongitude();
@@ -176,13 +175,14 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
                 int coins = (int) getRandomBetweenRange(10, 30);
                 builder.setMessage("Поздравляем! Вы нашли кейс! На ваш счёт зачислено " + coins + " койнов");
+                builder.setPositiveButton(R.string.ok_ru, (dialog, which) -> dialog.cancel());
                 builder.create().show();
                 deleteCase();
                 doRetrofit();
                 HashMap<String, String> changes = new HashMap<>();
-                changes.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-                changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
-                changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0) + coins));
+                changes.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+                changes.put(AppСonstants.ID_FIELD, String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
+                changes.put(AppСonstants.COINS_FIELD, String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0) + coins));
 
                 Call<ServerResponse<PostResult>> call = api.updateAchievement(AppСonstants.X_API_KEY,
                         preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
@@ -232,6 +232,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                 break;
             case R.id.open_case:
                 if (Integer.valueOf(preferences.getString(AppСonstants.CASES, "-1")) != 0) {
+                    int openedCases = 0;
                     if (openedCases == 0) {
                         //получаем рандомные координаты в радиусе 1км и строим маршрут до этих координат
                         double lat = startLocation.getLatitude();
@@ -269,8 +270,8 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         doRetrofit();
         HashMap<String, String> map = new HashMap<>();
         map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
-        map.put("latitude", String.valueOf(caseLocation.getLatitude()));
-        map.put("longitude", String.valueOf(caseLocation.getLongitude()));
+        map.put(AppСonstants.LAT_FIELD, String.valueOf(caseLocation.getLatitude()));
+        map.put(AppСonstants.LOT_FIELD, String.valueOf(caseLocation.getLongitude()));
         Call<ServerResponse<PostResult>> call = api.addCaseCoordinates(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
         call.enqueue(new Callback<ServerResponse<PostResult>>() {
@@ -310,9 +311,9 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
     private void updateCrateInfo(String id, String count) {
         doRetrofit();
         HashMap<String, String> map = new HashMap<>();
-        map.put("_id", id);
+        map.put(AppСonstants.ID_FIELD, id);
         map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
-        map.put("count", String.valueOf(Integer.valueOf(count) - 1));
+        map.put(AppСonstants.COUNT_FIELD, String.valueOf(Integer.valueOf(count) - 1));
         Call<ServerResponse<PostResult>> call = api.updateCrateInfo(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
         call.enqueue(new Callback<ServerResponse<PostResult>>() {
@@ -391,7 +392,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         doRetrofit();
         //получаем актуальную информацию о койнах
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
-                "user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+                AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
 
         call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
             @Override
@@ -416,9 +417,9 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
             preferences.edit().putInt(AppСonstants.USER_COINS, newCoins).apply();
 
             HashMap<String, String> changes = new HashMap<>();
-            changes.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-            changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
-            changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+            changes.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+            changes.put(AppСonstants.ID_FIELD, String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
+            changes.put(AppСonstants.COINS_FIELD, String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
 
             Call<ServerResponse<PostResult>> call2 = api.updateAchievement(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);

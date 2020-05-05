@@ -1,7 +1,5 @@
 package iooojik.app.klass.settings.private_policy;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,15 +28,11 @@ public class PrivatePolicy extends Fragment {
     public PrivatePolicy() {}
 
     private View view;
-    private TranslateApi translateApi;
-    private SharedPreferences preferences;
-    private String lang_original = "en";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_private_policy, container, false);
-        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         TextView policy = view.findViewById(R.id.privatepolicy);
         policy.setText(R.string.privatePolicyText);
         TextView terms = view.findViewById(R.id.termsconditions);
@@ -55,7 +49,7 @@ public class PrivatePolicy extends Fragment {
                 .baseUrl(AppСonstants.YANDEX_TRANSLATE_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        translateApi = retrofit.create(TranslateApi.class);
+        TranslateApi translateApi = retrofit.create(TranslateApi.class);
 
         Call<TranslationResponse> translationResponseCall = translateApi.translate(AppСonstants.YANDEX_TRANSLATE_API_KEY,
                 policy.getText().toString(), lang,"plain");
@@ -103,11 +97,11 @@ public class PrivatePolicy extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
-            case R.id.action_translate:
-                if (lang_original.equals("en")) translate("ru");
-                else translate("en");
-                return true;
+        String lang_original = "en";
+        if (item.getItemId() == R.id.action_translate) {
+            if (lang_original.equals("en")) translate("ru");
+            else translate("en");
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

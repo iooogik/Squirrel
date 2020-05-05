@@ -75,7 +75,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         delete.setOnClickListener(v -> {
 
             mDb = mDBHelper.getWritableDatabase();
-            mDb.delete("todo_list", "_id=" + (item.getId()), null);
+            mDb.delete(AppСonstants.TABLE_TODO_NAME, "_id=" + (item.getId()), null);
             items.remove(item);
             notifyItemRemoved(position);
             bottomSheetDialog.hide();
