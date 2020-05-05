@@ -45,8 +45,8 @@ import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIAL
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
-    private List<Note> notes;
-    private List<Note> notesFiltered;
+    private List<NoteObject> noteObjects;
+    private List<NoteObject> notesFiltered;
     //Переменные для работы с БД
     private Database mDBHelper;
     private SQLiteDatabase mDb;
@@ -56,9 +56,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     private Cursor userCursor;
     private Filter mFilter;
 
-    NotesAdapter(Context context, List<Note> notes, Fragment fragment){
-        this.notes = notes;
-        this.notesFiltered = notes;
+    NotesAdapter(Context context, List<NoteObject> noteObjects, Fragment fragment){
+        this.noteObjects = noteObjects;
+        this.notesFiltered = noteObjects;
         this.inflater = LayoutInflater.from(context);
         this.fragment = fragment;
         this.context = context;
@@ -79,22 +79,22 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         mDBHelper = new Database(context);
         mDBHelper.openDataBase();
         //получение и установка данных в элемент
-        Note note = notes.get(position);
+        NoteObject noteObject = noteObjects.get(position);
         //настройки
         SharedPreferences settings = context.getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         int val = settings.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
         //контроллер для перехода между фрагментами
         NavController navHostFragment = NavHostFragment.findNavController(fragment);
 
-        if (!(note.getName().equals("Математические формулы") && val == 1)) {
+        if (!(noteObject.getName().equals("Математические формулы") && val == 1)) {
             //ставим название и описание картинки
-            holder.name.setText(note.getName());
-            holder.desc.setText(note.getDescription());
+            holder.name.setText(noteObject.getName());
+            holder.desc.setText(noteObject.getDescription());
 
             mDb = mDBHelper.getReadableDatabase();
 
             userCursor =  mDb.rawQuery("Select * from Notes WHERE _id=?",
-                    new String[]{String.valueOf(note.getId())});
+                    new String[]{String.valueOf(noteObject.getId())});
 
             userCursor.moveToFirst();
 
@@ -126,7 +126,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                             mDb = mDBHelper.getReadableDatabase();
 
                             userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?",
-                                    new String[]{String.valueOf(note.getId())});
+                                    new String[]{String.valueOf(noteObject.getId())});
                             userCursor.moveToFirst();
 
                             if (userCursor.getBlob(userCursor.getColumnIndex("image")) != null) {
@@ -147,7 +147,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                     });
                 }
                 //устанавливаем соответсвующий значок заметкаим с типом shop
-                if (note.getType().equals("shop")) {
+                if (noteObject.getType().equals("shop")) {
                     if (userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 1) {
                         holder.completed.setVisibility(View.VISIBLE);
                     } else if (userCursor.getInt(userCursor.getColumnIndex("isCompleted")) == 0) {
@@ -158,7 +158,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 mDb = mDBHelper.getReadableDatabase();
 
                 userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?",
-                        new String[]{String.valueOf(note.getId())});
+                        new String[]{String.valueOf(noteObject.getId())});
                 userCursor.moveToFirst();
                 //узнаем было ли установлено уведомление
                 if (userCursor.getInt(userCursor.getColumnIndex("isNotifSet")) == 1) {
@@ -168,10 +168,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 }
                 //слушатель для открытия фрагмента с заметкой
                 holder.frameLayout.setOnClickListener(v -> {
-                    bundle.putString("button name", note.getName());
-                    bundle.putInt("button ID", note.getId());
+                    bundle.putString("button name", noteObject.getName());
+                    bundle.putInt("button ID", noteObject.getId());
 
-                    switch (note.getType()) {
+                    switch (noteObject.getType()) {
                         case "shop":
                             navHostFragment.navigate(R.id.nav_checkList, bundle);
                             break;
@@ -196,9 +196,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 Button delete = bottomSheet.findViewById(R.id.delete);
                 delete.setOnClickListener(v -> {
                     mDb = mDBHelper.getWritableDatabase();
-                    mDb.delete("Notes", "_id=" + (note.getId()), null);
-                    notes.remove(note);
-                    notesFiltered.remove(note);
+                    mDb.delete("Notes", "_id=" + (noteObject.getId()), null);
+                    noteObjects.remove(noteObject);
+                    notesFiltered.remove(noteObject);
                     notifyItemRemoved(position);
                     bottomSheetDialog.hide();
                 });
@@ -219,7 +219,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return notes.size();
+        return noteObjects.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -258,17 +258,17 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 results.count = notesFiltered.size();
             } else {
 
-                int count = notes.size();
-                final ArrayList<Note> mListResult = new ArrayList<>();
+                int count = noteObjects.size();
+                final ArrayList<NoteObject> mListResult = new ArrayList<>();
 
                 String name;
 
                 for (int i = 0; i < count; i++) {
 
-                    Note note = notes.get(i);
-                    name = note.getName();
+                    NoteObject noteObject = noteObjects.get(i);
+                    name = noteObject.getName();
                     if (name.toLowerCase().contains(filterString)) {
-                        mListResult.add(note);
+                        mListResult.add(noteObject);
                     }
                 }
 
@@ -283,7 +283,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, Filter.FilterResults results) {
-            notes = (ArrayList<Note>) results.values;
+            noteObjects = (ArrayList<NoteObject>) results.values;
             notifyDataSetChanged();
         }
     }

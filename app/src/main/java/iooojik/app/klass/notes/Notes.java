@@ -74,7 +74,7 @@ public class Notes extends Fragment {
     private FloatingActionButton fab;
     private Cursor userCursor;
 
-    private List<Note> ITEMS = new ArrayList<>();
+    private List<NoteObject> ITEMS = new ArrayList<>();
 
     public Notes() {}
 
@@ -167,7 +167,7 @@ public class Notes extends Fragment {
             }
 
             if (name != null || type != null)
-                ITEMS.add(new Note(name, desc, bitmap, type,
+                ITEMS.add(new NoteObject(name, desc, bitmap, type,
                         userCursor.getInt(userCursor.getColumnIndex("_id")), -1));
 
             userCursor.moveToNext();
@@ -219,8 +219,8 @@ public class Notes extends Fragment {
         final String DB_TYPE_SHOP = "shop";
         int id = 0;
         if (ITEMS.size() != 0) {
-            Note note = ITEMS.get(ITEMS.size() - 1);
-            id = note.getId() + 1;
+            NoteObject noteObject = ITEMS.get(ITEMS.size() - 1);
+            id = noteObject.getId() + 1;
         }
 
         int finalId = id;
@@ -258,7 +258,7 @@ public class Notes extends Fragment {
                         //запись
                         mDb.insert("Notes", null, cv);
 
-                        ITEMS.add(new Note(name, shortNote, null, type, finalId, -1));
+                        ITEMS.add(new NoteObject(name, shortNote, null, type, finalId, -1));
                         NOTES_ADAPTER.notifyDataSetChanged();
                     } else {
                         Snackbar.make(view, "Что-то пошло не так. Проверьте, пожалуйста, название и выбранный тип.",
@@ -280,30 +280,30 @@ public class Notes extends Fragment {
     @SuppressLint("Recycle")
     private void uploadNotes() {
         //получаем id каждой заметки из списка ITEMS и узнаём, можно ли добавлять картинку в базу
-        List<Note> uploadNotes = new ArrayList<>();
+        List<NoteObject> uploadNoteObjects = new ArrayList<>();
         mDb = mDBHelper.getReadableDatabase();
 
         Cursor userCursor;
-        for (Note note : ITEMS) {
-            int id = note.getId();
+        for (NoteObject noteObject : ITEMS) {
+            int id = noteObject.getId();
 
             userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(id)});
             userCursor.moveToFirst();
 
             if (userCursor.getInt(userCursor.getColumnIndex("permToSync")) == 1) {
-                uploadNotes.add(note);
+                uploadNoteObjects.add(noteObject);
             }
         }
 
         doRetrofit();
         //получаем все пользовательские заметки
         //удаляем все пользовательские заметки
-        if (uploadNotes.size() > 0) clearNotes();
+        if (uploadNoteObjects.size() > 0) clearNotes();
 
-        for (Note note : uploadNotes) {
+        for (NoteObject noteObject : uploadNoteObjects) {
             //заносим каждую заметку в базу
             HashMap<String, String> map = new HashMap<>();
-            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(note.getId())});
+            userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(noteObject.getId())});
 
             userCursor.moveToFirst();
             String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex("name")));
@@ -418,8 +418,8 @@ public class Notes extends Fragment {
 
                         for (OnlineNote onlineNote : onlineNotes) {
                             boolean result = false;
-                            for (Note note2 : ITEMS) {
-                                if (note2.getName().equals(onlineNote.getName())) {
+                            for (NoteObject noteObject2 : ITEMS) {
+                                if (noteObject2.getName().equals(onlineNote.getName())) {
                                     result = false;
                                     break;
                                 } else result = true;
@@ -476,7 +476,7 @@ public class Notes extends Fragment {
                                 userCursor = mDb.rawQuery("Select * from Notes", null);
                                 userCursor.moveToLast();
                                 int ident = userCursor.getInt(userCursor.getColumnIndex("_id"));
-                                ITEMS.add(new Note(name, shortName, null, type, id, ident));
+                                ITEMS.add(new NoteObject(name, shortName, null, type, id, ident));
                                 NOTES_ADAPTER.notifyDataSetChanged();
 
                             }

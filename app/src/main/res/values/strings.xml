@@ -139,6 +139,10 @@
     <string name="timeTest">Время прохождения теста:</string>
     <string name="ok_ru">Хорошо</string>
     <string name="google_maps_api_key">AIzaSyByhLOinHzF_1FGubCaXQAX4AJfVWo3qdc</string>
+    <string name="passedDistance">Пройденное расстояние:</string>
+    <string name="speed">Cкорость:</string>
+    <string name="getCoins">Получить койны</string>
+    <string name="youGetCoins">Вы получите койнов:</string>
     <!-- other strings end-->
 
 

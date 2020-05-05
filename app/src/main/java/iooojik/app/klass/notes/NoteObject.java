@@ -2,7 +2,7 @@ package iooojik.app.klass.notes;
 
 import android.graphics.Bitmap;
 
-public class Note {
+public class NoteObject {
     private String name;
     private String description;
     private Bitmap image;
@@ -18,7 +18,7 @@ public class Note {
         this.dataID = dataID;
     }
 
-    Note(String name, String description, Bitmap image, String type, int id, int dataID){
+    NoteObject(String name, String description, Bitmap image, String type, int id, int dataID){
         this.name = name;
         this.description = description;
         this.image = image;

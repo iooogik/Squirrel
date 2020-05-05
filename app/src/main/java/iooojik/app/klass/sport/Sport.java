@@ -1,6 +1,7 @@
 package iooojik.app.klass.sport;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,11 +9,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,19 +58,58 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
     private float distance = 0;
     private SharedPreferences preferences;
     private Api api;
+    private BottomSheetDialog bottomSheetDialog;
+    private FloatingActionButton fab;
+    private TextView speedText, distanceText, coins;
+    private boolean running;
+    private Handler chrono = new Handler();
+    private int seconds = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_sport, container, false);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.hide();
-        Button begin = view.findViewById(R.id.stop);
-        begin.setOnClickListener(this);
+        fab = getActivity().findViewById(R.id.fab);
+        fab.show();
+        fab.setOnClickListener(this);
+        fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
+        enableBottomSheet();
         prepareMap();
         setLocationManager();
+        startTimer();
         return view;
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void startTimer(){
+        running = true;
+        seconds = 0;
+        chrono.post(new Runnable() {
+            @Override
+            public void run() {
+                if(running) {
+                    seconds++;
+                    chrono.postDelayed(this, 1000);
+                }
+
+            }
+        });
+    }
+
+    @SuppressLint("InflateParams")
+    private void enableBottomSheet() {
+        bottomSheetDialog = new BottomSheetDialog(getActivity());
+        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_sport, null);
+        Button stop = bottomSheet.findViewById(R.id.stop);
+        stop.setOnClickListener(this);
+
+        speedText = bottomSheet.findViewById(R.id.speed);
+        distanceText = bottomSheet.findViewById(R.id.distance);
+        coins = bottomSheet.findViewById(R.id.coins);
+
+        bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
+        bottomSheetDialog.setContentView(bottomSheet);
     }
 
     private void prepareMap(){
@@ -82,13 +125,20 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         else {
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            //слушатель, отслеживающий изменение координат пользователя
             locationListener = new LocationListener() {
+                @SuppressLint("DefaultLocale")
                 @Override
                 public void onLocationChanged(Location location) {
                     if (startLocation != null) {
                         map.addPolyline(new PolylineOptions().add(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()),
                                 new LatLng(location.getLatitude(), location.getLongitude())).width(25).color(R.color.notCompleted));
                         distance+=startLocation.distanceTo(location);
+                        int speed = (int) location.getSpeed();
+                        distanceText.setText(String.format("%sкм", String.format("%.3f %n", distance / 1000)));
+                        speedText.setText(String.valueOf(speed));
+                        coins.setText(String.valueOf(Math.round((distance/1000)/3) * 3));
+                        seconds = 0;
                     }
                     startLocation = location;
                 }
@@ -113,8 +163,8 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
             };
 
             //получаем координаты из GPS или из сети
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10*1000, 50, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, 50, locationListener);
         }
     }
 
@@ -122,9 +172,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.getUiSettings().setMyLocationButtonEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
         map.setMyLocationEnabled(true);
-
     }
 
     @Override
@@ -134,8 +182,13 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                 locationManager.removeUpdates(locationListener);
                 //получение койнов в зависимости от пройденного пути
                 int coins = 0;
-                coins = Math.round(distance/3) * 3;
+                coins = Math.round((distance/1000)/3) * 3;
                 updateCoins(coins);
+                bottomSheetDialog.hide();
+                break;
+            case R.id.fab:
+                bottomSheetDialog.show();
+                fab.hide();
                 break;
         }
     }

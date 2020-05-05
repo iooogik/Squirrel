@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/nav_notes"
-        android:name="iooojik.app.klass.notes.Notes"
+        android:name="iooojik.app.klass.noteObjects.Notes"
         android:label="Заметки"
         tools:layout="@layout/fragment_notes" >
         <action
@@ -66,20 +66,20 @@
 
     <fragment
         android:id="@+id/nav_standart_note"
-        android:name="iooojik.app.klass.notes.StandartNote"
+        android:name="iooojik.app.klass.noteObjects.StandartNote"
         android:label=""
         tools:layout="@layout/fragment_standart_note" >
     </fragment>
 
     <fragment
         android:id="@+id/nav_checkList"
-        android:name="iooojik.app.klass.notes.CheckList"
+        android:name="iooojik.app.klass.noteObjects.CheckList"
         android:label=""
         tools:layout="@layout/fragment_check_list" />
 
     <fragment
         android:id="@+id/nav_book"
-        android:name="iooojik.app.klass.notes.Book"
+        android:name="iooojik.app.klass.noteObjects.Book"
         android:label="Справочные материалы"
         tools:layout="@layout/fragment_book" />
 

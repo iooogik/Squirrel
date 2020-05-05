@@ -23,6 +23,9 @@
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_api_key"/>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
 
         <activity
@@ -41,7 +44,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.notes.StandartNote"
+        <activity android:name="iooojik.app.klass.noteObjects.StandartNote"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
@@ -49,7 +52,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.notes.Notes"
+        <activity android:name="iooojik.app.klass.noteObjects.Notes"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
