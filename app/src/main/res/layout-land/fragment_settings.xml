@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/background"
+    android:orientation="vertical"
+    tools:context=".settings.Settings">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/book_items"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="@string/show_book_materials" />
+
+            <Switch
+                android:id="@+id/darkTheme"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="@string/darkTheme" />
+
+            <Switch
+                android:id="@+id/showGroupID"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="Показывать id группы" />
+
+            <Switch
+                android:id="@+id/showWeatherSwitchPerDay"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="Показывать уведомление о погоде 1 раз в день" />
+
+            <Switch
+                android:id="@+id/showWeatherSwitchAlways"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="Показывать уведомление о погоде при каждом запуске приложения" />
+
+            <Button
+                android:id="@+id/delete_tests"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:text="Удалить все тесты" />
+
+            <Button
+                android:id="@+id/delete_notes"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="Удалить все заметки" />
+
+            <Button
+                android:id="@+id/showWeather"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="Показать погоду" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/telegram"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/small_buttons"
+                    android:contentDescription="@string/telegram"
+                    android:src="@drawable/telegram_icon" />
+
+                <ImageView
+                    android:id="@+id/gmail"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/small_buttons"
+                    android:contentDescription="@string/gmail"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/gmail" />
+
+                <ImageView
+                    android:id="@+id/discord"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/small_buttons"
+                    android:contentDescription="@string/discord"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/discord" />
+
+                <ImageView
+                    android:id="@+id/vk"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/small_buttons"
+                    android:contentDescription="@string/vk"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/vk_logo" />
+
+                <ImageView
+                    android:id="@+id/instagram"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/small_buttons"
+                    android:contentDescription="@string/instagram"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/instagram" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/exit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="@string/exitAcc"
+                android:textColor="@color/notCompleted" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="@string/installedVersion" />
+
+            <TextView
+                android:id="@+id/policy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/settings_margin"
+                android:text="@string/privatePolicy"
+                android:textAlignment="center"
+                android:textColor="#8C8B8B"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

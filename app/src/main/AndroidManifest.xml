@@ -27,6 +27,7 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
+        <meta-data android:name="com.google.ar.core" android:value="optional" />
 
         <activity
             android:name="iooojik.app.klass.MainActivity"
@@ -44,7 +45,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.noteObjects.StandartNote"
+        <activity android:name="iooojik.app.klass.notes.StandartNote"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
@@ -52,7 +53,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 
-        <activity android:name="iooojik.app.klass.noteObjects.Notes"
+        <activity android:name="iooojik.app.klass.notes.Notes"
             android:configChanges="keyboardHidden|orientation|screenSize"
             />
 

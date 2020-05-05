@@ -469,6 +469,8 @@ public class Profile extends Fragment implements View.OnClickListener {
                         notif.setVisibility(View.VISIBLE);
                         notif.setText("Вы ещё не создали ни одну группу");
                     } else {
+                        TextView warn = view.findViewById(R.id.notif_text);
+                        warn.setVisibility(View.GONE);
                         groupsAdapter = new GroupsAdapter(context, groupInforms, fragment);
                         RecyclerView recyclerView = view.findViewById(R.id.classes);
                         recyclerView.setLayoutManager(new LinearLayoutManager(context));

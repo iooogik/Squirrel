@@ -149,6 +149,11 @@ public interface Api {
     @POST("api/tests_result/delete")
     Call<ServerResponse<PostResult>> removeResult(@Header("X-API-KEY") String api_key, @Field("_id") String id);
 
+    //удаление группы
+    @FormUrlEncoded
+    @POST("api/groups/delete")
+    Call<ServerResponse<PostResult>> removeGroup(@Header("X-API-KEY") String api_key, @Field("_id") String id);
+
 
     //получение item-ов в магазине
     @GET("api/shop/all")
