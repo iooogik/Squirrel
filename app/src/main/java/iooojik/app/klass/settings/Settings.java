@@ -472,42 +472,40 @@ public class Settings extends Fragment implements View.OnClickListener{
             }
         });
 
-        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1) {
-            //получение погоды
-            weather = new BottomSheetDialog(getActivity());
-            View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_weather, null);
+        //получение погоды
+        weather = new BottomSheetDialog(getActivity());
+        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_weather, null);
 
-            //координаты
-            String lat = preferences.getString(AppСonstants.USER_LAT, "");
-            String lon = preferences.getString(AppСonstants.USER_LON, "");
+        //координаты
+        String lat = preferences.getString(AppСonstants.USER_LAT, "");
+        String lon = preferences.getString(AppСonstants.USER_LON, "");
 
-            WeatherApi weatherApi;
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(AppСonstants.WEATHER_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            weatherApi = retrofit.create(WeatherApi.class);
+        WeatherApi weatherApi;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.WEATHER_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        weatherApi = retrofit.create(WeatherApi.class);
 
-            //запрос
-            Call<WeatherData> getWeatherCall = weatherApi.getWeather(lat, lon, AppСonstants.WEATHER_API_KEY);
+        //запрос
+        Call<WeatherData> getWeatherCall = weatherApi.getWeather(lat, lon, AppСonstants.WEATHER_API_KEY);
 
-            getWeatherCall.enqueue(new Callback<WeatherData>() {
-                @Override
-                public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
+        getWeatherCall.enqueue(new Callback<WeatherData>() {
+            @Override
+            public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
 
-                    if (response.code() == 200) {
-                        setWeatherInfo(bottomSheet, response.body());
-                    } else Log.e("GETTING WEATHER", String.valueOf(response.raw()));
-                }
+                if (response.code() == 200) {
+                    setWeatherInfo(bottomSheet, response.body());
+                } else Log.e("GETTING WEATHER", String.valueOf(response.raw()));
+            }
 
-                @Override
-                public void onFailure(Call<WeatherData> call, Throwable t) {
-                    Log.e("GETTING WEATHER", String.valueOf(t));
-                }
-            });
+            @Override
+            public void onFailure(Call<WeatherData> call, Throwable t) {
+                Log.e("GETTING WEATHER", String.valueOf(t));
+            }
+        });
 
-            weather.setContentView(bottomSheet);
-        }
+        weather.setContentView(bottomSheet);
     }
 
     @SuppressLint("DefaultLocale")
