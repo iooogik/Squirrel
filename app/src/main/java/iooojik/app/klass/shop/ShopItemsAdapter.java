@@ -212,32 +212,31 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
 
             }
             else if (shopItem.getItemType().equals("bonus_crate")){
-                fragment.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        doRetrofit();
-                        Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
-                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "user_email",
-                                preferences.getString(AppСonstants.USER_EMAIL, ""));
-                        getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
-                            @Override
-                            public void onResponse(Call<ServerResponse<CratesData>> call, Response<ServerResponse<CratesData>> response) {
-                                if (response.code() == 200){
-                                    CratesData data = response.body().getData();
-                                    if (data.getBonusCratesToUsers().size() == 0){
-                                        addCrateInfo();
-                                    }else {
-                                        updateCrateInfo(data.getBonusCratesToUsers().get(0).getId(), data.getBonusCratesToUsers().get(0).getCount());
-                                    }
+                fragment.getActivity().runOnUiThread(() -> {
+                    doRetrofit();
+                    preferences.edit().putString(AppСonstants.CASES, String.valueOf(Integer.valueOf(
+                            preferences.getString(AppСonstants.CASES, "0" )) + 1)).apply();
+                    Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "user_email",
+                            preferences.getString(AppСonstants.USER_EMAIL, ""));
+                    getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
+                            if (response.code() == 200){
+                                CratesData data = response.body().getData();
+                                if (data.getBonusCratesToUsers().size() == 0){
+                                    addCrateInfo();
+                                }else {
+                                    updateCrateInfo(data.getBonusCratesToUsers().get(0).getId(), data.getBonusCratesToUsers().get(0).getCount());
                                 }
                             }
+                        }
 
-                            @Override
-                            public void onFailure(Call<ServerResponse<CratesData>> call, Throwable t) {
+                        @Override
+                        public void onFailure(Call<ServerResponse<CratesData>> call1, Throwable t) {
 
-                            }
-                        });
-                    }
+                        }
+                    });
                 });
             }
             }

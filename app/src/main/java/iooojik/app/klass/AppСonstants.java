@@ -107,4 +107,9 @@ public class AppСonstants {
     public static final String YANDEX_TRANSLATE_BASE_URL = "https://translate.yandex.net/";
     public static final String GOOGLE_MAPS_BASE_URL = "https://maps.googleapis.com/maps/";
 
+    public static String CASES = "CASES";
+
+    //online-db fields
+    public static final String USER_EMAIL_FIELD = "user_email";
+
 }

@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -42,6 +43,9 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
+import iooojik.app.klass.models.bonusCrate.CratesData;
+import iooojik.app.klass.models.caseData.CaseData;
+import iooojik.app.klass.models.caseData.CasesToUser;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,13 +60,16 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
     private GoogleMap map;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private Location startLocation;
+    private Location startLocation, caseLocation;
     private float distance = 0;
+    private int openedCases = 0;
     private SharedPreferences preferences;
     private Api api;
     private BottomSheetDialog bottomSheetDialog;
     private FloatingActionButton fab;
     private TextView speedText, distanceText, coins;
+    private Button addCaseOnMap;
+    private String caseID = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,6 +83,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         enableBottomSheet();
         prepareMap();
         setLocationManager();
+        loadCase();
         return view;
     }
 
@@ -86,8 +94,8 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         Button stop = bottomSheet.findViewById(R.id.stop);
         stop.setOnClickListener(this);
 
-        Button openCase = bottomSheet.findViewById(R.id.open_case);
-        openCase.setOnClickListener(this);
+        addCaseOnMap = bottomSheet.findViewById(R.id.open_case);
+        addCaseOnMap.setOnClickListener(this);
 
         speedText = bottomSheet.findViewById(R.id.speed);
         distanceText = bottomSheet.findViewById(R.id.distance);
@@ -124,6 +132,9 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                         speedText.setText(String.format("%s км/ч", String.valueOf(speed)));
                         coins.setText(String.valueOf(Math.round((distance/1000)/3) * 3));
                     }
+
+                    checkCaseLocation(location);
+
                     startLocation = location;
                 }
 
@@ -147,8 +158,50 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
             };
 
             //получаем координаты из GPS или из сети
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10*1000, 50, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, 50, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0*1000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0*1000, 0, locationListener);
+        }
+    }
+
+    private void checkCaseLocation(Location location) {
+        //проверяем был ли найден кейс
+        //координаты кейса
+        //Toast.makeText(getContext(), String.valueOf(caseLocation == null), Toast.LENGTH_LONG).show();
+        if (caseLocation != null) {
+            double caseLat = caseLocation.getLatitude();
+            double caseLot = caseLocation.getLongitude();
+            //проверяем разницу в координатах
+            if (Math.abs(location.getLatitude() - caseLat) < 0.0003 && Math.abs(location.getLongitude() - caseLot) < 0.0003) {
+                //показываем Dialog и зачисляем монеты
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+                int coins = (int) getRandomBetweenRange(10, 30);
+                builder.setMessage("Поздравляем! Вы нашли кейс! На ваш счёт зачислено " + coins + " койнов");
+                builder.create().show();
+                deleteCase();
+                doRetrofit();
+                HashMap<String, String> changes = new HashMap<>();
+                changes.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+                changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
+                changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0) + coins));
+
+                Call<ServerResponse<PostResult>> call = api.updateAchievement(AppСonstants.X_API_KEY,
+                        preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
+
+                call.enqueue(new Callback<ServerResponse<PostResult>>() {
+                    @Override
+                    public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                        if (response.code() != 200)
+                            Log.e("ADD ACHIEVEMENT", String.valueOf(response.raw()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                        Log.e("ADD ACHIEVEMENT", String.valueOf(t));
+                    }
+                });
+                caseLocation = null;
+                addCaseOnMap.setEnabled(true);
+            }
         }
     }
 
@@ -178,33 +231,159 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                 fab.hide();
                 break;
             case R.id.open_case:
-                //получаем рандомные координаты в радиусе 1км и строим маршрут до этих координат
-                double lat = startLocation.getLatitude();
-                double lon = startLocation.getLongitude();
+                if (Integer.valueOf(preferences.getString(AppСonstants.CASES, "-1")) != 0) {
+                    if (openedCases == 0) {
+                        //получаем рандомные координаты в радиусе 1км и строим маршрут до этих координат
+                        double lat = startLocation.getLatitude();
+                        double lon = startLocation.getLongitude();
 
-                double k = getRandomIntegerBetweenRange(0, 4);
-                int chance = (int) getRandomIntegerBetweenRange(1, 2);
-                if (chance == 2) k *= (-1);
-                lat = lat + (k/100);
+                        double k = getRandomBetweenRange(0, 1);
+                        int chance = (int) getRandomBetweenRange(1, 2);
+                        if (chance == 2) k *= (-1);
+                        lat = lat + (k / 100);
 
-                k = getRandomIntegerBetweenRange(0, 4);
-                chance = (int) getRandomIntegerBetweenRange(1, 2);
-                if (chance == 2) k *= (-1);
-                lon = lon + (k/100);
+                        k = getRandomBetweenRange(0, 1);
+                        chance = (int) getRandomBetweenRange(1, 2);
+                        if (chance == 2) k *= (-1);
+                        lon = lon + (k / 100);
 
-                LatLng latLng = new LatLng(lat, lon);
-                map.addMarker(new MarkerOptions().position(latLng).title("кейс").
-                        snippet("Поскорее найдите меня!").icon(BitmapDescriptorFactory.fromResource(R.drawable.small_crate)));
+                        caseLocation = new Location("");
+                        caseLocation.setLatitude(lat);
+                        caseLocation.setLongitude(lon);
+                        addCaseOnMap.setEnabled(false);
+                        getActivity().runOnUiThread(() -> {
+                            saveCaseLocation();
+                            loadCase();
+                        });
 
-                map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        // обработать получение кейса, когда пользователь пришёл за ним (попробовать через поток)
 
+                    } else Snackbar.make(getView(), "Вы уже открыли кейс, сходите за ним! " +
+                           "Или нажмите \"Отменить поиск кейса\", чтобы открыть новый!", Snackbar.LENGTH_LONG).show();
+               } else Snackbar.make(getView(), "У вас нет кейсов", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }
 
-    public static double getRandomIntegerBetweenRange(double min, double max){
-        double x = (int)(Math.random()*((max-min)+1))+min;
-        return x;
+    private void saveCaseLocation(){
+        doRetrofit();
+        HashMap<String, String> map = new HashMap<>();
+        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put("latitude", String.valueOf(caseLocation.getLatitude()));
+        map.put("longitude", String.valueOf(caseLocation.getLongitude()));
+        Call<ServerResponse<PostResult>> call = api.addCaseCoordinates(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+        call.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+            }
+        });
+
+        Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
+                preferences.getString(AppСonstants.USER_EMAIL, ""));
+        getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
+                if (response.code() == 200){
+                    CratesData data = response.body().getData();
+                    if (data.getBonusCratesToUsers().size() != 0){
+                        updateCrateInfo(data.getBonusCratesToUsers().get(0).getId(),
+                                data.getBonusCratesToUsers().get(0).getCount());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<CratesData>> call1, Throwable t) {
+
+            }
+        });
+    }
+
+    private void updateCrateInfo(String id, String count) {
+        doRetrofit();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("_id", id);
+        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put("count", String.valueOf(Integer.valueOf(count) - 1));
+        Call<ServerResponse<PostResult>> call = api.updateCrateInfo(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+        call.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void loadCase(){
+        //получаем информацию о местонахождении кейса и показываем его на карте
+        doRetrofit();
+        Call<ServerResponse<CaseData>> call = api.getCase(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                AppСonstants.USER_EMAIL_FIELD,
+                preferences.getString(AppСonstants.USER_EMAIL, ""));
+
+        call.enqueue(new Callback<ServerResponse<CaseData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<CaseData>> call, Response<ServerResponse<CaseData>> response) {
+                if (response.code() == 200){
+                    CaseData caseData = response.body().getData();
+                    if (caseData.getCasesToUsers().size() != 0) {
+                        CasesToUser casesToUsers = caseData.getCasesToUsers().get(0);
+                        caseLocation = new Location("");
+                        caseLocation.setLatitude(Double.valueOf(casesToUsers.getLatitude()));
+                        caseLocation.setLongitude(Double.valueOf(casesToUsers.getLongitude()));
+                        caseID = casesToUsers.getId();
+                        LatLng latLng = new LatLng(Double.valueOf(casesToUsers.getLatitude()), Double.valueOf(casesToUsers.getLongitude()));
+
+                        map.addMarker(new MarkerOptions().position(latLng).title("Кейс").
+                                snippet("Поскорее найдите меня!").icon(BitmapDescriptorFactory.fromResource(R.drawable.small_crate)));
+                        map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        addCaseOnMap.setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<CaseData>> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void deleteCase(){
+        //удаление "активного" кейса
+        doRetrofit();
+        Call<ServerResponse<PostResult>> call = api.removeCase(AppСonstants.X_API_KEY, caseID);
+        call.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private static double getRandomBetweenRange(double min, double max){
+        return (int)(Math.random()*((max-min)+1))+min;
     }
 
     private void updateCoins(int coins){

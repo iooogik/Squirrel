@@ -43,6 +43,7 @@ import iooojik.app.klass.api.WeatherApi;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
+import iooojik.app.klass.models.bonusCrate.CratesData;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.profileData.User;
@@ -405,6 +406,7 @@ public class Profile extends Fragment implements View.OnClickListener {
             }
         });
 
+        getBonusCases();
 
     }
 
@@ -484,6 +486,28 @@ public class Profile extends Fragment implements View.OnClickListener {
             @Override
             public void onFailure(Call<ServerResponse<DataGroup>> call, Throwable t) {
                 Log.e("GETTING GROUPS",t.toString());
+            }
+        });
+    }
+
+    private void getBonusCases(){
+        doRetrofit();
+        Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "user_email",
+                preferences.getString(AppСonstants.USER_EMAIL, ""));
+        getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
+                if (response.code() == 200){
+                    CratesData data = response.body().getData();
+                    preferences.edit().putString(AppСonstants.CASES,
+                            data.getBonusCratesToUsers().get(0).getCount()).apply();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<CratesData>> call1, Throwable t) {
+
             }
         });
     }
