@@ -93,6 +93,7 @@ public class Group extends Fragment{
 
         fab = getActivity().findViewById(R.id.fab);
         fab.show();
+        fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
         enableBottomSheet();
         return view;
     }

@@ -9,9 +9,9 @@
 
         <item name="buttonTint">?attr/colorAccent</item>
 
-        <item name="colorPrimaryDark">@color/transparent</item>
-        <item name="background">@color/colorBackground_light</item>
+        <item name="colorPrimaryDark">@color/colorBackground_dark</item>
 
+        <item name="background">@color/colorBackground_light</item>
         <item name="itemShapeFillColor">@color/colorWhite</item>
 
         <item name="windowActionBar">false</item>

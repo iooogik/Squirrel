@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/background"
     android:orientation="vertical"
     tools:context=".settings.Settings">
 
@@ -13,7 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <Switch
                 android:id="@+id/book_items"
@@ -40,12 +42,12 @@
                 android:text="Показывать id группы" />
 
             <Switch
-            android:id="@+id/showWeatherSwitchPerDay"
-            style="@style/Widget.MaterialComponents.CompoundButton.Switch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/settings_margin"
-            android:text="Показывать уведомление о погоде 1 раз в день" />
+                android:id="@+id/showWeatherSwitchPerDay"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_margin"
+                android:text="Показывать уведомление о погоде 1 раз в день" />
 
             <Switch
                 android:id="@+id/showWeatherSwitchAlways"
@@ -58,19 +60,19 @@
             <Button
                 android:id="@+id/delete_tests"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_margin="@dimen/fab_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
                 android:text="Удалить все тесты" />
 
             <Button
                 android:id="@+id/delete_notes"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_marginBottom="@dimen/fab_margin"
-                android:layout_marginStart="@dimen/fab_margin"
-                android:layout_marginEnd="@dimen/fab_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginBottom="@dimen/fab_margin"
                 android:text="Удалить все заметки" />
 
             <Button
@@ -78,17 +80,10 @@
                 style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fab_margin"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginBottom="@dimen/fab_margin"
                 android:text="Показать погоду" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/settings_margin"
-                android:text="Контакты: " />
 
             <LinearLayout
                 android:layout_width="wrap_content"

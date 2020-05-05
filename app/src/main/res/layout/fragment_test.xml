@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="?attr/background"
+
     tools:context=".tests.Tests">
 
     <FrameLayout
@@ -17,7 +19,9 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?attr/background"
+        >
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/test_items"

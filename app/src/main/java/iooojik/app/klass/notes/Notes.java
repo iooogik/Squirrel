@@ -85,7 +85,7 @@ public class Notes extends Fragment {
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = view.getContext();
         fab = getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.baseline_add_24);
+        fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
         setHasOptionsMenu(true);
         return view;
     }

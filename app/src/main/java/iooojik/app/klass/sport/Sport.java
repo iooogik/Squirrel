@@ -9,7 +9,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +49,6 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
 
     public Sport() {}
 
-    private View view;
     private GoogleMap map;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -61,14 +59,11 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
     private BottomSheetDialog bottomSheetDialog;
     private FloatingActionButton fab;
     private TextView speedText, distanceText, coins;
-    private boolean running;
-    private Handler chrono = new Handler();
-    private int seconds = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_sport, container, false);
+        View view = inflater.inflate(R.layout.fragment_sport, container, false);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         fab = getActivity().findViewById(R.id.fab);
         fab.show();
@@ -77,24 +72,7 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
         enableBottomSheet();
         prepareMap();
         setLocationManager();
-        startTimer();
         return view;
-    }
-
-    @SuppressLint("DefaultLocale")
-    private void startTimer(){
-        running = true;
-        seconds = 0;
-        chrono.post(new Runnable() {
-            @Override
-            public void run() {
-                if(running) {
-                    seconds++;
-                    chrono.postDelayed(this, 1000);
-                }
-
-            }
-        });
     }
 
     @SuppressLint("InflateParams")
@@ -138,7 +116,6 @@ public class Sport extends Fragment implements OnMapReadyCallback, View.OnClickL
                         distanceText.setText(String.format("%sкм", String.format("%.3f %n", distance / 1000)));
                         speedText.setText(String.format("%s км/ч", String.valueOf(speed)));
                         coins.setText(String.valueOf(Math.round((distance/1000)/3) * 3));
-                        seconds = 0;
                     }
                     startLocation = location;
                 }

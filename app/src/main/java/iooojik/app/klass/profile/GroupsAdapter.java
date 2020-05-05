@@ -61,6 +61,15 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
             NavController navController = NavHostFragment.findNavController(fragment);
             navController.navigate(R.id.nav_group, bundle);
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -70,7 +79,6 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
 
 
     static class ViewHolder extends RecyclerView.ViewHolder{
-
         TextView groupName;
         TextView groupID;
 

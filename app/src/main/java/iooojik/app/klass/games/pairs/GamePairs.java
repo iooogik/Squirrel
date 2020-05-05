@@ -4,9 +4,11 @@ package iooojik.app.klass.games.pairs;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +24,24 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
+import iooojik.app.klass.api.Api;
 import iooojik.app.klass.games.cells.Cell;
+import iooojik.app.klass.models.PostResult;
+import iooojik.app.klass.models.ServerResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class GamePairs extends Fragment implements View.OnClickListener{
@@ -55,6 +68,9 @@ public class GamePairs extends Fragment implements View.OnClickListener{
     private boolean running = true;
     private Context context;
     private int seconds;
+    private Api api;
+
+    private SharedPreferences preferences;
 
     //создаём массив с картинками
     private int[] image_res = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4,
@@ -67,7 +83,7 @@ public class GamePairs extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_pairs_game, container, false);
-
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         Bundle args = this.getArguments();
         if(args != null) {
             HEIGHT = args.getInt("Height");
@@ -216,6 +232,33 @@ public class GamePairs extends Fragment implements View.OnClickListener{
     }
 
     private void addCoins() {
+        doRetrofit();
+        int newCoins = preferences.getInt(AppСonstants.USER_COINS, 0) + 3;
+        if (newCoins != 0) {
+            preferences.edit().putInt(AppСonstants.USER_COINS, newCoins).apply();
+
+            HashMap<String, String> changes = new HashMap<>();
+            changes.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
+            changes.put("_id", String.valueOf(preferences.getInt(AppСonstants.ACHIEVEMENTS_ID, -1)));
+            changes.put("coins", String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+
+            Call<ServerResponse<PostResult>> call2 = api.updateAchievement(AppСonstants.X_API_KEY,
+                    preferences.getString(AppСonstants.STANDART_TOKEN, ""), changes);
+
+            call2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                @Override
+                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                    if (response.code() != 200)
+                        Log.e("ADD ACHIEVEMENT", String.valueOf(response.raw()));
+                }
+
+                @Override
+                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                    Log.e("ADD ACHIEVEMENT", String.valueOf(t));
+                }
+            });
+        }
+        Snackbar.make(getView(), "Получено " + 3 + " койнов", Snackbar.LENGTH_SHORT).show();
     }
 
     private int getResID(View v) {
@@ -342,6 +385,14 @@ public class GamePairs extends Fragment implements View.OnClickListener{
 
             }
         });
+    }
+
+    private void doRetrofit(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppСonstants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
     }
 
 }

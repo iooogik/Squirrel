@@ -52,14 +52,7 @@ public class MainActivity extends AppCompatActivity {
         // получение настроек
         preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         // изменение темы
-        switch (preferences.getInt(APP_PREFERENCES_THEME, 0)) {
-            case 0:
-                setTheme(R.style.AppThemeLight); // Стандартная
-                break;
-            case 1:
-                setTheme(R.style.AppThemeDark); // Тёмная
-                break;
-        }
+        setTheme(preferences.getInt(APP_PREFERENCES_THEME, R.style.AppThemeLight));
         //получение админского токена
         getAdminToken();
 

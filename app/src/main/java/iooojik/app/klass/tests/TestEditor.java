@@ -2,6 +2,7 @@ package iooojik.app.klass.tests;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,6 +32,8 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.TestResults.DataTestResult;
+import iooojik.app.klass.models.TestResults.TestsResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,6 +58,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private int time = 0, scorePerAnsw = 10;
     private EditText minutes, score;
     private CheckBox checkBox;
+    private SharedPreferences preferences;
 
 
 
@@ -66,6 +70,8 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         minutes = view.findViewById(R.id.edit_text_minutes);
         checkBox = view.findViewById(R.id.check);
         score = view.findViewById(R.id.edit_text_score);
+
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
         score.addTextChangedListener(new TextWatcher() {
             @Override
@@ -120,8 +126,10 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         });
 
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.baseline_add_24);
         fab.show();
         fab.setOnClickListener(this);
+
         questions = new ArrayList<>();
         Button button = view.findViewById(R.id.collectTest);
         button.setOnClickListener(this);
@@ -184,10 +192,52 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         api = retrofit.create(Api.class);
     }
 
+    private void deleteResult(TestsResult result){
+        Call<ServerResponse<PostResult>> deleteCall = api.removeResult(AppСonstants.X_API_KEY, result.getId());
+        deleteCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void uploadTest(){
         List<String> textQuestions = new ArrayList<>();
         List<String> trueAnswers = new ArrayList<>();
         List<String> textAnswers = new ArrayList<>();
+
+        //удаляем все результаты ученоков, проходивших тест
+        doRetrofit();
+
+        Call<ServerResponse<DataTestResult>> response = api.getTestResults(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", String.valueOf(id));
+
+        response.enqueue(new Callback<ServerResponse<DataTestResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
+                if (response.code() == 200){
+                    DataTestResult dataTestResult = response.body().getData();
+                    List<TestsResult> results = dataTestResult.getTestsResult();
+
+                    for (TestsResult result : results){
+                        deleteResult(result);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataTestResult>> call, Throwable t) {
+
+            }
+        });
+
+
 
         for (int i = 0; i < questions.size(); i++) {
             View tempQuestion = questions.get(i);
