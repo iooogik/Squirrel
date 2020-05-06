@@ -3,12 +3,17 @@ package iooojik.app.klass.profile;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +21,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -29,6 +37,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,14 +45,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
+import iooojik.app.klass.api.FileUploadApi;
 import iooojik.app.klass.api.WeatherApi;
+import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.bonusCrate.CratesData;
+import iooojik.app.klass.models.fileUpload.UploadResult;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.profileData.User;
@@ -55,11 +68,16 @@ import iooojik.app.klass.models.teacher.GroupInfo;
 import iooojik.app.klass.models.weather.Weather;
 import iooojik.app.klass.models.weather.WeatherData;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static iooojik.app.klass.AppСonstants.PICK_IMAGE_AVATAR;
 
 public class Profile extends Fragment implements View.OnClickListener {
     public Profile() {
@@ -517,54 +535,156 @@ public class Profile extends Fragment implements View.OnClickListener {
     @SuppressLint("InflateParams")
     public void onClick(View v) {
         String teacherRole = "teacher";
-        if (v.getId() == R.id.fab) {//добавление класса в учительский профиль
-            if (userRole.equals(teacherRole)) {
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
-                TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-                textInputLayout.setHint("Название группы");
-                textInputLayout.setCounterEnabled(false);
-                textInputLayout.setHelperTextEnabled(false);
-                EditText name = view1.findViewById(R.id.edit_text);
+        switch (v.getId()){//добавление класса в учительский профиль
+            case R.id.fab:
+                if (userRole.equals(teacherRole)) {
+                    MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                    View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);
+                    TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
+                    textInputLayout.setHint("Название группы");
+                    textInputLayout.setCounterEnabled(false);
+                    textInputLayout.setHelperTextEnabled(false);
+                    EditText name = view1.findViewById(R.id.edit_text);
 
-                builder.setView(view1);
+                    builder.setView(view1);
 
-                builder.setPositiveButton("Добавить", (dialog, which) -> {
-                    //заносим в базу данных
-                    doRetrofit();
-                    String nameGroup = name.getText().toString();
+                    builder.setPositiveButton("Добавить", (dialog, which) -> {
+                        //заносим в базу данных
+                        doRetrofit();
+                        String nameGroup = name.getText().toString();
 
-                    HashMap<String, String> post = new HashMap<>();
-                    post.put("author_email", email);
-                    post.put("name", nameGroup);
-                    post.put("test", "null");
-                    post.put("author_name", fullName);
+                        HashMap<String, String> post = new HashMap<>();
+                        post.put("author_email", email);
+                        post.put("name", nameGroup);
+                        post.put("test", "null");
+                        post.put("author_name", fullName);
 
-                    Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
-                            AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                            post);
+                        Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
+                                AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                                post);
 
-                    responseCall.enqueue(new Callback<ServerResponse<AddGroupResult>>() {
-                        @Override
-                        public void onResponse(Call<ServerResponse<AddGroupResult>> call, Response<ServerResponse<AddGroupResult>> response) {
-                            if (response.code() != 200) {
-                                Log.e("Add Group", String.valueOf(response.raw()));
-                            } else {
-                                getGroups();
+                        responseCall.enqueue(new Callback<ServerResponse<AddGroupResult>>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse<AddGroupResult>> call, Response<ServerResponse<AddGroupResult>> response) {
+                                if (response.code() != 200) {
+                                    Log.e("Add Group", String.valueOf(response.raw()));
+                                } else {
+                                    getGroups();
+                                }
                             }
+
+                            @Override
+                            public void onFailure(Call<ServerResponse<AddGroupResult>> call, Throwable t) {
+                                Log.e("Add Group", String.valueOf(t));
+                            }
+                        });
+
+                    });
+                    builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+                    builder.create().show();
+                }
+                break;
+            case R.id.avatar:
+                //запрос на разрешение использование памяти
+                int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]
+                            {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                }
+                if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_PICK);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_AVATAR);
+                }
+                break;
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("Recycle")
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_AVATAR) {
+            if (data != null) {
+                /*
+
+
+                if (file.getAbsoluteFile() != null) {
+                    doRetrofit();
+
+                    RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+
+                    RequestBody requestBody;
+
+                    HashMap<String, RequestBody> map = new HashMap<>();
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_EMAIL, ""));
+
+                    map.put("email", requestBody);
+
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_PASSWORD, ""));
+                    map.put("password", requestBody);
+
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_FULL_NAME, ""));
+                    map.put("full_name", requestBody);
+
+                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
+                            preferences.getString(AppСonstants.USER_ID, ""));
+                    map.put("id", requestBody);
+
+
+                    map.put("Avatar", fileReqBody);
+
+                    //MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
+                    // preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
+
+                    //RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
+
+                    Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+
+                    postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<PostResult>> call,
+                                               Response<ServerResponse<PostResult>> response) {
+
+                            if (response.code() == 200) {
+                                ImageView avatar = view.findViewById(R.id.avatar);
+                                avatar.setImageURI(selectedImage);
+                            } else
+                                Log.e("UPDATE AVATAR", response.raw() + " " + file.getName());
                         }
 
                         @Override
-                        public void onFailure(Call<ServerResponse<AddGroupResult>> call, Throwable t) {
-                            Log.e("Add Group", String.valueOf(t));
+                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                            Log.e("UPDATE AVATAR", String.valueOf(t));
                         }
                     });
+                }
 
-                });
-                builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
-                builder.create().show();
+                 */
             }
         }
     }
 
+
+    private static String getRealPathFromURI(Context context, Uri contentURI) {
+        String result = null;
+        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            if(idx >= 0) {
+                result = cursor.getString(idx);
+            }
+            cursor.close();
+        }
+        return result;
+    }
 }

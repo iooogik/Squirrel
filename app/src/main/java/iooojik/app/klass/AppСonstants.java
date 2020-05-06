@@ -120,6 +120,7 @@ public class AppСonstants {
     public static final String SHOW_WEATHER_NOTIF_ALWAYS = "SHOW_WEATHER_NOTIF_ALWAYS";
     public static final String YANDEX_TRANSLATE_API_KEY = "trnsl.1.1.20200504T150254Z.de2d9abf855314c5.22a15b3c1fad2d9bdb3e676aa3abf9d3ec67dbc0";
     public static final String YANDEX_TRANSLATE_BASE_URL = "https://translate.yandex.net/";
+    public static final String IOOOJIK_BASE_URL = "http://www.iooojik.ru/";
 
     public static String CASES = "CASES";
 

@@ -273,20 +273,6 @@ public class Settings extends Fragment implements View.OnClickListener{
                 Intent openInst = new Intent(Intent.ACTION_VIEW, addressInst);
                 startActivity(openInst);
                 break;
-            case R.id.avatar:
-                //запрос на разрешение использование памяти
-                int permissionStatus = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
-                if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]
-                            {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                }
-                if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_PICK);
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_AVATAR);
-                }
-                break;
             case R.id.delete_tests:
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
                 builder.setMessage("Вы действительно хотите удалить все тесты? \n" +
@@ -320,99 +306,12 @@ public class Settings extends Fragment implements View.OnClickListener{
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @SuppressLint("Recycle")
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_AVATAR) {
-            if (data != null) {
-                Uri selectedImage = data.getData();
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                        null, null, null);
-                cursor.moveToFirst();
-                File file = new File(getRealPathFromURI(context, selectedImage));
-
-                if (file.getAbsoluteFile() != null) {
-                    doRetrofit();
-
-                    RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-
-                    RequestBody requestBody;
-
-                    HashMap<String, RequestBody> map = new HashMap<>();
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_EMAIL, ""));
-
-                    map.put("email", requestBody);
-
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_PASSWORD, ""));
-                    map.put("password", requestBody);
-
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_FULL_NAME, ""));
-                    map.put("full_name", requestBody);
-
-                    requestBody = RequestBody.create(MediaType.parse("text/plain"),
-                            preferences.getString(AppСonstants.USER_ID, ""));
-                    map.put("id", requestBody);
-
-
-                    map.put("Avatar", fileReqBody);
-
-                    //MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
-                           // preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
-
-                    //RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
-
-                    Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
-
-                    postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
-                        @Override
-                        public void onResponse(Call<ServerResponse<PostResult>> call,
-                                               Response<ServerResponse<PostResult>> response) {
-
-                            if (response.code() == 200) {
-                                ImageView avatar = view.findViewById(R.id.avatar);
-                                avatar.setImageURI(selectedImage);
-                            } else
-                                Log.e("UPDATE AVATAR", response.raw() + " " + file.getName());
-                        }
-
-                        @Override
-                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                            Log.e("UPDATE AVATAR", String.valueOf(t));
-                        }
-                    });
-                }
-            }
-        }
-    }
-
     private void doRetrofit(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(Api.class);
-    }
-
-    private static String getRealPathFromURI(Context context, Uri contentURI) {
-        String result = null;
-        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            result = contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            if(idx >= 0) {
-                result = cursor.getString(idx);
-            }
-            cursor.close();
-        }
-        return result;
     }
 
     @Override
