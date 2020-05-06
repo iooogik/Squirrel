@@ -5,6 +5,7 @@ import java.util.HashMap;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.passed_test_result.DataPassedTest;
 import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.authorization.SignUpResult;
@@ -197,9 +198,10 @@ public interface Api {
     Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token);
 
-    @GET("api/passed_tests/all")
-    Call<ServerResponse<ShopData>> getPassedTestResult(@Header("X-API-KEY") String api_key,
-                                                @Header("X-TOKEN") String token);
+    @GET("api/passed_tests/all?")
+    Call<ServerResponse<DataPassedTest>> getPassedTestResult(@Header("X-API-KEY") String api_key,
+                                                             @Header("X-TOKEN") String token,
+                                                             @Query("field") String field, @Query("filter") String filter);
     //получение информации о кейсах
     @GET("api/bonus_crates_to_users/all?")
     Call<ServerResponse<CratesData>> getCrates(@Header("X-API-KEY") String api_key,

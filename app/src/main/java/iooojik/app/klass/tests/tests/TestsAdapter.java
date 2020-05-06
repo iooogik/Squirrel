@@ -53,6 +53,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
 
 
         //если тест пройден
+        /*
         if(testObject.isPassed()){
             float rightScore = testObject.getUserScore(), wrongScore = testObject.getWrongAnswers();
 
@@ -99,7 +100,10 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
                     Math.round((rightScore / wrongScore) * 100)));
 
         } else {
-            //обработка нажатия на view
+
+         */
+        //обработка нажатия на view
+        if (!testObject.isPassed()) {
             holder.frameLayout.setOnClickListener(v -> {
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
                 FrameLayout quest_frame = activity.findViewById(R.id.test_frame);
@@ -128,16 +132,12 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
     static class ViewHolder extends RecyclerView.ViewHolder{
         final TextView name;
         final TextView desc;
-        final TextView result;
-        final PieChart pieChart;
         final FrameLayout frameLayout;
 
         ViewHolder(View view){
             super(view);
             name = view.findViewById(R.id.name);
             desc = view.findViewById(R.id.description);
-            result = view.findViewById(R.id.result);
-            pieChart = view.findViewById(R.id.chart);
             frameLayout = view.findViewById(R.id.frame);
         }
     }

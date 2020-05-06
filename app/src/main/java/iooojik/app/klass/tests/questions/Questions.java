@@ -19,12 +19,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.DateFormat;
@@ -73,6 +75,9 @@ public class Questions extends Fragment implements View.OnClickListener{
     static int scorePerAnswer = 1;
     private NavController navHostFragment;
     private String testName = "";
+    private Context context;
+    private DrawerLayout mDrawerLayout;
+    private MaterialToolbar materialToolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,6 +108,8 @@ public class Questions extends Fragment implements View.OnClickListener{
                 new String[]{String.valueOf(getTestID())});
         userCursor.moveToFirst();
 
+        context = getContext();
+
         String[] quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_QUESTIONS))
                 .split(Pattern.quote(testDivider));
         testName = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME));
@@ -129,6 +136,12 @@ public class Questions extends Fragment implements View.OnClickListener{
         RecyclerView recyclerViewQuestions = view.findViewById(R.id.questions);
         recyclerViewQuestions.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewQuestions.setAdapter(questionsAdapter);
+
+        mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        materialToolbar = getActivity().findViewById(R.id.bar);
+        materialToolbar.setVisibility(View.GONE);
 
     }
 
@@ -188,6 +201,9 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             builder.create().show();
         }
+
+        materialToolbar.setVisibility(View.VISIBLE);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     private void showAnswers() {
@@ -195,8 +211,13 @@ public class Questions extends Fragment implements View.OnClickListener{
         for (int i = 0; i < questionObjects.size(); i++) {
             QuestionObject object = questionObjects.get(i);
             QuestionsAdapter.ViewHolder recView = recyclerViewItems.get(i);
-
             List<RadioButton> radioButtons = new ArrayList<>();
+
+            recView.firstAnswer.setEnabled(false);
+            recView.secondAnswer.setEnabled(false);
+            recView.thirdAnswer.setEnabled(false);
+            recView.fourthAnswer.setEnabled(false);
+
             radioButtons.add(recView.firstAnswer);
             radioButtons.add(recView.secondAnswer);
             radioButtons.add(recView.thirdAnswer);
@@ -373,7 +394,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         chrono.post(new Runnable() {
             @Override
             public void run() {
-                if(running && seconds != 0) {
+                if(running && seconds != 0 && context == getContext()) {
                     int minutes = (seconds % 3600) / 60;
                     int secon = seconds % 60;
                     String time = String.format("%02d:%02d", minutes, secon);
@@ -382,8 +403,9 @@ public class Questions extends Fragment implements View.OnClickListener{
                     chrono.postDelayed(this, 1000);
                 } else {
                     running = false;
-                    endTest(true);
-                    navHostFragment.navigate(R.id.nav_tests);
+                    if (context == getContext()) {
+                        endTest(true);
+                    }
                 }
             }
         });
