@@ -22,6 +22,7 @@ import iooojik.app.klass.models.shop.ShopData;
 import iooojik.app.klass.models.teacher.AddGroupResult;
 import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.userData.UserData;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -32,6 +33,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
@@ -63,7 +65,7 @@ public interface Api {
     @POST("api/user/update")
     Call<ServerResponse<PostResult>> userUpdateAvatar(@Header("X-API-KEY") String api_key,
                                                       @Header("X-TOKEN") String token,
-                                                      @PartMap HashMap<String, RequestBody> map);
+                                                      @PartMap HashMap<String, RequestBody> map,  @Part MultipartBody.Part file);
     //добавление группы(класса)
     @FormUrlEncoded
     @POST("api/groups/add")

@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -44,6 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import iooojik.app.klass.AppСonstants;
@@ -70,7 +74,9 @@ import iooojik.app.klass.models.weather.WeatherData;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -467,10 +473,16 @@ public class Profile extends Fragment implements View.OnClickListener {
         });
     }
 
+
+
     private void doRetrofit(){
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(new OkHttpClient().newBuilder()
+                        .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                        .build())
                 .build();
         api = retrofit.create(Api.class);
     }
@@ -613,14 +625,26 @@ public class Profile extends Fragment implements View.OnClickListener {
         if (requestCode == PICK_IMAGE_AVATAR) {
             if (data != null) {
 
+
                 Uri selectedImage = data.getData();
 
                 File file = new File(getRealPathFromURI(context, selectedImage));
 
-                if (file.getAbsoluteFile() != null) {
+                //File file = new File("/storage/emulated/0/Download/Test.png");
+
+                RequestBody requestFile =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("avatar", file.getName(), requestFile);
+
+                RequestBody fullName =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), "Test.jpg");
+
+              //  if (file.getAbsoluteFile() != null) {
                     doRetrofit();
 
-                    RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+                  //  RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
 
                     RequestBody requestBody;
 
@@ -642,21 +666,17 @@ public class Profile extends Fragment implements View.OnClickListener {
                             preferences.getString(AppСonstants.USER_ID, ""));
                     map.put("id", requestBody);
 
-
-                    map.put("Avatar", fileReqBody);
-
-                    //MultipartBody.Part part = MultipartBody.Part.createFormData("Avatar",
-                    // preferences.getString(AppСonstants.USER_EMAIL, "avatar"), fileReqBody);
-
-                    //RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Avatar");
-
                     Call<ServerResponse<PostResult>> postCall = api.userUpdateAvatar(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map, body );
+
+                    Log.e("UPDATE AVATAR", map.toString() + " ");
 
                     postCall.enqueue(new Callback<ServerResponse<PostResult>>() {
                         @Override
                         public void onResponse(Call<ServerResponse<PostResult>> call,
                                                Response<ServerResponse<PostResult>> response) {
+
+                            Log.e("UPDATE AVATAR", response.raw() + " " + file.getName());
 
                             if (response.code() == 200) {
                                 ImageView avatar = view.findViewById(R.id.avatar);
@@ -673,7 +693,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                 }
 
 
-            }
+            //}
         }
     }
 
