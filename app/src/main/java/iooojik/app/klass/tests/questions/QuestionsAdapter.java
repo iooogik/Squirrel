@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +40,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         holder.firstAnswer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
                 Questions.userScore+= Questions.scorePerAnswer;
+
             }else if (!isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
                 Questions.userScore-=Questions.scorePerAnswer;
             }
@@ -77,7 +79,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             }
             object.setSelectedAnswer(buttonView.getText().toString());
         });
-
+        Questions.recyclerViewItems.add(holder);
     }
 
     @Override

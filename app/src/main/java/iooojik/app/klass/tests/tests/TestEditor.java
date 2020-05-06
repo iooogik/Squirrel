@@ -269,6 +269,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
             //четвёртый ответ
             EditText fourthAnsw = tempQuestion.findViewById(R.id.answ4);
+            answer = fourthAnsw.getText().toString().trim();
             if (answer.isEmpty()) answer = "-";
             textAnswers.add(answer);
 

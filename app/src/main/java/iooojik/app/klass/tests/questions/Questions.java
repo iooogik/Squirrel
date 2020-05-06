@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,11 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -29,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.sql.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import iooojik.app.klass.AppСonstants;
@@ -66,6 +62,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     private Cursor userCursor;
 
     static List<QuestionObject> questionObjects;
+    static List<QuestionsAdapter.ViewHolder> recyclerViewItems;
     static int userScore = 0;
     private int totalScore = 0;
     private Api api;
@@ -84,6 +81,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         questionObjects = new ArrayList<>();
+        recyclerViewItems = new ArrayList<>();
         navHostFragment = NavHostFragment.findNavController(this);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         getScorePerAnswer();
@@ -131,6 +129,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         RecyclerView recyclerViewQuestions = view.findViewById(R.id.questions);
         recyclerViewQuestions.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewQuestions.setAdapter(questionsAdapter);
+
     }
 
     private void getScorePerAnswer() {
@@ -182,6 +181,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             builder.setPositiveButton("Да", (dialog, which) -> {
                 sendAnswers();
+                showAnswers();
             });
 
             builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
@@ -192,6 +192,27 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     private void showAnswers() {
 
+        for (int i = 0; i < questionObjects.size(); i++) {
+            QuestionObject object = questionObjects.get(i);
+            QuestionsAdapter.ViewHolder recView = recyclerViewItems.get(i);
+
+            List<RadioButton> radioButtons = new ArrayList<>();
+            radioButtons.add(recView.firstAnswer);
+            radioButtons.add(recView.secondAnswer);
+            radioButtons.add(recView.thirdAnswer);
+            radioButtons.add(recView.fourthAnswer);
+
+            String answer = object.getTrueAnswer();
+
+            for (RadioButton radioButton : radioButtons){
+                if (radioButton.getText().toString().equals(answer) && radioButton.isChecked()){
+                    radioButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.Completed));
+                } else if (!radioButton.isChecked() && radioButton.getText().toString().equals(answer)){
+                    radioButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.notCompleted));
+                }
+            }
+
+        }
     }
 
     private void doRetrofit(){
