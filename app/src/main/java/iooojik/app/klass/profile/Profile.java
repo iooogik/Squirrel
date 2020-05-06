@@ -612,8 +612,10 @@ public class Profile extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_AVATAR) {
             if (data != null) {
-                /*
 
+                Uri selectedImage = data.getData();
+
+                File file = new File(getRealPathFromURI(context, selectedImage));
 
                 if (file.getAbsoluteFile() != null) {
                     doRetrofit();
@@ -670,7 +672,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                     });
                 }
 
-                 */
+
             }
         }
     }
