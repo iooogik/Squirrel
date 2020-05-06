@@ -262,6 +262,7 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="deleteAllTests">Удалить все тесты</string>
     <string name="deleteAllNotes">Удалить все заметки</string>
     <string name="ShowWeather">Показать погоду</string>
+    <string name="deleteTest">Удалить тест</string>
     <!-- other strings end-->
 
 

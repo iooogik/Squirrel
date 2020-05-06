@@ -321,6 +321,33 @@ public class Group extends Fragment{
             bottomSheetDialog.hide();
         });
 
+        Button delete_test = bottomSheet.findViewById(R.id.delete_test);
+        delete_test.setOnClickListener(v -> {
+            HashMap<String, String> updateMap = new HashMap<>();
+
+            updateMap.put("_id", String.valueOf(id));
+            updateMap.put("author_email", groupAuthor);
+            updateMap.put("author_name", groupAuthorName);
+            updateMap.put("name", groupName);
+            updateMap.put("test", "null");
+
+            Call<ServerResponse<PostResult>> responseCall = api.updateTest(AppСonstants.X_API_KEY,
+                    getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES,
+                            Context.MODE_PRIVATE).getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                    updateMap);
+            responseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                @Override
+                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                }
+            });
+        });
+
         bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
 
 
