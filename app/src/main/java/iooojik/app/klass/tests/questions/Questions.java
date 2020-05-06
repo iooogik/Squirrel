@@ -24,9 +24,12 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.sql.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,18 +65,15 @@ public class Questions extends Fragment implements View.OnClickListener{
     private SQLiteDatabase mDb;
     private Cursor userCursor;
 
-    private List<String> questions;
-    private List<String> answers;
-    private List<String> isTrue;
-    private HashMap<Integer, Bitmap> images;
-    private int userScore = 0;
+    static List<QuestionObject> questionObjects;
+    static int userScore = 0;
     private int totalScore = 0;
     private Api api;
     private SharedPreferences preferences;
     private final Handler chrono = new Handler();
     private boolean running = true;
     private int seconds;
-    private int scorePerAnswer = 1;
+    static int scorePerAnswer = 1;
     private NavController navHostFragment;
     private String testName = "";
 
@@ -83,26 +83,54 @@ public class Questions extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_questions, container, false);
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
-
+        questionObjects = new ArrayList<>();
         navHostFragment = NavHostFragment.findNavController(this);
-
-        questions = new ArrayList<>();
-        answers = new ArrayList<>();
-        isTrue = new ArrayList<>();
-        images= new HashMap<>();
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        getQuestions();
-        getAnswers();
-        getImages();
-        setTest();
-        setTimer();
         getScorePerAnswer();
-        totalScore = questions.size() * scorePerAnswer;
+        getInformation();
+        setTimer();
+
+        totalScore = questionObjects.size() * scorePerAnswer;
         Button completed = view.findViewById(R.id.send_answers);
         completed.setOnClickListener(this);
 
         return view;
+    }
+
+    private void getInformation() {
+
+        mDb = mDBHelper.getReadableDatabase();
+
+        userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS + " WHERE _id=?",
+                new String[]{String.valueOf(getTestID())});
+        userCursor.moveToFirst();
+
+        String[] quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_QUESTIONS))
+                .split(Pattern.quote(testDivider));
+        testName = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME));
+
+        String[] answersArray = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT_ANSWERS))
+                .split(Pattern.quote(testDivider));
+
+        String[] trueAnswersArray = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_ANSWERS))
+                .split(Pattern.quote(testDivider));
+
+        List<String> questions = new ArrayList<>(Arrays.asList(quests));
+        List<String> answers = new ArrayList<>(Arrays.asList(answersArray));
+        List<String> trueAnswers = new ArrayList<>(Arrays.asList(trueAnswersArray));
+
+        for (int i = 0; i < questions.size(); i++) {
+            String[] tempAnswers = new String[4];
+            for (int j = 0; j < 4; j++) {
+                tempAnswers[j] = answers.get(j);
+            }
+            questionObjects.add(new QuestionObject(questions.get(i), Arrays.asList(tempAnswers), trueAnswers.get(i)));
+            answers.subList(0, 4).clear();
+        }
+        QuestionsAdapter questionsAdapter = new QuestionsAdapter(getContext());
+        RecyclerView recyclerViewQuestions = view.findViewById(R.id.questions);
+        recyclerViewQuestions.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewQuestions.setAdapter(questionsAdapter);
     }
 
     private void getScorePerAnswer() {
@@ -114,21 +142,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         userCursor.moveToFirst();
 
         scorePerAnswer = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_SCORE_QUEST));
-
-    }
-
-    private void getImages() {
-        mDb = mDBHelper.getReadableDatabase();
-        userCursor =  mDb.rawQuery("Select * from picturesToQuestions WHERE test_id=?",
-                new String[]{String.valueOf(getTestID())});
-        userCursor.moveToFirst();
-        Bitmap bitmap;
-        while (!userCursor.isAfterLast()){
-            byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("image"));
-            bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
-            images.put(userCursor.getInt(userCursor.getColumnIndex("num_question")), bitmap);
-            userCursor.moveToNext();
-        }
 
     }
 
@@ -218,33 +231,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         Bundle arguments = this.getArguments();
         assert arguments != null;
         return arguments.getInt("test id");
-    }
-
-    private void getAnswers(){
-        mDb = mDBHelper.getReadableDatabase();
-
-        String TEMPansws = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT_ANSWERS));
-
-        answers.addAll(Arrays.asList(TEMPansws.split(Pattern.quote(testDivider))));
-
-        TEMPansws = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_ANSWERS));
-
-        isTrue.addAll(Arrays.asList(TEMPansws.split(Pattern.quote(testDivider))));
-        System.out.println(answers + " " + answers.size());
-    }
-
-    private void getQuestions() {
-        mDb = mDBHelper.getReadableDatabase();
-
-        userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS +
-                " WHERE _id=?", new String[]{String.valueOf(getTestID())});
-
-        userCursor.moveToFirst();
-
-        String TEMP_quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_QUESTIONS));
-        String[] quests = TEMP_quests.split(Pattern.quote(testDivider));
-        questions.addAll(Arrays.asList(quests));
-        testName = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME));
     }
 
     @Override
