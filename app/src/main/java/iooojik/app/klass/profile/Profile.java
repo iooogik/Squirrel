@@ -94,6 +94,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         //получаем fab и ставим слушатель на него
         fab = getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(this);
+        fab.setImageResource(R.drawable.baseline_add_24);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
         //получаем координаты пользователя и показываем погоду, основываясь на координатах
