@@ -27,7 +27,7 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.models.TestResults.TestsResult;
+import iooojik.app.klass.models.test_results.TestsResult;
 import iooojik.app.klass.models.matesList.Mate;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;

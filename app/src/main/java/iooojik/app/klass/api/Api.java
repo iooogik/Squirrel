@@ -5,7 +5,7 @@ import java.util.HashMap;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.models.TestResults.DataTestResult;
+import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.bonusCrate.CratesData;
@@ -177,6 +177,11 @@ public interface Api {
     Call<ServerResponse<PostResult>> addCaseCoordinates(@Header("X-API-KEY") String api_key,
                                               @Header("X-TOKEN") String token,
                                               @FieldMap HashMap<String, String> map);
+    @FormUrlEncoded
+    @POST("api/passed_tests/add")
+    Call<ServerResponse<PostResult>> addTestResult(@Header("X-API-KEY") String api_key,
+                                                        @Header("X-TOKEN") String token,
+                                                        @FieldMap HashMap<String, String> map);
 
     //удаление кейса
     @FormUrlEncoded
@@ -188,6 +193,10 @@ public interface Api {
     //получение item-ов в магазине
     @GET("api/shop/all")
     Call<ServerResponse<ShopData>> getShopItems(@Header("X-API-KEY") String api_key,
+                                                @Header("X-TOKEN") String token);
+
+    @GET("api/passed_tests/all")
+    Call<ServerResponse<ShopData>> getPassedTestResult(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token);
     //получение информации о кейсах
     @GET("api/bonus_crates_to_users/all?")

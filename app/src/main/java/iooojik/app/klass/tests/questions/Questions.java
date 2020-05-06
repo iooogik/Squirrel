@@ -1,4 +1,4 @@
-package iooojik.app.klass.tests;
+package iooojik.app.klass.tests.questions;
 
 
 import android.annotation.SuppressLint;
@@ -75,6 +75,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     private int seconds;
     private int scorePerAnswer = 1;
     private NavController navHostFragment;
+    private String testName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -133,6 +134,8 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     @SuppressLint("InflateParams")
     private void setTest(){
+
+        /*
         List<String> temp = answers;
 
         for (int i = 0; i < questions.size(); i++) {
@@ -207,6 +210,8 @@ public class Questions extends Fragment implements View.OnClickListener{
             linearLayout.addView(view1);
         }
         temp.clear();
+
+         */
     }
 
     private int getTestID(){
@@ -239,6 +244,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         String TEMP_quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_QUESTIONS));
         String[] quests = TEMP_quests.split(Pattern.quote(testDivider));
         questions.addAll(Arrays.asList(quests));
+        testName = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME));
     }
 
     @Override
@@ -254,7 +260,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         if (isTime){
 
             sendAnswers();
-            navHostFragment.navigate(R.id.nav_tests);
+            showAnswers();
 
         } else {
 
@@ -272,13 +278,16 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             builder.setPositiveButton("Да", (dialog, which) -> {
                 sendAnswers();
-                navHostFragment.navigate(R.id.nav_tests);
             });
 
             builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
 
             builder.create().show();
         }
+    }
+
+    private void showAnswers() {
+
     }
 
     private void doRetrofit(){
@@ -311,8 +320,6 @@ public class Questions extends Fragment implements View.OnClickListener{
 
         map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
 
-
-
         Call<ServerResponse<PostResult>> updateInfo = api.addResult(
                 AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
 
@@ -327,6 +334,27 @@ public class Questions extends Fragment implements View.OnClickListener{
                 Log.e("SENDING RESULT", String.valueOf(t));
             }
         });
+
+        map = new HashMap<>();
+
+        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put(AppСonstants.TEST_NAME_FIELD, testName);
+        map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
+
+        Call<ServerResponse<PostResult>> responseCall = api.addTestResult(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+        responseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                if (response.code() != 200) Log.e("ADD TEST RESULT", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                Log.e("ADD TEST RESULT", String.valueOf(t));
+            }
+        });
+
 
         //изменяем значения койнов
         //если тест выполнен на 0-30%, то добавляем 1 койн, если на 31 - 60 %, то 3 койна,

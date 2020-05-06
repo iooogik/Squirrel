@@ -1,4 +1,4 @@
-package iooojik.app.klass.tests;
+package iooojik.app.klass.tests.tests;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -32,8 +32,8 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
-import iooojik.app.klass.models.TestResults.DataTestResult;
-import iooojik.app.klass.models.TestResults.TestsResult;
+import iooojik.app.klass.models.test_results.DataTestResult;
+import iooojik.app.klass.models.test_results.TestsResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

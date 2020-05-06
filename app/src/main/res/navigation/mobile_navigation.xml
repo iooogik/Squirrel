@@ -31,7 +31,7 @@
 
     <fragment
         android:id="@+id/nav_tests"
-        android:name="iooojik.app.klass.tests.Tests"
+        android:name="iooojik.app.klass.tests.tests.Tests"
         android:label="Тесты"
         tools:layout="@layout/fragment_test" />
 
@@ -161,7 +161,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_testEditor"
-        android:name="iooojik.app.klass.tests.TestEditor"
+        android:name="iooojik.app.klass.tests.tests.TestEditor"
         tools:layout="@layout/fragment_test_editor"
         android:label="Редактор теста" />
 
@@ -176,7 +176,7 @@
     </fragment>
     <fragment
         android:id="@+id/questions"
-        android:name="iooojik.app.klass.tests.Questions"
+        android:name="iooojik.app.klass.tests.questions.Questions"
         android:label="Тест"
         tools:layout="@layout/fragment_questions" >
         <action

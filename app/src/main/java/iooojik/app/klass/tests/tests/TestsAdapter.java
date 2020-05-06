@@ -1,4 +1,4 @@
-package iooojik.app.klass.tests;
+package iooojik.app.klass.tests.tests;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,14 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import iooojik.app.klass.R;
+import iooojik.app.klass.tests.questions.Questions;
 
 public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
-    private List<TestTheme> tests;
+    private List<TestObject> tests;
     private Bundle bundle = new Bundle();
 
-    TestsAdapter(Context context, List<TestTheme> tests){
+    TestsAdapter(Context context, List<TestObject> tests){
         this.tests = tests;
         this.inflater = LayoutInflater.from(context);
     }
@@ -46,14 +47,14 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        TestTheme testTheme = tests.get(position);
-        holder.name.setText(testTheme.getName());
-        holder.desc.setText(testTheme.getDesc());
+        TestObject testObject = tests.get(position);
+        holder.name.setText(testObject.getName());
+        holder.desc.setText(testObject.getDesc());
 
 
         //если тест пройден
-        if(testTheme.isPassed()){
-            float rightScore = testTheme.getUserScore(), wrongScore = testTheme.getWrongAnswers();
+        if(testObject.isPassed()){
+            float rightScore = testObject.getUserScore(), wrongScore = testObject.getWrongAnswers();
 
             //находим диаграмму на активити
             holder.pieChart.setVisibility(View.VISIBLE);
@@ -104,7 +105,7 @@ public class TestsAdapter extends RecyclerView.Adapter<TestsAdapter.ViewHolder> 
                 FrameLayout quest_frame = activity.findViewById(R.id.test_frame);
                 quest_frame.setVisibility(View.VISIBLE);
 
-                bundle.putInt("test id", testTheme.getId());
+                bundle.putInt("test id", testObject.getId());
 
                 Questions questions = new Questions();
                 questions.setArguments(bundle);

@@ -1,4 +1,4 @@
-package iooojik.app.klass.models.TestResults;
+package iooojik.app.klass.models.test_results;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

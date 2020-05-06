@@ -1,4 +1,4 @@
-package iooojik.app.klass.tests;
+package iooojik.app.klass.tests.tests;
 
 
 import android.content.Intent;
@@ -37,7 +37,7 @@ public class Tests extends Fragment implements View.OnClickListener{
     //Переменная для работы с БД
     private Database mDBHelper;
 
-    private static List<TestTheme> TEST_ITEMS;
+    private static List<TestObject> TEST_ITEMS;
 
 
     public Tests() {}
@@ -90,7 +90,7 @@ public class Tests extends Fragment implements View.OnClickListener{
 
             int id = userCursor.getInt(userCursor.getColumnIndex(TABLE_ID));
             //добавляем тест в recyclerView
-            TEST_ITEMS.add(new TestTheme(name, desc, userScore, totalScore, isPassed, id));
+            TEST_ITEMS.add(new TestObject(name, desc, userScore, totalScore, isPassed, id));
             userCursor.moveToNext();
         }
         userCursor.close();

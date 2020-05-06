@@ -519,8 +519,10 @@ public class Profile extends Fragment implements View.OnClickListener {
             public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
                 if (response.code() == 200){
                     CratesData data = response.body().getData();
-                    preferences.edit().putString(AppСonstants.CASES,
-                            data.getBonusCratesToUsers().get(0).getCount()).apply();
+                    if (data.getBonusCratesToUsers().size() != 0) {
+                        preferences.edit().putString(AppСonstants.CASES,
+                                data.getBonusCratesToUsers().get(0).getCount()).apply();
+                    }
                 }
             }
 

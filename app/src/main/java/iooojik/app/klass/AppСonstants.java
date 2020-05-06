@@ -144,5 +144,6 @@ public class AppСonstants {
     public static final String GROUP_NAME_FIELD = "group_name";
     public static final String AVATAR_FIELD = "avatar";
     public static final String MESSAGE_FIELD = "message";
+    public static final String TEST_NAME_FIELD = "test_name";
 
 }

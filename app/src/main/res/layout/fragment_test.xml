@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="?attr/background"
 
-    tools:context=".tests.Tests">
+    tools:context=".tests.tests.Tests">
 
     <FrameLayout
         android:id="@+id/test_frame"

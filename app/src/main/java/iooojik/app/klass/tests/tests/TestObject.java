@@ -1,6 +1,6 @@
-package iooojik.app.klass.tests;
+package iooojik.app.klass.tests.tests;
 
-public class TestTheme {
+public class TestObject {
     private String name;
     private String desc;
     private int userScore;
@@ -9,7 +9,7 @@ public class TestTheme {
     private int id;
 
 
-    TestTheme(String name, String desc, int userScore, int wrongAnswers, boolean isPassed, int id) {
+    TestObject(String name, String desc, int userScore, int wrongAnswers, boolean isPassed, int id) {
         this.name = name;
         this.desc = desc;
         this.userScore = userScore;
