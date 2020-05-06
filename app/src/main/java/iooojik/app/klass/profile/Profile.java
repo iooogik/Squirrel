@@ -321,7 +321,9 @@ public class Profile extends Fragment implements View.OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
-        locationManager.removeUpdates(locationListener);
+        if (locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
     }
 
     private void getCoins(String userEmail) {
