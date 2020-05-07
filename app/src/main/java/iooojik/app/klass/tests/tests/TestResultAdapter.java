@@ -42,7 +42,7 @@ public class TestResultAdapter extends RecyclerView.Adapter<TestResultAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PassedTest passedTest = passedTests.get(position);
-        holder.name.setText(passedTest.getTestName());
+        holder.name.setText(String.format("Название теста: %s", passedTest.getTestName()));
         List<Float> score = new ArrayList<>();
         float rightScore = Float.valueOf(passedTest.getResult());
         float wrongScore = 100.0f;
@@ -79,7 +79,7 @@ public class TestResultAdapter extends RecyclerView.Adapter<TestResultAdapter.Vi
         holder.pieChart.setData(pieData);
 
         //процент правильных ответов
-        holder.result.setText(String.valueOf(Math.round((rightScore / wrongScore) * 100)));
+        holder.result.setText(String.format("Тест был пройден на %s из 100", String.valueOf(Math.round((rightScore / wrongScore) * 100))));
     }
 
     @Override

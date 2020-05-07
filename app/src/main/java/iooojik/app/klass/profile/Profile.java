@@ -639,7 +639,8 @@ public class Profile extends Fragment implements View.OnClickListener {
                         MultipartBody.Part.createFormData("avatar", file.getName(), requestFile);
 
                 RequestBody fullName =
-                        RequestBody.create(MediaType.parse("multipart/form-data"), "Test.jpg");
+                        RequestBody.create(MediaType.parse("multipart/form-data"),
+                                preferences.getString(AppСonstants.USER_EMAIL, "") + "_avatar.jpg");
 
               //  if (file.getAbsoluteFile() != null) {
                     doRetrofit();
@@ -679,8 +680,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                             Log.e("UPDATE AVATAR", response.raw() + " " + file.getName());
 
                             if (response.code() == 200) {
-                                ImageView avatar = view.findViewById(R.id.avatar);
-                                avatar.setImageURI(selectedImage);
+                                getUserProfile();
                             } else
                                 Log.e("UPDATE AVATAR", response.raw() + " " + file.getName());
                         }

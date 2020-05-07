@@ -89,7 +89,7 @@ public class Tests extends Fragment implements View.OnClickListener{
         doRetrofit();
         Call<ServerResponse<DataPassedTest>> responseCall = api.getPassedTestResult(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                AppСonstants.EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+                AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
         responseCall.enqueue(new Callback<ServerResponse<DataPassedTest>>() {
             @Override
             public void onResponse(Call<ServerResponse<DataPassedTest>> call, Response<ServerResponse<DataPassedTest>> response) {
