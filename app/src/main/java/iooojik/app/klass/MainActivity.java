@@ -1,8 +1,10 @@
 package iooojik.app.klass;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -10,7 +12,10 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -67,6 +72,24 @@ public class MainActivity extends AppCompatActivity {
         isUserAuth();
         //создание тул-бара
         createToolbar();
+
+        String[] perms = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        //проверяем наличие разрешения на использование геолокации пользователя
+        int permissionStatus = PackageManager.PERMISSION_GRANTED;
+
+        for (String perm : perms){
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), perm) == PackageManager.PERMISSION_DENIED){
+                permissionStatus = PackageManager.PERMISSION_DENIED;
+                break;
+            }
+        }
+
+        //если нет разрешения, то запрашиваем его, иначе показываем погоду
+        if (!(permissionStatus == PackageManager.PERMISSION_GRANTED))
+            ActivityCompat.requestPermissions(this, perms, 1);
     }
 
     private void doRetrofit(){
@@ -201,4 +224,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
 }

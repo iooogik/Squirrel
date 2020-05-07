@@ -21,7 +21,8 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_plugin"
         android:theme="@style/AppThemeLight"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="q">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_api_key"/>

@@ -136,11 +136,8 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void setLocationManager() {
-        //проверяем наличие разрешения на использование геолокации пользователя
-        int permissionStatus = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        //если нет разрешения, то запрашиваем его, иначе показываем погоду
-        if (!(permissionStatus == PackageManager.PERMISSION_GRANTED)) ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        else {
+
+
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             locationListener = new LocationListener() {
                 @Override
@@ -173,7 +170,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0,
                     0, locationListener);
-        }
+
     }
 
     private void showWeather(Location location) {
@@ -187,9 +184,8 @@ public class Profile extends Fragment implements View.OnClickListener {
         preferences.edit().putString(AppСonstants.USER_LON, String.valueOf(location.getLongitude())).apply();
 
         //проверяем, показывалось ли сегодня уведомление с погодой
-        if ((!preferences.getString(AppСonstants.CURRENT_DATE, "").equals(dateText)
-                && (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1))
-                || preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0) == 1) {
+        if (!preferences.getString(AppСonstants.CURRENT_DATE, "").equals(dateText)
+                && (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1)) {
             //заносим текущую дату, для последующих проверок
             preferences.edit().putString(AppСonstants.CURRENT_DATE, dateText).apply();
             //ретрофит
@@ -239,85 +235,85 @@ public class Profile extends Fragment implements View.OnClickListener {
 
         Weather weather = weathers.get(0);
         String condition = weather.getIcon();
-        String messageText = "";
+        int messageText = 0;
         //сопоставляем погоду и иконки
         switch (condition){
             case "01d":
                 conditionImage.setImageResource(R.drawable.x01d_clear_sky);
-                messageText = "Сегодня ясно, можно пойти погулять, но сначала надо сделать все тесты!";
+                messageText = R.string.weather1;
                 break;
             case "01n":
                 conditionImage.setImageResource(R.drawable.x01n_clear_sky);
-                messageText = "Сегодня ясно, можно пойти погулять, но сначала надо сделать все тесты!";
+                messageText = R.string.weather1;
                 break;
             case "02d":
                 conditionImage.setImageResource(R.drawable.x02d_few_clouds);
-                messageText = "Сегодня немного облачно, но можно пойти погулять. \n Не забудьте сделать все тесты!";
+                messageText = R.string.weather2;
                 break;
             case "02n":
                 conditionImage.setImageResource(R.drawable.x02n_few_clouds);
-                messageText = "Сегодня немного облачно, но можно пойти погулять. \n Не забудьте сделать все тесты!";
+                messageText = R.string.weather2;
                 break;
             case "03d":
                 conditionImage.setImageResource(R.drawable.x03d_scattered_clouds);
-                messageText = "Сегодня облачно. Если вы пойдёте гулять, прихватите с собой курточку, но не забудьте сделать все тесты!";
+                messageText = R.string.weather3;
                 break;
             case "03n":
                 conditionImage.setImageResource(R.drawable.x03n_scattered_clouds);
-                messageText = "Сегодня облачно. Если вы пойдёте гулять, прихватите с собой курточку, но не забудьте сделать все тесты!";
+                messageText = R.string.weather3;
                 break;
             case "04d":
                 conditionImage.setImageResource(R.drawable.x04d_broken_clouds);
-                messageText = "Сегодня облачно. Если вы пойдёте гулять, прихватите с собой курточку, но не забудьте сделать все тесты!";
+                messageText = R.string.weather3;
                 break;
             case "04n":
                 conditionImage.setImageResource(R.drawable.x04n_broken_clouds);
-                messageText = "Сегодня облачно. Если вы пойдёте гулять, прихватите с собой курточку, но не забудьте сделать все тесты!";
+                messageText = R.string.weather3;
                 break;
             case "09d":
                 conditionImage.setImageResource(R.drawable.x09d_shower_rain);
-                messageText = "Сегодня идёт сильный дождь. Лучше останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!";
+                messageText = R.string.weather4;
                 break;
             case "09n":
                 conditionImage.setImageResource(R.drawable.x09n_shower_rain);
-                messageText = "Сегодня идёт сильный дождь. Лучше останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!";
+                messageText = R.string.weather4;
                 break;
             case "10d":
                 conditionImage.setImageResource(R.drawable.x10d_rain);
-                messageText = "Сегодня дождливо. Лучше останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!";
+                messageText = R.string.weather5;
                 break;
             case "10n":
                 conditionImage.setImageResource(R.drawable.x10n_rain);
-                messageText = "Сегодня дождливо. Лучше останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!";
+                messageText = R.string.weather5;
                 break;
             case "11d":
                 conditionImage.setImageResource(R.drawable.x11d_thunderstorm);
-                messageText = "Сегодня штормит. Останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!";
+                messageText = R.string.weather6;
                 break;
             case "11n":
                 conditionImage.setImageResource(R.drawable.x11n_thunderstorm);
-                messageText = "Сегодня штормит. Останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!";
+                messageText = R.string.weather6;
                 break;
             case "13d":
                 conditionImage.setImageResource(R.drawable.x13d_snow);
-                messageText = "Сегодня идёт снег, самое время пойти и сделать парочку красивых фото!";
+                messageText = R.string.weather7;
                 break;
             case "13n":
                 conditionImage.setImageResource(R.drawable.x13n_snow);
-                messageText = "Сегодня идёт снег, самое время пойти и сделать парочку красивых фото!";
+                messageText = R.string.weather7;
                 break;
             case "50d":
                 conditionImage.setImageResource(R.drawable.x50d_mist);
-                messageText = "Сегодня туманно";
+                messageText = R.string.weather8;
                 break;
             case "50n":
                 conditionImage.setImageResource(R.drawable.x50n_mist);
-                messageText = "Сегодня туманно";
+                messageText = R.string.weather8;
                 break;
         }
 
         //устанавливаем информацию и показываем уведомление
-        message.setText(messageText);
+        message.setText(getContext().getResources().getText(messageText));
         secondMessage.setText("Вы можете посмотреть актуальную погоду в настроках, нажав кнопку 'Показать погоду'.");
         builder.setNegativeButton(R.string.ok_ru, (dialog, which) -> dialog.cancel());
         builder.setView(dialogView);
@@ -472,8 +468,6 @@ public class Profile extends Fragment implements View.OnClickListener {
             }
         });
     }
-
-
 
     private void doRetrofit(){
 

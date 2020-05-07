@@ -50,14 +50,6 @@
                 android:layout_marginStart="@dimen/settings_margin"
                 android:text="@string/showWeatherNotif1Day" />
 
-            <Switch
-                android:id="@+id/showWeatherSwitchAlways"
-                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/settings_margin"
-                android:text="@string/showWeatherSwitchAlways" />
-
             <Button
                 android:id="@+id/delete_tests"
                 style="@style/Widget.MaterialComponents.Button"

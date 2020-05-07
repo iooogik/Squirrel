@@ -19,15 +19,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -76,8 +75,6 @@ public class Questions extends Fragment implements View.OnClickListener{
     private NavController navHostFragment;
     private String testName = "";
     private Context context;
-    private DrawerLayout mDrawerLayout;
-    private MaterialToolbar materialToolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,10 +90,12 @@ public class Questions extends Fragment implements View.OnClickListener{
         getInformation();
         setTimer();
 
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.hide();
+
         totalScore = questionObjects.size() * scorePerAnswer;
         Button completed = view.findViewById(R.id.send_answers);
         completed.setOnClickListener(this);
-
         return view;
     }
 
@@ -136,12 +135,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         RecyclerView recyclerViewQuestions = view.findViewById(R.id.questions);
         recyclerViewQuestions.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewQuestions.setAdapter(questionsAdapter);
-
-        mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-        materialToolbar = getActivity().findViewById(R.id.bar);
-        materialToolbar.setVisibility(View.GONE);
 
     }
 
@@ -201,9 +194,6 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             builder.create().show();
         }
-
-        materialToolbar.setVisibility(View.VISIBLE);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     private void showAnswers() {
@@ -260,11 +250,11 @@ public class Questions extends Fragment implements View.OnClickListener{
 
         doRetrofit();
         HashMap<String, String> map = new HashMap<>();
-        map.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
-        map.put("group_id", String.valueOf(userCursor.getInt(
+        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(userCursor.getInt(
                 userCursor.getColumnIndex(AppСonstants.TABLE_GROUP_ID))));
 
-        map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
+        map.put(AppСonstants.TABLE_RESULT,  String.valueOf((userScore / totalScore) * 100.0f));
 
         Call<ServerResponse<PostResult>> updateInfo = api.addResult(
                 AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);

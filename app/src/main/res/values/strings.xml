@@ -266,6 +266,14 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="coinsSearch">Поиск койнов</string>
     <string name="testResults">Результаты тестов</string>
     <!-- other strings end-->
+    <string name="weather1">Сегодня ясно, можно пойти погулять, но сначала надо сделать все тесты!</string>
+    <string name="weather2">Сегодня немного облачно, но можно пойти погулять. \n Не забудьте сделать все тесты!</string>
+    <string name="weather3">Сегодня облачно. Если вы пойдёте гулять, прихватите с собой курточку, но не забудьте сделать все тесты!</string>
+    <string name="weather4">Сегодня идёт сильный дождь. Лучше останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!</string>
+    <string name="weather5">Сегодня дождливо. Лучше останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!</string>
+    <string name="weather6">Сегодня штормит. Останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!</string>
+    <string name="weather7">Сегодня идёт снег, самое время пойти и сделать парочку красивых фото!</string>
+    <string name="weather8">Сегодня туманно</string>
 
 
 </resources>

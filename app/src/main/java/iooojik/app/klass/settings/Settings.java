@@ -1,6 +1,5 @@
 package iooojik.app.klass.settings;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -9,12 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,10 +23,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -40,25 +32,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
-import java.util.HashMap;
-
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
-import iooojik.app.klass.api.Api;
 import iooojik.app.klass.api.TranslateApi;
 import iooojik.app.klass.api.WeatherApi;
-import iooojik.app.klass.models.PostResult;
-import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.translation.TranslationResponse;
 import iooojik.app.klass.models.weather.Main;
 import iooojik.app.klass.models.weather.Weather;
 import iooojik.app.klass.models.weather.WeatherData;
 import iooojik.app.klass.models.weather.Wind;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,7 +51,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIALS;
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
-import static iooojik.app.klass.AppСonstants.PICK_IMAGE_AVATAR;
 
 public class Settings extends Fragment implements View.OnClickListener{
 
@@ -76,13 +59,9 @@ public class Settings extends Fragment implements View.OnClickListener{
     private View view;
     private PackageInfo packageInfo;
     private SharedPreferences preferences;
-    private Context context;
-    private Api api;
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private BottomSheetDialog weather;
-    private Switch show;
-    private Switch showAlways;
 
 
     @Override
@@ -91,7 +70,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         view = inflater.inflate(R.layout.fragment_settings, container, false);
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
-        context = getContext();
         //получаем настройки
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //получаем packageInfo, чтобы узнать версию установленного приложения
@@ -306,14 +284,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void doRetrofit(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(AppСonstants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        api = retrofit.create(Api.class);
-    }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -336,38 +306,13 @@ public class Settings extends Fragment implements View.OnClickListener{
     private void showWeather(){
 
         //переключатель
-        show = view.findViewById(R.id.showWeatherSwitchPerDay);
-        showAlways = view.findViewById(R.id.showWeatherSwitchAlways);
-        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1){
-            show.setChecked(true);
-            showAlways.setChecked(false);
-        } else if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0
-        && preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0) == 0){
-            show.setChecked(false);
-            showAlways.setChecked(false);
-        } else if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 0 &&
-        preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0) == 1){
-            show.setChecked(false);
-            showAlways.setChecked(true);
-        }
+        Switch show = view.findViewById(R.id.showWeatherSwitchPerDay);
 
         show.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked){
-                showAlways.setChecked(false);
-                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
                 preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 1).apply();
             }else {
                 preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
-            }
-        });
-
-        showAlways.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked){
-                show.setChecked(false);
-                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 1).apply();
-                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF, 0).apply();
-            }else {
-                preferences.edit().putInt(AppСonstants.SHOW_WEATHER_NOTIF_ALWAYS, 0).apply();
             }
         });
 

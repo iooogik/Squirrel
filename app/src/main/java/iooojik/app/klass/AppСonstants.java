@@ -102,6 +102,7 @@ public class AppСonstants {
     public static final String TABLE_DECODE_QR = "decodeQR";
     public static final String TABLE_TYPEFACE = "typeface";
     public static final String TABLE_FONT_SIZE = "fontSize";
+    public static final String TABLE_RESULT = "result";
     ///////////////////////////////////////////////////////////////////////////////////
     //id группы, в которой находится пользователь
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";
@@ -117,7 +118,6 @@ public class AppСonstants {
     public static final String USER_LAT = "USER_LAT";
     public static final String USER_LON = "USER_LON";
     public static final String SHOW_WEATHER_NOTIF = "SHOW_WEATHER_NOTIF";
-    public static final String SHOW_WEATHER_NOTIF_ALWAYS = "SHOW_WEATHER_NOTIF_ALWAYS";
     public static final String YANDEX_TRANSLATE_API_KEY = "trnsl.1.1.20200504T150254Z.de2d9abf855314c5.22a15b3c1fad2d9bdb3e676aa3abf9d3ec67dbc0";
     public static final String YANDEX_TRANSLATE_BASE_URL = "https://translate.yandex.net/";
     public static final String IOOOJIK_BASE_URL = "http://www.iooojik.ru/";
