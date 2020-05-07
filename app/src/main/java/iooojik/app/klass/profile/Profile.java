@@ -13,7 +13,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -36,8 +34,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -47,20 +43,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
-import iooojik.app.klass.api.FileUploadApi;
 import iooojik.app.klass.api.WeatherApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.bonusCrate.CratesData;
-import iooojik.app.klass.models.fileUpload.UploadResult;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.profileData.User;
@@ -624,7 +616,6 @@ public class Profile extends Fragment implements View.OnClickListener {
 
                 File file = new File(getRealPathFromURI(context, selectedImage));
 
-                //File file = new File("/storage/emulated/0/Download/Test.png");
 
                 RequestBody requestFile =
                         RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -636,10 +627,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                         RequestBody.create(MediaType.parse("multipart/form-data"),
                                 preferences.getString(AppСonstants.USER_EMAIL, "") + "_avatar.jpg");
 
-              //  if (file.getAbsoluteFile() != null) {
                     doRetrofit();
-
-                  //  RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
 
                     RequestBody requestBody;
 

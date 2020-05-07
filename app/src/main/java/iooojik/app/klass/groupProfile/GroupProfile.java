@@ -82,7 +82,6 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         doRetrofit();
         //получаем список одноклассников
         Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, AppСonstants.GROUP_ID_FIELD, groupID);
-
         response.enqueue(new Callback<ServerResponse<DataUsersToGroup>>() {
             @Override
             public void onResponse(Call<ServerResponse<DataUsersToGroup>> call, Response<ServerResponse<DataUsersToGroup>> response) {
