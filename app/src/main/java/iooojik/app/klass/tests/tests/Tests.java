@@ -62,18 +62,20 @@ public class Tests extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_test, container, false);
 
-        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
-        floatingActionButton.setImageResource(R.drawable.round_keyboard_arrow_up_24);
-        floatingActionButton.show();
-        floatingActionButton.setOnClickListener(this);
         TEST_ITEMS = new ArrayList<>();
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
 
-        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
 
-        enableBottomSheet();
+        preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+        if (preferences.getString(AppСonstants.USER_ROLE, "").equals("pupil")) {
+            floatingActionButton.setImageResource(R.drawable.round_keyboard_arrow_up_24);
+            floatingActionButton.show();
+            floatingActionButton.setOnClickListener(this);
+            enableBottomSheet();
+        } else floatingActionButton.hide();
 
         setHasOptionsMenu(true);
         loadAndSetThemes();

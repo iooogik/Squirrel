@@ -88,14 +88,20 @@ public class Questions extends Fragment implements View.OnClickListener{
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         getScorePerAnswer();
         getInformation();
-        setTimer();
+
+
+        Button completed = view.findViewById(R.id.send_answers);
+        if (preferences.getString(AppСonstants.USER_ROLE, "").equals("pupil")){
+            completed.setOnClickListener(this);
+            setTimer();
+        }else completed.setVisibility(View.GONE);
 
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.hide();
 
         totalScore = questionObjects.size() * scorePerAnswer;
-        Button completed = view.findViewById(R.id.send_answers);
-        completed.setOnClickListener(this);
+
+
         return view;
     }
 

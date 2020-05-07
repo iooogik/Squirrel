@@ -3,6 +3,8 @@ package iooojik.app.klass.tests.tests;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import iooojik.app.klass.AppСonstants;
+import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
@@ -90,7 +93,6 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 else scorePerAnsw = Integer.parseInt(score.getText().toString());
             }
         });
-
 
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -216,7 +218,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         doRetrofit();
 
         Call<ServerResponse<DataTestResult>> response = api.getTestResults(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), "group_id", String.valueOf(id));
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
 
         response.enqueue(new Callback<ServerResponse<DataTestResult>>() {
             @Override
@@ -236,8 +238,6 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
             }
         });
-
-
 
         for (int i = 0; i < questions.size(); i++) {
             View tempQuestion = questions.get(i);
@@ -305,16 +305,23 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         doRetrofit();
 
         HashMap<String, String> updateMap = new HashMap<>();
-
+        String SQL = createSQL("'"+ name.getText().toString() + "'",
+                "'"+ description.getText().toString() + "'",
+                builderQuestions.toString(),
+                builderTrueAnswers.toString(),
+                builderTextAnswers.toString(), textQuestions.size());
         updateMap.put("_id", String.valueOf(id));
         updateMap.put("author_email", groupAuthor);
         updateMap.put("author_name", groupAuthorName);
         updateMap.put("name", groupName);
-        updateMap.put("test", createSQL("'"+ name.getText().toString() + "'",
-                "'"+ description.getText().toString() + "'",
-                builderQuestions.toString(),
-                builderTrueAnswers.toString(),
-                builderTextAnswers.toString(), textQuestions.size()));
+        updateMap.put("test", SQL);
+
+        Database mDBHelper;
+        mDBHelper = new Database(getContext());
+        mDBHelper.openDataBase();
+        mDBHelper.updateDataBase();
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
+        mDb.execSQL(SQL);
 
         Call<ServerResponse<PostResult>> responseCall = api.updateTest(AppСonstants.X_API_KEY,
                 getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES,
