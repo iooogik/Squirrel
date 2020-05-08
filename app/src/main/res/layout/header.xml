@@ -32,6 +32,7 @@
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:textColor="@color/color_secondary_text"
         app:layout_constraintBottom_toBottomOf="@+id/side_avatar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.050"

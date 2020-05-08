@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,14 +25,19 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.w3c.dom.Text;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
@@ -62,13 +69,15 @@ public class Settings extends Fragment implements View.OnClickListener{
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private BottomSheetDialog weather;
+    private Switch darkTheme, show_book_mat, show, showID;
+    private FloatingActionButton floatingActionButton;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
-        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
+        floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
         //получаем настройки
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -114,7 +123,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void setDarkTheme() {
-        Switch darkTheme = view.findViewById(R.id.darkTheme);
+        darkTheme = view.findViewById(R.id.darkTheme);
 
         if (preferences.contains(APP_PREFERENCES_THEME)) {
             // Получаем число из настроек
@@ -128,25 +137,48 @@ public class Settings extends Fragment implements View.OnClickListener{
         }
 
         darkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+            View header = navigationView.getHeaderView(0);
+            TextView name = header.findViewById(R.id.textView);
+            MaterialToolbar toolbar = getActivity().findViewById(R.id.bar);
+            NavController navHostFragment = NavHostFragment.findNavController(this);
 
             if (isChecked){
-
                 getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeDark).apply());
+                getActivity().setTheme(preferences.getInt(APP_PREFERENCES_THEME, R.style.AppThemeLight));
+
+
+                navHostFragment.navigate(R.id.nav_settings);
+                navigationView.setItemTextColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorWhite)));
+                navigationView.setItemIconTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorWhite)));
+                toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkBackground));
+                name.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                navigationView.setBackground(getActivity().getDrawable(R.drawable.nav_view_background));
+
+
 
             }else {
 
                 getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeLight).apply());
+                getActivity().setTheme(preferences.getInt(APP_PREFERENCES_THEME, R.style.AppThemeLight));
+                navHostFragment.navigate(R.id.nav_settings);
 
+                navigationView.setItemTextColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.color_primary_text)));
+                navigationView.setItemIconTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.color_primary_text)));
+                navigationView.setItemTextColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.color_primary_text)));
+                navigationView.setItemIconTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.color_primary_text)));
+                toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                name.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                navigationView.setBackgroundResource(R.drawable.nav_view_background);
             }
 
-            startActivity(new Intent(getContext(), MainActivity.class));
         });
 
     }
 
     private void setShowBookMaterials() {
         //убираем справочные материалы из заметок
-        Switch show_book_mat = view.findViewById(R.id.book_items);
+        show_book_mat = view.findViewById(R.id.book_items);
 
         if (preferences.contains(APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
             // Получаем число из настроек
@@ -291,7 +323,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void showGroupID(){
-        Switch showID = view.findViewById(R.id.showGroupID);
+        showID = view.findViewById(R.id.showGroupID);
 
         if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1) showID.setChecked(true);
 
@@ -306,7 +338,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     private void showWeather(){
 
         //переключатель
-        Switch show = view.findViewById(R.id.showWeatherSwitchPerDay);
+        show = view.findViewById(R.id.showWeatherSwitchPerDay);
 
         show.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked){

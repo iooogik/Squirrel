@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
     private void createToolbar(){
         //устанавливаем стандартный ActionBar
         setSupportActionBar(materialToolbar);
-        //инициализируем боковое меню и NavigationView
+        //инициализируем NavigationView
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // определение "домашнего" фрагмента и установка навигации

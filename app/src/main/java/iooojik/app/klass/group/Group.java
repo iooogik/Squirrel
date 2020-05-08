@@ -361,7 +361,6 @@ public class Group extends Fragment{
     private void addMessageToGroup() {
         //создаём окно для ввода сообщения
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle("Добавить сообщение");
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null);

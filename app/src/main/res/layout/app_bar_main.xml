@@ -31,7 +31,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:visibility="gone"
-        app:tint="?attr/itemShapeFillColor"
+        app:tint="@color/colorWhite"
         app:borderWidth="0dp"
         />
 

@@ -200,6 +200,7 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                     }
                 });
                 caseLocation = null;
+                map.clear();
                 addCaseOnMap.setEnabled(true);
             }
         }
@@ -260,8 +261,8 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                         // обработать получение кейса, когда пользователь пришёл за ним (попробовать через поток)
 
                     } else Snackbar.make(getView(), "Вы уже открыли кейс, сходите за ним! " +
-                           "Или нажмите \"Отменить поиск кейса\", чтобы открыть новый!", Snackbar.LENGTH_LONG).show();
-               } else Snackbar.make(getView(), "У вас нет кейсов", Snackbar.LENGTH_LONG).show();
+                          "Или нажмите \"Отменить поиск кейса\", чтобы открыть новый!", Snackbar.LENGTH_LONG).show();
+              } else Snackbar.make(getView(), "У вас нет кейсов", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }
