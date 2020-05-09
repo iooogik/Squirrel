@@ -274,6 +274,8 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="weather6">Сегодня штормит. Останьтесь дома и подготовьтесь к урокам или займитесь домашними делами!</string>
     <string name="weather7">Сегодня идёт снег, самое время пойти и сделать парочку красивых фото!</string>
     <string name="weather8">Сегодня туманно</string>
+    <string name="translate">Перевести</string>
+    <string name="uploadFile">Загрзуть файл</string>
 
 
 </resources>

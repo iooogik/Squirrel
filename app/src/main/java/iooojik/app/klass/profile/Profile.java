@@ -2,6 +2,7 @@ package iooojik.app.klass.profile;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,12 +17,18 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -30,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -47,12 +55,14 @@ import java.util.Locale;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
+import iooojik.app.klass.api.FileUploadApi;
 import iooojik.app.klass.api.WeatherApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.bonusCrate.CratesData;
+import iooojik.app.klass.models.fileUpload.UploadResult;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.profileData.User;
@@ -118,7 +128,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
         ImageView main_avatar = view.findViewById(R.id.avatar);
         main_avatar.setOnClickListener(this);
-
+        setHasOptionsMenu(true);
         //запускаем поток получения/обновления данных
         getActivity().runOnUiThread(() -> {
             getUserProfile();
@@ -462,7 +472,6 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void doRetrofit(){
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(AppСonstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -610,12 +619,9 @@ public class Profile extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_AVATAR) {
             if (data != null) {
-
-
                 Uri selectedImage = data.getData();
 
                 File file = new File(getRealPathFromURI(context, selectedImage));
-
 
                 RequestBody requestFile =
                         RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -673,14 +679,59 @@ public class Profile extends Fragment implements View.OnClickListener {
                         }
                     });
                 }
+        }
+        else if (requestCode == AppСonstants.PICK_FILE){
 
+            Uri selectedFile = data.getData();
+            File file = new File(getPath(selectedFile));
+            RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            MultipartBody.Part body =
+                    MultipartBody.Part.createFormData("user_file", file.getName(), requestFile);
 
-            //}
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(AppСonstants.IOOOJIK_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+
+                    .build();
+            FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
+
+            Call<UploadResult> resultCall = fileUploadApi.uploadFile(body);
+            resultCall.enqueue(new Callback<UploadResult>() {
+                @Override
+                public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
+                    if (response.code() != 200) Log.e("UPLOADING FILE", String.valueOf(response.raw()));
+                    Log.e("UPLOADING FILE", String.valueOf(response.body().getResult() + " " + file.getPath()));
+                }
+
+                @Override
+                public void onFailure(Call<UploadResult> call, Throwable t) {
+                    Log.e("UPLOADING FILE", String.valueOf(t) + " " + file.getPath());
+                }
+            });
         }
     }
 
+    private String getPath(Uri uri) {
+        String path = null;
+        String[] projection = { MediaStore.Files.FileColumns.DATA };
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
+        if(cursor == null){
+            path = uri.getPath();
+        }
+        else{
+            cursor.moveToFirst();
+            int column_index = cursor.getColumnIndex(projection[0]);
+            path = cursor.getString(column_index);
+            cursor.close();
+        }
+        return ((path == null || path.isEmpty()) ? (uri.getPath()) : path);
+    }
 
+
+    @SuppressLint("Recycle")
     private static String getRealPathFromURI(Context context, Uri contentURI) {
+
         String result = null;
         Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
         if (cursor == null) {
@@ -695,4 +746,44 @@ public class Profile extends Fragment implements View.OnClickListener {
         }
         return result;
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_profile, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_upload:
+                uploadFile();
+                return true;
+        }
+        return false;
+    }
+
+    private void uploadFile(){
+        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.setType("*/*");
+        chooseFile = Intent.createChooser(chooseFile, "Choose a file");
+        startActivityForResult(chooseFile, AppСonstants.PICK_FILE);
+
+        //BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
+        //View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_upload_file, null);
+        //bottomSheetDialog.setContentView(bottomSheet);
+        /*
+        ///Button upload = bottomSheet.findViewById(R.id.upload);
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+         */
+
+    }
+
 }

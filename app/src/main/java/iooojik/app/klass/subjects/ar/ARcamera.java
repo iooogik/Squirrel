@@ -110,8 +110,7 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
     public void onClick(View v) {
         if(v.getId() == R.id.back){
             //нажатие "Назад"
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
+            super.onBackPressed();
         } else if(v.getId() == R.id.findARsurf){
             //"заново найти поверхность
             recreate();

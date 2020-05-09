@@ -449,4 +449,11 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
         api = retrofit.create(Api.class);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
+    }
 }

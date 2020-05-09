@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -206,7 +207,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                     if (list.size() != 0) {
                         MessagesToGroup message = list.get(0);
                         TextView textView = view.findViewById(R.id.teacher_message);
-                        textView.setText(String.format("%s\n    %s", textView.getText().toString(), message.getMessage()));
+                        textView.setText(Html.fromHtml(message.getMessage()));
                     }else {
                         TextView message = view.findViewById(R.id.teacher_message);
                         message.setVisibility(View.GONE);

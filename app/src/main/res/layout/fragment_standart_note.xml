@@ -92,6 +92,7 @@
                 android:textColorHint="@color/secondary_text"
                 android:autofillHints="" />
 
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

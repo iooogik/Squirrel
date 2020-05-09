@@ -93,12 +93,12 @@ public class Book extends Fragment implements View.OnClickListener {
         }
     }
 
+    @SuppressLint("InflateParams")
     private void setInformation(int pos){
-        @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.recycler_view_book_item, null, false);
-        FrameLayout frameLayout = view1.findViewById(R.id.frame_formulae);
-        ImageView imageView = frameLayout.findViewById(R.id.formulae);
-        TextView tv = frameLayout.findViewById(R.id.description);
-        if(tv.getVisibility() == View.GONE){
+        View view1 = getLayoutInflater().inflate(R.layout.recycler_view_book_item, null, false);
+        ImageView imageView = view1.findViewById(R.id.formulae);
+        TextView tv = view1.findViewById(R.id.description);
+        if(tv.getVisibility() == View.GONE) {
             tv.setVisibility(View.VISIBLE);
         }
         Bitmap bitmap = IMAGES.get(pos);

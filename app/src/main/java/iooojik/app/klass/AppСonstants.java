@@ -73,6 +73,8 @@ public class AppСonstants {
     public static final String testDivider = "{#$#}";
     //переменная, индентифицируящая выбранную пользователем картинку
     public static final int PICK_IMAGE_AVATAR = 9;
+    //переменная, индентифицируящий выбранный пользователем файл
+    public static final int PICK_FILE = 10;
     //таблицы
     public static final String TABLE_TESTS = "Tests";
     public static final String TABLE_NOTES = "Notes";

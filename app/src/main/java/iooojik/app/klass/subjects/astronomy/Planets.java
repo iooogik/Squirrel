@@ -107,6 +107,7 @@ public class Planets extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.openAr){
+
             Intent intent = new Intent(getContext(), ARcamera.class);
             intent.putExtra("TYPE", "SolarSystem");
             startActivity(intent);
