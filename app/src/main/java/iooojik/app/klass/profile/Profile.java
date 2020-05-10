@@ -681,7 +681,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                 }
         }
         else if (requestCode == AppСonstants.PICK_FILE){
-
+            /*
             Uri selectedFile = data.getData();
             File file = new File(getPath(selectedFile));
             RequestBody requestFile =
@@ -690,7 +690,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                     MultipartBody.Part.createFormData("user_file", file.getName(), requestFile);
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(AppСonstants.IOOOJIK_BASE_URL)
+                    .baseUrl(AppСonstants.TEST_URL)
                     .addConverterFactory(GsonConverterFactory.create())
 
                     .build();
@@ -709,6 +709,8 @@ public class Profile extends Fragment implements View.OnClickListener {
                     Log.e("UPLOADING FILE", String.valueOf(t) + " " + file.getPath());
                 }
             });
+
+             */
         }
     }
 

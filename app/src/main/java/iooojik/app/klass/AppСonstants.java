@@ -37,9 +37,9 @@ public class AppСonstants {
     public static final float ASPECT_RATIO_TOLERANCE = 0.01f;
 
     //базовый url, чтобы получать данные с сервера
-    public static final String BASE_URL = "http://195.19.44.146/service/";
+    public static final String BASE_URL = "http://195.19.44.146:89/";
     //url, чтобы получать пользовательские картинки
-    public static final String IMAGE_URL = "http://195.19.44.146/service/uploads/user/";
+    public static final String IMAGE_URL = "http://195.19.44.146:89/uploads/user/";
     //ключ апи
     public static final String X_API_KEY = "33CD9CAE7D5D15F7E435A26BBFF81A4E";
     //названия настроек
