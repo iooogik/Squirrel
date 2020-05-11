@@ -21,17 +21,16 @@ public class GroupInfo {
     @SerializedName("author_name")
     @Expose
     private String author_name;
-
-    @SerializedName("avatar")
+    @SerializedName("count_questions")
     @Expose
-    private String avatar;
+    private String count_questions;
 
-    public String getAvatar() {
-        return avatar;
+    public String getCount_questions() {
+        return count_questions;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setCount_questions(String count_questions) {
+        this.count_questions = count_questions;
     }
 
     public String getAuthor_name() {

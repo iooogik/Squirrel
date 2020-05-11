@@ -3,6 +3,7 @@ package iooojik.app.klass.group;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -17,6 +19,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,6 +40,7 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.test_results.TestsResult;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
@@ -70,12 +79,15 @@ public class Group extends Fragment{
     //настройки
     private SharedPreferences preferences;
     private Fragment fragment;
+    private BottomSheetDialog bottomSheetDialog;
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_group, container, false);
+
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //получение названия нажатого класса
         getGroupInfo();
@@ -94,7 +106,8 @@ public class Group extends Fragment{
         fab = getActivity().findViewById(R.id.fab);
         fab.show();
         fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
-        enableBottomSheet();
+        fab.setOnClickListener(v -> bottomSheetDialog.show());
+
         return view;
     }
 
@@ -121,7 +134,9 @@ public class Group extends Fragment{
                     mates = result.getData().getMates();
 
                     Call<ServerResponse<DataTestResult>> call2 = api.getTestResults(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                            AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+
                     call2.enqueue(new Callback<ServerResponse<DataTestResult>>() {
                         @Override
                         public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
@@ -129,11 +144,13 @@ public class Group extends Fragment{
                                 //ставим адаптер
                                 DataTestResult result = response.body().getData();
                                 List<TestsResult> testsResults = result.getTestsResult();
+
                                 groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults, fragment, true);
                                 RecyclerView recyclerView = view.findViewById(R.id.groupmates);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                                 recyclerView.setAdapter(groupmatesAdapter);
-                            }
+                                enableBottomSheet(testsResults, mates);
+                            } else Log.e("tttttttt", String.valueOf(response.raw()));
                         }
 
                         @Override
@@ -144,7 +161,7 @@ public class Group extends Fragment{
 
 
                 } else {
-                    Log.e("GETTING MATES", response.raw() + "");
+                    Log.e("GETTING MATES", String.valueOf(response.raw()));
                 }
             }
 
@@ -288,9 +305,123 @@ public class Group extends Fragment{
     }
 
     @SuppressLint("InflateParams")
-    private void enableBottomSheet() {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
+    private void enableBottomSheet(List<TestsResult> testsResults, List<Mate> mates2) {
+        doRetrofit();
+        bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_group_editor, null);
+
+        Call<ServerResponse<DataGroup>> call = api.getGroupsById(AppСonstants.X_API_KEY,
+                "_id", String.valueOf(id));
+        call.enqueue(new Callback<ServerResponse<DataGroup>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
+                if (response.code()==200) {
+                    PieChart pieChart = bottomSheet.findViewById(R.id.chart);
+                    PieChart pieChart2 = bottomSheet.findViewById(R.id.chart2);
+                    if (!response.body().getData().getGroupInfos().get(0).getTest().toString().equals("null")) {
+                        int countDiff = 0;
+                        int countPassed = 0;
+
+                        for (TestsResult result : testsResults) {
+                            countDiff += Integer.valueOf(result.getDifficultiesCount());
+                            for (Mate mate : mates2) {
+                                if (result.getUserEmail().equals(mate.getEmail())) {
+                                    countPassed++;
+                                }
+                            }
+                        }
+
+
+                        //показываем диаграмму, показывающую процент заданий с затруднениями
+                        List<Float> score = new ArrayList<>();
+                        float rightScore = Float.valueOf(countDiff);
+                        float wrongScore = Float.valueOf(response.body().getData().
+                                getGroupInfos().get(0).getCount_questions());
+
+                        score.add((rightScore / wrongScore) * 100);
+                        score.add(100 - (rightScore / wrongScore) * 100);
+
+                        //преобразуем в понятные для диаграммы данные
+                        List<PieEntry> entries = new ArrayList<>();
+                        for (int i = 0; i < score.size(); i++)
+                            entries.add(new PieEntry(score.get(i), i));
+                        PieDataSet pieDataSet = new PieDataSet(entries, "");
+                        //устанавливаем цвета
+                        List<Integer> colors = new ArrayList<>();
+                        int green = Color.parseColor("#56CF54");
+                        int red = Color.parseColor("#FF5252");
+                        colors.add(green);
+                        colors.add(red);
+                        pieDataSet.setColors(colors);
+
+                        PieData pieData = new PieData(pieDataSet);
+                        //анимация
+                        pieChart.animateY(500);
+                        //убираем надписи
+                        Description description = new Description();
+                        description.setText("");
+                        pieChart.setDescription(description);
+
+                        pieChart.getLegend().setFormSize(0f);
+                        pieData.setValueTextSize(0f);
+
+                        pieChart.setTransparentCircleRadius(0);
+
+                        pieChart.setHoleRadius(0);
+                        pieChart.setData(pieData);
+
+
+                        List<Float> score2 = new ArrayList<>();
+                        float rightScore2 = Float.valueOf(countPassed);
+                        float wrongScore2 = mates2.size();
+                        score2.add((rightScore2 / wrongScore2) * 100);
+                        score2.add(100 - (rightScore2 / wrongScore2) * 100);
+
+                        //преобразуем в понятные для диаграммы данные
+                        List<PieEntry> entries2 = new ArrayList<>();
+                        for (int i = 0; i < score2.size(); i++)
+                            entries2.add(new PieEntry(score2.get(i), i));
+                        PieDataSet pieDataSet2 = new PieDataSet(entries2, "");
+                        //устанавливаем цвета
+                        List<Integer> colors2 = new ArrayList<>();
+                        int green2 = Color.parseColor("#56CF54");
+                        int red2 = Color.parseColor("#FF5252");
+                        colors2.add(green2);
+                        colors2.add(red2);
+                        pieDataSet2.setColors(colors2);
+
+                        PieData pieData2 = new PieData(pieDataSet2);
+                        //анимация
+                        pieChart2.animateY(500);
+                        //убираем надписи
+                        Description description2 = new Description();
+                        description2.setText("");
+                        pieChart2.setDescription(description2);
+
+                        pieChart2.getLegend().setFormSize(0f);
+                        pieData2.setValueTextSize(0f);
+
+                        pieChart2.setTransparentCircleRadius(0);
+
+                        pieChart2.setHoleRadius(0);
+                        pieChart2.setData(pieData2);
+                    }
+                    else {
+                        pieChart.setVisibility(View.GONE);
+                        pieChart2.setVisibility(View.GONE);
+                        TextView textView = bottomSheet.findViewById(R.id.dif_percent);
+                        TextView textView2 = bottomSheet.findViewById(R.id.passed_test_percent);
+                        textView.setVisibility(View.GONE);
+                        textView2.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataGroup>> call, Throwable t) {
+
+            }
+        });
 
         bottomSheetDialog.setContentView(bottomSheet);
 
@@ -313,7 +444,6 @@ public class Group extends Fragment{
             navController.navigate(R.id.nav_testEditor, bundle);
             bottomSheetDialog.hide();
         });
-
 
         Button download = bottomSheet.findViewById(R.id.add_message);
         download.setOnClickListener(v -> {
@@ -350,11 +480,6 @@ public class Group extends Fragment{
 
         bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
 
-
-        fab.setOnClickListener(v -> {
-            bottomSheetDialog.show();
-            fab.hide();
-        });
 
     }
 

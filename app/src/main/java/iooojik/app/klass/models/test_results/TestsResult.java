@@ -16,6 +16,17 @@ public class TestsResult {
     @SerializedName("result")
     @Expose
     private String result;
+    @SerializedName("difficultiesCount")
+    @Expose
+    private String difficultiesCount;
+
+    public String getDifficultiesCount() {
+        return difficultiesCount;
+    }
+
+    public void setDifficultiesCount(String difficultiesCount) {
+        this.difficultiesCount = difficultiesCount;
+    }
 
     public String getId() {
         return id;

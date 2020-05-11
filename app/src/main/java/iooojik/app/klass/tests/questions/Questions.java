@@ -14,14 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -72,9 +71,9 @@ public class Questions extends Fragment implements View.OnClickListener{
     private boolean running = true;
     private int seconds;
     static int scorePerAnswer = 1;
-    private NavController navHostFragment;
     private String testName = "";
     private Context context;
+    static int difficultiesCount = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,7 +83,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         mDBHelper.openDataBase();
         questionObjects = new ArrayList<>();
         recyclerViewItems = new ArrayList<>();
-        navHostFragment = NavHostFragment.findNavController(this);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         getScorePerAnswer();
         getInformation();
@@ -203,7 +201,8 @@ public class Questions extends Fragment implements View.OnClickListener{
     }
 
     private void showAnswers() {
-
+        Button completed = view.findViewById(R.id.send_answers);
+        completed.setVisibility(View.GONE);
         for (int i = 0; i < questionObjects.size(); i++) {
             QuestionObject object = questionObjects.get(i);
             QuestionsAdapter.ViewHolder recView = recyclerViewItems.get(i);
@@ -259,11 +258,12 @@ public class Questions extends Fragment implements View.OnClickListener{
         map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
         map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(userCursor.getInt(
                 userCursor.getColumnIndex(AppСonstants.TABLE_GROUP_ID))));
+        map.put(AppСonstants.DIFFICULTIES_FIELD, String.valueOf(difficultiesCount));
 
         map.put(AppСonstants.TABLE_RESULT,  String.valueOf((userScore / totalScore) * 100.0f));
 
-        Call<ServerResponse<PostResult>> updateInfo = api.addResult(
-                AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+        Call<ServerResponse<PostResult>> updateInfo = api.addResult(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
 
         updateInfo.enqueue(new Callback<ServerResponse<PostResult>>() {
             @Override

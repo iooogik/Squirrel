@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -34,6 +35,14 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         QuestionObject object = Questions.questionObjects.get(position);
         holder.question.setText(object.getQuestion());
+
+        holder.difficulties.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                Questions.difficultiesCount++;
+            }else {
+                Questions.difficultiesCount--;
+            }
+        });
 
         //первый ответ на вопрос
         holder.firstAnswer.setText(object.getAnswers().get(0));
@@ -94,9 +103,11 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         RadioButton secondAnswer;
         RadioButton thirdAnswer;
         RadioButton fourthAnswer;
+        CheckBox difficulties;
 
         ViewHolder(View view){
             super(view);
+            difficulties = view.findViewById(R.id.checkBox);
             question = view.findViewById(R.id.task);
             firstAnswer = view.findViewById(R.id.radioButton1);
             secondAnswer = view.findViewById(R.id.radioButton2);

@@ -242,12 +242,12 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                         double k = getRandomBetweenRange(0, 1);
                         int chance = (int) getRandomBetweenRange(1, 2);
                         if (chance == 2) k *= (-1);
-                        lat = lat + (k / 100);
+                        lat = lat + (k / 10000);
 
                         k = getRandomBetweenRange(0, 1);
                         chance = (int) getRandomBetweenRange(1, 2);
                         if (chance == 2) k *= (-1);
-                        lon = lon + (k / 100);
+                        lon = lon + (k / 10000);
 
                         caseLocation = new Location("");
                         caseLocation.setLatitude(lat);

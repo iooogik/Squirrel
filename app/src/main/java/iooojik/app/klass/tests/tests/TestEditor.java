@@ -315,6 +315,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         updateMap.put("author_name", groupAuthorName);
         updateMap.put("name", groupName);
         updateMap.put("test", SQL);
+        updateMap.put("count_questions", String.valueOf(questions.size()));
 
         Database mDBHelper;
         mDBHelper = new Database(getContext());

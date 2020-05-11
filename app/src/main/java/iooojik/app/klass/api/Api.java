@@ -98,6 +98,13 @@ public interface Api {
                                                 @Header("X-TOKEN") String token,
                                                 @FieldMap HashMap<String, String> map);
 
+    @FormUrlEncoded
+    @POST("api/tests_result/add")
+    Call<ServerResponse<PostResult>> deleteResult(@Header("X-API-KEY") String api_key,
+                                               @Header("X-TOKEN") String token,
+                                               @FieldMap HashMap<String, String> map);
+
+
     //логирование получения "достижения"
     @FormUrlEncoded
     @POST("api/achievements_changes/add")
@@ -228,6 +235,10 @@ public interface Api {
     @GET("api/groups/all?")
     Call<ServerResponse<DataGroup>> getGroups(@Header("X-API-KEY") String api_key,
                                               @Query("field") String field, @Query("filter") String email);
+
+    @GET("api/groups/all?")
+    Call<ServerResponse<DataGroup>> getGroupsById(@Header("X-API-KEY") String api_key,
+                                              @Query("field") String field, @Query("filter") String id);
 
     //получение списка заметок
     @GET("api/notes/all?")
