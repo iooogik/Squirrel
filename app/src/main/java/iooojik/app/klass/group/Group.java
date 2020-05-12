@@ -41,6 +41,7 @@ import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.teacher.DataGroup;
+import iooojik.app.klass.models.teacher.GroupInfo;
 import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.test_results.TestsResult;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
@@ -313,106 +314,112 @@ public class Group extends Fragment{
         Call<ServerResponse<DataGroup>> call = api.getGroupsById(AppСonstants.X_API_KEY,
                 "_id", String.valueOf(id));
         call.enqueue(new Callback<ServerResponse<DataGroup>>() {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
                 if (response.code()==200) {
-                    PieChart pieChart = bottomSheet.findViewById(R.id.chart);
-                    PieChart pieChart2 = bottomSheet.findViewById(R.id.chart2);
-                    if (!response.body().getData().getGroupInfos().get(0).getTest().toString().equals("null")) {
-                        int countDiff = 0;
-                        int countPassed = 0;
+                    if (response.body().getData() != null) {
+                        PieChart pieChart = bottomSheet.findViewById(R.id.chart);
+                        PieChart pieChart2 = bottomSheet.findViewById(R.id.chart2);
+                        if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
+                            int countDiff = 0;
+                            int countPassed = 0;
 
-                        for (TestsResult result : testsResults) {
-                            countDiff += Integer.valueOf(result.getDifficultiesCount());
-                            for (Mate mate : mates2) {
-                                if (result.getUserEmail().equals(mate.getEmail())) {
-                                    countPassed++;
+                            for (TestsResult result : testsResults) {
+                                countDiff += Integer.valueOf(result.getDifficultiesCount());
+                                for (Mate mate : mates2) {
+                                    if (result.getUserEmail().equals(mate.getEmail())) {
+                                        countPassed++;
+                                    }
                                 }
                             }
+                            List<GroupInfo> dataGroups = response.body().getData().getGroupInfos();
+                            //показываем диаграмму, показывающую процент заданий с затруднениями
+                            List<Float> score = new ArrayList<>();
+
+                            float rightScore = Float.valueOf(countDiff);
+                            float wrongScore = Float.valueOf(dataGroups.get(0).getCount_questions());
+
+                            TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
+                            textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore)));
+
+                            score.add((rightScore / wrongScore) * 100);
+                            score.add(100 - (rightScore / wrongScore) * 100);
+
+                            //преобразуем в понятные для диаграммы данные
+                            List<PieEntry> entries = new ArrayList<>();
+                            for (int i = 0; i < score.size(); i++)
+                                entries.add(new PieEntry(score.get(i), i));
+                            PieDataSet pieDataSet = new PieDataSet(entries, "");
+                            //устанавливаем цвета
+                            List<Integer> colors = new ArrayList<>();
+                            int green = Color.parseColor("#56CF54");
+                            int red = Color.parseColor("#FF5252");
+                            colors.add(red);
+                            colors.add(green);
+
+                            pieDataSet.setColors(colors);
+
+                            PieData pieData = new PieData(pieDataSet);
+                            //анимация
+                            pieChart.animateY(500);
+                            //убираем надписи
+                            Description description = new Description();
+                            description.setText("");
+                            pieChart.setDescription(description);
+
+                            pieChart.getLegend().setFormSize(0f);
+                            pieData.setValueTextSize(0f);
+
+                            pieChart.setTransparentCircleRadius(0);
+
+                            pieChart.setHoleRadius(0);
+                            pieChart.setData(pieData);
+
+
+                            List<Float> score2 = new ArrayList<>();
+                            float rightScore2 = Float.valueOf(countPassed);
+                            float wrongScore2 = mates2.size();
+                            score2.add((rightScore2 / wrongScore2) * 100);
+                            score2.add(100 - (rightScore2 / wrongScore2) * 100);
+                            TextView textView2 = bottomSheetDialog.findViewById(R.id.passed_test_percent);
+                            textView2.setText(String.format("%s %d%%", textView2.getText().toString(), Math.round(rightScore)));
+                            //преобразуем в понятные для диаграммы данные
+                            List<PieEntry> entries2 = new ArrayList<>();
+                            for (int i = 0; i < score2.size(); i++)
+                                entries2.add(new PieEntry(score2.get(i), i));
+                            PieDataSet pieDataSet2 = new PieDataSet(entries2, "");
+                            //устанавливаем цвета
+                            List<Integer> colors2 = new ArrayList<>();
+                            int green2 = Color.parseColor("#56CF54");
+                            int red2 = Color.parseColor("#FF5252");
+                            colors2.add(green2);
+                            colors2.add(red2);
+                            pieDataSet2.setColors(colors2);
+
+                            PieData pieData2 = new PieData(pieDataSet2);
+                            //анимация
+                            pieChart2.animateY(500);
+                            //убираем надписи
+                            Description description2 = new Description();
+                            description2.setText("");
+                            pieChart2.setDescription(description2);
+
+                            pieChart2.getLegend().setFormSize(0f);
+                            pieData2.setValueTextSize(0f);
+
+                            pieChart2.setTransparentCircleRadius(0);
+
+                            pieChart2.setHoleRadius(0);
+                            pieChart2.setData(pieData2);
+                        } else {
+                            pieChart.setVisibility(View.GONE);
+                            pieChart2.setVisibility(View.GONE);
+                            TextView textView = bottomSheet.findViewById(R.id.dif_percent);
+                            TextView textView2 = bottomSheet.findViewById(R.id.passed_test_percent);
+                            textView.setVisibility(View.GONE);
+                            textView2.setVisibility(View.GONE);
                         }
-
-
-                        //показываем диаграмму, показывающую процент заданий с затруднениями
-                        List<Float> score = new ArrayList<>();
-                        float rightScore = Float.valueOf(countDiff);
-                        float wrongScore = Float.valueOf(response.body().getData().
-                                getGroupInfos().get(0).getCount_questions());
-
-                        score.add((rightScore / wrongScore) * 100);
-                        score.add(100 - (rightScore / wrongScore) * 100);
-
-                        //преобразуем в понятные для диаграммы данные
-                        List<PieEntry> entries = new ArrayList<>();
-                        for (int i = 0; i < score.size(); i++)
-                            entries.add(new PieEntry(score.get(i), i));
-                        PieDataSet pieDataSet = new PieDataSet(entries, "");
-                        //устанавливаем цвета
-                        List<Integer> colors = new ArrayList<>();
-                        int green = Color.parseColor("#56CF54");
-                        int red = Color.parseColor("#FF5252");
-                        colors.add(green);
-                        colors.add(red);
-                        pieDataSet.setColors(colors);
-
-                        PieData pieData = new PieData(pieDataSet);
-                        //анимация
-                        pieChart.animateY(500);
-                        //убираем надписи
-                        Description description = new Description();
-                        description.setText("");
-                        pieChart.setDescription(description);
-
-                        pieChart.getLegend().setFormSize(0f);
-                        pieData.setValueTextSize(0f);
-
-                        pieChart.setTransparentCircleRadius(0);
-
-                        pieChart.setHoleRadius(0);
-                        pieChart.setData(pieData);
-
-
-                        List<Float> score2 = new ArrayList<>();
-                        float rightScore2 = Float.valueOf(countPassed);
-                        float wrongScore2 = mates2.size();
-                        score2.add((rightScore2 / wrongScore2) * 100);
-                        score2.add(100 - (rightScore2 / wrongScore2) * 100);
-
-                        //преобразуем в понятные для диаграммы данные
-                        List<PieEntry> entries2 = new ArrayList<>();
-                        for (int i = 0; i < score2.size(); i++)
-                            entries2.add(new PieEntry(score2.get(i), i));
-                        PieDataSet pieDataSet2 = new PieDataSet(entries2, "");
-                        //устанавливаем цвета
-                        List<Integer> colors2 = new ArrayList<>();
-                        int green2 = Color.parseColor("#56CF54");
-                        int red2 = Color.parseColor("#FF5252");
-                        colors2.add(green2);
-                        colors2.add(red2);
-                        pieDataSet2.setColors(colors2);
-
-                        PieData pieData2 = new PieData(pieDataSet2);
-                        //анимация
-                        pieChart2.animateY(500);
-                        //убираем надписи
-                        Description description2 = new Description();
-                        description2.setText("");
-                        pieChart2.setDescription(description2);
-
-                        pieChart2.getLegend().setFormSize(0f);
-                        pieData2.setValueTextSize(0f);
-
-                        pieChart2.setTransparentCircleRadius(0);
-
-                        pieChart2.setHoleRadius(0);
-                        pieChart2.setData(pieData2);
-                    }
-                    else {
-                        pieChart.setVisibility(View.GONE);
-                        pieChart2.setVisibility(View.GONE);
-                        TextView textView = bottomSheet.findViewById(R.id.dif_percent);
-                        TextView textView2 = bottomSheet.findViewById(R.id.passed_test_percent);
-                        textView.setVisibility(View.GONE);
-                        textView2.setVisibility(View.GONE);
                     }
                 }
             }

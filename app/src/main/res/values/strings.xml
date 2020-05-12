@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KLass.</string>
+    <string name="app_name">Klass.</string>
 
     <!-- menu items -->
     <string name="profile">Профиль</string>
@@ -277,6 +277,8 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="translate">Перевести</string>
     <string name="uploadFile">Загрзуть файл</string>
     <string name="testDifficulties">Этот вопрос вызвал у меня затруднения</string>
+    <string name="percentHardQuestions">Процент вопросов, вызывающих затруднение равен</string>
+    <string name="percentPassrdTest">Процент учеников, выполнивших тест равен</string>
 
 
 </resources>

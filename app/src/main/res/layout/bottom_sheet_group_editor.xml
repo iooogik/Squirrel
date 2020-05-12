@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/background"
+    android:gravity="center"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +30,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="% вопросов, вызывающих затруднение"
+                    android:maxWidth="190dp"
+                    android:text="@string/percentHardQuestions"
                     android:layout_marginEnd="50dp"
                     android:layout_margin="@dimen/fab_margin"/>
 
@@ -40,7 +44,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:orientation="horizontal">
@@ -50,7 +54,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="% учеников, выполнивших тест"
+                    android:maxWidth="190dp"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:text="@string/percentPassrdTest"
                     android:layout_marginEnd="50dp" />
 
                 <com.github.mikephil.charting.charts.PieChart
@@ -60,6 +66,12 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="@dimen/settings_margin" />
             </LinearLayout>
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?colorAccent" />
 
             <Button
                 android:id="@+id/add"

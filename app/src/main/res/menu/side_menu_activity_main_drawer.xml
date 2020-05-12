@@ -26,7 +26,7 @@
             android:title="@string/recreation" />
 
         <item
-            android:id="@+id/nav_news"
+            android:id="@+id/nav_subjects"
             android:icon="@drawable/augmented_reality"
             android:title="@string/ar" />
 
@@ -41,7 +41,7 @@
             android:title="@string/todoList" />
 
         <item
-            android:id="@+id/nav_sport"
+            android:id="@+id/nav_coins_searc"
             android:title="@string/coinsSearch"
             android:icon="@drawable/round_center_focus_strong_24"
             />

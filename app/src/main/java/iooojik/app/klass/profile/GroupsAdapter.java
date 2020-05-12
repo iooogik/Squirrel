@@ -99,6 +99,9 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
                 }
                 bottomSheetDialog.hide();
             }));
+
+            Button cancel = bottomSheetDialog.findViewById(R.id.cancel);
+            cancel.setOnClickListener(v12 -> bottomSheetDialog.hide());
             return true;
         });
 

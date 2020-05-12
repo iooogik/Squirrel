@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.HashMap;
 import java.util.List;
 
 import iooojik.app.klass.AppСonstants;
@@ -36,6 +37,8 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.groups_messages.DataMessage;
 import iooojik.app.klass.models.groups_messages.MessagesToGroup;
+import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
+import iooojik.app.klass.models.isUserGetTest.IsUserGetTest;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mate;
 import retrofit2.Call;
@@ -51,7 +54,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     private Api api;
     private Context context;
     private SharedPreferences sharedPreferences;
-    private Group group;
+
     private Fragment fragment;
     private NavController navController;
 
@@ -121,49 +124,95 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
             public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
                 if (response.code() == 200) {
                     DataGroup groupInfo = response.body().getData();
-                    group = groupInfo.getGroups();
-
-                    TextView teacher_name = view.findViewById(R.id.teacher_name);
-                    TextView teacher_email = view.findViewById(R.id.teacher_email);
+                    Group group = groupInfo.getGroups();
 
 
-                    teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
-                            + " ", group.getAuthorName()));
-                    teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
-                            + " ", group.getAuthorEmail()));
 
-                    test.setText(group.getTest());
-                    if (group.getTest().contains("INSERT")){
-                        test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
-                        test.setText("Тест доступен");
-                        Button execTest = view.findViewById(R.id.execTest);
-                        execTest.setVisibility(View.VISIBLE);
-                        execTest.setOnClickListener(v -> {
-                            try {
-                                Database mDBHelper = new Database(getContext());
-                                SQLiteDatabase mDb;
-                                mDBHelper = new Database(getContext());
-                                mDBHelper.openDataBase();
-                                mDBHelper.updateDataBase();
+                    Call<ServerResponse<DataIsUserGetTest>> serverResponseCall = api.isUserGetTest(AppСonstants.X_API_KEY,
+                            sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
+                            sharedPreferences.getString(AppСonstants.USER_EMAIL, ""));
 
-                                mDb = mDBHelper.getWritableDatabase();
-                                mDb.execSQL(group.getTest());
+                    serverResponseCall.enqueue(new Callback<ServerResponse<DataIsUserGetTest>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<DataIsUserGetTest>> call, Response<ServerResponse<DataIsUserGetTest>> response) {
 
-                                @SuppressLint("Recycle") Cursor cursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS, null);
-                                cursor.moveToLast();
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put(AppСonstants.GROUP_ID_FIELD, Integer.parseInt(group.getId()));
-                                mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id=" + (cursor.getPosition() + 1), null);
-                                Snackbar.make(getView(), "Тест получен!", Snackbar.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                Log.i("LOAD TEST", String.valueOf(e));
+                            if (response.code() == 200){
+                                DataIsUserGetTest dataIsUserGetTest = response.body().getData();
+                                Button execTest = view.findViewById(R.id.execTest);
+                                boolean k = false;
+                                for (IsUserGetTest isUserGetTest : dataIsUserGetTest.getIsUserGetTest()){
+
+                                    if (isUserGetTest.getGroupId().equals(groupID) &&
+                                            Integer.valueOf(isUserGetTest.getIs_Passed()) == 0){
+
+                                        TextView teacher_name = view.findViewById(R.id.teacher_name);
+                                        TextView teacher_email = view.findViewById(R.id.teacher_email);
+
+
+                                        teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
+                                                + " ", group.getAuthorName()));
+                                        teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
+                                                + " ", group.getAuthorEmail()));
+
+                                        getTest(isUserGetTest, group);
+
+                                        k = true;
+                                        break;
+                                    }
+                                    else if (isUserGetTest.getGroupId().equals(groupID)){
+
+                                        TextView teacher_name = view.findViewById(R.id.teacher_name);
+                                        TextView teacher_email = view.findViewById(R.id.teacher_email);
+
+
+                                        teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
+                                                + " ", group.getAuthorName()));
+                                        teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
+                                                + " ", group.getAuthorEmail()));
+
+                                        test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
+                                        test.setText("Тест доступен");
+                                        execTest.setVisibility(View.VISIBLE);
+                                        execTest.setTextColor(ContextCompat.getColor(getContext(),
+                                                R.color.color_secondary_text));
+                                        execTest.setEnabled(false);
+                                        k = true;
+                                    }else k = false;
+                                }
+
+                                if (!k){
+                                    HashMap<String, String> map = new HashMap<>();
+                                    map.put(AppСonstants.USER_EMAIL_FIELD, sharedPreferences.getString(AppСonstants.USER_EMAIL, ""));
+                                    map.put(AppСonstants.GROUP_ID_FIELD, groupID);
+                                    map.put("is_Passed", "0");
+
+                                    Call<ServerResponse<PostResult>> responseCall2 = api.addUserGetTest(AppСonstants.X_API_KEY,
+                                            sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                                    responseCall2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                        @Override
+                                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                            if (response.code() == 200) {
+                                                getTestTeacherInfo();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                                        }
+                                    });
+
+                                }
                             }
+                        }
 
-                        });
-                    }else {
-                        test.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
-                        test.setText("Тест не доступен");
-                    }
+                        @Override
+                        public void onFailure(Call<ServerResponse<DataIsUserGetTest>> call, Throwable t) {
+
+                        }
+                    });
+
+
 
                 }else {
                     Log.e("GET TEACHER INFO", String.valueOf(response.raw()));
@@ -176,6 +225,71 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                 Log.e("GET TEACHER INFO", String.valueOf(t));
             }
         });
+    }
+
+    private void getTest(IsUserGetTest isUserGetTest, Group group){
+        TextView test = view.findViewById(R.id.test);
+        Button execTest = view.findViewById(R.id.execTest);
+
+        if (group.getTest().contains("INSERT")){
+
+            test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
+            test.setText("Тест доступен");
+
+            execTest.setVisibility(View.VISIBLE);
+            execTest.setOnClickListener(v -> {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("_id", isUserGetTest.getId());
+                map.put("group_id", groupID);
+                map.put(AppСonstants.USER_EMAIL_FIELD,
+                        sharedPreferences.getString(AppСonstants.USER_EMAIL, ""));
+                map.put(AppСonstants.TABLE_IS_PASSED, "1");
+                map.put("is_Passed", "1");
+                execTest.setTextColor(ContextCompat.getColor(getContext(),
+                        R.color.color_secondary_text));
+                execTest.setEnabled(false);
+
+                Call<ServerResponse<PostResult>> call2 = api.postUserGetTest(AppСonstants.X_API_KEY,
+                        sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                        map);
+                call2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                    @Override
+                    public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                        if (response.code() != 200) Log.e("rrrrr", String.valueOf(response.raw()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                    }
+                });
+
+                try {
+                    Database mDBHelper = new Database(getContext());
+                    SQLiteDatabase mDb;
+                    mDBHelper = new Database(getContext());
+                    mDBHelper.openDataBase();
+                    mDBHelper.updateDataBase();
+
+                    mDb = mDBHelper.getWritableDatabase();
+                    mDb.execSQL(group.getTest());
+
+                    @SuppressLint("Recycle") Cursor cursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS, null);
+                    cursor.moveToLast();
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(AppСonstants.GROUP_ID_FIELD, Integer.parseInt(group.getId()));
+                    mDb.update(AppСonstants.TABLE_TESTS, contentValues,
+                            "_id=" + (cursor.getPosition() + 1), null);
+                    Snackbar.make(getView(), "Тест получен!", Snackbar.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Log.i("LOAD TEST", String.valueOf(e));
+                }
+
+            });
+        }else {
+            test.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));
+            test.setText("Тест не доступен");
+        }
     }
 
     private void doRetrofit(){

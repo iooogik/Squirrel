@@ -205,13 +205,11 @@ public class Notes extends Fragment {
         //выбор типа
         View view2 = getLayoutInflater().inflate(R.layout.spinner_item, null, false);
         TextInputLayout textInputLayout2 = view2.findViewById(R.id.spinner_layout);
+
         AutoCompleteTextView spinner = textInputLayout2.findViewById(R.id.filled_exposed_dropdown);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_spinner_dropdown_item, types);
-
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.list_item, types);
         spinner.setAdapter(adapter);
-
+        spinner.setText(types[0], false);
         layout1.addView(view2);
         builder.setView(layout1);
 
@@ -243,7 +241,7 @@ public class Notes extends Fragment {
                         ContentValues cv = new ContentValues();
                         cv.put(AppСonstants.TABLE_ID, finalId);
                         cv.put(AppСonstants.TABLE_NAME, name);
-                        cv.put(AppСonstants.TABLE_SHORT_NOTE, shortNote);
+                        cv.put(AppСonstants.TABLE_SHORT_NAME, shortNote);
                         cv.put(AppСonstants.TABLE_TEXT, text);
                         cv.put(AppСonstants.TABLE_TYPE, type);
                         cv.put(AppСonstants.TABLE_IS_NOTIF_SET, 0);
@@ -309,7 +307,7 @@ public class Notes extends Fragment {
         String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME)));
             //собираем данные
 
-            String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_SHORT_NOTE)));
+            String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_SHORT_NAME)));
             String text = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT)));
         String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.DATE_FIELD)));
             String type = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TYPE)));
@@ -326,7 +324,7 @@ public class Notes extends Fragment {
             //добавляем данные в map
             map.put(AppСonstants.USER_ID_FIELD, String.valueOf(getUserID()));
             map.put(AppСonstants.TABLE_NAME, name);
-            map.put(AppСonstants.TABLE_SHORT_NOTE, shortName);
+            map.put(AppСonstants.TABLE_SHORT_NAME, shortName);
             map.put(AppСonstants.TABLE_TEXT, text);
             map.put(AppСonstants.DATE_FIELD, date);
             map.put(AppСonstants.TABLE_TYPE, type);
@@ -454,7 +452,7 @@ public class Notes extends Fragment {
 
 
                                 cv.put(AppСonstants.TABLE_NAME, name);
-                                cv.put(AppСonstants.TABLE_SHORT_NOTE, shortName);
+                                cv.put(AppСonstants.TABLE_SHORT_NAME, shortName);
                                 cv.put(AppСonstants.TABLE_TEXT, text);
                                 cv.put(AppСonstants.TABLE_TYPE, type);
                                 cv.put(AppСonstants.TABLE_IS_NOTIF_SET, 0);

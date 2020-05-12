@@ -19,14 +19,6 @@
             android:orientation="vertical">
 
             <Switch
-                android:id="@+id/book_items"
-                style="@style/Widget.MaterialComponents.CompoundButton.Switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/settings_margin"
-                android:text="@string/show_book_materials" />
-
-            <Switch
                 android:id="@+id/darkTheme"
                 style="@style/Widget.MaterialComponents.CompoundButton.Switch"
                 android:layout_width="match_parent"

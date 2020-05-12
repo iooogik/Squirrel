@@ -187,7 +187,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
         //проверяем, показывалось ли сегодня уведомление с погодой
         if (!preferences.getString(AppСonstants.CURRENT_DATE, "").equals(dateText)
-                && (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 1) == 1)) {
+                && (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 0) == 1)) {
             //заносим текущую дату, для последующих проверок
             preferences.edit().putString(AppСonstants.CURRENT_DATE, dateText).apply();
             //ретрофит
@@ -389,11 +389,11 @@ public class Profile extends Fragment implements View.OnClickListener {
                         preferences.edit().putString(AppСonstants.USER_AVATAR,
                                 AppСonstants.IMAGE_URL + user.getAvatar()).apply();
 
-                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
+                        Picasso.with(context).load(AppСonstants.IMAGE_URL + user.getAvatar())
                                 .resize(100, 100)
                                 .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
 
-                        Picasso.get().load(AppСonstants.IMAGE_URL + user.getAvatar())
+                        Picasso.with(context).load(AppСonstants.IMAGE_URL + user.getAvatar())
                                 .resize(100, 100)
                                 .transform(new RoundedCornersTransformation(30, 5)).into(main_avatar);
 

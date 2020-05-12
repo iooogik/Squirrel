@@ -37,6 +37,7 @@ import iooojik.app.klass.models.bonusCrate.CratesData;
 import iooojik.app.klass.models.promocode.LasPromo;
 import iooojik.app.klass.models.promocode.PromoData;
 import iooojik.app.klass.models.shop.ShopItem;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,13 +52,16 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
     private LayoutInflater inflater;
     private SharedPreferences preferences;
     private Api api;
+    private View view;
 
-    ShopItemsAdapter(List<ShopItem> items, Context context, Fragment fragment, SharedPreferences preferences) {
+    ShopItemsAdapter(List<ShopItem> items, Context context, Fragment fragment,
+                     SharedPreferences preferences, View view) {
         this.items = items;
         this.context = context;
         this.fragment = fragment;
         this.inflater = LayoutInflater.from(context);
         this.preferences = preferences;
+        this.view = view;
     }
 
     @NonNull
@@ -74,16 +78,21 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
         holder.description.setText(shopItem.getDescription());
         holder.price.setText(shopItem.getPrice());
 
+
         if (!shopItem.getLogoURL().trim().isEmpty()) {
-            Picasso.get().load(String.valueOf(shopItem.getLogoURL())).into(holder.logo);
+            Picasso.with(context).load(shopItem.getLogoURL()).into(holder.logo);
         } else {
             holder.logo.setImageResource(R.drawable.baseline_account_circle_24);
         }
 
+
+
         holder.buy.setOnClickListener(v -> {
             int userCoins = preferences.getInt(AppСonstants.USER_COINS, 0);
+
             if (userCoins - Integer.parseInt(shopItem.getPrice()) >= 0){
             preferences.edit().putInt(AppСonstants.USER_COINS, userCoins - Integer.parseInt(shopItem.getPrice())).apply();
+
             TextView balance = fragment.getView().findViewById(R.id.balance);
             balance.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
             //обновляем количество койнов у пользователя
@@ -224,6 +233,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
                         public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
                             if (response.code() == 200){
                                 CratesData data = response.body().getData();
+                                Snackbar.make(view, "Куплено", Snackbar.LENGTH_LONG).show();
                                 if (data.getBonusCratesToUsers().size() == 0){
                                     addCrateInfo();
                                 }else {
@@ -237,6 +247,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
 
                         }
                     });
+
                 });
             }
             }

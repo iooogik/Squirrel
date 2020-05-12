@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -176,7 +177,8 @@ public class StandartNote extends Fragment{
 
         textSize = userCursor.getInt(userCursor.getColumnIndex("fontSize"));
         typeFace = userCursor.getInt(userCursor.getColumnIndex("typeface"));
-        noteText.setTextSize(textSize);
+        if (textSize <= 0) textSize = 14;
+        noteText.setTextSize(Float.valueOf(textSize));
         noteText.setTypeface(null, typeFace);
     }
 
@@ -350,6 +352,7 @@ public class StandartNote extends Fragment{
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_text_settings, null);
         openTextSettings.setContentView(bottomSheet);
         EditText fontSize = bottomSheet.findViewById(R.id.font_size);
+        fontSize.setText(String.valueOf(textSize));
 
         fontSize.addTextChangedListener(new TextWatcher() {
             @Override
@@ -362,13 +365,20 @@ public class StandartNote extends Fragment{
 
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void afterTextChanged(Editable s) {
-                if (s != null && Float.parseFloat(s.toString()) > 0) {
+                String numRegex   = "[0-9]";
+
+                Log.e("ttttt", String.valueOf(s));
+                if (s.toString().isEmpty() && s.toString().matches(numRegex)){
+                    fontSize.setText("14");
+                    noteText.setTextSize(14.0f);
+                    textSize = 14;
+                } else if (!s.toString().isEmpty() && Float.parseFloat(s.toString()) > 0 && s.toString().matches(numRegex)) {
                     noteText.setTextSize(Float.parseFloat(s.toString()));
                     textSize = Integer.parseInt(s.toString());
                 }
-                else noteText.setTextSize(14.0f);
             }
         });
 
@@ -377,10 +387,22 @@ public class StandartNote extends Fragment{
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.list_item, list_items);
         AutoCompleteTextView spinner = bottomSheet.findViewById(R.id.drop_down);
         spinner.setAdapter(adapter);
-
-
+        switch (typeFace){
+            case Typeface.NORMAL:
+                spinner.setText(list_items[0], false);
+                break;
+            case Typeface.BOLD:
+                spinner.setText(list_items[1], false);
+                break;
+            case Typeface.ITALIC:
+                spinner.setText(list_items[2], false);
+                break;
+            case Typeface.BOLD_ITALIC:
+                spinner.setText(list_items[3], false);
+                break;
+        }
         spinner.setOnItemClickListener((parent, view, position, id) -> {
-
+            typeFace = 0;
             switch (position){
                 case 0:
                     typeFace = Typeface.NORMAL;

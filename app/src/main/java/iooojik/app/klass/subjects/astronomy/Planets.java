@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,16 +24,19 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
+
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.subjects.ar.ARcamera;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class Planets extends Fragment implements View.OnClickListener {
 
     private View view;
-    private Database mDBHelper;
     private Cursor userCursor;
-    private SQLiteDatabase mDb;
 
 
     public Planets(){}
@@ -51,10 +55,10 @@ public class Planets extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
 
-        mDBHelper = new Database(getContext());
+        Database mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-        mDb = mDBHelper.getReadableDatabase();
+        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
         userCursor = mDb.rawQuery("Select * from Planets", null);
         getPlanets();
 
@@ -107,10 +111,11 @@ public class Planets extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.openAr){
-
-            Intent intent = new Intent(getContext(), ARcamera.class);
-            intent.putExtra("TYPE", "SolarSystem");
-            startActivity(intent);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Intent intent = new Intent(getContext(), ARcamera.class);
+                intent.putExtra("TYPE", "SolarSystem");
+                startActivity(intent);
+            } else Snackbar.make(getView(), "Несовместимость версий Android", Snackbar.LENGTH_LONG).show();
         }
     }
 

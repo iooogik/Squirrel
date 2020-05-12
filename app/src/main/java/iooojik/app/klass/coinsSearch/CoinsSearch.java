@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
         fab.show();
         fab.setOnClickListener(this);
         fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
+
         enableBottomSheet();
         prepareMap();
         setLocationManager();
@@ -89,7 +91,7 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
     @SuppressLint("InflateParams")
     private void enableBottomSheet() {
         bottomSheetDialog = new BottomSheetDialog(getActivity());
-        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_sport, null);
+        View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_coins_search, null);
         Button stop = bottomSheet.findViewById(R.id.stop);
         stop.setOnClickListener(this);
 
@@ -242,12 +244,12 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                         double k = getRandomBetweenRange(0, 1);
                         int chance = (int) getRandomBetweenRange(1, 2);
                         if (chance == 2) k *= (-1);
-                        lat = lat + (k / 10000);
+                        lat = lat + (k / 1000);
 
                         k = getRandomBetweenRange(0, 1);
                         chance = (int) getRandomBetweenRange(1, 2);
                         if (chance == 2) k *= (-1);
-                        lon = lon + (k / 10000);
+                        lon = lon + (k / 1000);
 
                         caseLocation = new Location("");
                         caseLocation.setLatitude(lat);

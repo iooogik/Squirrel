@@ -133,7 +133,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
         holder.email.setText(mate.getEmail());
         holder.name.setText(mate.getFullName());
         if (!mate.getAvatar().equals("null")){
-            Picasso.get().load(AppСonstants.IMAGE_URL + mate.getAvatar())
+            Picasso.with(context).load(AppСonstants.IMAGE_URL + mate.getAvatar())
                     .resize(100, 100)
                     .transform(new RoundedCornersTransformation(30, 5)).into(holder.img);
 

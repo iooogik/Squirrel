@@ -5,6 +5,7 @@ import java.util.HashMap;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
 import iooojik.app.klass.models.passed_test_result.DataPassedTest;
 import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.achievements.AchievementsData;
@@ -198,6 +199,24 @@ public interface Api {
     @POST("api/cases_to_users/delete")
     Call<ServerResponse<PostResult>> removeCase(@Header("X-API-KEY") String api_key, @Field("_id") String id);
 
+    @FormUrlEncoded
+    @POST("api/is_user_get_test/update")
+    Call<ServerResponse<PostResult>> postUserGetTest(@Header("X-API-KEY") String api_key,
+                                                     @Header("X-TOKEN") String token,
+                                                     @FieldMap HashMap<String, String> map);
+
+    @FormUrlEncoded
+    @POST("api/is_user_get_test/delete")
+    Call<ServerResponse<PostResult>> deleteUserGetTest(@Header("X-API-KEY") String api_key,
+                                                     @Header("X-TOKEN") String token,
+                                                     @Field("_id") String id);
+
+    @FormUrlEncoded
+    @POST("api/is_user_get_test/add")
+    Call<ServerResponse<PostResult>> addUserGetTest(@Header("X-API-KEY") String api_key,
+                                                     @Header("X-TOKEN") String token,
+                                                     @FieldMap HashMap<String, String> map);
+
 
 
     //получение item-ов в магазине
@@ -220,6 +239,11 @@ public interface Api {
     Call<ServerResponse<PromoData>> getPromo(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token,
                                              @Query("field") String field, @Query("filter") String filter);
+
+    @GET("api/is_user_get_test/all?")
+    Call<ServerResponse<DataIsUserGetTest>> isUserGetTest(@Header("X-API-KEY") String api_key,
+                                                          @Header("X-TOKEN") String token,
+                                                          @Query("field") String field, @Query("filter") String filter);
 
     //получение кейса
     @GET("api/cases_to_users/all?")

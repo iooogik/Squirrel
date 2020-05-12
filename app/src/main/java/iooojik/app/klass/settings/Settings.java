@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -69,15 +70,15 @@ public class Settings extends Fragment implements View.OnClickListener{
     private Database mDBHelper;
     private SQLiteDatabase mDb;
     private BottomSheetDialog weather;
-    private Switch darkTheme, show_book_mat, show, showID;
-    private FloatingActionButton floatingActionButton;
+    private Switch darkTheme, show, showID;
+    private Button deleteTests, deleteNotes, showBottomWeather;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
-        floatingActionButton = getActivity().findViewById(R.id.fab);
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
         //получаем настройки
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -87,13 +88,13 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        Button deleteTests = view.findViewById(R.id.delete_tests);
+        deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
 
-        Button deleteNotes = view.findViewById(R.id.delete_notes);
+        deleteNotes = view.findViewById(R.id.delete_notes);
         deleteNotes.setOnClickListener(this);
 
-        Button showBottomWeather = view.findViewById(R.id.showWeather);
+        showBottomWeather = view.findViewById(R.id.showWeather);
         showBottomWeather.setOnClickListener(this);
 
         TextView policy = view.findViewById(R.id.policy);
@@ -107,8 +108,6 @@ public class Settings extends Fragment implements View.OnClickListener{
     private void load(){
         //установка тем
         setDarkTheme();
-        //"чек" для того, чтобы убрать справочные материалы из заметок
-        setShowBookMaterials();
         //установка текущей версии
         setCurrentVersion();
         deAuth();
@@ -141,14 +140,26 @@ public class Settings extends Fragment implements View.OnClickListener{
             View header = navigationView.getHeaderView(0);
             TextView name = header.findViewById(R.id.textView);
             MaterialToolbar toolbar = getActivity().findViewById(R.id.bar);
-            NavController navHostFragment = NavHostFragment.findNavController(this);
+            LinearLayout mainLayout = view.findViewById(R.id.mainLayout);
+            TextView version = view.findViewById(R.id.version);
+
 
             if (isChecked){
                 getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeDark).apply());
                 getActivity().setTheme(preferences.getInt(APP_PREFERENCES_THEME, R.style.AppThemeLight));
 
+                darkTheme.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                show.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                showID.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
 
-                navHostFragment.navigate(R.id.nav_settings);
+                deleteTests.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                deleteNotes.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                showBottomWeather.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+
+                version.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+
+                mainLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_dark));
+
                 navigationView.setItemTextColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorWhite)));
                 navigationView.setItemIconTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorWhite)));
                 toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkBackground));
@@ -161,7 +172,18 @@ public class Settings extends Fragment implements View.OnClickListener{
 
                 getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeLight).apply());
                 getActivity().setTheme(preferences.getInt(APP_PREFERENCES_THEME, R.style.AppThemeLight));
-                navHostFragment.navigate(R.id.nav_settings);
+
+                darkTheme.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                show.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                showID.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+
+                deleteTests.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                deleteNotes.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                showBottomWeather.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+
+                mainLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+
+                version.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
 
                 navigationView.setItemTextColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.color_primary_text)));
                 navigationView.setItemIconTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.color_primary_text)));
@@ -172,35 +194,6 @@ public class Settings extends Fragment implements View.OnClickListener{
                 navigationView.setBackgroundResource(R.drawable.nav_view_background);
             }
 
-        });
-
-    }
-
-    private void setShowBookMaterials() {
-        //убираем справочные материалы из заметок
-        show_book_mat = view.findViewById(R.id.book_items);
-
-        if (preferences.contains(APP_PREFERENCES_SHOW_BOOK_MATERIALS)) {
-            // Получаем число из настроек
-            int val = preferences.getInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
-
-            if(val == 1){
-                show_book_mat.setChecked(true);
-            } else if (val == 0){
-                show_book_mat.setChecked(false);
-            }
-        }
-
-        show_book_mat.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked){
-                SharedPreferences.Editor SettingsEditor = preferences.edit();
-                SettingsEditor.putInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 1);
-                SettingsEditor.apply();
-            } else {
-                SharedPreferences.Editor SettingsEditor = preferences.edit();
-                SettingsEditor.putInt(APP_PREFERENCES_SHOW_BOOK_MATERIALS, 0);
-                SettingsEditor.apply();
-            }
         });
 
     }
@@ -217,12 +210,13 @@ public class Settings extends Fragment implements View.OnClickListener{
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
 
             builder.setTitle("Важное сообщение!");
-            builder.setMessage("При выходе все ваши заметки будут удалены, результаты тестов сброшены." +
+            builder.setMessage("При выходе все ваши заметки будут удалены." +
                     "Вы действительно хотите выйти?");
 
             builder.setPositiveButton("Выйти", (dialog, which) -> {
                 preferences.edit().clear().apply();
-
+                mDb = mDBHelper.getWritableDatabase();
+                mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
                 startActivity(new Intent(getContext(), MainActivity.class));
             });
 
@@ -339,6 +333,9 @@ public class Settings extends Fragment implements View.OnClickListener{
 
         //переключатель
         show = view.findViewById(R.id.showWeatherSwitchPerDay);
+
+        if (preferences.getInt(AppСonstants.SHOW_WEATHER_NOTIF, 0) == 1) show.setChecked(true);
+
 
         show.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked){

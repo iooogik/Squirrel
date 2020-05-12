@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.shop.ShopData;
 import iooojik.app.klass.models.shop.ShopItem;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,14 +44,16 @@ public class Shop extends Fragment {
     private Api api;
     private Fragment fragment;
     private SharedPreferences preferences;
+    private View view;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_shop, container, false);
+
         context = getContext();
         fragment = this;
+        view = inflater.inflate(R.layout.fragment_shop, container, false);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
         TextView balance = view.findViewById(R.id.balance);
@@ -89,7 +94,8 @@ public class Shop extends Fragment {
                         if (Integer.parseInt(shopItem.getVisible()) == 0)  shopItems.remove(shopItem);
                     }
 
-                    ShopItemsAdapter adapter = new ShopItemsAdapter(shopItems, context, fragment, preferences);
+                    ShopItemsAdapter adapter = new ShopItemsAdapter(shopItems, context, fragment,
+                            preferences, view);
 
                     items.setLayoutManager(new LinearLayoutManager(getContext()));
                     items.setAdapter(adapter);

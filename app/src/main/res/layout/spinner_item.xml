@@ -15,8 +15,7 @@
             android:id="@+id/filled_exposed_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:duplicateParentState="false"
-            tools:ignore="LabelFor" />
+            android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
     

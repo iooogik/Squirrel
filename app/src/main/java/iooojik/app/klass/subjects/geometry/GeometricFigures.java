@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.subjects.ar.ARcamera;
@@ -34,9 +37,7 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
     public GeometricFigures() {}
 
     private View view;
-    private Database mDBHelper;
     private Cursor userCursor;
-    private SQLiteDatabase mDb;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,10 +50,10 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
     @Override
     public void onStart() {
         super.onStart();
-        mDBHelper = new Database(getContext());
+        Database mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-        mDb = mDBHelper.getReadableDatabase();
+        SQLiteDatabase mDb = mDBHelper.getReadableDatabase();
         userCursor = mDb.rawQuery("Select * from Geometry", null);
         getFigures();
     }
@@ -100,9 +101,12 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
         desc.setText(description);
 
         view1.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), ARcamera.class);
-            intent.putExtra("TYPE", type);
-            startActivity(intent);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Intent intent = new Intent(getContext(), ARcamera.class);
+                intent.putExtra("TYPE", type);
+                startActivity(intent);
+            } else Snackbar.make(getView(), "Несовместимость версий Android", Snackbar.LENGTH_LONG).show();
+
         });
 
         linearLayout.addView(view1);

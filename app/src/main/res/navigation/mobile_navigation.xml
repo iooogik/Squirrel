@@ -6,11 +6,20 @@
     app:startDestination="@+id/nav_profile">
 
     <fragment
-        android:id="@+id/nav_news"
+        android:id="@+id/nav_subjects"
         android:name="iooojik.app.klass.subjects.Subject"
         android:label="AR"
         tools:layout="@layout/fragment_subjects" >
 
+        <action
+            android:id="@+id/action_nav_subjects_to_nav_planets_article"
+            app:destination="@id/nav_planets_article" />
+        <action
+            android:id="@+id/action_nav_subjects_to_nav_geometry_list"
+            app:destination="@id/nav_geometry_list" />
+        <action
+            android:id="@+id/action_nav_subjects_to_nav_planets_list"
+            app:destination="@id/nav_planets_list" />
     </fragment>
 
     <fragment
@@ -19,11 +28,11 @@
         android:label="Заметки"
         tools:layout="@layout/fragment_notes" >
         <action
-            android:id="@+id/action_nav_notes_to_nav_book"
-            app:destination="@id/nav_book" />
-        <action
             android:id="@+id/action_nav_notes_to_nav_standart_note"
             app:destination="@id/nav_standart_note" />
+        <action
+            android:id="@+id/action_nav_notes_to_nav_book"
+            app:destination="@id/nav_book" />
         <action
             android:id="@+id/action_nav_notes_to_nav_checkList"
             app:destination="@id/nav_checkList" />
@@ -33,7 +42,11 @@
         android:id="@+id/nav_tests"
         android:name="iooojik.app.klass.tests.tests.Tests"
         android:label="Тесты"
-        tools:layout="@layout/fragment_test" />
+        tools:layout="@layout/fragment_test" >
+        <action
+            android:id="@+id/action_nav_tests_to_questions"
+            app:destination="@id/questions" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_settings"
@@ -41,7 +54,7 @@
         android:label="Настройки"
         tools:layout="@layout/fragment_settings" >
         <action
-            android:id="@+id/action_nav_settings_to_privatePolicy"
+            android:id="@+id/action_nav_settings_to_nav_policy"
             app:destination="@id/nav_policy" />
     </fragment>
 
@@ -49,11 +62,7 @@
         android:id="@+id/nav_planets_list"
         android:name="iooojik.app.klass.subjects.astronomy.Planets"
         android:label="Планеты"
-        tools:layout="@layout/fragment_planets"  >
-        <action
-            android:id="@+id/action_nav_planets_list_to_nav_planets_article"
-            app:destination="@id/nav_planets_article" />
-    </fragment>
+        tools:layout="@layout/fragment_planets"  />
 
     <fragment
         android:id="@+id/nav_planets_article"
@@ -91,13 +100,27 @@
         android:id="@+id/nav_signUp"
         android:name="iooojik.app.klass.auth.SignUp"
         tools:layout="@layout/fragment_sign_up"
-        android:label="Регистрация" />
+        android:label="Регистрация" >
+        <action
+            android:id="@+id/action_nav_signUp_to_nav_signIn"
+            app:destination="@id/nav_signIn" />
+        <action
+            android:id="@+id/action_nav_signUp_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_signIn"
         android:name="iooojik.app.klass.auth.SignIn"
         android:label="Вход"
-        tools:layout="@layout/fragment_sign_in" />
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_nav_signIn_to_nav_signUp"
+            app:destination="@id/nav_signUp" />
+        <action
+            android:id="@+id/action_nav_signIn_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_profile"
@@ -105,50 +128,20 @@
         tools:layout="@layout/fragment_profile"
         android:label="Профиль" >
         <action
-            android:id="@+id/action_nav_profile_to_group"
+            android:id="@+id/action_nav_profile_to_groupProfile"
+            app:destination="@id/groupProfile" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_group"
             app:destination="@id/nav_group" />
-
         <action
-            android:id="@+id/action_nav_home_to_nav_planets_list"
-            app:destination="@id/nav_planets_list" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_geometry_list"
-            app:destination="@id/nav_geometry_list" />
-
-        <action
-            android:id="@+id/action_nav_home_to_nav_notes"
+            android:id="@+id/action_nav_profile_to_nav_notes"
             app:destination="@id/nav_notes" />
         <action
-            android:id="@+id/action_nav_home_to_nav_tests"
+            android:id="@+id/action_nav_profile_to_nav_tests"
             app:destination="@id/nav_tests" />
-        <action
-            android:id="@+id/action_nav_home_pop2"
-            app:destination="@+id/nav_planets_list"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/mobile_navigation"
-            app:popUpToInclusive="false" />
-        <action
-            android:id="@+id/action_nav_profile_to_games2"
-            app:destination="@id/nav_games" />
         <action
             android:id="@+id/action_nav_profile_to_nav_games"
             app:destination="@id/nav_games" />
-        <action
-            android:id="@+id/action_nav_profile_to_nav_news"
-            app:destination="@id/nav_news" />
-        <action
-            android:id="@+id/action_nav_profile_to_nav_shop"
-            app:destination="@id/nav_shop" />
-        <action
-            android:id="@+id/action_nav_profile_to_games"
-            app:destination="@id/nav_games" />
-        <action
-            android:id="@+id/action_nav_profile_to_sport"
-            app:destination="@id/nav_sport" />
-
     </fragment>
     <fragment
         android:id="@+id/nav_group"
@@ -156,7 +149,7 @@
         tools:layout="@layout/fragment_group"
         android:label="Группа" >
         <action
-            android:id="@+id/action_nav_group_to_testEditor2"
+            android:id="@+id/action_nav_group_to_nav_testEditor"
             app:destination="@id/nav_testEditor" />
     </fragment>
     <fragment
@@ -169,20 +162,12 @@
         android:id="@+id/groupProfile"
         android:name="iooojik.app.klass.groupProfile.GroupProfile"
         android:label="Группа"
-        tools:layout="@layout/fragment_group_profile" >
-        <action
-            android:id="@+id/action_groupProfile_to_nav_profile"
-            app:destination="@id/nav_profile" />
-    </fragment>
+        tools:layout="@layout/fragment_group_profile" />
     <fragment
         android:id="@+id/questions"
         android:name="iooojik.app.klass.tests.questions.Questions"
         android:label="Тест"
-        tools:layout="@layout/fragment_questions" >
-        <action
-            android:id="@+id/action_questions_to_nav_tests"
-            app:destination="@id/nav_tests" />
-    </fragment>
+        tools:layout="@layout/fragment_questions" />
     <fragment
         android:id="@+id/nav_shop"
         android:name="iooojik.app.klass.shop.Shop"
@@ -192,19 +177,36 @@
         android:id="@+id/nav_todoList"
         android:name="iooojik.app.klass.todo.TodoList"
         android:label="ToDo лист"
-        tools:layout="@layout/fragment_todo_list" >
-        <action
-            android:id="@+id/action_todoList_to_nav_profile"
-            app:destination="@id/nav_profile" />
-    </fragment>
+        tools:layout="@layout/fragment_todo_list" />
 
     <fragment
         android:id="@+id/nav_games"
         android:name="iooojik.app.klass.games.Games"
         android:label="Переменка" >
         <action
-            android:id="@+id/action_games_to_lifeAtSpace"
+            android:id="@+id/action_nav_games_to_nav_gameTikTak"
+            app:destination="@id/nav_gameTikTak" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_pairs"
+            app:destination="@id/nav_pairs" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_las"
             app:destination="@id/nav_las" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_subjects"
+            app:destination="@id/nav_subjects" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_shop"
+            app:destination="@id/nav_shop" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_todoList"
+            app:destination="@id/nav_todoList" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_coins_searc"
+            app:destination="@id/nav_coins_searc" />
+        <action
+            android:id="@+id/action_nav_games_to_nav_settings"
+            app:destination="@id/nav_settings" />
     </fragment>
 
     <fragment
@@ -224,7 +226,7 @@
         tools:layout="@layout/fragment_game_tik_tak" />
 
     <fragment
-        android:id="@+id/nav_sport"
+        android:id="@+id/nav_coins_searc"
         android:name="iooojik.app.klass.coinsSearch.CoinsSearch"
         android:label="Поиск койнов"
         tools:layout="@layout/fragment_sport" />

@@ -51,7 +51,7 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         GameObject gameObject = gameObjects.get(position);
         holder.name.setText(gameObject.getName());
-        Picasso.get().load(gameObject.getImageID())
+        Picasso.with(context).load(gameObject.getImageID())
                 .resize(130, 130)
                 .transform(new RoundedCornersTransformation(30, 5)).into(holder.logo);
         if (gameObject.gameID == R.id.nav_pairs){

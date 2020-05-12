@@ -19,7 +19,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 4;
+    static int DB_VERSION = 6;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -94,7 +94,8 @@ public class AppСonstants {
     public static final String TABLE_IMAGE = "image";
     public static final String TABLE_PERM_TO_SYNC = "permToSync";
     public static final String TABLE_IS_NOTIF_SET = "isNotifSet";
-    public static final String TABLE_SHORT_NOTE = "shortNote";
+    //public static final String TABLE_SHORT_NOTE = "shortNote";
+    public static final String TABLE_SHORT_NAME = "shortName";
     public static final String TABLE_TYPE = "type";
     public static final String TABLE_DB_TYPE_SHOP = "shop";
     public static final String TABLE_DB_TYPE_STNDRT = "standart";

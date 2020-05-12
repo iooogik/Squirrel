@@ -3,7 +3,6 @@ package iooojik.app.klass.tests.tests;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
@@ -35,6 +34,8 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
+import iooojik.app.klass.models.isUserGetTest.IsUserGetTest;
 import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.test_results.TestsResult;
 import retrofit2.Call;
@@ -346,6 +347,40 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 Log.e("ADD TEST", String.valueOf(t));
             }
         });
+
+        Call<ServerResponse<DataIsUserGetTest>> serverResponseCall = api.isUserGetTest(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+
+        serverResponseCall.enqueue(new Callback<ServerResponse<DataIsUserGetTest>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataIsUserGetTest>> call, Response<ServerResponse<DataIsUserGetTest>> response) {
+                if (response.code() == 200){
+                    List<IsUserGetTest> isUserGetTests = response.body().getData().getIsUserGetTest();
+                    for (IsUserGetTest test : isUserGetTests){
+                        Call<ServerResponse<PostResult>> call2 = api.deleteUserGetTest(AppСonstants.X_API_KEY,
+                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), String.valueOf(test.getId()));
+
+                        call2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                if (response.code() != 200) Log.e("DELETING TEST RESULT", String.valueOf(response.raw()));
+                            }
+
+                            @Override
+                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataIsUserGetTest>> call, Throwable t) {
+
+            }
+        });
+
     }
 
     private String createSQL(String name, String description, String textQuestions,
