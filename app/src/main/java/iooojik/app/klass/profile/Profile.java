@@ -41,6 +41,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
@@ -51,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
@@ -62,7 +64,6 @@ import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.bonusCrate.CratesData;
-import iooojik.app.klass.models.fileUpload.UploadResult;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.profileData.User;
@@ -612,7 +613,6 @@ public class Profile extends Fragment implements View.OnClickListener {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("Recycle")
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -681,36 +681,70 @@ public class Profile extends Fragment implements View.OnClickListener {
                 }
         }
         else if (requestCode == AppСonstants.PICK_FILE){
-            /*
+            //получаем uri и полный путь к файлу, создаём файл и отправляем его, ссылку заносим в базу
             Uri selectedFile = data.getData();
             File file = new File(getPath(selectedFile));
             RequestBody requestFile =
                     RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            String fileName = file.getName();
+            int pointIndex = -1;
+            if (fileName.contains(".")) {
+                pointIndex = fileName.lastIndexOf('.');
+
+                StringBuilder extension = new StringBuilder();
+                for (int i = pointIndex; i < fileName.length(); i++) {
+                    extension.append(fileName.charAt(i));
+                }
+
+
+            fileName = UUID.randomUUID() + extension.toString();
+            }
             MultipartBody.Part body =
-                    MultipartBody.Part.createFormData("user_file", file.getName(), requestFile);
+                    MultipartBody.Part.createFormData("file", fileName.toLowerCase(), requestFile);
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(AppСonstants.TEST_URL)
+                    .baseUrl(AppСonstants.NEW_API_URL)
                     .addConverterFactory(GsonConverterFactory.create())
 
                     .build();
             FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
 
-            Call<UploadResult> resultCall = fileUploadApi.uploadFile(body);
-            resultCall.enqueue(new Callback<UploadResult>() {
+            Call<Void> resultCall = fileUploadApi.uploadFile(body);
+            String finalFileName = fileName;
+            resultCall.enqueue(new Callback<Void>() {
                 @Override
-                public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
-                    if (response.code() != 200) Log.e("UPLOADING FILE", String.valueOf(response.raw()));
-                    Log.e("UPLOADING FILE", String.valueOf(response.body().getResult() + " " + file.getPath()));
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.code() == 200){
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+                        map.put(AppСonstants.FILE_URL_FIELD, AppСonstants.IOOOJIK_BASE_URL + "project/" + finalFileName);
+
+                        Call<ServerResponse<PostResult>> serverResponseCall = api.addFileInfo(AppСonstants.X_API_KEY,
+                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                        serverResponseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                if (response.code() == 200) Snackbar.make(getView(), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                    else Log.e("UPLOADING FILE", String.valueOf(response.raw()));
+
                 }
 
                 @Override
-                public void onFailure(Call<UploadResult> call, Throwable t) {
-                    Log.e("UPLOADING FILE", String.valueOf(t) + " " + file.getPath());
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e("UPLOADING FILE", t + " " + file.getPath());
                 }
             });
 
-             */
+
+
         }
     }
 
@@ -758,10 +792,9 @@ public class Profile extends Fragment implements View.OnClickListener {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_upload:
-                uploadFile();
-                return true;
+        if (item.getItemId() == R.id.action_upload) {
+            uploadFile();
+            return true;
         }
         return false;
     }

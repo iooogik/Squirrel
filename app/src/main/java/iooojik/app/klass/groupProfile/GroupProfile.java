@@ -3,9 +3,11 @@ package iooojik.app.klass.groupProfile;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -35,6 +38,7 @@ import iooojik.app.klass.api.Api;
 import iooojik.app.klass.group.GroupMatesAdapter;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.group_attachment.DataGroupAttachment;
 import iooojik.app.klass.models.groups_messages.DataMessage;
 import iooojik.app.klass.models.groups_messages.MessagesToGroup;
 import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
@@ -74,12 +78,16 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     }
 
     private void setInformation(){
-        getExtraData();
-        TextView groupN = view.findViewById(R.id.group_name);
-        groupN.setText(groupName);
-        getGroupInformation();
-        getTestTeacherInfo();
-        getGroupMessage();
+        getActivity().runOnUiThread(() -> {
+            getExtraData();
+            TextView groupN = view.findViewById(R.id.group_name);
+            groupN.setText(groupName);
+            getGroupInformation();
+            getTestTeacherInfo();
+            getGroupMessage();
+            getAttachment();
+        });
+
     }
 
     private void getGroupInformation() {
@@ -332,6 +340,42 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
             @Override
             public void onFailure(Call<ServerResponse<DataMessage>> call, Throwable t) {
                 Log.e("GETTING MESSAGE", String.valueOf(t));
+            }
+        });
+    }
+
+    private void getAttachment(){
+        doRetrofit();
+        Call<ServerResponse<DataGroupAttachment>> serverResponseCall = api.getAttachment(AppСonstants.X_API_KEY,
+                sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, groupID);
+        serverResponseCall.enqueue(new Callback<ServerResponse<DataGroupAttachment>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataGroupAttachment>> call, Response<ServerResponse<DataGroupAttachment>> response) {
+                if (response.code() == 200){
+                    if (response.body().getData().getFilesToGroups().size() > 0){
+                        LinearLayout linearLayout = view.findViewById(R.id.attachment);
+                        linearLayout.setVisibility(View.VISIBLE);
+                        Button download = view.findViewById(R.id.download);
+                        download.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //скачивание файла
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(response.
+                                                body().getData().
+                                                getFilesToGroups().get(response.body().
+                                                getData().getFilesToGroups().size() -1).
+                                                getFileUrl()));
+                                startActivity(browserIntent);
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataGroupAttachment>> call, Throwable t) {
+
             }
         });
     }

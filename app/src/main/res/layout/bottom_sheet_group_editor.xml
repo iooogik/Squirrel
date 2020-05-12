@@ -94,6 +94,17 @@
                 app:icon="@drawable/round_edit_24" />
 
             <Button
+                android:id="@+id/choose_file"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                app:icon="@drawable/round_publish_24"
+                android:layout_width="340dp"
+                android:layout_gravity="center"
+
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/addGroupFile" />
+
+            <Button
                 android:id="@+id/add_message"
                 style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 android:layout_width="340dp"
@@ -111,6 +122,8 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
                 android:text="@string/deleteTest"
+                app:iconTint="@color/notCompleted"
+                android:textColor="@color/notCompleted"
                 app:icon="@drawable/baseline_delete_forever_24" />
 
         </LinearLayout>

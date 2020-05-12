@@ -40,6 +40,7 @@ public class AppСonstants {
     public static final String BASE_URL = "http://195.19.44.146:89/";
     //url, чтобы получать пользовательские картинки
     public static final String IMAGE_URL = "http://195.19.44.146:89/uploads/user/";
+    public static final String NEW_API_URL = "http://188.127.254.149:8008/klass/";
     //ключ апи
     public static final String X_API_KEY = "33CD9CAE7D5D15F7E435A26BBFF81A4E";
     //названия настроек
@@ -149,5 +150,6 @@ public class AppСonstants {
     public static final String MESSAGE_FIELD = "message";
     public static final String TEST_NAME_FIELD = "test_name";
     public static final String DIFFICULTIES_FIELD = "difficulties";
+    public static final String FILE_URL_FIELD = "file_url";
 
 }

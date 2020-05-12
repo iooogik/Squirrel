@@ -279,6 +279,10 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="testDifficulties">Этот вопрос вызвал у меня затруднения</string>
     <string name="percentHardQuestions">Процент вопросов, вызывающих затруднение равен</string>
     <string name="percentPassrdTest">Процент учеников, выполнивших тест равен</string>
+    <string name="addGroupFile">Прикрепить файл к группе</string>
+    <string name="uploadedFiles">Загруженные файлы</string>
+    <string name="Download">Скачать</string>
+    <string name="teacherAttachment">Преподаватель прикрепил файл</string>
 
 
 </resources>

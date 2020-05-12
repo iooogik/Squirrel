@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,6 +41,8 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.file_info.DataFiles;
+import iooojik.app.klass.models.file_info.FileObject;
 import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.teacher.GroupInfo;
 import iooojik.app.klass.models.test_results.DataTestResult;
@@ -81,6 +84,7 @@ public class Group extends Fragment{
     private SharedPreferences preferences;
     private Fragment fragment;
     private BottomSheetDialog bottomSheetDialog;
+    private BottomSheetDialog fileBottomSheetDialog;
 
 
 
@@ -430,16 +434,16 @@ public class Group extends Fragment{
             }
         });
 
-        bottomSheetDialog.setContentView(bottomSheet);
-
+        //добавление ученика в группу
         Button add = bottomSheet.findViewById(R.id.add);
         add.setOnClickListener(v -> {
             addUser();
             bottomSheetDialog.hide();
         });
 
-        Button sync = bottomSheet.findViewById(R.id.test_editor);
-        sync.setOnClickListener(v -> {
+        //открытие редакторов теста
+        Button test_editor = bottomSheet.findViewById(R.id.test_editor);
+        test_editor.setOnClickListener(v -> {
             //редактор тестов
             Bundle bundle = new Bundle();
             bundle.putInt("id", id);
@@ -452,12 +456,14 @@ public class Group extends Fragment{
             bottomSheetDialog.hide();
         });
 
-        Button download = bottomSheet.findViewById(R.id.add_message);
-        download.setOnClickListener(v -> {
+        //добавление сообщения группе
+        Button add_message = bottomSheet.findViewById(R.id.add_message);
+        add_message.setOnClickListener(v -> {
             addMessageToGroup();
             bottomSheetDialog.hide();
         });
 
+        //удаление активного теста
         Button delete_test = bottomSheet.findViewById(R.id.delete_test);
         delete_test.setOnClickListener(v -> {
             HashMap<String, String> updateMap = new HashMap<>();
@@ -485,8 +491,93 @@ public class Group extends Fragment{
             });
         });
 
-        bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
+        //окно загрузки файлов
+        fileBottomSheetDialog = new BottomSheetDialog(getActivity());
+        View fileBottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_file_selector, null);
+        LinearLayout layout = fileBottomSheet.findViewById(R.id.files);
+        Call<ServerResponse<DataFiles>> serverResponseCall = api.getUserFiles(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
+                preferences.getString(AppСonstants.USER_EMAIL,""));
 
+        serverResponseCall.enqueue(new Callback<ServerResponse<DataFiles>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataFiles>> call, Response<ServerResponse<DataFiles>> response) {
+                if (response.code() == 200){
+
+                    List<FileObject> fileObjects = response.body().getData().getFilesToUsers();
+                    for (FileObject file : fileObjects){
+                        View img_view = getActivity().getLayoutInflater().inflate(R.layout.file_item, null);
+                        ImageView fileImage = img_view.findViewById(R.id.imageView4);
+                        TextView fileNameText = img_view.findViewById(R.id.file_name);
+                        int pointIndex = file.getFileUrl().lastIndexOf('.');
+                        StringBuilder extension = new StringBuilder();
+                        for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
+                            extension.append(file.getFileUrl().charAt(i));
+                        }
+                        StringBuilder fileName = new StringBuilder();
+                        pointIndex = file.getFileUrl().lastIndexOf('/');
+                        for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
+                            fileName.append(file.getFileUrl().charAt(i));
+                        }
+
+                        img_view.setOnClickListener(v -> {
+                            Call<ServerResponse<PostResult>> deleteGroupFile = api.deleteGroupFile(AppСonstants.X_API_KEY,
+                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), String.valueOf(id));
+
+                            deleteGroupFile.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                @Override
+                                public void onResponse(Call<ServerResponse<PostResult>> call1, Response<ServerResponse<PostResult>> response1) {
+                                    if (response1.code() != 200) Log.e("DELETING ATTACHMENT", String.valueOf(response1.raw()));
+                                }
+
+                                @Override
+                                public void onFailure(Call<ServerResponse<PostResult>> call1, Throwable t) {
+
+                                }
+                            });
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+                            map.put(AppСonstants.FILE_URL_FIELD, file.getFileUrl());
+                            Call<ServerResponse<PostResult>> addAttachment = api.addAttachment(AppСonstants.X_API_KEY,
+                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                            addAttachment.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                @Override
+                                public void onResponse(Call<ServerResponse<PostResult>> call1, Response<ServerResponse<PostResult>> response1) {
+                                    if (response1.code() == 200){
+                                        Snackbar.make(getView(), "Добавлено", Snackbar.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ServerResponse<PostResult>> call1, Throwable t) {
+
+                                }
+                            });
+                        });
+
+                        fileNameText.setText(fileName.toString());
+
+                        fileImage.setImageResource(fragment.getResources().
+                                getIdentifier(extension.toString(), "drawable", "iooojik.app.klass"));
+                        layout.addView(img_view);
+                    }
+                }
+                else Log.e("GETTING FILES", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataFiles>> call, Throwable t) {
+                Log.e("GETTING FILES", String.valueOf(t));
+            }
+        });
+        fileBottomSheetDialog.setContentView(fileBottomSheet);
+
+        //открытие окна загрузки файлов
+        Button chooseFile = bottomSheet.findViewById(R.id.choose_file);
+        chooseFile.setOnClickListener(v -> fileBottomSheetDialog.show());
+
+        bottomSheetDialog.setOnCancelListener(dialog -> fab.show());
+        bottomSheetDialog.setContentView(bottomSheet);
 
     }
 

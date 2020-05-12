@@ -5,6 +5,8 @@ import java.util.HashMap;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.file_info.DataFiles;
+import iooojik.app.klass.models.group_attachment.DataGroupAttachment;
 import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
 import iooojik.app.klass.models.passed_test_result.DataPassedTest;
 import iooojik.app.klass.models.test_results.DataTestResult;
@@ -217,6 +219,33 @@ public interface Api {
                                                      @Header("X-TOKEN") String token,
                                                      @FieldMap HashMap<String, String> map);
 
+    @FormUrlEncoded
+    @POST("api/files_to_users/add")
+    Call<ServerResponse<PostResult>> addFileInfo(@Header("X-API-KEY") String api_key,
+                                                    @Header("X-TOKEN") String token,
+                                                    @FieldMap HashMap<String, String> map);
+    @FormUrlEncoded
+    @POST("api/files_to_groups/delete")
+    Call<ServerResponse<PostResult>> deleteGroupFile(@Header("X-API-KEY") String api_key,
+                                                       @Header("X-TOKEN") String token,
+                                                       @Field("group_id") String group_id);
+
+    @FormUrlEncoded
+    @POST("api/files_to_groups/add")
+    Call<ServerResponse<PostResult>> addAttachment(@Header("X-API-KEY") String api_key,
+                                                     @Header("X-TOKEN") String token,
+                                                   @FieldMap HashMap<String, String> map);
+
+
+    @GET("api/files_to_groups/all?")
+    Call<ServerResponse<DataGroupAttachment>> getAttachment(@Header("X-API-KEY") String api_key,
+                                                            @Header("X-TOKEN") String token,
+                                                            @Query("field") String field, @Query("filter") String filter);
+
+    @GET("api/files_to_users/all?")
+    Call<ServerResponse<DataFiles>> getUserFiles(@Header("X-API-KEY") String api_key,
+                                                        @Header("X-TOKEN") String token,
+                                                        @Query("field") String field, @Query("filter") String filter);
 
 
     //получение item-ов в магазине
