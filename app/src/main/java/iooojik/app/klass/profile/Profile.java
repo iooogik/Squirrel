@@ -565,6 +565,7 @@ public class Profile extends Fragment implements View.OnClickListener {
                         post.put("name", nameGroup);
                         post.put("test", "null");
                         post.put("author_name", fullName);
+                        post.put("count_questions", "0");
 
                         Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
                                 AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),

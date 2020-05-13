@@ -136,8 +136,13 @@ public class CheckList extends Fragment implements View.OnClickListener {
         userCursor.moveToFirst();
         nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
         String shortName = userCursor.getString(userCursor.getColumnIndex("shortName"));
-        if (!shortName.isEmpty() && !shortName.toString().equals("null"))
-        shortNote.setText(shortName);
+        try {
+            if (!shortName.isEmpty() && !shortName.toString().equals("null"))
+                shortNote.setText(shortName);
+        }catch (Exception e){
+            Log.e("GETTING SHORT MOTE", String.valueOf(e));
+        }
+
 
         TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
         tempBool = userCursor.getString(userCursor.getColumnIndex("isChecked"));
