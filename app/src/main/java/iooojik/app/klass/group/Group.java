@@ -542,7 +542,7 @@ public class Group extends Fragment{
                                 fileName.toString(), file.getFileUrl()));
                     }
 
-                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, view);
+                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, fileBottomSheet);
                     RecyclerView recyclerView = fileBottomSheet.findViewById(R.id.rec_view);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                             LinearLayoutManager.HORIZONTAL, true));

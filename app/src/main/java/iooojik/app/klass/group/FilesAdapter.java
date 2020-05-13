@@ -66,7 +66,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
                 @Override
                 public void onResponse(Call<ServerResponse<PostResult>> call1, Response<ServerResponse<PostResult>> response1) {
                     if (response1.code() == 200){
-                        Snackbar.make(view, "Добавлено", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(holder.itemView, "Добавлено", Snackbar.LENGTH_LONG).show();
                     }
                 }
 
