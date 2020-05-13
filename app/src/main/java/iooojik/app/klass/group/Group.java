@@ -164,9 +164,11 @@ public class Group extends Fragment{
                                 List<TestsResult> testsResults = result.getTestsResult();
 
                                 groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults, fragment, true);
+
                                 RecyclerView recyclerView = view.findViewById(R.id.groupmates);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                                 recyclerView.setAdapter(groupmatesAdapter);
+
                                 enableBottomSheet(testsResults, mates);
                             }
                         }
@@ -323,21 +325,23 @@ public class Group extends Fragment{
     }
 
     @SuppressLint("InflateParams")
-    private void enableBottomSheet(List<TestsResult> testsResults, List<Mate> mates2) {
-        doRetrofit();
+    private void enableBottomSheet(final List<TestsResult> results, List<Mate> mates2) {
+
+        List<TestsResult> testsResults = new ArrayList<>(results);
 
         bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_group_editor, null);
 
         Call<ServerResponse<DataGroup>> call = api.getGroupsById(AppСonstants.X_API_KEY, "_id", String.valueOf(id));
-
         call.enqueue(new Callback<ServerResponse<DataGroup>>() {
             @SuppressLint("DefaultLocale")
             @Override
             public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
                 if (response.code()==200) {
                     if (response.body().getData() != null) {
+
                         Log.e("tttttt", String.valueOf(testsResults.size()));
+
                         PieChart pieChart = bottomSheet.findViewById(R.id.chart);
                         PieChart pieChart2 = bottomSheet.findViewById(R.id.chart2);
                         if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
@@ -357,11 +361,12 @@ public class Group extends Fragment{
                             List<Float> score = new ArrayList<>();
 
                             float rightScore = Float.valueOf(countDiff);
-                            float wrongScore = Float.valueOf(dataGroups.get(0).getCount_questions());
+                            float wrongScore =
+                                    Float.valueOf(Integer.valueOf(dataGroups.get(0).getCount_questions()) * testsResults.size());
 
                             TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
-                            textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore)));
-                            Log.e("tttttt", String.valueOf(countDiff));
+                            textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore/wrongScore * 100)));
+
                             score.add((rightScore / wrongScore) * 100);
                             score.add(100 - (rightScore / wrongScore) * 100);
 
@@ -402,7 +407,8 @@ public class Group extends Fragment{
                             score2.add((rightScore2 / wrongScore2) * 100);
                             score2.add(100 - (rightScore2 / wrongScore2) * 100);
                             TextView textView2 = bottomSheetDialog.findViewById(R.id.passed_test_percent);
-                            textView2.setText(String.format("%s %d%%", textView2.getText().toString(), Math.round(rightScore)));
+                            textView2.setText(String.format("%s %d%%",
+                                    textView2.getText().toString(), Math.round((rightScore2 / wrongScore2) * 100)));
                             //преобразуем в понятные для диаграммы данные
                             List<PieEntry> entries2 = new ArrayList<>();
                             for (int i = 0; i < score2.size(); i++)
@@ -542,7 +548,7 @@ public class Group extends Fragment{
                                 fileName.toString(), file.getFileUrl()));
                     }
 
-                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, fileBottomSheet);
+                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, view);
                     RecyclerView recyclerView = fileBottomSheet.findViewById(R.id.rec_view);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                             LinearLayoutManager.HORIZONTAL, true));

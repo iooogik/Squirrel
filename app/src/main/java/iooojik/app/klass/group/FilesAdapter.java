@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,12 +35,14 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     private SharedPreferences preferences;
     private Api api;
     private View view;
+    private Context context;
 
     FilesAdapter(List<FileInfo> infoList, Context context, SharedPreferences preferences, View view) {
         this.infoList = infoList;
         this.inflater = LayoutInflater.from(context);
         this.preferences = preferences;
         this.view = view;
+        this.context = context;
     }
 
     @NonNull
@@ -66,7 +69,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
                 @Override
                 public void onResponse(Call<ServerResponse<PostResult>> call1, Response<ServerResponse<PostResult>> response1) {
                     if (response1.code() == 200){
-                        Snackbar.make(holder.itemView, "Добавлено", Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(context, "Добавлено", Toast.LENGTH_SHORT).show();
+                        //Snackbar.make(view, "Добавлено", Snackbar.LENGTH_LONG).show();
                     }
                 }
 

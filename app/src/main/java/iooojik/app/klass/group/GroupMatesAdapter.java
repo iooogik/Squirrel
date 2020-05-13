@@ -74,9 +74,10 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
             //ищем ученика с его результами
             for (TestsResult testResult: testsResults) {
                 if (testResult.getUserEmail().equals(mate.getEmail())){
+                    int result = Math.round(Float.valueOf(testResult.getResult()));
                     //ставим результат и показываем его
                     holder.progress.setVisibility(View.VISIBLE);
-                    holder.text_result.setText(String.format("Тест был пройден на %s/100", testResult.getResult()));
+                    holder.text_result.setText(String.format("Тест был пройден на %s/100", String.valueOf(result)));
                     holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.Completed));
 
                     testsResults.remove(testResult);

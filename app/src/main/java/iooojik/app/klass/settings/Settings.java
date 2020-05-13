@@ -221,6 +221,8 @@ public class Settings extends Fragment implements View.OnClickListener{
                 preferences.edit().clear().apply();
                 mDb = mDBHelper.getWritableDatabase();
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
+                mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
+
                 startActivity(new Intent(getContext(), MainActivity.class));
             });
 
