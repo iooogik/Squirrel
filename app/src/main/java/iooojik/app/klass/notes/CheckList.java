@@ -119,6 +119,7 @@ public class CheckList extends Fragment implements View.OnClickListener {
         Snackbar.make(view, "Сохранено", Snackbar.LENGTH_LONG).show();
     }
 
+    @SuppressLint("Recycle")
     private void getPoints(){
         //"открытие" бд
         mDBHelper = new Database(getActivity());
@@ -130,10 +131,14 @@ public class CheckList extends Fragment implements View.OnClickListener {
 
         final String TEMP;
         String tempBool;
-        @SuppressLint("Recycle") Cursor userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
+        Cursor userCursor = mDb.rawQuery("Select * from Notes WHERE _id=?", new String[]{String.valueOf(getButtonID())});
+
         userCursor.moveToFirst();
         nameNote.setText(userCursor.getString(userCursor.getColumnIndex("name")));
-        shortNote.setText(userCursor.getString(userCursor.getColumnIndex("shortName")));
+        String shortName = userCursor.getString(userCursor.getColumnIndex("shortName"));
+        if (!shortName.isEmpty() && !shortName.toString().equals("null"))
+        shortNote.setText(shortName);
+
         TEMP = userCursor.getString(userCursor.getColumnIndex("points"));
         tempBool = userCursor.getString(userCursor.getColumnIndex("isChecked"));
 
@@ -161,7 +166,11 @@ public class CheckList extends Fragment implements View.OnClickListener {
                 addCheck(booleans[i], tempArr[i]);
             }
             isCompleted(!Booleans.contains(false));
+
         }
+
+
+
     }
 
     private void isCompleted(Boolean bool){
@@ -310,6 +319,7 @@ public class CheckList extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public void onClick(View v) {
         if (v.getId() == R.id.fab){
             //добавление элемента
@@ -318,11 +328,14 @@ public class CheckList extends Fragment implements View.OnClickListener {
             MAIN_LAYOUT.setOrientation(LinearLayout.VERTICAL);
             LAYOUT_1.setOrientation(LinearLayout.VERTICAL);
             //ввод названия заметки
+            View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
+            TextInputEditText editText = view1.findViewById(R.id.edit_text);
+            TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
+            textInputLayout.setHelperTextEnabled(false);
+            textInputLayout.setCounterEnabled(false);
+            textInputLayout.setHint("Введите новый пункт");
 
-            EditText namePoint = new EditText(getContext());
-
-            namePoint.setHint("Введите текст пункта");
-            LAYOUT_1.addView(namePoint);
+            LAYOUT_1.addView(view1);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
@@ -331,12 +344,12 @@ public class CheckList extends Fragment implements View.OnClickListener {
 
             builder.setPositiveButton("Добавить",
                     (dialog, which) -> {
-                if(!namePoint.getText().toString().isEmpty()) {
+                if(!editText.getText().toString().isEmpty()) {
                     mDb = mDBHelper.getWritableDatabase();
                     ContentValues cv = new ContentValues();
 
                     Booleans.add(false);
-                    Items.add(namePoint.getText().toString());
+                    Items.add(editText.getText().toString());
 
                     StringBuilder strBool = new StringBuilder();
                     StringBuilder strItems = new StringBuilder();
@@ -353,7 +366,7 @@ public class CheckList extends Fragment implements View.OnClickListener {
                     //обновление базы данных
                     mDb.update("Notes", cv, "_id=" + (getButtonID()),
                             null);
-                    addCheck(false, namePoint.getText().toString());
+                    addCheck(false, editText.getText().toString());
                 } else {
                     Snackbar.make(view, "Что-то пошло не так. Проверьте, пожалуйста, название пункта.",
                             Snackbar.LENGTH_LONG).show();
@@ -382,7 +395,6 @@ public class CheckList extends Fragment implements View.OnClickListener {
                 return true;
             case R.id.action_save:
                 updateData(nameNote.getText().toString(), shortNote.getText().toString());
-                Snackbar.make(getView(), "Сохранено", Snackbar.LENGTH_LONG).show();
                 return true;
         }
         return false;

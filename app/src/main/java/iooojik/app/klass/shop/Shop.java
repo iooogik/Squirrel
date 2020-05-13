@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.models.bonusCrate.CratesData;
 import iooojik.app.klass.models.shop.ShopData;
 import iooojik.app.klass.models.shop.ShopItem;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
@@ -55,18 +57,49 @@ public class Shop extends Fragment {
         fragment = this;
         view = inflater.inflate(R.layout.fragment_shop, container, false);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        TextView balance = view.findViewById(R.id.balance);
-        balance.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+        getActivity().runOnUiThread(() -> {
+            TextView balance = view.findViewById(R.id.balance);
+            balance.setText(String.valueOf(preferences.getInt(AppСonstants.USER_COINS, 0)));
+            getCrates();
+            ImageView crates = view.findViewById(R.id.imageCrate);
+            Picasso.with(context).load("http://iooojik.ru/project/crate.png").into(crates);
+            FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+            fab.hide();
+        });
 
         items = view.findViewById(R.id.items);
         getActivity().runOnUiThread(this::getItems);
 
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.hide();
 
         setHasOptionsMenu(true);
         return view;
+    }
+
+    private void getCrates(){
+        doRetrofit();
+
+        Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
+                preferences.getString(AppСonstants.USER_EMAIL, ""));
+        getCrates.enqueue(new Callback<ServerResponse<CratesData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
+                TextView cratesCount = view.findViewById(R.id.crates_count);
+                if (response.code() == 200){
+                    CratesData data = response.body().getData();
+                    if (data.getBonusCratesToUsers().size() == 0){
+                        cratesCount.setText("0");
+                    }else {
+                        cratesCount.setText(data.getBonusCratesToUsers().get(0).getCount());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<CratesData>> call1, Throwable t) {
+
+            }
+        });
     }
 
     private void doRetrofit(){

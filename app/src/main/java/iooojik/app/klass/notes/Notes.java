@@ -193,7 +193,7 @@ public class Notes extends Fragment {
         //ввод названия заметки
         View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
         TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-        textInputLayout.setHint("Введите имя заметки");
+        textInputLayout.setHint("Введите название заметки");
         EditText nameNote = textInputLayout.getEditText();
 
         layout1.addView(view1);
@@ -226,7 +226,6 @@ public class Notes extends Fragment {
                     if (!nameNote.getText().toString().isEmpty() &&
                             !spinner.getText().toString().isEmpty()) {
                         String name = nameNote.getText().toString();
-                        String shortNote = "";
                         String text = "Новая заметка";
                         String type = "";
                         mDb = mDBHelper.getWritableDatabase();
@@ -241,7 +240,6 @@ public class Notes extends Fragment {
                         ContentValues cv = new ContentValues();
                         cv.put(AppСonstants.TABLE_ID, finalId);
                         cv.put(AppСonstants.TABLE_NAME, name);
-                        cv.put(AppСonstants.TABLE_SHORT_NAME, shortNote);
                         cv.put(AppСonstants.TABLE_TEXT, text);
                         cv.put(AppСonstants.TABLE_TYPE, type);
                         cv.put(AppСonstants.TABLE_IS_NOTIF_SET, 0);
@@ -255,7 +253,7 @@ public class Notes extends Fragment {
                         //запись
                         mDb.insert(AppСonstants.TABLE_NOTES, null, cv);
 
-                        ITEMS.add(new NoteObject(name, shortNote, null, type, finalId, -1));
+                        ITEMS.add(new NoteObject(name, null, null, type, finalId, -1));
                         NOTES_ADAPTER.notifyDataSetChanged();
                     } else {
                         Snackbar.make(view, "Что-то пошло не так. Проверьте, пожалуйста, название и выбранный тип.",
@@ -304,12 +302,12 @@ public class Notes extends Fragment {
                     new String[]{String.valueOf(noteObject.getId())});
 
             userCursor.moveToFirst();
-        String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME)));
+            String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME)));
             //собираем данные
 
             String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_SHORT_NAME)));
             String text = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT)));
-        String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.DATE_FIELD)));
+            String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.DATE_FIELD)));
             String type = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TYPE)));
             String isNotifSet = String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_IS_NOTIF_SET)));
             String permToSync = String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_PERM_TO_SYNC)));
@@ -341,6 +339,7 @@ public class Notes extends Fragment {
             Call<ServerResponse<PostResult>> call = api.uploadNotes(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
                     map);
+
 
             call.enqueue(new Callback<ServerResponse<PostResult>>() {
                 @Override
@@ -435,11 +434,10 @@ public class Notes extends Fragment {
                                 //собираем данные
                                 String shortName = onlineNote.getShortName();
                                 String text = onlineNote.getText();
-
                                 String type = onlineNote.getType();
-
                                 String points = onlineNote.getPoints();
                                 String isCompleted = onlineNote.getIsCompleted();
+                                String isChecked = onlineNote.getIsChecked();
 
                                 String decodeQR;
                                 ContentValues cv = new ContentValues();
@@ -459,6 +457,7 @@ public class Notes extends Fragment {
                                 cv.put(AppСonstants.TABLE_PERM_TO_SYNC, 1);
                                 cv.put(AppСonstants.TABLE_POINTS, points);
                                 cv.put(AppСonstants.TABLE_IS_COMPLETED, isCompleted);
+                                cv.put(AppСonstants.TABLE_IS_CHECKED, isChecked);
 
                                 //получение даты
                                 Date currentDate = new Date();

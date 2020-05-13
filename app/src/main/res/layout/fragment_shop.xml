@@ -9,10 +9,30 @@
     tools:context=".shop.Shop">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="end"
         android:layout_margin="10dp">
+
+        <ImageView
+            android:id="@+id/imageCrate"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/baseline_account_circle_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/todo" />
+
+        <TextView
+            android:id="@+id/crates_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageCrate"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/balance"
@@ -31,12 +51,12 @@
             android:layout_height="30dp"
             android:layout_gravity="end"
             android:layout_marginEnd="0dp"
+            android:contentDescription="@string/todo"
             android:src="@drawable/coins"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.466"
-            android:contentDescription="@string/todo" />
+            app:layout_constraintVertical_bias="0.466" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView

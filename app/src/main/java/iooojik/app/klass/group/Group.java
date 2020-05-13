@@ -7,6 +7,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,12 +17,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.developer.filepicker.model.DialogConfigs;
+import com.developer.filepicker.model.DialogProperties;
+import com.developer.filepicker.view.FilePickerDialog;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
@@ -32,13 +39,16 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
+import iooojik.app.klass.api.FileUploadApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.file_info.DataFiles;
@@ -51,6 +61,9 @@ import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mate;
 import iooojik.app.klass.models.paramUsers.ParamData;
 import iooojik.app.klass.models.paramUsers.UserParams;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,7 +83,7 @@ public class Group extends Fragment{
     //уитель
     private String groupAuthor;
     private String groupAuthorName;
-    private int id = -1;
+    public static int id = -1;
     private Context context;
     //адаптер
     private GroupMatesAdapter groupmatesAdapter;
@@ -112,7 +125,7 @@ public class Group extends Fragment{
         fab.show();
         fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
         fab.setOnClickListener(v -> bottomSheetDialog.show());
-
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -155,7 +168,7 @@ public class Group extends Fragment{
                                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                                 recyclerView.setAdapter(groupmatesAdapter);
                                 enableBottomSheet(testsResults, mates);
-                            } else Log.e("tttttttt", String.valueOf(response.raw()));
+                            }
                         }
 
                         @Override
@@ -312,17 +325,19 @@ public class Group extends Fragment{
     @SuppressLint("InflateParams")
     private void enableBottomSheet(List<TestsResult> testsResults, List<Mate> mates2) {
         doRetrofit();
+
         bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_group_editor, null);
 
-        Call<ServerResponse<DataGroup>> call = api.getGroupsById(AppСonstants.X_API_KEY,
-                "_id", String.valueOf(id));
+        Call<ServerResponse<DataGroup>> call = api.getGroupsById(AppСonstants.X_API_KEY, "_id", String.valueOf(id));
+
         call.enqueue(new Callback<ServerResponse<DataGroup>>() {
             @SuppressLint("DefaultLocale")
             @Override
             public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
                 if (response.code()==200) {
                     if (response.body().getData() != null) {
+                        Log.e("tttttt", String.valueOf(testsResults.size()));
                         PieChart pieChart = bottomSheet.findViewById(R.id.chart);
                         PieChart pieChart2 = bottomSheet.findViewById(R.id.chart2);
                         if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
@@ -346,7 +361,7 @@ public class Group extends Fragment{
 
                             TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
                             textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore)));
-
+                            Log.e("tttttt", String.valueOf(countDiff));
                             score.add((rightScore / wrongScore) * 100);
                             score.add(100 - (rightScore / wrongScore) * 100);
 
@@ -491,10 +506,10 @@ public class Group extends Fragment{
             });
         });
 
-        //окно загрузки файлов
+        //окно с файлами
         fileBottomSheetDialog = new BottomSheetDialog(getActivity());
         View fileBottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_file_selector, null);
-        LinearLayout layout = fileBottomSheet.findViewById(R.id.files);
+
         Call<ServerResponse<DataFiles>> serverResponseCall = api.getUserFiles(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
                 preferences.getString(AppСonstants.USER_EMAIL,""));
@@ -505,10 +520,10 @@ public class Group extends Fragment{
                 if (response.code() == 200){
 
                     List<FileObject> fileObjects = response.body().getData().getFilesToUsers();
+                    List<FileInfo> files = new ArrayList<>();
                     for (FileObject file : fileObjects){
-                        View img_view = getActivity().getLayoutInflater().inflate(R.layout.file_item, null);
-                        ImageView fileImage = img_view.findViewById(R.id.imageView4);
-                        TextView fileNameText = img_view.findViewById(R.id.file_name);
+
+
                         int pointIndex = file.getFileUrl().lastIndexOf('.');
                         StringBuilder extension = new StringBuilder();
                         for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
@@ -516,51 +531,22 @@ public class Group extends Fragment{
                         }
                         StringBuilder fileName = new StringBuilder();
                         pointIndex = file.getFileUrl().lastIndexOf('/');
+
                         for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
                             fileName.append(file.getFileUrl().charAt(i));
                         }
 
-                        img_view.setOnClickListener(v -> {
-                            Call<ServerResponse<PostResult>> deleteGroupFile = api.deleteGroupFile(AppСonstants.X_API_KEY,
-                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), String.valueOf(id));
-
-                            deleteGroupFile.enqueue(new Callback<ServerResponse<PostResult>>() {
-                                @Override
-                                public void onResponse(Call<ServerResponse<PostResult>> call1, Response<ServerResponse<PostResult>> response1) {
-                                    if (response1.code() != 200) Log.e("DELETING ATTACHMENT", String.valueOf(response1.raw()));
-                                }
-
-                                @Override
-                                public void onFailure(Call<ServerResponse<PostResult>> call1, Throwable t) {
-
-                                }
-                            });
-                            HashMap<String, String> map = new HashMap<>();
-                            map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
-                            map.put(AppСonstants.FILE_URL_FIELD, file.getFileUrl());
-                            Call<ServerResponse<PostResult>> addAttachment = api.addAttachment(AppСonstants.X_API_KEY,
-                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
-                            addAttachment.enqueue(new Callback<ServerResponse<PostResult>>() {
-                                @Override
-                                public void onResponse(Call<ServerResponse<PostResult>> call1, Response<ServerResponse<PostResult>> response1) {
-                                    if (response1.code() == 200){
-                                        Snackbar.make(getView(), "Добавлено", Snackbar.LENGTH_LONG).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<ServerResponse<PostResult>> call1, Throwable t) {
-
-                                }
-                            });
-                        });
-
-                        fileNameText.setText(fileName.toString());
-
-                        fileImage.setImageResource(fragment.getResources().
-                                getIdentifier(extension.toString(), "drawable", "iooojik.app.klass"));
-                        layout.addView(img_view);
+                        files.add(new FileInfo(
+                                fragment.getResources().
+                                        getIdentifier(extension.toString(), "drawable", "iooojik.app.klass"),
+                                fileName.toString(), file.getFileUrl()));
                     }
+
+                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, view);
+                    RecyclerView recyclerView = fileBottomSheet.findViewById(R.id.rec_view);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                            LinearLayoutManager.HORIZONTAL, true));
+                    recyclerView.setAdapter(adapter);
                 }
                 else Log.e("GETTING FILES", String.valueOf(response.raw()));
             }
@@ -630,5 +616,103 @@ public class Group extends Fragment{
         builder.create().show();
         fab.show();
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_group, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_upload) {
+            uploadFile();
+            return true;
+        }
+        return false;
+    }
+
+    private void uploadFile(){
+        DialogProperties properties = new DialogProperties();
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+        properties.show_hidden_files = false;
+
+        FilePickerDialog dialog = new FilePickerDialog(getActivity(), properties);
+        dialog.setTitle("Select a File");
+
+        dialog.setDialogSelectionListener(files -> {
+            String file_path = files[0];
+            if (file_path != null && !file_path.trim().isEmpty()) {
+                File file = new File(file_path);
+                RequestBody requestFile =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                String fileName = file.getName();
+                int pointIndex = -1;
+                if (fileName.contains(".")) {
+                    pointIndex = fileName.lastIndexOf('.');
+
+                    StringBuilder extension = new StringBuilder();
+                    for (int i = pointIndex; i < fileName.length(); i++) {
+                        extension.append(fileName.charAt(i));
+                    }
+
+
+                    fileName = UUID.randomUUID() + extension.toString();
+                }
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("file", fileName.toLowerCase(), requestFile);
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(AppСonstants.NEW_API_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+
+                        .build();
+                FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
+
+                Call<Void> resultCall = fileUploadApi.uploadFile(body);
+                String finalFileName = fileName;
+                resultCall.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.code() == 200) {
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+                            map.put(AppСonstants.FILE_URL_FIELD, AppСonstants.IOOOJIK_BASE_URL + "project/" + finalFileName);
+
+                            Call<ServerResponse<PostResult>> serverResponseCall = api.addFileInfo(AppСonstants.X_API_KEY,
+                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
+                            serverResponseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                @Override
+                                public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                    if (response.code() == 200)
+                                        Snackbar.make(getView(), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+                                }
+
+                                @Override
+                                public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                                }
+                            });
+                        } else Log.e("UPLOADING FILE", String.valueOf(response.raw()));
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("UPLOADING FILE", t + " " + file.getPath());
+                    }
+                });
+            }
+        });
+        dialog.show();
+
+    }
+
 
 }

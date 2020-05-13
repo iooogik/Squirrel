@@ -256,11 +256,11 @@ public class Questions extends Fragment implements View.OnClickListener{
         doRetrofit();
         HashMap<String, String> map = new HashMap<>();
         map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
-        map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(userCursor.getInt(
-                userCursor.getColumnIndex(AppСonstants.TABLE_GROUP_ID))));
+        map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_GROUP_ID))));
         map.put(AppСonstants.DIFFICULTIES_FIELD, String.valueOf(difficultiesCount));
-
         map.put(AppСonstants.TABLE_RESULT,  String.valueOf((userScore / totalScore) * 100.0f));
+
+        Log.e("trrr", map.values().toString());
 
         Call<ServerResponse<PostResult>> updateInfo = api.addResult(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
@@ -268,7 +268,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         updateInfo.enqueue(new Callback<ServerResponse<PostResult>>() {
             @Override
             public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                if (response.code() != 200) Log.e("SENDING RESULT", String.valueOf(response.raw()));
+                if (response.code() != 200) Log.e("SENDING RESULT", String.valueOf(response.body()));
             }
 
             @Override

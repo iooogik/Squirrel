@@ -56,6 +56,12 @@ public interface Api {
     Call<ServerResponse<PostResult>> addUserToGroup(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
+    @FormUrlEncoded
+    @POST("api/users_to_group/update")
+    Call<ServerResponse<PostResult>> updateUserToGroup(@Header("X-API-KEY") String api_key,
+                                                    @Header("X-TOKEN") String token,
+                                                    @FieldMap HashMap<String, String> map);
+
     //регистрация
     @FormUrlEncoded
     @POST("api/user/add")
@@ -88,7 +94,7 @@ public interface Api {
     Call<DataToken> request_token(@Header("X-API-KEY") String api_key,
                                   @FieldMap HashMap<String, String> map);
 
-    //жобавление пользовательских заметок в беху
+    //добавление пользовательских заметок в базу
     @FormUrlEncoded
     @POST("api/notes/add")
     Call<ServerResponse<PostResult>> uploadNotes(@Header("X-API-KEY") String api_key, @Header("X-TOKEN") String token,

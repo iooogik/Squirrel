@@ -2,7 +2,7 @@ package iooojik.app.klass.profile;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +12,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,22 +22,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -619,19 +614,16 @@ public class Profile extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_AVATAR) {
             if (data != null) {
-                Uri selectedImage = data.getData();
 
-                File file = new File(getRealPathFromURI(context, selectedImage));
+                getActivity().runOnUiThread(() -> {
+                    Uri selectedImage = data.getData();
+                    File file = new File(getRealPathFromURI(context, selectedImage));
 
-                RequestBody requestFile =
-                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                    RequestBody requestFile =
+                            RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
-                MultipartBody.Part body =
-                        MultipartBody.Part.createFormData("avatar", file.getName(), requestFile);
-
-                RequestBody fullName =
-                        RequestBody.create(MediaType.parse("multipart/form-data"),
-                                preferences.getString(AppСonstants.USER_EMAIL, "") + "_avatar.jpg");
+                    MultipartBody.Part body =
+                            MultipartBody.Part.createFormData("avatar", file.getName(), requestFile);
 
                     doRetrofit();
 
@@ -678,92 +670,57 @@ public class Profile extends Fragment implements View.OnClickListener {
                             Log.e("UPDATE AVATAR", String.valueOf(t));
                         }
                     });
-                }
-        }
-        else if (requestCode == AppСonstants.PICK_FILE){
-            //получаем uri и полный путь к файлу, создаём файл и отправляем его, ссылку заносим в базу
-            Uri selectedFile = data.getData();
-            File file = new File(getPath(selectedFile));
-            RequestBody requestFile =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            String fileName = file.getName();
-            int pointIndex = -1;
-            if (fileName.contains(".")) {
-                pointIndex = fileName.lastIndexOf('.');
-
-                StringBuilder extension = new StringBuilder();
-                for (int i = pointIndex; i < fileName.length(); i++) {
-                    extension.append(fileName.charAt(i));
-                }
 
 
-            fileName = UUID.randomUUID() + extension.toString();
-            }
-            MultipartBody.Part body =
-                    MultipartBody.Part.createFormData("file", fileName.toLowerCase(), requestFile);
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(AppСonstants.NEW_API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    Call<ServerResponse<DataPupilList>> serverResponseCall = api.getPupilActiveGroups(AppСonstants.X_API_KEY,
+                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.EMAIL_FIELD,
+                            preferences.getString(AppСonstants.USER_EMAIL, ""));
+                    serverResponseCall.enqueue(new Callback<ServerResponse<DataPupilList>>() {
+                        @Override
+                        public void onResponse(Call<ServerResponse<DataPupilList>> call, Response<ServerResponse<DataPupilList>> response) {
+                            if (response.code() == 200){
+                                DataPupilList dataPupilList = response.body().getData();
+                                List<PupilGroups> pupilGroups = dataPupilList.getPupilGroups();
+                                for (PupilGroups pupil : pupilGroups){
 
-                    .build();
-            FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
+                                    HashMap<String, String> map2 = new HashMap<>();
 
-            Call<Void> resultCall = fileUploadApi.uploadFile(body);
-            String finalFileName = fileName;
-            resultCall.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.code() == 200){
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
-                        map.put(AppСonstants.FILE_URL_FIELD, AppСonstants.IOOOJIK_BASE_URL + "project/" + finalFileName);
+                                    map2.put("avatar", file.getName());
+                                    map2.put("email", pupil.getEmail());
+                                    map2.put("full_name", pupil.getFullName());
+                                    map2.put("_id", pupil.getId());
+                                    map2.put("group_id", pupil.getGroupId());
+                                    map2.put("group_name", pupil.getGroup_name());
 
-                        Call<ServerResponse<PostResult>> serverResponseCall = api.addFileInfo(AppСonstants.X_API_KEY,
-                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
-                        serverResponseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
-                            @Override
-                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                                if (response.code() == 200) Snackbar.make(getView(), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-                            }
+                                    Call<ServerResponse<PostResult>> call2 = api.updateUserToGroup(AppСonstants.X_API_KEY,
+                                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map2);
 
-                            @Override
-                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                                    call2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                        @Override
+                                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
 
-                            }
-                        });
-                    }
-                    else Log.e("UPLOADING FILE", String.valueOf(response.raw()));
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                                        }
+                                    });
+                                }
+                            } else Log.e("ttttt", String.valueOf(response.raw()));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<DataPupilList>> call, Throwable t) {
+
+                        }
+                    });
+                });
 
                 }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Log.e("UPLOADING FILE", t + " " + file.getPath());
-                }
-            });
-
-
-
         }
     }
-
-    private String getPath(Uri uri) {
-        String path = null;
-        String[] projection = { MediaStore.Files.FileColumns.DATA };
-        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
-        if(cursor == null){
-            path = uri.getPath();
-        }
-        else{
-            cursor.moveToFirst();
-            int column_index = cursor.getColumnIndex(projection[0]);
-            path = cursor.getString(column_index);
-            cursor.close();
-        }
-        return ((path == null || path.isEmpty()) ? (uri.getPath()) : path);
-    }
-
 
     @SuppressLint("Recycle")
     private static String getRealPathFromURI(Context context, Uri contentURI) {
@@ -787,38 +744,6 @@ public class Profile extends Fragment implements View.OnClickListener {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.menu_profile, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_upload) {
-            uploadFile();
-            return true;
-        }
-        return false;
-    }
-
-    private void uploadFile(){
-        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-        chooseFile.setType("*/*");
-        chooseFile = Intent.createChooser(chooseFile, "Choose a file");
-        startActivityForResult(chooseFile, AppСonstants.PICK_FILE);
-
-        //BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
-        //View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_upload_file, null);
-        //bottomSheetDialog.setContentView(bottomSheet);
-        /*
-        ///Button upload = bottomSheet.findViewById(R.id.upload);
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-         */
-
     }
 
 }

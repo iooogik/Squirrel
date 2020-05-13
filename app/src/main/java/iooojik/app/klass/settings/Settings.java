@@ -88,6 +88,11 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+        getActivity().runOnUiThread(this::load);
+
+
+
         deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
 
@@ -100,7 +105,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         TextView policy = view.findViewById(R.id.policy);
         policy.setOnClickListener(this);
 
-        getActivity().runOnUiThread(this::load);
 
         return view;
     }
