@@ -59,7 +59,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private String groupName, groupAuthor, groupAuthorName;
     private String firstSel = "Первый ответ", secondSel = "Второй ответ",
     thirdSel = "Третий ответ", fourthSel = "Четвёртый ответ";
-    private int time = 0, scorePerAnsw = 10;
+    private int time = 0;
     private EditText minutes, score;
     private CheckBox checkBox;
     private SharedPreferences preferences;
@@ -73,27 +73,8 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         context = getContext();
         minutes = view.findViewById(R.id.edit_text_minutes);
         checkBox = view.findViewById(R.id.check);
-        score = view.findViewById(R.id.edit_text_score);
 
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        score.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (score.getText().toString().trim().isEmpty()) scorePerAnsw = 10;
-                else scorePerAnsw = Integer.parseInt(score.getText().toString());
-            }
-        });
 
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -214,6 +195,8 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         List<String> textQuestions = new ArrayList<>();
         List<String> trueAnswers = new ArrayList<>();
         List<String> textAnswers = new ArrayList<>();
+        List<String> scores = new ArrayList<>();
+        int total_score = 0;
 
         //удаляем все результаты ученоков, проходивших тест
         doRetrofit();
@@ -281,9 +264,18 @@ public class TestEditor extends Fragment implements View.OnClickListener {
             else if (spinner.getSelectedItem().toString().equals(thirdSel)) trueAnswers.add(thirdAnsw.getText().toString());
             else if (spinner.getSelectedItem().toString().equals(fourthSel)) trueAnswers.add(fourthAnsw.getText().toString());
 
+            //баллы
+            EditText scoreText = tempQuestion.findViewById(R.id.edit_text_score);
+            String score = scoreText.getText().toString().trim();
+            String numRegex   = "[0-99]";
+            if (score.matches(numRegex)) {
+                if (score.isEmpty()) score = "1";
+                scores.add(score);
+                score += Integer.valueOf(score.trim());
+            }
         }
 
-        //собираем каждый массив, чтобы выполнить SQL-запрос
+        //собираем массивы, чтобы выполнить SQL-запрос
         //объединяем вопросы
         StringBuilder builderQuestions = new StringBuilder();
         builderQuestions.append("'");
@@ -299,6 +291,12 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         builderTextAnswers.append("'");
         for (String answ : textAnswers) builderTextAnswers.append(answ).append(testDivider);
         builderTextAnswers.append("'");
+        //объединяем все баллы за ответы
+        StringBuilder builderScore = new StringBuilder();
+        builderScore.append("'");
+        for (String sc : scores) builderScore.append(sc).append(testDivider);
+        builderScore.append("'");
+
 
         EditText name = view.findViewById(R.id.name);
         EditText description = view.findViewById(R.id.description);
@@ -310,7 +308,11 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 "'"+ description.getText().toString() + "'",
                 builderQuestions.toString(),
                 builderTrueAnswers.toString(),
-                builderTextAnswers.toString(), textQuestions.size());
+                builderTextAnswers.toString(),
+                textQuestions.size(),
+                builderScore.toString(),
+                String.valueOf(total_score));
+
         updateMap.put("_id", String.valueOf(id));
         updateMap.put("author_email", groupAuthor);
         updateMap.put("author_name", groupAuthorName);
@@ -384,8 +386,10 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     }
 
     private String createSQL(String name, String description, String textQuestions,
-                                              String trueAnswers, String textAnswers, int size){
+                                              String trueAnswers, String textAnswers, int size,
+                             String score, String totalScore){
         String SQL = "";
+        int scorePerAnsw = 10;
         SQL = "INSERT INTO Tests (" +
                 AppСonstants.TABLE_NAME + ", " +
                 AppСonstants.TABLE_DESCRIPTION + ", " +
@@ -397,7 +401,9 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 AppСonstants.TABLE_USER_SCORE + ", " +
                 AppСonstants.TABLE_SCORE_QUEST + ", " +
                 AppСonstants.TABLE_TIME + ", " +
-                AppСonstants.TABLE_GROUP_ID +
+                AppСonstants.TABLE_GROUP_ID + ", " +
+                AppСonstants.TABLE_SCORES + ", " +
+                AppСonstants.TABLE_MAX_SCORE +
                 ") "
 
                 +
@@ -413,7 +419,10 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 0 + "," +
                 scorePerAnsw + "," +
                 time + "," +
-                id +")";
+                id + "," +
+                score + "," +
+                totalScore +
+                ")";
 
         return SQL;
     }

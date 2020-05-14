@@ -37,7 +37,6 @@ import iooojik.app.klass.models.bonusCrate.CratesData;
 import iooojik.app.klass.models.promocode.LasPromo;
 import iooojik.app.klass.models.promocode.PromoData;
 import iooojik.app.klass.models.shop.ShopItem;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -131,7 +130,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
             HashMap<String, String> map = new HashMap<>();
             map.put(AppСonstants.DATE_FIELD, date);
             map.put(AppСonstants.ITEM_ID_FIELD, shopItem.getItemId());
-            map.put(AppСonstants.LOG_FIELD, "Совершена покупка " + shopItem.getName() + "за " + shopItem.getPrice());
+            map.put(AppСonstants.LOG_FIELD, "Совершена покупка " + shopItem.getName() + " за " + shopItem.getPrice());
 
             Call<ServerResponse<PostResult>> logCall = api.logBuying(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);

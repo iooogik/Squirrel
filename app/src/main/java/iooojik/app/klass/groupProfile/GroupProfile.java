@@ -370,14 +370,6 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                             @Override
                             public void onClick(View v) {
                                 //скачивание файла
-                                /*
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(response.
-                                                body().getData().
-                                                getFilesToGroups().get(0).
-                                                getFileUrl()));
-
-                                 */
                                 String src = response.body().getData().getFilesToGroups().get(0).getFileUrl();
                                 StringBuilder fileName = new StringBuilder();
                                 int pointIndex = src.lastIndexOf('/');
@@ -405,6 +397,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     private void onDownloadComplete(boolean success) {
         if (success)
             Snackbar.make(getView(), "Файл скачан и находится в папке Download", Snackbar.LENGTH_LONG).show();
+        else Snackbar.make(getView(), "Что-то пошло не так", Snackbar.LENGTH_LONG).show();
         Log.i("***", "************** " + success);
     }
 

@@ -195,8 +195,8 @@ public interface Api {
     @POST("api/cases_to_users/add")
     Call<ServerResponse<PostResult>> addCaseCoordinates(@Header("X-API-KEY") String api_key,
                                               @Header("X-TOKEN") String token,
-                                              @FieldMap HashMap<String, String> map);
-    @FormUrlEncoded
+                                            @FieldMap HashMap<String, String> map);
+     @FormUrlEncoded
     @POST("api/passed_tests/add")
     Call<ServerResponse<PostResult>> addTestResult(@Header("X-API-KEY") String api_key,
                                                         @Header("X-TOKEN") String token,

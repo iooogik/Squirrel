@@ -368,7 +368,7 @@ public class StandartNote extends Fragment{
             @SuppressLint("SetTextI18n")
             @Override
             public void afterTextChanged(Editable s) {
-                String numRegex   = "[0-9]";
+                String numRegex   = "[0-99]";
 
                 Log.e("ttttt", String.valueOf(s));
                 if (s.toString().isEmpty() && s.toString().matches(numRegex)){

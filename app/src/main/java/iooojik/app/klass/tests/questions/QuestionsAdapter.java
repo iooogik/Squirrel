@@ -5,10 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,10 +46,10 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         holder.firstAnswer.setText(object.getAnswers().get(0));
         holder.firstAnswer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore+= Questions.scorePerAnswer;
+                Questions.userScore+=object.getScore();
 
             }else if (!isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore-=Questions.scorePerAnswer;
+                Questions.userScore-=object.getScore();
             }
             object.setSelectedAnswer(buttonView.getText().toString());
         });
@@ -60,9 +58,9 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         holder.secondAnswer.setText(object.getAnswers().get(1));
         holder.secondAnswer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore+= Questions.scorePerAnswer;
+                Questions.userScore+=object.getScore();
             }else if (!isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore-=Questions.scorePerAnswer;
+                Questions.userScore-=object.getScore();
             }
             object.setSelectedAnswer(buttonView.getText().toString());
         });
@@ -71,9 +69,9 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         holder.thirdAnswer.setText(object.getAnswers().get(2));
         holder.thirdAnswer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore+= Questions.scorePerAnswer;
+                Questions.userScore+=object.getScore();
             }else if (!isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore-=Questions.scorePerAnswer;
+                Questions.userScore-=object.getScore();
             }
             object.setSelectedAnswer(buttonView.getText().toString());
         });
@@ -82,9 +80,9 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         holder.fourthAnswer.setText(object.getAnswers().get(3));
         holder.fourthAnswer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore+= Questions.scorePerAnswer;
+                Questions.userScore+=object.getScore();
             }else if (!isChecked && object.getTrueAnswer().contains(buttonView.getText().toString())){
-                Questions.userScore-=Questions.scorePerAnswer;
+                Questions.userScore-=object.getScore();
             }
             object.setSelectedAnswer(buttonView.getText().toString());
         });

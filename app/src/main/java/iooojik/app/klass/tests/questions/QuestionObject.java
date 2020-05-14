@@ -7,14 +7,24 @@ public class QuestionObject {
     private List<String> answers;
     private String trueAnswer;
     private String selectedAnswer;
+    private int score;
 
-    QuestionObject(String question, List<String> answers, String trueAnswer) {
+    QuestionObject(String question, List<String> answers, String trueAnswer, int score) {
         this.question = question;
         this.answers = answers;
         this.trueAnswer = trueAnswer;
+        this.score = score;
     }
 
-    public String getQuestion() {
+    int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    String getQuestion() {
         return question;
     }
 
@@ -22,7 +32,7 @@ public class QuestionObject {
         this.question = question;
     }
 
-    public List<String> getAnswers() {
+    List<String> getAnswers() {
         return answers;
     }
 
@@ -30,7 +40,7 @@ public class QuestionObject {
         this.answers = answers;
     }
 
-    public String getTrueAnswer() {
+    String getTrueAnswer() {
         return trueAnswer;
     }
 
@@ -42,7 +52,7 @@ public class QuestionObject {
         return selectedAnswer;
     }
 
-    public void setSelectedAnswer(String selectedAnswer) {
+    void setSelectedAnswer(String selectedAnswer) {
         this.selectedAnswer = selectedAnswer;
     }
 }

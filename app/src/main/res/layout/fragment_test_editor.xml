@@ -101,36 +101,6 @@
                     android:layout_margin="@dimen/fab_margin"
                     android:text="@string/timerOff" />
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView11"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/fab_margin"
-                        android:text="@string/scorePerAnsw" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:hint="@string/scores"
-                        android:layout_margin="10dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edit_text_score"
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:maxLines="1" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-                </FrameLayout>
-
             </LinearLayout>
 
 

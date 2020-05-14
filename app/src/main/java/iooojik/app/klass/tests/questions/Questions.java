@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -70,10 +69,10 @@ public class Questions extends Fragment implements View.OnClickListener{
     private final Handler chrono = new Handler();
     private boolean running = true;
     private int seconds;
-    static int scorePerAnswer = 1;
     private String testName = "";
     private Context context;
     static int difficultiesCount = 0;
+    private boolean isTestEnd = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,7 +83,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         questionObjects = new ArrayList<>();
         recyclerViewItems = new ArrayList<>();
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        getScorePerAnswer();
         getInformation();
 
 
@@ -97,7 +95,6 @@ public class Questions extends Fragment implements View.OnClickListener{
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.hide();
 
-        totalScore = questionObjects.size() * scorePerAnswer;
 
 
         return view;
@@ -123,34 +120,28 @@ public class Questions extends Fragment implements View.OnClickListener{
         String[] trueAnswersArray = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_ANSWERS))
                 .split(Pattern.quote(testDivider));
 
+        String[] scoresArray = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_SCORES))
+                .split(Pattern.quote(testDivider));
+
         List<String> questions = new ArrayList<>(Arrays.asList(quests));
         List<String> answers = new ArrayList<>(Arrays.asList(answersArray));
         List<String> trueAnswers = new ArrayList<>(Arrays.asList(trueAnswersArray));
+        List<String> scores = new ArrayList<>(Arrays.asList(scoresArray));
 
         for (int i = 0; i < questions.size(); i++) {
             String[] tempAnswers = new String[4];
             for (int j = 0; j < 4; j++) {
                 tempAnswers[j] = answers.get(j);
             }
-            questionObjects.add(new QuestionObject(questions.get(i), Arrays.asList(tempAnswers), trueAnswers.get(i)));
+            questionObjects.add(new QuestionObject(questions.get(i), Arrays.asList(tempAnswers),
+                    trueAnswers.get(i), Integer.valueOf(scores.get(i))));
+            totalScore+=Integer.valueOf(scores.get(i));
             answers.subList(0, 4).clear();
         }
         QuestionsAdapter questionsAdapter = new QuestionsAdapter(getContext());
         RecyclerView recyclerViewQuestions = view.findViewById(R.id.questions);
         recyclerViewQuestions.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewQuestions.setAdapter(questionsAdapter);
-
-    }
-
-    private void getScorePerAnswer() {
-        mDb = mDBHelper.getReadableDatabase();
-
-        userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS +
-                " WHERE _id=?", new String[]{String.valueOf(getTestID())});
-
-        userCursor.moveToFirst();
-
-        scorePerAnswer = userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_SCORE_QUEST));
 
     }
 
@@ -169,11 +160,12 @@ public class Questions extends Fragment implements View.OnClickListener{
 
     @SuppressLint("InflateParams")
     private void endTest(boolean isTime){
-
+        isTestEnd = true;
         if (isTime){
 
             sendAnswers();
             showAnswers();
+            running = false;
 
         } else {
 
@@ -192,13 +184,14 @@ public class Questions extends Fragment implements View.OnClickListener{
             builder.setPositiveButton("Да", (dialog, which) -> {
                 sendAnswers();
                 showAnswers();
+                running = false;
             });
 
             builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
 
             builder.create().show();
         }
-        running = false;
+
     }
 
     private void showAnswers() {
@@ -259,7 +252,11 @@ public class Questions extends Fragment implements View.OnClickListener{
         map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
         map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_GROUP_ID))));
         map.put(AppСonstants.DIFFICULTIES_FIELD, String.valueOf(difficultiesCount));
-        map.put(AppСonstants.TABLE_RESULT,  String.valueOf((userScore / totalScore) * 100.0f));
+        map.put(AppСonstants.TABLE_RESULT,  String.valueOf(Math.round ((Float.valueOf(userScore)
+                / Float.valueOf(totalScore)) * 100.0f)));
+
+        Log.e("ttt", String.valueOf(Math.round ((Float.valueOf(userScore)
+                / Float.valueOf(totalScore)) * 100.0f)));
 
         Log.e("trrr", map.values().toString());
 
@@ -282,7 +279,8 @@ public class Questions extends Fragment implements View.OnClickListener{
 
         map.put(AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
         map.put(AppСonstants.TEST_NAME_FIELD, testName);
-        map.put("result",  String.valueOf((userScore / totalScore) * 100.0f));
+        map.put("result",  String.valueOf(Math.round ((Float.valueOf(userScore)
+                / Float.valueOf(totalScore)) * 100.0f)));
 
         Call<ServerResponse<PostResult>> responseCall = api.addTestResult(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
@@ -307,7 +305,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         HashMap<String, String> log = new HashMap<>();
         log.put("user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
 
-        int percent = (userScore / totalScore) * 100;
+        int percent = Integer.valueOf(Math.round ((Float.valueOf(userScore) / Float.valueOf(totalScore)) * 100.0f));
 
         int coins = preferences.getInt(AppСonstants.USER_COINS, 0);
 
@@ -400,7 +398,7 @@ public class Questions extends Fragment implements View.OnClickListener{
                     chrono.postDelayed(this, 1000);
                 } else {
                     running = false;
-                    if (context == getContext()) {
+                    if (context == getContext() && !isTestEnd) {
                         endTest(true);
                     }
                 }

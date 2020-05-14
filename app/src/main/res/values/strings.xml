@@ -132,8 +132,8 @@
     <string name="teacherMessage">Сообщение от преподавателя:</string>
     <string name="testAvailable">Тест доступен</string>
     <string name="listPupil">Список учащихся:</string>
-    <string name="scorePerAnsw">Количество баллов \n за 1 правильный ответ:</string>
-    <string name="scores">баллов</string>
+    <string name="scorePerAnsw">Количество баллов \n за правильный ответ:</string>
+    <string name="scores">N баллов</string>
     <string name="min">мин</string>
     <string name="timeTest">Время прохождения теста:</string>
     <string name="ok_ru">Хорошо</string>

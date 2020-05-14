@@ -163,11 +163,16 @@ public class Profile extends Fragment implements View.OnClickListener {
             };
 
             //получаем координаты из GPS или из сети
+        try {
+
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
                     0, locationListener);
 
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0,
                     0, locationListener);
+        } catch (Exception e) {
+            Log.e("GPS LOCATION", String.valueOf(e));
+        }
 
     }
 

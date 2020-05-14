@@ -19,7 +19,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 6;
+    static int DB_VERSION = 7;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -107,6 +107,8 @@ public class AppСonstants {
     public static final String TABLE_TYPEFACE = "typeface";
     public static final String TABLE_FONT_SIZE = "fontSize";
     public static final String TABLE_RESULT = "result";
+    public static final String TABLE_SCORES = "scores";
+    public static final String TABLE_MAX_SCORE = "max_score";
     ///////////////////////////////////////////////////////////////////////////////////
     //id группы, в которой находится пользователь
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";

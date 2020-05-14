@@ -147,6 +147,14 @@ public class Settings extends Fragment implements View.OnClickListener{
             LinearLayout mainLayout = view.findViewById(R.id.mainLayout);
             TextView version = view.findViewById(R.id.version);
 
+            LinearLayout layout = weather.findViewById(R.id.layout);
+            TextView town = weather.findViewById(R.id.town);
+            TextView condition = weather.findViewById(R.id.condition);
+            TextView pressure = weather.findViewById(R.id.pressure);
+            TextView humidity = weather.findViewById(R.id.humidity);
+            TextView windInfo = weather.findViewById(R.id.wind);
+            TextView temp = weather.findViewById(R.id.temperature);
+
 
             if (isChecked){
                 getActivity().runOnUiThread(() -> preferences.edit().putInt(APP_PREFERENCES_THEME, R.style.AppThemeDark).apply());
@@ -171,6 +179,13 @@ public class Settings extends Fragment implements View.OnClickListener{
                 navigationView.setBackground(getActivity().getDrawable(R.drawable.nav_view_background));
 
 
+                town.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                condition.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                pressure.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                humidity.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                windInfo.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                temp.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+                layout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_dark));
 
             }else {
 
@@ -196,6 +211,16 @@ public class Settings extends Fragment implements View.OnClickListener{
                 toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
                 name.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
                 navigationView.setBackgroundResource(R.drawable.nav_view_background);
+
+                town.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                condition.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                pressure.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                humidity.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                windInfo.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+                temp.setTextColor(ContextCompat.getColor(getContext(), R.color.color_primary_text));
+
+                layout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackground_light));
+
             }
 
         });
