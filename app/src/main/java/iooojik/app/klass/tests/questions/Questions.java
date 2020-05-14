@@ -181,12 +181,12 @@ public class Questions extends Fragment implements View.OnClickListener{
             final LinearLayout layout = new LinearLayout(getContext());
             layout.setOrientation(LinearLayout.VERTICAL);
 
-            View view1 = getLayoutInflater().inflate(R.layout.text_view, null, false);
-            TextView textView = view1.findViewById(R.id.tv);
+
+            TextView textView = new TextView(getContext());
 
             textView.setText("Вы действительно хотите завершить выполнение теста?");
 
-            layout.addView(view1);
+            layout.addView(textView);
             builder.setView(layout);
 
             builder.setPositiveButton("Да", (dialog, which) -> {
@@ -198,6 +198,7 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             builder.create().show();
         }
+        running = false;
     }
 
     private void showAnswers() {
@@ -222,9 +223,9 @@ public class Questions extends Fragment implements View.OnClickListener{
 
             for (RadioButton radioButton : radioButtons){
                 if (radioButton.getText().toString().equals(answer) && radioButton.isChecked()){
-                    radioButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.Completed));
+                    radioButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.rightAnswer));
                 } else if (!radioButton.isChecked() && radioButton.getText().toString().equals(answer)){
-                    radioButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.notCompleted));
+                    radioButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.wrongAnswer));
                 }
             }
 

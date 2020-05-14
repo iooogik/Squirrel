@@ -17,6 +17,8 @@
     <color name="transparent">#00FFFFFF</color>
 
     <color name="notCompleted">#FF5252</color>
+    <color name="wrongAnswer">#FA8072</color>
     <color name="Completed">#56CF54</color>
+    <color name="rightAnswer">#98FB98</color>
     <color name="colorWhite">#FFFFFF</color>
 </resources>

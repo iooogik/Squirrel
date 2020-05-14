@@ -698,6 +698,56 @@ public class Group extends Fragment{
                                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
                                     if (response.code() == 200)
                                         Snackbar.make(getView(), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
+
+                                    View fileBottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_file_selector, null);
+
+                                    Call<ServerResponse<DataFiles>> serverResponseCall = api.getUserFiles(AppСonstants.X_API_KEY,
+                                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
+                                            preferences.getString(AppСonstants.USER_EMAIL,""));
+
+                                    serverResponseCall.enqueue(new Callback<ServerResponse<DataFiles>>() {
+                                        @Override
+                                        public void onResponse(Call<ServerResponse<DataFiles>> call, Response<ServerResponse<DataFiles>> response) {
+                                            if (response.code() == 200){
+
+                                                List<FileObject> fileObjects = response.body().getData().getFilesToUsers();
+                                                List<FileInfo> files = new ArrayList<>();
+                                                for (FileObject file : fileObjects){
+
+
+                                                    int pointIndex = file.getFileUrl().lastIndexOf('.');
+                                                    StringBuilder extension = new StringBuilder();
+                                                    for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
+                                                        extension.append(file.getFileUrl().charAt(i));
+                                                    }
+                                                    StringBuilder fileName = new StringBuilder();
+                                                    pointIndex = file.getFileUrl().lastIndexOf('/');
+
+                                                    for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
+                                                        fileName.append(file.getFileUrl().charAt(i));
+                                                    }
+
+                                                    files.add(new FileInfo(
+                                                            fragment.getResources().
+                                                                    getIdentifier(extension.toString(), "drawable", "iooojik.app.klass"),
+                                                            fileName.toString(), file.getFileUrl()));
+                                                }
+
+                                                FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, view);
+                                                RecyclerView recyclerView = fileBottomSheet.findViewById(R.id.rec_view);
+                                                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                                                        LinearLayoutManager.HORIZONTAL, true));
+                                                recyclerView.setAdapter(adapter);
+                                            }
+                                            else Log.e("GETTING FILES", String.valueOf(response.raw()));
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ServerResponse<DataFiles>> call, Throwable t) {
+                                            Log.e("GETTING FILES", String.valueOf(t));
+                                        }
+                                    });
+                                    fileBottomSheetDialog.setContentView(fileBottomSheet);
                                 }
 
                                 @Override

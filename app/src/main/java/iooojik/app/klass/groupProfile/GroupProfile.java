@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +29,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
@@ -360,13 +370,25 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                             @Override
                             public void onClick(View v) {
                                 //скачивание файла
+                                /*
                                 Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                                         Uri.parse(response.
                                                 body().getData().
-                                                getFilesToGroups().get(response.body().
-                                                getData().getFilesToGroups().size() -1).
+                                                getFilesToGroups().get(0).
                                                 getFileUrl()));
-                                startActivity(browserIntent);
+
+                                 */
+                                String src = response.body().getData().getFilesToGroups().get(0).getFileUrl();
+                                StringBuilder fileName = new StringBuilder();
+                                int pointIndex = src.lastIndexOf('/');
+
+                                for (int i = pointIndex + 1; i < src.length(); i++) {
+                                    fileName.append(src.charAt(i));
+                                }
+
+                                String path = Environment.getExternalStorageDirectory() + "/Download/" + fileName.toString();
+
+                                new LoadFile(src, new File(path)).start();
                             }
                         });
                     }
@@ -378,6 +400,33 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
 
             }
         });
+    }
+
+    private void onDownloadComplete(boolean success) {
+        if (success)
+            Snackbar.make(getView(), "Файл скачан и находится в папке Download", Snackbar.LENGTH_LONG).show();
+        Log.i("***", "************** " + success);
+    }
+
+    private class LoadFile extends Thread {
+        private final String src;
+        private final File dest;
+
+        LoadFile(String src, File dest) {
+            this.src = src;
+            this.dest = dest;
+        }
+
+        @Override
+        public void run() {
+            try {
+                FileUtils.copyURLToFile(new URL(src), dest);
+                onDownloadComplete(true);
+            } catch (IOException e) {
+                e.printStackTrace();
+                onDownloadComplete(false);
+            }
+        }
     }
 
     @Override

@@ -232,6 +232,8 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.View
                         @Override
                         public void onResponse(Call<ServerResponse<CratesData>> call1, Response<ServerResponse<CratesData>> response) {
                             if (response.code() == 200){
+                                TextView cratesCount = view.findViewById(R.id.crates_count);
+                                cratesCount.setText(response.body().getData().getBonusCratesToUsers().get(0).getCount());
                                 CratesData data = response.body().getData();
                                 Snackbar.make(view, "Куплено", Snackbar.LENGTH_LONG).show();
                                 if (data.getBonusCratesToUsers().size() == 0){
