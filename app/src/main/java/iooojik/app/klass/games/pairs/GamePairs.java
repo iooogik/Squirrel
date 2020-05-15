@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -123,8 +124,7 @@ public class GamePairs extends Fragment implements View.OnClickListener{
             });
 
             goToMainMenu.setOnClickListener(v1 -> {
-                NavController navController = NavHostFragment.findNavController(getParentFragment());
-                navController.navigate(R.id.nav_games);
+                Navigation.findNavController(getView()).navigateUp();
                 dialog.dismiss();
             });
 

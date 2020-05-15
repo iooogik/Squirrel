@@ -62,7 +62,8 @@ public class SignIn extends Fragment implements View.OnClickListener {
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //ещё одна проверка на авторизацию
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
-        if (!(token.isEmpty())) navController.navigate(R.id.nav_profile);
+        String email = preferences.getString(AppСonstants.USER_EMAIL, "");
+        if (!(token.isEmpty()) && !email.isEmpty()) navController.navigate(R.id.nav_profile);
 
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);

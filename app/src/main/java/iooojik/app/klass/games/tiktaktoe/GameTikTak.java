@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -154,8 +155,10 @@ public class GameTikTak extends Fragment implements View.OnClickListener{
         }
 
         builder.setNegativeButton("Закончить", (dialog, which) -> {
-            NavController navController = NavHostFragment.findNavController(getParentFragment());
-            navController.navigate(R.id.nav_games);
+            //NavController navController = NavHostFragment.findNavController(getParentFragment());
+            //navController.navigate(R.id.nav_games);
+            Navigation.findNavController(view).navigateUp();
+
             dialog.cancel();
         });
 

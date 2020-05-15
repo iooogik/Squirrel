@@ -165,14 +165,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        //переход "вверх"
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-
     private void signIN(String uEmail, String uPassword){
         //авторизация пользователя
         doRetrofit();
