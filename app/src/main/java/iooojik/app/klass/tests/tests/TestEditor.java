@@ -17,27 +17,37 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.developer.filepicker.model.DialogConfigs;
+import com.developer.filepicker.model.DialogProperties;
+import com.developer.filepicker.view.FilePickerDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
+import iooojik.app.klass.api.FileUploadApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
 import iooojik.app.klass.models.isUserGetTest.IsUserGetTest;
 import iooojik.app.klass.models.test_results.DataTestResult;
 import iooojik.app.klass.models.test_results.TestsResult;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,6 +64,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private View view;
     private Context context;
     private List<View> questions;
+    private static List<AttachmentObject> attachmentObjects;
     private int id = -1;
     private Api api;
     private String groupName, groupAuthor, groupAuthorName;
@@ -63,6 +74,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     private EditText minutes, score;
     private CheckBox checkBox;
     private SharedPreferences preferences;
+    private int numQuestions = 0;
 
 
 
@@ -115,6 +127,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         fab.setOnClickListener(this);
 
         questions = new ArrayList<>();
+        attachmentObjects = new ArrayList<>();
         Button button = view.findViewById(R.id.collectTest);
         button.setOnClickListener(this);
         getGroupInfo();
@@ -132,7 +145,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     @SuppressLint("InflateParams")
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fab:
 
                 View q = getLayoutInflater().inflate(R.layout.recycler_view_edit_test, null);
@@ -155,17 +168,84 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                     builder.create().show();
                     return true;
                 });
+
+                Button addAttachment = q.findViewById(R.id.addAttachment);
+                addAttachment.setOnClickListener(v12 -> addFile(numQuestions));
+
+                numQuestions++;
                 questions.add(q);
                 layout.addView(q);
                 break;
             case R.id.collectTest:
-
                 if ((!(minutes.getText().toString().isEmpty()) || checkBox.isChecked()) && id != -1)
                     uploadTest();
                 else Snackbar.make(getView(), "Не все поля заполнены", Snackbar.LENGTH_LONG).show();
                 break;
 
         }
+    }
+
+    private void addFile(int numQuestions) {
+        DialogProperties properties = new DialogProperties();
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+        properties.show_hidden_files = false;
+
+        FilePickerDialog dialog = new FilePickerDialog(getActivity(), properties);
+        dialog.setTitle("Select a File");
+        dialog.setDialogSelectionListener(files -> {
+            String file_path = files[0];
+            if (file_path != null && !file_path.trim().isEmpty()) {
+                File file = new File(file_path);
+                RequestBody requestFile =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                String fileName = file.getName();
+                int pointIndex = -1;
+                if (fileName.contains(".")) {
+                    pointIndex = fileName.lastIndexOf('.');
+
+                    StringBuilder extension = new StringBuilder();
+                    for (int i = pointIndex; i < fileName.length(); i++) {
+                        extension.append(fileName.charAt(i));
+                    }
+
+
+                    fileName = UUID.randomUUID() + extension.toString();
+                }
+
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("file", fileName.toLowerCase(), requestFile);
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(AppСonstants.NEW_API_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
+                Call<Void> resultCall = fileUploadApi.uploadFile(body);
+
+                String finalFileName = fileName;
+                resultCall.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.code() == 200){
+                            Snackbar.make(view, "Добавлено", Snackbar.LENGTH_LONG).show();
+                            boolean add = attachmentObjects.add(new AttachmentObject(numQuestions,
+                                    AppСonstants.IOOOJIK_BASE_URL + "project/" + finalFileName));
+                        }
+                        else Snackbar.make(view, "Что-то пошло не так", Snackbar.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        dialog.show();
     }
 
     private void doRetrofit(){
@@ -296,7 +376,13 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         builderScore.append("'");
         for (String sc : scores) builderScore.append(sc).append(testDivider);
         builderScore.append("'");
-
+        //объединяем все ссылки на прикрпелённые файлы
+        StringBuilder fileBuilder = new StringBuilder();
+        if (attachmentObjects.size() != 0) {
+            for (AttachmentObject file : attachmentObjects)
+                fileBuilder.append(file.getNumQuestion())
+                        .append(testDivider).append(file.getFileURL());
+        }
 
         EditText name = view.findViewById(R.id.name);
         EditText description = view.findViewById(R.id.description);
@@ -319,6 +405,8 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         updateMap.put("name", groupName);
         updateMap.put("test", SQL);
         updateMap.put("count_questions", String.valueOf(questions.size()));
+        if (attachmentObjects.size() > 0)
+            updateMap.put("attachments", fileBuilder.toString());
 
         Database mDBHelper;
         mDBHelper = new Database(getContext());

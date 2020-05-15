@@ -283,6 +283,8 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="uploadedFiles">Загруженные файлы</string>
     <string name="Download">Скачать</string>
     <string name="teacherAttachment">Преподаватель прикрепил файл</string>
+    <string name="downloadAttachment">Скачать прикреплённый файл</string>
+    <string name="addFilePicture">Добавить файл/картинку</string>
 
 
 </resources>

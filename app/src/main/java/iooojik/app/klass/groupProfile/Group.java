@@ -19,6 +19,17 @@ public class Group {
     @SerializedName("test")
     @Expose
     private String test;
+    @SerializedName("attachments")
+    @Expose
+    private String attachments;
+
+    public String getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(String attachments) {
+        this.attachments = attachments;
+    }
 
     public String getId() {
         return id;

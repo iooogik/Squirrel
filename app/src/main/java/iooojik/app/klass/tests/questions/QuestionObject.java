@@ -8,12 +8,22 @@ public class QuestionObject {
     private String trueAnswer;
     private String selectedAnswer;
     private int score;
+    private String fileURL;
 
-    QuestionObject(String question, List<String> answers, String trueAnswer, int score) {
+    QuestionObject(String question, List<String> answers, String trueAnswer, int score, String fileURL) {
         this.question = question;
         this.answers = answers;
         this.trueAnswer = trueAnswer;
         this.score = score;
+        this.fileURL = fileURL;
+    }
+
+    public String getFileURL() {
+        return fileURL;
+    }
+
+    public void setFileURL(String fileURL) {
+        this.fileURL = fileURL;
     }
 
     int getScore() {

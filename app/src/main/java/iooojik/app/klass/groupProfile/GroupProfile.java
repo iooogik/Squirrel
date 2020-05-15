@@ -37,9 +37,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
@@ -60,6 +63,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static iooojik.app.klass.AppСonstants.testDivider;
 
 public class GroupProfile extends Fragment implements View.OnClickListener{
 
@@ -282,26 +287,55 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                     }
                 });
 
+                Database mDBHelper = new Database(getContext());
+                SQLiteDatabase mDb;
+                mDBHelper = new Database(getContext());
+                mDBHelper.openDataBase();
+                mDBHelper.updateDataBase();
+                mDb = mDBHelper.getWritableDatabase();
+
                 try {
-                    Database mDBHelper = new Database(getContext());
-                    SQLiteDatabase mDb;
-                    mDBHelper = new Database(getContext());
-                    mDBHelper.openDataBase();
-                    mDBHelper.updateDataBase();
-
-                    mDb = mDBHelper.getWritableDatabase();
                     mDb.execSQL(group.getTest());
-
                     @SuppressLint("Recycle") Cursor cursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS, null);
                     cursor.moveToLast();
                     ContentValues contentValues = new ContentValues();
+                    int testID = cursor.getPosition() + 1;
                     contentValues.put(AppСonstants.GROUP_ID_FIELD, Integer.parseInt(group.getId()));
-                    mDb.update(AppСonstants.TABLE_TESTS, contentValues,
-                            "_id=" + (cursor.getPosition() + 1), null);
+                    mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id=" + testID, null);
+
+                    //получаем прикреплённые файлы и картинки
+                    //получаем строку с ссылками и разделяем её, затем отправляем данные в бд
+                    String attachmentsText = group.getAttachments();
+                    attachmentsText = attachmentsText.replaceAll("[']", "");
+                    cursor.moveToLast();
+                    testID = cursor.getInt(cursor.getColumnIndex("_id"));
+                    if (!attachmentsText.trim().isEmpty()) {
+
+                        List<String> attachmentsURLs = new
+                                ArrayList<>(Arrays.asList(attachmentsText.split(Pattern.quote(testDivider))));
+
+                        for (int i = 0; i < attachmentsURLs.size() - 1; i+=2) {
+                            ContentValues filesInfo = new ContentValues();
+                            filesInfo.put(AppСonstants.TABLE_TEST_ID, testID);
+                            filesInfo.put(AppСonstants.TABLE_QUESTION_NUM, Integer.valueOf(attachmentsURLs.get(i)));
+                            filesInfo.put(AppСonstants.TABLE_FILE_URL, attachmentsURLs.get(i + 1));
+
+                            mDb.insert(AppСonstants.TABLE_FILES_TO_QUESTIONS, null, filesInfo);
+                            Log.e("t", String.valueOf(i));
+                        }
+                    }
+
+
+
                     Snackbar.make(getView(), "Тест получен!", Snackbar.LENGTH_LONG).show();
                 } catch (Exception e) {
-                    Log.i("LOAD TEST", String.valueOf(e));
+                    Log.e("LOADING TEST", String.valueOf(e));
                 }
+
+
+
+
+
 
             });
         }else {
@@ -366,22 +400,19 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                         LinearLayout linearLayout = view.findViewById(R.id.attachment);
                         linearLayout.setVisibility(View.VISIBLE);
                         Button download = view.findViewById(R.id.download);
-                        download.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //скачивание файла
-                                String src = response.body().getData().getFilesToGroups().get(0).getFileUrl();
-                                StringBuilder fileName = new StringBuilder();
-                                int pointIndex = src.lastIndexOf('/');
+                        download.setOnClickListener(v -> {
+                            //скачивание файла
+                            String src = response.body().getData().getFilesToGroups().get(0).getFileUrl();
+                            StringBuilder fileName = new StringBuilder();
+                            int pointIndex = src.lastIndexOf('/');
 
-                                for (int i = pointIndex + 1; i < src.length(); i++) {
-                                    fileName.append(src.charAt(i));
-                                }
-
-                                String path = Environment.getExternalStorageDirectory() + "/Download/" + fileName.toString();
-
-                                new LoadFile(src, new File(path)).start();
+                            for (int i = pointIndex + 1; i < src.length(); i++) {
+                                fileName.append(src.charAt(i));
                             }
+
+                            String path = Environment.getExternalStorageDirectory() + "/Download/" + fileName.toString();
+
+                            new LoadFile(src, new File(path)).start();
                         });
                     }
                 }
@@ -401,7 +432,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         Log.i("***", "************** " + success);
     }
 
-    private class LoadFile extends Thread {
+    public class LoadFile extends Thread {
         private final String src;
         private final File dest;
 

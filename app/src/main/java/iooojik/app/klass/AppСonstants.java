@@ -19,7 +19,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 7;
+    static int DB_VERSION = 9;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -79,6 +79,7 @@ public class AppСonstants {
     //таблицы
     public static final String TABLE_TESTS = "Tests";
     public static final String TABLE_NOTES = "Notes";
+    public static final String TABLE_FILES_TO_QUESTIONS = "files_to_questions";
     //название колонок ////////////////////////////////////////////////////
     public static final String TABLE_ID = "_id";
     public static final String TABLE_NAME = "name";
@@ -109,6 +110,9 @@ public class AppСonstants {
     public static final String TABLE_RESULT = "result";
     public static final String TABLE_SCORES = "scores";
     public static final String TABLE_MAX_SCORE = "max_score";
+    public static final String TABLE_TEST_ID = "test_id";
+    public static final String TABLE_QUESTION_NUM = "question_num";
+    public static final String TABLE_FILE_URL = "file_url";
     ///////////////////////////////////////////////////////////////////////////////////
     //id группы, в которой находится пользователь
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";

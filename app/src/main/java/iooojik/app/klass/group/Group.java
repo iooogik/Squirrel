@@ -677,7 +677,6 @@ public class Group extends Fragment{
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(AppСonstants.NEW_API_URL)
                         .addConverterFactory(GsonConverterFactory.create())
-
                         .build();
                 FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
 

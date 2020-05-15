@@ -60,7 +60,7 @@ public class Questions extends Fragment implements View.OnClickListener{
     private SQLiteDatabase mDb;
     private Cursor userCursor;
 
-    static List<QuestionObject> questionObjects;
+    private List<QuestionObject> questionObjects;
     static List<QuestionsAdapter.ViewHolder> recyclerViewItems;
     static int userScore = 0;
     private int totalScore = 0;
@@ -100,6 +100,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         return view;
     }
 
+    @SuppressLint("Recycle")
     private void getInformation() {
 
         mDb = mDBHelper.getReadableDatabase();
@@ -108,8 +109,12 @@ public class Questions extends Fragment implements View.OnClickListener{
                 new String[]{String.valueOf(getTestID())});
         userCursor.moveToFirst();
 
-        context = getContext();
+        Cursor fileCursor = mDb.rawQuery("Select * from " + AppСonstants.TABLE_FILES_TO_QUESTIONS + " WHERE test_id=?",
+                new String[]{String.valueOf(getTestID())});
+        fileCursor.moveToFirst();
 
+        context = getContext();
+        //получаем вопросы, ответы и правильные ответы
         String[] quests = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_QUESTIONS))
                 .split(Pattern.quote(testDivider));
         testName = userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME));
@@ -133,16 +138,26 @@ public class Questions extends Fragment implements View.OnClickListener{
             for (int j = 0; j < 4; j++) {
                 tempAnswers[j] = answers.get(j);
             }
+            String fileURL = "";
+            if (fileCursor.getCount() > 0) {
+                int fileQuestNum = fileCursor.getInt(fileCursor.getColumnIndex(AppСonstants.TABLE_QUESTION_NUM)) - 1;
+
+                if (fileQuestNum == i) {
+                    fileURL = fileCursor.getString(fileCursor.getColumnIndex(AppСonstants.TABLE_FILE_URL));
+                }
+            }
+            fileCursor.moveToNext();
+
             questionObjects.add(new QuestionObject(questions.get(i), Arrays.asList(tempAnswers),
-                    trueAnswers.get(i), Integer.valueOf(scores.get(i))));
+                    trueAnswers.get(i), Integer.valueOf(scores.get(i)), fileURL));
             totalScore+=Integer.valueOf(scores.get(i));
             answers.subList(0, 4).clear();
         }
-        QuestionsAdapter questionsAdapter = new QuestionsAdapter(getContext());
+        QuestionsAdapter questionsAdapter = new QuestionsAdapter(getContext(), questionObjects);
         RecyclerView recyclerViewQuestions = view.findViewById(R.id.questions);
         recyclerViewQuestions.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewQuestions.setAdapter(questionsAdapter);
-
+        //получаем файлы
     }
 
     private int getTestID(){

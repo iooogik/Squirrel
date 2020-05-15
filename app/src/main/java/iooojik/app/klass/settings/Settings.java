@@ -317,6 +317,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                 builder.setPositiveButton("Удалить", (dialog, which) -> {
                     mDb = mDBHelper.getWritableDatabase();
                     mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
+                    mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_FILES_TO_QUESTIONS);
                 });
                 builder.create().show();
                 break;

@@ -55,12 +55,14 @@ public interface Api {
     @POST("api/users_to_group/add")
     Call<ServerResponse<PostResult>> addUserToGroup(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
-                                                    @FieldMap HashMap<String, String> map);
+                                                @FieldMap HashMap<String, String> map);
     @FormUrlEncoded
     @POST("api/users_to_group/update")
     Call<ServerResponse<PostResult>> updateUserToGroup(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
+
+
 
     //регистрация
     @FormUrlEncoded
