@@ -113,7 +113,7 @@ public class Planets extends Fragment implements View.OnClickListener {
         if(v.getId() == R.id.openAr){
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Intent intent = new Intent(getContext(), ARcamera.class);
-                intent.putExtra("TYPE", "SolarSystem");
+                intent.putExtra("TYPE", R.raw.solar_system);
                 startActivity(intent);
             } else Snackbar.make(getView(), "Несовместимость версий Android", Snackbar.LENGTH_LONG).show();
         }

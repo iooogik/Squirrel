@@ -1,6 +1,5 @@
 package iooojik.app.klass.subjects.ar;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -21,14 +20,13 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
-import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 
 public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
     ArFragment arFragment;
     private ModelRenderable solarSystem;
-    public static String TYPE;
+    public int TYPE;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -36,7 +34,7 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         //определение типа 3д объекта
         if (getIntent().getExtras() != null)
-            TYPE = getIntent().getExtras().getString("TYPE");
+            TYPE = getIntent().getExtras().getInt("TYPE");
 
         setContentView(R.layout.ar_camera_activity);
 
@@ -54,27 +52,10 @@ public class ARcamera extends FragmentActivity implements View.OnClickListener {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void loadModel() {
-        int res = -1;
         //получение файла-ресурса с 3д объектом
-        switch (TYPE){
-            case ("SolarSystem"):
-                //Солнечная система
-                 res = R.raw.solar_system;
-                 break;
-            case ("Sphere"):
-                //Сфера
-                res = R.raw.sphere;
-                break;
-            case ("Cube"):
-                //Куб
-                res = R.raw.cube;
-                break;
-
-        }
-
         //создание рендера модели
         ModelRenderable.builder()
-                .setSource(this, res).build()
+                .setSource(this, TYPE).build()
                 .thenAccept(renderable -> solarSystem = renderable)
                 .exceptionally(throwable -> {
                     Toast toast =

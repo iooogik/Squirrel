@@ -84,24 +84,19 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         sharedPreferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         context = getContext();
         fragment = this;
-        setInformation();
+        getExtraData();
+        new Thread(this::getGroupInformation).start();
+        new Thread(this::getTestTeacherInfo).start();
+        new Thread(this::getGroupMessage).start();
+        new Thread(this::getAttachment).start();
+
+        TextView groupN = view.findViewById(R.id.group_name);
+        groupN.setText(groupName);
+
         Button leave = view.findViewById(R.id.leave_group);
         navController = NavHostFragment.findNavController(this);
         leave.setOnClickListener(this);
         return view;
-
-    }
-
-    private void setInformation(){
-        getActivity().runOnUiThread(() -> {
-            getExtraData();
-            TextView groupN = view.findViewById(R.id.group_name);
-            groupN.setText(groupName);
-            getGroupInformation();
-            getTestTeacherInfo();
-            getGroupMessage();
-            getAttachment();
-        });
 
     }
 

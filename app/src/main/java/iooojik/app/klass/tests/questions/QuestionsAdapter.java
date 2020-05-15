@@ -1,15 +1,23 @@
 package iooojik.app.klass.tests.questions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +36,7 @@ import java.util.List;
 import iooojik.app.klass.R;
 
 
-public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.ViewHolder> {
+public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.ViewHolder>{
 
     private LayoutInflater inflater;
     private List<QuestionObject> questionObjects;
@@ -47,6 +55,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         QuestionObject object = questionObjects.get(position);
@@ -117,7 +126,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             for (int i = lastPointID + 1; i < fileURL.length(); i++) {
                 extension.append(fileURL.charAt(i));
             }
-            Log.e("tttt", extension.toString());
+
             switch (extension.toString()){
                 case "jpg":
                 case "jpeg":
@@ -125,6 +134,21 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
                 case "tiff":
                     holder.urlImage.setVisibility(View.VISIBLE);
                     Picasso.with(context).load(fileURL).resize(150, 150).into(holder.urlImage);
+                    break;
+                case "mp3":
+                case "wav":
+                case "aac":
+                case "mp4":
+                case "avi":
+                case "mov":
+                    holder.openInBrowser.setVisibility(View.VISIBLE);
+                    holder.openInBrowser.setOnClickListener(v -> {
+                        View webView = inflater.inflate(R.layout.web_view, null);
+                        WebView web = webView.findViewById(R.id.web);
+                        web.getSettings().setJavaScriptEnabled(true);
+                        web.loadUrl(fileURL);
+                        holder.questionLayout.addView(webView);
+                    });
                     break;
                 default:
 
@@ -148,6 +172,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
 
         Questions.recyclerViewItems.add(holder);
     }
+
     private void onDownloadComplete(boolean success) {
         if (success)
             Toast.makeText(context, "Файл находится в папке Download", Toast.LENGTH_LONG).show();
@@ -190,7 +215,9 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         RadioButton fourthAnswer;
         CheckBox difficulties;
         ImageView urlImage;
-        Button downloadButton;
+        Button downloadButton, openInBrowser;
+        LinearLayout questionLayout;
+
 
         ViewHolder(View view){
             super(view);
@@ -202,6 +229,8 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             fourthAnswer = view.findViewById(R.id.radioButton4);
             urlImage = view.findViewById(R.id.image);
             downloadButton = view.findViewById(R.id.downloadAttachment);
+            questionLayout = view.findViewById(R.id.questionLayout);
+            openInBrowser = view.findViewById(R.id.open_in_browser);
         }
     }
 }

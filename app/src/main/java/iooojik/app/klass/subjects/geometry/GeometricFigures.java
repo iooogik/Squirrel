@@ -50,6 +50,8 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
     @Override
     public void onStart() {
         super.onStart();
+        LinearLayout linearLayout = view.findViewById(R.id.linear);
+        linearLayout.removeAllViews();
         Database mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
@@ -70,13 +72,13 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
             byte[] bytesImg = userCursor.getBlob(userCursor.getColumnIndex("images"));
             if(bytesImg!=null)
                 bitmap = BitmapFactory.decodeByteArray(bytesImg, 0, bytesImg.length);
-            String type = "";
+            int type = -1;
             switch (name){
                 case "Сфера":
-                    type = "Sphere";
+                    type = R.raw.sphere;
                     break;
                 case "Куб":
-                    type = "Cube";
+                    type = R.raw.cube;
                     break;
             }
             setInformation(name, description, bitmap, type);
@@ -84,7 +86,7 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void setInformation(String name, String description, Bitmap bitmap, String type){
+    private void setInformation(String name, String description, Bitmap bitmap, int type){
         LinearLayout linearLayout = view.findViewById(R.id.linear);
         @SuppressLint("InflateParams")
         View view1 = getLayoutInflater().inflate(R.layout.recycler_view_item_planet, null, false);
@@ -106,7 +108,6 @@ public class GeometricFigures extends Fragment implements View.OnClickListener{
                 intent.putExtra("TYPE", type);
                 startActivity(intent);
             } else Snackbar.make(getView(), "Несовместимость версий Android", Snackbar.LENGTH_LONG).show();
-
         });
 
         linearLayout.addView(view1);

@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -147,9 +148,9 @@ public class TestEditor extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab:
-
+                numQuestions++;
                 View q = getLayoutInflater().inflate(R.layout.recycler_view_edit_test, null);
-
+                q.setTag(numQuestions);
                 LinearLayout layout = view.findViewById(R.id.linear);
 
                 Spinner spinner = q.findViewById(R.id.spinner);
@@ -157,35 +158,50 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                         android.R.layout.simple_spinner_dropdown_item, trueAnsw);
                 spinner.setAdapter(adapter);
-
+                TextView hint = q.findViewById(R.id.hint);
                 q.setOnLongClickListener(v1 -> {
                     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
 
                     builder.setMessage("Удалить вопрос?");
 
-                    builder.setPositiveButton("Да", (dialog, which) -> layout.removeView(q));
+                    builder.setPositiveButton("Да", (dialog, which) -> {
+                        layout.removeView(q);
+                        numQuestions--;
+                    });
                     builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
                     builder.create().show();
                     return true;
                 });
 
                 Button addAttachment = q.findViewById(R.id.addAttachment);
-                addAttachment.setOnClickListener(v12 -> addFile(numQuestions));
+                addAttachment.setOnClickListener(v12 -> addFile((Integer) q.getTag(), q));
 
-                numQuestions++;
+                Button deleteAttachment = q.findViewById(R.id.deleteAttachment);
+                deleteAttachment.setOnClickListener(v13 -> {
+                    for (AttachmentObject object : attachmentObjects){
+                        int objID = object.getNumQuestion();
+                        if (objID == Integer.valueOf((String) q.getTag())){
+                            attachmentObjects.remove(object);
+                            hint.setVisibility(View.GONE);
+                            break;
+                        }
+                    }
+                });
+
+
                 questions.add(q);
                 layout.addView(q);
                 break;
             case R.id.collectTest:
                 if ((!(minutes.getText().toString().isEmpty()) || checkBox.isChecked()) && id != -1)
-                    uploadTest();
+                    new Thread(this::uploadTest).start();
                 else Snackbar.make(getView(), "Не все поля заполнены", Snackbar.LENGTH_LONG).show();
                 break;
 
         }
     }
 
-    private void addFile(int numQuestions) {
+    private void addFile(int numQuestion, View box) {
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -232,8 +248,9 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.code() == 200){
                             Snackbar.make(view, "Добавлено", Snackbar.LENGTH_LONG).show();
-                            boolean add = attachmentObjects.add(new AttachmentObject(numQuestions,
+                            attachmentObjects.add(new AttachmentObject(numQuestion,
                                     AppСonstants.IOOOJIK_BASE_URL + "project/" + finalFileName));
+
                         }
                         else Snackbar.make(view, "Что-то пошло не так", Snackbar.LENGTH_LONG).show();
                     }
@@ -243,6 +260,8 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
                     }
                 });
+                TextView hint = box.findViewById(R.id.hint);
+                hint.setVisibility(View.GONE);
             }
         });
         dialog.show();
@@ -278,198 +297,217 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         List<String> scores = new ArrayList<>();
         int total_score = 0;
 
-        //удаляем все результаты ученоков, проходивших тест
-        doRetrofit();
 
-        Call<ServerResponse<DataTestResult>> response = api.getTestResults(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
 
-        response.enqueue(new Callback<ServerResponse<DataTestResult>>() {
-            @Override
-            public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
-                if (response.code() == 200){
-                    DataTestResult dataTestResult = response.body().getData();
-                    List<TestsResult> results = dataTestResult.getTestsResult();
+            for (int i = 0; i < questions.size(); i++){
+                View tempQuestion = questions.get(i);
+                String question;
 
-                    for (TestsResult result : results){
-                        deleteResult(result);
+                //вопрос
+                EditText editableQuestion = tempQuestion.findViewById(R.id.question);
+                question = editableQuestion.getText().toString();
+                if (question.isEmpty()) question = "-";
+                textQuestions.add(question);
+
+                //баллы
+                EditText scoreText = tempQuestion.findViewById(R.id.edit_text_score);
+                String score = scoreText.getText().toString().trim();
+                String numRegex = "[0-99]";
+                if (score.matches(numRegex)) {
+                    if (score.isEmpty()) score = "1";
+                    scores.add(score);
+                    score += Integer.valueOf(score.trim());
+                }
+
+            }
+            if (scores.size() == questions.size() && textQuestions.size() == questions.size()) {
+                for (int i = 0; i < questions.size(); i++) {
+                    View tempQuestion = questions.get(i);
+
+
+                    //первый ответ
+                    EditText firstAnsw = tempQuestion.findViewById(R.id.answ1);
+                    String answer = firstAnsw.getText().toString();
+                    if (answer.trim().isEmpty()) answer = "-";
+                    textAnswers.add(answer);
+
+                    //второй ответ
+                    EditText secondAnsw = tempQuestion.findViewById(R.id.answ2);
+                    answer = secondAnsw.getText().toString().trim();
+                    if (answer.isEmpty()) answer = "-";
+                    textAnswers.add(answer);
+
+                    //третий ответ
+                    EditText thirdAnsw = tempQuestion.findViewById(R.id.answ3);
+                    answer = thirdAnsw.getText().toString().trim();
+                    if (answer.isEmpty()) answer = "-";
+                    textAnswers.add(answer);
+
+                    //четвёртый ответ
+                    EditText fourthAnsw = tempQuestion.findViewById(R.id.answ4);
+                    answer = fourthAnsw.getText().toString().trim();
+                    if (answer.isEmpty()) answer = "-";
+                    textAnswers.add(answer);
+
+                    //правильный ответ
+                    Spinner spinner = tempQuestion.findViewById(R.id.spinner);
+                    if (spinner.getSelectedItem().toString().equals(firstSel))
+                        trueAnswers.add(firstAnsw.getText().toString());
+                    else if (spinner.getSelectedItem().toString().equals(secondSel))
+                        trueAnswers.add(secondAnsw.getText().toString());
+                    else if (spinner.getSelectedItem().toString().equals(thirdSel))
+                        trueAnswers.add(thirdAnsw.getText().toString());
+                    else if (spinner.getSelectedItem().toString().equals(fourthSel))
+                        trueAnswers.add(fourthAnsw.getText().toString());
+
+
+                }
+
+
+
+                //собираем массивы, чтобы выполнить SQL-запрос
+                //объединяем вопросы
+                StringBuilder builderQuestions = new StringBuilder();
+                builderQuestions.append("'");
+                for (String question : textQuestions)
+                    builderQuestions.append(question).append(testDivider);
+                builderQuestions.append("'");
+                //объединяем правильные оветы
+                StringBuilder builderTrueAnswers = new StringBuilder();
+                builderTrueAnswers.append("'");
+                for (String answ : trueAnswers) builderTrueAnswers.append(answ).append(testDivider);
+                builderTrueAnswers.append("'");
+                //объединяем все ответы
+                StringBuilder builderTextAnswers = new StringBuilder();
+                builderTextAnswers.append("'");
+                for (String answ : textAnswers) builderTextAnswers.append(answ).append(testDivider);
+                builderTextAnswers.append("'");
+                //объединяем все баллы за ответы
+                StringBuilder builderScore = new StringBuilder();
+                builderScore.append("'");
+                for (String sc : scores) builderScore.append(sc).append(testDivider);
+                builderScore.append("'");
+                //объединяем все ссылки на прикрпелённые файлы
+                StringBuilder fileBuilder = new StringBuilder();
+                if (attachmentObjects.size() != 0) {
+                    for (AttachmentObject file : attachmentObjects)
+                        fileBuilder.append(file.getNumQuestion()).append(testDivider).append(file.getFileURL()).append(testDivider);
+                }
+
+                EditText name = view.findViewById(R.id.name);
+                EditText description = view.findViewById(R.id.description);
+
+                doRetrofit();
+
+                HashMap<String, String> updateMap = new HashMap<>();
+                String SQL = createSQL("'" + name.getText().toString() + "'",
+                        "'" + description.getText().toString() + "'",
+                        builderQuestions.toString(),
+                        builderTrueAnswers.toString(),
+                        builderTextAnswers.toString(),
+                        textQuestions.size(),
+                        builderScore.toString(),
+                        String.valueOf(total_score));
+
+                updateMap.put("_id", String.valueOf(id));
+                updateMap.put("author_email", groupAuthor);
+                updateMap.put("author_name", groupAuthorName);
+                updateMap.put("name", groupName);
+                updateMap.put("test", SQL);
+                updateMap.put("count_questions", String.valueOf(questions.size()));
+                if (attachmentObjects.size() > 0)
+                    updateMap.put("attachments", fileBuilder.toString());
+
+                Database mDBHelper;
+                mDBHelper = new Database(getContext());
+                mDBHelper.openDataBase();
+                mDBHelper.updateDataBase();
+                SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
+                mDb.execSQL(SQL);
+
+                Call<ServerResponse<PostResult>> responseCall = api.updateTest(AppСonstants.X_API_KEY,
+                        getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES,
+                                Context.MODE_PRIVATE).getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                        updateMap);
+
+                responseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
+                    @Override
+                    public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                        if (response.code() == 200) {
+                            Snackbar.make(view, "Тест был успешно добавлен!", Snackbar.LENGTH_LONG).show();
+                            //удаляем все результаты ученоков, ранее проходивших тест
+                            doRetrofit();
+
+                            Call<ServerResponse<DataTestResult>> response2 = api.getTestResults(AppСonstants.X_API_KEY,
+                                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                                    AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+
+                            response2.enqueue(new Callback<ServerResponse<DataTestResult>>() {
+                                @Override
+                                public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
+                                    if (response.code() == 200) {
+                                        DataTestResult dataTestResult = response.body().getData();
+                                        List<TestsResult> results = dataTestResult.getTestsResult();
+
+                                        for (TestsResult result : results) {
+                                            deleteResult(result);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ServerResponse<DataTestResult>> call, Throwable t) {
+
+                                }
+                            });
+                        } else {
+                            Snackbar.make(view, "Что-то пошло не так. Код ошибки: " + response.code(),
+                                    Snackbar.LENGTH_LONG).show();
+                            Log.e("ADD TEST", String.valueOf(response.raw()));
+                        }
                     }
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ServerResponse<DataTestResult>> call, Throwable t) {
-
-            }
-        });
-
-        for (int i = 0; i < questions.size(); i++) {
-            View tempQuestion = questions.get(i);
-            String question;
-
-            //вопрос
-            EditText editableQuestion = tempQuestion.findViewById(R.id.question);
-            question = editableQuestion.getText().toString();
-            if (question.isEmpty()) question = "-";
-            textQuestions.add(question);
-
-            //первый ответ
-            EditText firstAnsw = tempQuestion.findViewById(R.id.answ1);
-            String answer = firstAnsw.getText().toString();
-            if (answer.trim().isEmpty()) answer = "-";
-            textAnswers.add(answer);
-
-            //второй ответ
-            EditText secondAnsw = tempQuestion.findViewById(R.id.answ2);
-            answer = secondAnsw.getText().toString().trim();
-            if (answer.isEmpty()) answer = "-";
-            textAnswers.add(answer);
-
-            //третий ответ
-            EditText thirdAnsw = tempQuestion.findViewById(R.id.answ3);
-            answer = thirdAnsw.getText().toString().trim();
-            if (answer.isEmpty()) answer = "-";
-            textAnswers.add(answer);
-
-            //четвёртый ответ
-            EditText fourthAnsw = tempQuestion.findViewById(R.id.answ4);
-            answer = fourthAnsw.getText().toString().trim();
-            if (answer.isEmpty()) answer = "-";
-            textAnswers.add(answer);
-
-            //правильный ответ
-            Spinner spinner = tempQuestion.findViewById(R.id.spinner);
-            if (spinner.getSelectedItem().toString().equals(firstSel)) trueAnswers.add(firstAnsw.getText().toString());
-            else if (spinner.getSelectedItem().toString().equals(secondSel)) trueAnswers.add(secondAnsw.getText().toString());
-            else if (spinner.getSelectedItem().toString().equals(thirdSel)) trueAnswers.add(thirdAnsw.getText().toString());
-            else if (spinner.getSelectedItem().toString().equals(fourthSel)) trueAnswers.add(fourthAnsw.getText().toString());
-
-            //баллы
-            EditText scoreText = tempQuestion.findViewById(R.id.edit_text_score);
-            String score = scoreText.getText().toString().trim();
-            String numRegex   = "[0-99]";
-            if (score.matches(numRegex)) {
-                if (score.isEmpty()) score = "1";
-                scores.add(score);
-                score += Integer.valueOf(score.trim());
-            }
-        }
-
-        //собираем массивы, чтобы выполнить SQL-запрос
-        //объединяем вопросы
-        StringBuilder builderQuestions = new StringBuilder();
-        builderQuestions.append("'");
-        for (String question: textQuestions) builderQuestions.append(question).append(testDivider);
-        builderQuestions.append("'");
-        //объединяем правильные оветы
-        StringBuilder builderTrueAnswers = new StringBuilder();
-        builderTrueAnswers.append("'");
-        for (String answ : trueAnswers) builderTrueAnswers.append(answ).append(testDivider);
-        builderTrueAnswers.append("'");
-        //объединяем все ответы
-        StringBuilder builderTextAnswers = new StringBuilder();
-        builderTextAnswers.append("'");
-        for (String answ : textAnswers) builderTextAnswers.append(answ).append(testDivider);
-        builderTextAnswers.append("'");
-        //объединяем все баллы за ответы
-        StringBuilder builderScore = new StringBuilder();
-        builderScore.append("'");
-        for (String sc : scores) builderScore.append(sc).append(testDivider);
-        builderScore.append("'");
-        //объединяем все ссылки на прикрпелённые файлы
-        StringBuilder fileBuilder = new StringBuilder();
-        if (attachmentObjects.size() != 0) {
-            for (AttachmentObject file : attachmentObjects)
-                fileBuilder.append(file.getNumQuestion())
-                        .append(testDivider).append(file.getFileURL());
-        }
-
-        EditText name = view.findViewById(R.id.name);
-        EditText description = view.findViewById(R.id.description);
-
-        doRetrofit();
-
-        HashMap<String, String> updateMap = new HashMap<>();
-        String SQL = createSQL("'"+ name.getText().toString() + "'",
-                "'"+ description.getText().toString() + "'",
-                builderQuestions.toString(),
-                builderTrueAnswers.toString(),
-                builderTextAnswers.toString(),
-                textQuestions.size(),
-                builderScore.toString(),
-                String.valueOf(total_score));
-
-        updateMap.put("_id", String.valueOf(id));
-        updateMap.put("author_email", groupAuthor);
-        updateMap.put("author_name", groupAuthorName);
-        updateMap.put("name", groupName);
-        updateMap.put("test", SQL);
-        updateMap.put("count_questions", String.valueOf(questions.size()));
-        if (attachmentObjects.size() > 0)
-            updateMap.put("attachments", fileBuilder.toString());
-
-        Database mDBHelper;
-        mDBHelper = new Database(getContext());
-        mDBHelper.openDataBase();
-        mDBHelper.updateDataBase();
-        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
-        mDb.execSQL(SQL);
-
-        Call<ServerResponse<PostResult>> responseCall = api.updateTest(AppСonstants.X_API_KEY,
-                getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES,
-                        Context.MODE_PRIVATE).getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                updateMap);
-
-        responseCall.enqueue(new Callback<ServerResponse<PostResult>>() {
-            @Override
-            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                if (response.code()==200) {
-                    Snackbar.make(view, "Тест был успешно добавлен!", Snackbar.LENGTH_LONG).show();
-                }else {
-                    Snackbar.make(view, "Что-то пошло не так. Код ошибки: " + response.code(),
-                            Snackbar.LENGTH_LONG).show();
-                    Log.e("ADD TEST", String.valueOf(response.raw()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-                Log.e("ADD TEST", String.valueOf(t));
-            }
-        });
-
-        Call<ServerResponse<DataIsUserGetTest>> serverResponseCall = api.isUserGetTest(AppСonstants.X_API_KEY,
-                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
-
-        serverResponseCall.enqueue(new Callback<ServerResponse<DataIsUserGetTest>>() {
-            @Override
-            public void onResponse(Call<ServerResponse<DataIsUserGetTest>> call, Response<ServerResponse<DataIsUserGetTest>> response) {
-                if (response.code() == 200){
-                    List<IsUserGetTest> isUserGetTests = response.body().getData().getIsUserGetTest();
-                    for (IsUserGetTest test : isUserGetTests){
-                        Call<ServerResponse<PostResult>> call2 = api.deleteUserGetTest(AppСonstants.X_API_KEY,
-                                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), String.valueOf(test.getId()));
-
-                        call2.enqueue(new Callback<ServerResponse<PostResult>>() {
-                            @Override
-                            public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                                if (response.code() != 200) Log.e("DELETING TEST RESULT", String.valueOf(response.raw()));
-                            }
-
-                            @Override
-                            public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-
-                            }
-                        });
+                    @Override
+                    public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+                        Log.e("ADD TEST", String.valueOf(t));
                     }
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<ServerResponse<DataIsUserGetTest>> call, Throwable t) {
+                Call<ServerResponse<DataIsUserGetTest>> serverResponseCall = api.isUserGetTest(AppСonstants.X_API_KEY,
+                        preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
 
-            }
-        });
+                serverResponseCall.enqueue(new Callback<ServerResponse<DataIsUserGetTest>>() {
+                    @Override
+                    public void onResponse(Call<ServerResponse<DataIsUserGetTest>> call, Response<ServerResponse<DataIsUserGetTest>> response) {
+                        if (response.code() == 200) {
+                            List<IsUserGetTest> isUserGetTests = response.body().getData().getIsUserGetTest();
+                            for (IsUserGetTest test : isUserGetTests) {
+                                Call<ServerResponse<PostResult>> call2 = api.deleteUserGetTest(AppСonstants.X_API_KEY,
+                                        preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), String.valueOf(test.getId()));
+
+                                call2.enqueue(new Callback<ServerResponse<PostResult>>() {
+                                    @Override
+                                    public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
+                                        if (response.code() != 200)
+                                            Log.e("DELETING TEST RESULT", String.valueOf(response.raw()));
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ServerResponse<DataIsUserGetTest>> call, Throwable t) {
+
+                    }
+                });
+            } else Snackbar.make(getView(), "Не все поля заполнены", Snackbar.LENGTH_SHORT).show();
+
 
     }
 

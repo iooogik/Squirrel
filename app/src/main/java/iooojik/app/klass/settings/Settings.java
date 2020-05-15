@@ -10,7 +10,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,7 +37,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.w3c.dom.Text;
+import java.util.concurrent.CyclicBarrier;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
@@ -57,7 +56,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_SHOW_BOOK_MATERIALS;
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
 
 public class Settings extends Fragment implements View.OnClickListener{
@@ -78,6 +76,26 @@ public class Settings extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
+        initViews();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+
+        synchronized (this){
+            new Thread(this::setDarkTheme).start();
+            new Thread(this::setCurrentVersion).start();
+            new Thread(this::deAuth).start();
+            new Thread(this::contacts).start();
+            new Thread(this::showGroupID).start();
+            new Thread(this::showWeather).start();
+        }
+
+        super.onResume();
+    }
+
+    private void initViews(){
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
         //получаем настройки
@@ -88,11 +106,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        getActivity().runOnUiThread(this::load);
-
-
-
         deleteTests = view.findViewById(R.id.delete_tests);
         deleteTests.setOnClickListener(this);
 
@@ -105,24 +118,9 @@ public class Settings extends Fragment implements View.OnClickListener{
         TextView policy = view.findViewById(R.id.policy);
         policy.setOnClickListener(this);
 
-
-        return view;
-    }
-
-    private void load(){
-        //установка тем
-        setDarkTheme();
-        //установка текущей версии
-        setCurrentVersion();
-        deAuth();
-        contacts();
-        showGroupID();
-        showWeather();
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
-        setHasOptionsMenu(true);
-
     }
 
     private void setDarkTheme() {

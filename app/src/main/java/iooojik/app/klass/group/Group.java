@@ -107,12 +107,14 @@ public class Group extends Fragment{
         view = inflater.inflate(R.layout.fragment_group, container, false);
 
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        //получение названия нажатого класса
-        getGroupInfo();
+
+        new Thread(this::getGroupMates).start();
+        new Thread(this::getGroupInfo).start();
+
         //контекст
         context = getContext();
         //получение списка одноклассников
-        getGroupMates();
+
 
         fragment = this;
 
@@ -340,10 +342,8 @@ public class Group extends Fragment{
                 if (response.code()==200) {
                     if (response.body().getData() != null) {
 
-                        Log.e("tttttt", String.valueOf(testsResults.size()));
 
                         PieChart pieChart = bottomSheet.findViewById(R.id.chart);
-                        PieChart pieChart2 = bottomSheet.findViewById(R.id.chart2);
                         if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
                             int countDiff = 0;
                             int countPassed = 0;
@@ -400,50 +400,10 @@ public class Group extends Fragment{
                             pieChart.setHoleRadius(0);
                             pieChart.setData(pieData);
 
-
-                            List<Float> score2 = new ArrayList<>();
-                            float rightScore2 = Float.valueOf(countPassed);
-                            float wrongScore2 = mates2.size();
-                            score2.add((rightScore2 / wrongScore2) * 100);
-                            score2.add(100 - (rightScore2 / wrongScore2) * 100);
-                            TextView textView2 = bottomSheetDialog.findViewById(R.id.passed_test_percent);
-                            textView2.setText(String.format("%s %d%%",
-                                    textView2.getText().toString(), Math.round((rightScore2 / wrongScore2) * 100)));
-                            //преобразуем в понятные для диаграммы данные
-                            List<PieEntry> entries2 = new ArrayList<>();
-                            for (int i = 0; i < score2.size(); i++)
-                                entries2.add(new PieEntry(score2.get(i), i));
-                            PieDataSet pieDataSet2 = new PieDataSet(entries2, "");
-                            //устанавливаем цвета
-                            List<Integer> colors2 = new ArrayList<>();
-                            int green2 = Color.parseColor("#56CF54");
-                            int red2 = Color.parseColor("#FF5252");
-                            colors2.add(green2);
-                            colors2.add(red2);
-                            pieDataSet2.setColors(colors2);
-
-                            PieData pieData2 = new PieData(pieDataSet2);
-                            //анимация
-                            pieChart2.animateY(500);
-                            //убираем надписи
-                            Description description2 = new Description();
-                            description2.setText("");
-                            pieChart2.setDescription(description2);
-
-                            pieChart2.getLegend().setFormSize(0f);
-                            pieData2.setValueTextSize(0f);
-
-                            pieChart2.setTransparentCircleRadius(0);
-
-                            pieChart2.setHoleRadius(0);
-                            pieChart2.setData(pieData2);
                         } else {
                             pieChart.setVisibility(View.GONE);
-                            pieChart2.setVisibility(View.GONE);
                             TextView textView = bottomSheet.findViewById(R.id.dif_percent);
-                            TextView textView2 = bottomSheet.findViewById(R.id.passed_test_percent);
                             textView.setVisibility(View.GONE);
-                            textView2.setVisibility(View.GONE);
                         }
                     }
                 }

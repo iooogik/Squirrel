@@ -8,6 +8,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/questionLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
@@ -25,10 +26,11 @@
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
+            android:maxHeight="200dp"
             android:layout_margin="10dp"
-            android:visibility="gone"
-            android:contentDescription="@string/todo" />
+            android:contentDescription="@string/todo"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/downloadAttachment"
@@ -36,9 +38,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:text="@string/downloadAttachment"
             android:textSize="10sp"
             android:visibility="gone"
-            android:text="@string/downloadAttachment"
+            tools:ignore="SmallSp" />
+
+        <Button
+            android:id="@+id/open_in_browser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textSize="10sp"
+            android:text="@string/openInBrowser"
+            android:visibility="gone"
             tools:ignore="SmallSp" />
     </LinearLayout>
 

@@ -126,10 +126,7 @@ public class Profile extends Fragment implements View.OnClickListener {
         main_avatar.setOnClickListener(this);
         setHasOptionsMenu(true);
         //запускаем поток получения/обновления данных
-        getActivity().runOnUiThread(() -> {
-            getUserProfile();
-            getCoins(preferences.getString(AppСonstants.USER_EMAIL, ""));
-        });
+        new Thread(this::getUserProfile).start();
         return view;
     }
 
@@ -431,7 +428,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
             }
         });
-
+        getCoins(preferences.getString(AppСonstants.USER_EMAIL, ""));
         getBonusCases();
 
     }

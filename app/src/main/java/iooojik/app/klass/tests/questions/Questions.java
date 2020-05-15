@@ -132,16 +132,18 @@ public class Questions extends Fragment implements View.OnClickListener{
         List<String> answers = new ArrayList<>(Arrays.asList(answersArray));
         List<String> trueAnswers = new ArrayList<>(Arrays.asList(trueAnswersArray));
         List<String> scores = new ArrayList<>(Arrays.asList(scoresArray));
-
+        Log.e("ttttt", scores.toString());
+        int filesUsed = 0;
         for (int i = 0; i < questions.size(); i++) {
             String[] tempAnswers = new String[4];
             for (int j = 0; j < 4; j++) {
                 tempAnswers[j] = answers.get(j);
             }
-            String fileURL = "";
-            if (fileCursor.getCount() > 0) {
-                int fileQuestNum = fileCursor.getInt(fileCursor.getColumnIndex(AppСonstants.TABLE_QUESTION_NUM)) - 1;
 
+            String fileURL = "";
+            if (fileCursor.getCount() > 0 && filesUsed < fileCursor.getCount()) {
+                int fileQuestNum = fileCursor.getInt(fileCursor.getColumnIndex(AppСonstants.TABLE_QUESTION_NUM)) - 1;
+                filesUsed++;
                 if (fileQuestNum == i) {
                     fileURL = fileCursor.getString(fileCursor.getColumnIndex(AppСonstants.TABLE_FILE_URL));
                 }
@@ -149,7 +151,9 @@ public class Questions extends Fragment implements View.OnClickListener{
             fileCursor.moveToNext();
 
             questionObjects.add(new QuestionObject(questions.get(i), Arrays.asList(tempAnswers),
-                    trueAnswers.get(i), Integer.valueOf(scores.get(i)), fileURL));
+                    trueAnswers.get(i),
+                    Integer.valueOf(scores.get(i)),
+                    fileURL));
             totalScore+=Integer.valueOf(scores.get(i));
             answers.subList(0, 4).clear();
         }

@@ -94,9 +94,6 @@ public class CameraSource {
 
     private Map<byte[], ByteBuffer> mBytesToByteBuffer = new HashMap<>();
 
-    /**
-     * Builder for configuring and creating an associated camera source.
-     */
     public static class Builder {
         private final Detector<?> mDetector;
         private CameraSource mCameraSource = new CameraSource();
@@ -173,30 +170,12 @@ public class CameraSource {
         void onAutoFocus(boolean success);
     }
 
-    /**
-     * Callback interface used to notify on auto focus start and stop.
-     * <p/>
-     * <p>This is only supported in continuous autofocus modes -- {@link
-     * Camera.Parameters#FOCUS_MODE_CONTINUOUS_VIDEO} and {@link
-     * Camera.Parameters#FOCUS_MODE_CONTINUOUS_PICTURE}. Applications can show
-     * autofocus animation based on this.</p>
-     */
+
     public interface AutoFocusMoveCallback {
-        /**
-         * Called when the camera auto focus starts or stops.
-         *
-         * @param start true if focus starts to move, false if focus stops to move
-         */
+
         void onAutoFocusMoving(boolean start);
     }
 
-    //==============================================================================================
-    // Public
-    //==============================================================================================
-
-    /**
-     * Stops the camera and releases the resources of the camera and underlying detector.
-     */
     public void release() {
         synchronized (mCameraLock) {
             stop();
@@ -204,12 +183,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Opens the camera and starts sending preview frames to the underlying detector.  The preview
-     * frames are not displayed.
-     *
-     * @throws IOException if the camera's preview texture or display could not be initialized
-     */
     @RequiresPermission(Manifest.permission.CAMERA)
     public CameraSource start() throws IOException {
         synchronized (mCameraLock) {
@@ -237,13 +210,6 @@ public class CameraSource {
         return this;
     }
 
-    /**
-     * Opens the camera and starts sending preview frames to the underlying detector.  The supplied
-     * surface holder is used for the preview so frames can be displayed to the user.
-     *
-     * @param surfaceHolder the surface holder to use for the preview frames
-     * @throws IOException if the supplied surface holder could not be used as the preview display
-     */
     @RequiresPermission(Manifest.permission.CAMERA)
     public CameraSource start(SurfaceHolder surfaceHolder) throws IOException {
         synchronized (mCameraLock) {
@@ -262,26 +228,14 @@ public class CameraSource {
         return this;
     }
 
-    /**
-     * Closes the camera and stops sending frames to the underlying frame detector.
-     * <p/>
-     * This camera source may be restarted again by calling {@link #start()} or
-     * {@link #start(SurfaceHolder)}.
-     * <p/>
-     * Call {@link #release()} instead to completely shut down this camera source and release the
-     * resources of the underlying detector.
-     */
     public void stop() {
         synchronized (mCameraLock) {
             mFrameProcessor.setActive(false);
             if (mProcessingThread != null) {
                 try {
-                    // Wait for the thread to complete to ensure that we can't have multiple threads
-                    // executing at the same time (i.e., which would happen if we called start too
-                    // quickly after stop).
                     mProcessingThread.join();
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Frame processing thread interrupted on release.");
+                    Log.d(TAG, String.valueOf(e));
                 }
                 mProcessingThread = null;
             }
@@ -293,11 +247,6 @@ public class CameraSource {
                 mCamera.stopPreview();
                 mCamera.setPreviewCallbackWithBuffer(null);
                 try {
-                    // We want to be compatible back to Gingerbread, but SurfaceTexture
-                    // wasn't introduced until Honeycomb.  Since the interface cannot use a SurfaceTexture, if the
-                    // developer wants to display a preview we must use a SurfaceHolder.  If the developer doesn't
-                    // want to display a preview we use a SurfaceTexture if we are running at least Honeycomb.
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                         mCamera.setPreviewTexture(null);
 
@@ -305,7 +254,7 @@ public class CameraSource {
                         mCamera.setPreviewDisplay(null);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to clear camera preview: " + e);
+                    Log.d(TAG, String.valueOf(e));
                 }
                 mCamera.release();
                 mCamera = null;
@@ -313,9 +262,7 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Returns the preview size that is currently in use by the underlying camera.
-     */
+
     public Size getPreviewSize() {
         return mPreviewSize;
     }
@@ -334,7 +281,6 @@ public class CameraSource {
             int maxZoom;
             Camera.Parameters parameters = mCamera.getParameters();
             if (!parameters.isZoomSupported()) {
-                Log.w(TAG, "Zoom is not supported on this device");
                 return currentZoom;
             }
             maxZoom = parameters.getMaxZoom();
@@ -358,15 +304,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Initiates taking a picture, which happens asynchronously.  The camera source should have been
-     * activated previously with {@link #start()} or {@link #start(SurfaceHolder)}.  The camera
-     * preview is suspended while the picture is being taken, but will resume once picture taking is
-     * done.
-     *
-     * @param shutter the callback for image capture moment, or null
-     * @param jpeg    the callback for JPEG image data, or null
-     */
     public void takePicture(ShutterCallback shutter, PictureCallback jpeg) {
         synchronized (mCameraLock) {
             if (mCamera != null) {
@@ -379,33 +316,12 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Gets the current focus mode setting.
-     *
-     * @return current focus mode. This value is null if the camera is not yet created. Applications should call {@link
-     * #autoFocus(AutoFocusCallback)} to start the focus if focus
-     * mode is FOCUS_MODE_AUTO or FOCUS_MODE_MACRO.
-     * @see Camera.Parameters#FOCUS_MODE_AUTO
-     * @see Camera.Parameters#FOCUS_MODE_INFINITY
-     * @see Camera.Parameters#FOCUS_MODE_MACRO
-     * @see Camera.Parameters#FOCUS_MODE_FIXED
-     * @see Camera.Parameters#FOCUS_MODE_EDOF
-     * @see Camera.Parameters#FOCUS_MODE_CONTINUOUS_VIDEO
-     * @see Camera.Parameters#FOCUS_MODE_CONTINUOUS_PICTURE
-     */
     @Nullable
     @FocusMode
     public String getFocusMode() {
         return mFocusMode;
     }
 
-    /**
-     * Sets the focus mode.
-     *
-     * @param mode the focus mode
-     * @return {@code true} if the focus mode is set, {@code false} otherwise
-     * @see #getFocusMode()
-     */
     public boolean setFocusMode(@FocusMode String mode) {
         synchronized (mCameraLock) {
             if (mCamera != null && mode != null) {
@@ -422,30 +338,14 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Gets the current flash mode setting.
-     *
-     * @return current flash mode. null if flash mode setting is not
-     * supported or the camera is not yet created.
-     * @see Camera.Parameters#FLASH_MODE_OFF
-     * @see Camera.Parameters#FLASH_MODE_AUTO
-     * @see Camera.Parameters#FLASH_MODE_ON
-     * @see Camera.Parameters#FLASH_MODE_RED_EYE
-     * @see Camera.Parameters#FLASH_MODE_TORCH
-     */
+
     @Nullable
     @FlashMode
     public String getFlashMode() {
         return mFlashMode;
     }
 
-    /**
-     * Sets the flash mode.
-     *
-     * @param mode flash mode.
-     * @return {@code true} if the flash mode is set, {@code false} otherwise
-     * @see #getFlashMode()
-     */
+
     public boolean setFlashMode(@FlashMode String mode) {
         synchronized (mCameraLock) {
             if (mCamera != null && mode != null) {
@@ -462,24 +362,7 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Starts camera auto-focus and registers a callback function to run when
-     * the camera is focused.  This method is only valid when preview is active
-     * (between {@link #start()} or {@link #start(SurfaceHolder)} and before {@link #stop()} or {@link #release()}).
-     * <p/>
-     * <p>Callers should check
-     * {@link #getFocusMode()} to determine if
-     * this method should be called. If the camera does not support auto-focus,
-     * it is a no-op and {@link AutoFocusCallback#onAutoFocus(boolean)}
-     * callback will be called immediately.
-     * <p/>
-     * <p>If the current flash mode is not
-     * {@link Camera.Parameters#FLASH_MODE_OFF}, flash may be
-     * fired during auto-focus, depending on the driver and camera hardware.<p>
-     *
-     * @param cb the callback to run
-     * @see #cancelAutoFocus()
-     */
+
     public void autoFocus(@Nullable AutoFocusCallback cb) {
         synchronized (mCameraLock) {
             if (mCamera != null) {
@@ -493,14 +376,7 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Cancels any auto-focus function in progress.
-     * Whether or not auto-focus is currently in progress,
-     * this function will return the focus position to the default.
-     * If the camera does not support auto-focus, this is a no-op.
-     *
-     * @see #autoFocus(AutoFocusCallback)
-     */
+
     public void cancelAutoFocus() {
         synchronized (mCameraLock) {
             if (mCamera != null) {
@@ -509,12 +385,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Sets camera auto-focus move callback.
-     *
-     * @param cb the callback to run
-     * @return {@code true} if the operation is supported (i.e. from Jelly Bean), {@code false} otherwise
-     */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public boolean setAutoFocusMoveCallback(@Nullable AutoFocusMoveCallback cb) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -535,19 +405,10 @@ public class CameraSource {
         return true;
     }
 
-    //==============================================================================================
-    // Private
-    //==============================================================================================
 
-    /**
-     * Only allow creation via the builder class.
-     */
     private CameraSource() {
     }
 
-    /**
-     * Wraps the camera1 shutter callback so that the deprecated API isn't exposed.
-     */
     private class PictureStartCallback implements Camera.ShutterCallback {
         private ShutterCallback mDelegate;
 
@@ -559,10 +420,7 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Wraps the final callback in the camera sequence, so that we can automatically turn the camera
-     * preview back on after the picture has been taken.
-     */
+
     private class PictureDoneCallback implements Camera.PictureCallback {
         private PictureCallback mDelegate;
 
@@ -579,9 +437,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Wraps the camera1 auto focus callback so that the deprecated API isn't exposed.
-     */
     private class CameraAutoFocusCallback implements Camera.AutoFocusCallback {
         private AutoFocusCallback mDelegate;
 
@@ -593,9 +448,7 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Wraps the camera1 auto focus move callback so that the deprecated API isn't exposed.
-     */
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private class CameraAutoFocusMoveCallback implements Camera.AutoFocusMoveCallback {
         private AutoFocusMoveCallback mDelegate;
@@ -608,11 +461,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Opens the camera and applies the user settings.
-     *
-     * @throws RuntimeException if the method fails
-     */
     @SuppressLint("InlinedApi")
     private Camera createCamera() {
         int requestedCameraId = getIdForRequestedCamera(mFacing);
