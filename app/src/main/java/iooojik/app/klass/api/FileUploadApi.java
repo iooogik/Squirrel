@@ -7,7 +7,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 
 public interface FileUploadApi {
-
+    //загрузка файла, весом не более 5Мб
     @Multipart
     @POST("upload_file/upload")
     Call<Void> uploadFile(@Part MultipartBody.Part file);

@@ -131,8 +131,6 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void setLocationManager() {
-
-
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             locationListener = new LocationListener() {
                 @Override
@@ -324,11 +322,13 @@ public class Profile extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         if (locationListener != null) {
+            //останавливаем навигацию
             locationManager.removeUpdates(locationListener);
         }
     }
 
     private void getCoins(String userEmail) {
+        //получаем монетки пользователя
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
                 AppСonstants.USER_EMAIL_FIELD, userEmail);
 
@@ -354,7 +354,7 @@ public class Profile extends Fragment implements View.OnClickListener {
     }
 
     private void getUserProfile() {
-
+        //получаем пользовательскую информацию
         doRetrofit();
 
         Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
@@ -382,7 +382,7 @@ public class Profile extends Fragment implements View.OnClickListener {
 
                     ImageView avatar = header.findViewById(R.id.side_avatar);
                     ImageView main_avatar = view.findViewById(R.id.avatar);
-
+                    //если есть пользовательская автарка, то показываем её, иначе показываем стандартный значок
                     if (!user.getAvatar().isEmpty()) {
                         preferences.edit().putString(AppСonstants.USER_AVATAR,
                                 AppСonstants.IMAGE_URL + user.getAvatar()).apply();

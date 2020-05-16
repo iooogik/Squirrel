@@ -166,6 +166,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
 
                     builder.setPositiveButton("Да", (dialog, which) -> {
                         layout.removeView(q);
+                        questions.remove(q);
                         numQuestions--;
                     });
                     builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
@@ -306,20 +307,18 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 //вопрос
                 EditText editableQuestion = tempQuestion.findViewById(R.id.question);
                 question = editableQuestion.getText().toString();
-                if (question.isEmpty()) question = "-";
-                textQuestions.add(question);
+                if (!question.isEmpty())
+                    textQuestions.add(question);
 
                 //баллы
                 EditText scoreText = tempQuestion.findViewById(R.id.edit_text_score);
                 String score = scoreText.getText().toString().trim();
-                String numRegex = "[0-99]";
-                if (score.matches(numRegex)) {
-                    if (score.isEmpty()) score = "1";
-                    scores.add(score);
-                    score += Integer.valueOf(score.trim());
-                }
+                if (score.isEmpty()) score = "1";
+                scores.add(score);
+                score += Integer.valueOf(score.trim());
 
             }
+            Log.e("ttttt", String.valueOf(questions.size() + " " + scores.size() + " " + textQuestions.size()));
             if (scores.size() == questions.size() && textQuestions.size() == questions.size()) {
                 for (int i = 0; i < questions.size(); i++) {
                     View tempQuestion = questions.get(i);
@@ -417,6 +416,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 updateMap.put("count_questions", String.valueOf(questions.size()));
                 if (attachmentObjects.size() > 0)
                     updateMap.put("attachments", fileBuilder.toString());
+                else updateMap.put("attachments", "null");
 
                 Database mDBHelper;
                 mDBHelper = new Database(getContext());

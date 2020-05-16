@@ -85,17 +85,18 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         context = getContext();
         fragment = this;
         getExtraData();
+        //потоки получения/обновления данных
         new Thread(this::getGroupInformation).start();
         new Thread(this::getTestTeacherInfo).start();
         new Thread(this::getGroupMessage).start();
         new Thread(this::getAttachment).start();
-
+        //название группы
         TextView groupN = view.findViewById(R.id.group_name);
         groupN.setText(groupName);
-
+        //конпка "Покинуть круппу"
         Button leave = view.findViewById(R.id.leave_group);
-        navController = NavHostFragment.findNavController(this);
         leave.setOnClickListener(this);
+        navController = NavHostFragment.findNavController(this);
         return view;
 
     }
@@ -133,6 +134,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     }
 
     private void getTestTeacherInfo(){
+        //получение информации о преподавателе
         doRetrofit();
         Call<ServerResponse<DataGroup>> responseCall = api.groupDetail(AppСonstants.X_API_KEY,
                 sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), Integer.parseInt(groupID));
@@ -143,8 +145,6 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                 if (response.code() == 200) {
                     DataGroup groupInfo = response.body().getData();
                     Group group = groupInfo.getGroups();
-
-
 
                     Call<ServerResponse<DataIsUserGetTest>> serverResponseCall = api.isUserGetTest(AppСonstants.X_API_KEY,
                             sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), AppСonstants.USER_EMAIL_FIELD,
@@ -158,6 +158,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                                 DataIsUserGetTest dataIsUserGetTest = response.body().getData();
                                 Button execTest = view.findViewById(R.id.execTest);
                                 boolean k = false;
+                                //проверяем, получил ли уже пользователь тест
                                 for (IsUserGetTest isUserGetTest : dataIsUserGetTest.getIsUserGetTest()){
 
                                     if (isUserGetTest.getGroupId().equals(groupID) &&
@@ -181,7 +182,6 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
 
                                         TextView teacher_name = view.findViewById(R.id.teacher_name);
                                         TextView teacher_email = view.findViewById(R.id.teacher_email);
-
 
                                         teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
                                                 + " ", group.getAuthorName()));
@@ -246,11 +246,13 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     }
 
     private void getTest(IsUserGetTest isUserGetTest, Group group){
+        //получение теста
         TextView test = view.findViewById(R.id.test);
         Button execTest = view.findViewById(R.id.execTest);
 
         if (group.getTest().contains("INSERT")){
-
+            //если тест группы содержит INSERT, то выполняем SQL-запрос
+            // и получаем файлы, прикреплённые к тесту
             test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
             test.setText("Тест доступен");
 
@@ -298,9 +300,10 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                     contentValues.put(AppСonstants.GROUP_ID_FIELD, Integer.parseInt(group.getId()));
                     mDb.update(AppСonstants.TABLE_TESTS, contentValues, "_id=" + testID, null);
 
-                    //получаем прикреплённые файлы и картинки
+                    //получаем прикреплённые файлы
                     //получаем строку с ссылками и разделяем её, затем отправляем данные в бд
                     String attachmentsText = group.getAttachments();
+
                     attachmentsText = attachmentsText.replaceAll("[']", "");
                     cursor.moveToLast();
                     testID = cursor.getInt(cursor.getColumnIndex("_id"));
@@ -308,30 +311,22 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
 
                         List<String> attachmentsURLs = new
                                 ArrayList<>(Arrays.asList(attachmentsText.split(Pattern.quote(testDivider))));
+                        if (!attachmentsText.equals("null")) {
+                            for (int i = 0; i < attachmentsURLs.size() - 1; i += 2) {
+                                ContentValues filesInfo = new ContentValues();
+                                filesInfo.put(AppСonstants.TABLE_TEST_ID, testID);
+                                filesInfo.put(AppСonstants.TABLE_QUESTION_NUM, Integer.valueOf(attachmentsURLs.get(i)));
+                                filesInfo.put(AppСonstants.TABLE_FILE_URL, attachmentsURLs.get(i + 1));
 
-                        for (int i = 0; i < attachmentsURLs.size() - 1; i+=2) {
-                            ContentValues filesInfo = new ContentValues();
-                            filesInfo.put(AppСonstants.TABLE_TEST_ID, testID);
-                            filesInfo.put(AppСonstants.TABLE_QUESTION_NUM, Integer.valueOf(attachmentsURLs.get(i)));
-                            filesInfo.put(AppСonstants.TABLE_FILE_URL, attachmentsURLs.get(i + 1));
-
-                            mDb.insert(AppСonstants.TABLE_FILES_TO_QUESTIONS, null, filesInfo);
-                            Log.e("t", String.valueOf(i));
+                                mDb.insert(AppСonstants.TABLE_FILES_TO_QUESTIONS, null, filesInfo);
+                                Log.e("t", String.valueOf(i));
+                            }
                         }
                     }
-
-
-
                     Snackbar.make(getView(), "Тест получен!", Snackbar.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("LOADING TEST", String.valueOf(e));
                 }
-
-
-
-
-
-
             });
         }else {
             test.setTextColor(ContextCompat.getColor(context, R.color.notCompleted));

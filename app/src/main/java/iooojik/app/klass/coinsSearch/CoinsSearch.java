@@ -77,9 +77,9 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
         View view = inflater.inflate(R.layout.fragment_sport, container, false);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         fab = getActivity().findViewById(R.id.fab);
-        fab.show();
-        fab.setOnClickListener(this);
         fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
+        fab.setOnClickListener(this);
+        fab.show();
 
         enableBottomSheet();
         prepareMap();
@@ -126,13 +126,13 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                 @Override
                 public void onLocationChanged(Location location) {
                     if (startLocation != null) {
-                        map.addPolyline(new PolylineOptions().add(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()),
-                                new LatLng(location.getLatitude(), location.getLongitude())).width(25).color(R.color.notCompleted));
+                        //map.addPolyline(new PolylineOptions().add(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()),
+                          //      new LatLng(location.getLatitude(), location.getLongitude())).width(25).color(R.color.notCompleted));
                         distance+=startLocation.distanceTo(location);
                         int speed = (int) location.getSpeed();
                         distanceText.setText(String.format("%sкм", String.format("%.3f %n", distance / 1000)));
                         speedText.setText(String.format("%s км/ч", String.valueOf(speed)));
-                        coins.setText(String.valueOf(Math.round((distance/1000)/3) * 3));
+                        coins.setText(String.valueOf(Math.round((distance/1000)/3) * 5));
                     }
 
                     checkCaseLocation(location);
@@ -172,7 +172,7 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
             double caseLat = caseLocation.getLatitude();
             double caseLot = caseLocation.getLongitude();
             //проверяем разницу в координатах
-            if (Math.abs(location.getLatitude() - caseLat) < 0.0003 && Math.abs(location.getLongitude() - caseLot) < 0.0003) {
+            if (Math.abs(location.getLatitude() - caseLat) <= 0.0006 && Math.abs(location.getLongitude() - caseLot) <= 0.0006) {
                 //показываем Dialog и зачисляем монеты
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
                 int coins = (int) getRandomBetweenRange(10, 30);

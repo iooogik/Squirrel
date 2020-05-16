@@ -119,7 +119,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         // если файл то появляется кнопка "скачать"
 
         String fileURL = object.getFileURL();
-        Log.e("rt", fileURL);
+
         if (!fileURL.trim().isEmpty()) {
             int lastPointID = fileURL.lastIndexOf('.');
             StringBuilder extension = new StringBuilder();

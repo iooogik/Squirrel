@@ -70,12 +70,12 @@ public class Shop extends Fragment {
         items = view.findViewById(R.id.items);
         getActivity().runOnUiThread(this::getItems);
 
-
         setHasOptionsMenu(true);
         return view;
     }
 
     private void getCrates(){
+        //получение кейсов
         doRetrofit();
 
         Call<ServerResponse<CratesData>> getCrates = api.getCrates(AppСonstants.X_API_KEY,
@@ -111,6 +111,7 @@ public class Shop extends Fragment {
     }
 
     private void getItems() {
+        //получение объектов в магазине
         doRetrofit();
         Call<ServerResponse<ShopData>> call = api.getShopItems(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""));

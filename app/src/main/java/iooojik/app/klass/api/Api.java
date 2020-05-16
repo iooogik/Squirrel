@@ -56,13 +56,12 @@ public interface Api {
     Call<ServerResponse<PostResult>> addUserToGroup(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                 @FieldMap HashMap<String, String> map);
+    //обновление принадлжености пользователя к группе
     @FormUrlEncoded
     @POST("api/users_to_group/update")
     Call<ServerResponse<PostResult>> updateUserToGroup(@Header("X-API-KEY") String api_key,
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
-
-
 
     //регистрация
     @FormUrlEncoded
@@ -91,10 +90,13 @@ public interface Api {
                                                     @Header("X-TOKEN") String token,
                                                     @FieldMap HashMap<String, String> map);
     //получение админского токена
+
     @FormUrlEncoded
     @POST("api/user/request_token")
     Call<DataToken> request_token(@Header("X-API-KEY") String api_key,
                                   @FieldMap HashMap<String, String> map);
+
+
 
     //добавление пользовательских заметок в базу
     @FormUrlEncoded
@@ -108,6 +110,7 @@ public interface Api {
     Call<ServerResponse<PostResult>> addResult(@Header("X-API-KEY") String api_key,
                                                 @Header("X-TOKEN") String token,
                                                 @FieldMap HashMap<String, String> map);
+
 
     @FormUrlEncoded
     @POST("api/tests_result/add")
@@ -197,8 +200,10 @@ public interface Api {
     @POST("api/cases_to_users/add")
     Call<ServerResponse<PostResult>> addCaseCoordinates(@Header("X-API-KEY") String api_key,
                                               @Header("X-TOKEN") String token,
-                                            @FieldMap HashMap<String, String> map);
-     @FormUrlEncoded
+                                                        @FieldMap HashMap<String, String> map);
+
+    //добавление информации о прохождении теста
+    @FormUrlEncoded
     @POST("api/passed_tests/add")
     Call<ServerResponse<PostResult>> addTestResult(@Header("X-API-KEY") String api_key,
                                                         @Header("X-TOKEN") String token,
@@ -209,18 +214,20 @@ public interface Api {
     @POST("api/cases_to_users/delete")
     Call<ServerResponse<PostResult>> removeCase(@Header("X-API-KEY") String api_key, @Field("_id") String id);
 
+    //обнолвение информации, получил ли пользователь тест
     @FormUrlEncoded
     @POST("api/is_user_get_test/update")
     Call<ServerResponse<PostResult>> postUserGetTest(@Header("X-API-KEY") String api_key,
                                                      @Header("X-TOKEN") String token,
                                                      @FieldMap HashMap<String, String> map);
 
+    //удаление информации о полученных тестах
     @FormUrlEncoded
     @POST("api/is_user_get_test/delete")
     Call<ServerResponse<PostResult>> deleteUserGetTest(@Header("X-API-KEY") String api_key,
                                                      @Header("X-TOKEN") String token,
                                                      @Field("_id") String id);
-
+    //добавление информации о получение теста
     @FormUrlEncoded
     @POST("api/is_user_get_test/add")
     Call<ServerResponse<PostResult>> addUserGetTest(@Header("X-API-KEY") String api_key,

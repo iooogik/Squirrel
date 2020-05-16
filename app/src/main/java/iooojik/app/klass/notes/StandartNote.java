@@ -135,10 +135,12 @@ public class StandartNote extends Fragment{
         userCursor.moveToFirst();
         // перемещаем курсор
 
-        // устанавливаем дынные
-
+        // устанавливаем данные
+        String text = userCursor.getString((userCursor.getColumnIndex("shortName")));
+        if (text != null && !text.toString().equals("null") && !text.isEmpty())
+            shortNote.setText(userCursor.getString((userCursor.getColumnIndex("shortName"))));
         name.setText(userCursor.getString(userCursor.getColumnIndex("name")));
-        shortNote.setText(userCursor.getString((userCursor.getColumnIndex("shortName"))));
+
         note.setText(userCursor.getString(userCursor.getColumnIndex("text")));
 
 

@@ -37,8 +37,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.concurrent.CyclicBarrier;
-
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.MainActivity;
@@ -77,25 +75,27 @@ public class Settings extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
         initViews();
+        showWeather();
+
         return view;
     }
 
     @Override
     public void onResume() {
-
-        synchronized (this){
+        super.onResume();
+        synchronized (this) {
+            //потоки обновления данных
             new Thread(this::setDarkTheme).start();
             new Thread(this::setCurrentVersion).start();
             new Thread(this::deAuth).start();
             new Thread(this::contacts).start();
             new Thread(this::showGroupID).start();
-            new Thread(this::showWeather).start();
         }
 
-        super.onResume();
     }
 
     private void initViews(){
+        //инициализация вьюшек и получение настроек и необходимых переменных
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.fab);
         floatingActionButton.hide();
         //получаем настройки
@@ -124,6 +124,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void setDarkTheme() {
+        //переключатель, отвечающий за изменение темы приложения
         darkTheme = view.findViewById(R.id.darkTheme);
 
         if (preferences.contains(APP_PREFERENCES_THEME)) {
@@ -226,12 +227,13 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void setCurrentVersion(){
-        //установка версии
+        //получение версии
         TextView version = view.findViewById(R.id.version);
         version.setText(String.format("%s%s", version.getText() + " ", packageInfo.versionName));
     }
 
     private void deAuth(){
+        //кнопка деавторизации
         Button exit = view.findViewById(R.id.exit);
         exit.setOnClickListener(v -> {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
@@ -245,6 +247,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                 mDb = mDBHelper.getWritableDatabase();
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
+                mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TODO_NAME);
 
                 startActivity(new Intent(getContext(), MainActivity.class));
             });
@@ -257,6 +260,7 @@ public class Settings extends Fragment implements View.OnClickListener{
     }
 
     private void contacts(){
+        //список контактов
         ImageView telegram = view.findViewById(R.id.telegram);
         ImageView gmail = view.findViewById(R.id.gmail);
         ImageView discord = view.findViewById(R.id.discord);

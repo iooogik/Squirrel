@@ -5,10 +5,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +27,12 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.HashMap;
 
 import iooojik.app.klass.api.Api;
@@ -41,7 +50,6 @@ import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
     public MaterialToolbar materialToolbar;
 
     // переменная с настройками приложения
@@ -50,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private NavController navController;
     //апи для работы с серверной бд
     private Api api;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-
         //если нет разрешения, то запрашиваем его, иначе показываем погоду
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED))
             ActivityCompat.requestPermissions(this, perms, 1);
@@ -159,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // определение "домашнего" фрагмента и установка навигации
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile).setDrawerLayout(drawer).build();
+        AppBarConfiguration mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_profile).setDrawerLayout(drawer).build();
         // получение nav-контроллера
         NavigationUI.setupWithNavController(materialToolbar, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -215,6 +223,32 @@ public class MainActivity extends AppCompatActivity {
                 return false;
         }
         return false;
+    }
+
+    private void internetCheck(){
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),
+                            "Нет подключения к интернету!", Toast.LENGTH_SHORT).show();
+                }
+                handler.postDelayed(this, 5000);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        internetCheck();
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
 }

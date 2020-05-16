@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -105,19 +104,15 @@ public class Group extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_group, container, false);
-
+        //настройки
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-
+        //потоки получения данных
         new Thread(this::getGroupMates).start();
         new Thread(this::getGroupInfo).start();
-
         //контекст
         context = getContext();
-        //получение списка одноклассников
-
-
+        //текущий фрагмент
         fragment = this;
-
         //адаптер с одногруппникми и информацией о прохождении теста
         RecyclerView groupmates = view.findViewById(R.id.groupmates);
         groupmates.setLayoutManager(new LinearLayoutManager(context));
@@ -144,13 +139,15 @@ public class Group extends Fragment{
 
         //получаем список учеников(их полное имя и email) из бд
         doRetrofit();
-        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+        Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY,
+                AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
 
         response.enqueue(new Callback<ServerResponse<DataUsersToGroup>>() {
             @Override
             public void onResponse(Call<ServerResponse<DataUsersToGroup>> call, Response<ServerResponse<DataUsersToGroup>> response) {
                 if(response.code() == 200) {
                     ServerResponse<DataUsersToGroup> result = response.body();
+                    //список одногруппников
                     mates = result.getData().getMates();
 
                     Call<ServerResponse<DataTestResult>> call2 = api.getTestResults(AppСonstants.X_API_KEY,
@@ -164,14 +161,12 @@ public class Group extends Fragment{
                                 //ставим адаптер
                                 DataTestResult result = response.body().getData();
                                 List<TestsResult> testsResults = result.getTestsResult();
-
                                 groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults, fragment, true);
-
                                 RecyclerView recyclerView = view.findViewById(R.id.groupmates);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                                 recyclerView.setAdapter(groupmatesAdapter);
-
-                                enableBottomSheet(testsResults, mates);
+                                //инициализируем нижнее меню
+                                enableBottomSheet(testsResults);
                             }
                         }
 
@@ -206,8 +201,7 @@ public class Group extends Fragment{
     }
 
     private void addNewUserWeb(String email) {
-        //получение информации о добавляемом пользователе
-
+        //получение информации о пользователе
         doRetrofit();
 
         Call<ServerResponse<ParamData>> call = api.getParamUser(AppСonstants.X_API_KEY,
@@ -221,13 +215,14 @@ public class Group extends Fragment{
                     ParamData paramData = response.body().getData();
                     if (paramData.getUserParams().size() > 0) {
                         UserParams userParams = paramData.getUserParams().get(0);
-
+                        //аватар
                         String avatar = userParams.getAvatar();
                         if (avatar == null || avatar.isEmpty()) {
                             avatar = "null";
                         }
 
                         HashMap<String, String> map = new HashMap<>();
+
                         map.put(AppСonstants.FULL_NAME_FIELD, userParams.getFullName());
                         map.put(AppСonstants.EMAIL_FIELD, userParams.getEmail());
                         map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
@@ -256,8 +251,6 @@ public class Group extends Fragment{
                                 Snackbar.LENGTH_LONG).show();
                     }
 
-
-
                     } else {
                         Log.e("ADD MATE", String.valueOf(response.raw()));
                         Snackbar.make(view, "Что-то пошло не так!",
@@ -274,10 +267,11 @@ public class Group extends Fragment{
     private void addUser(){
         /*
          * MaterialAlertDialogBuilder для добавления нового ученика в группу
-         * 1. пользователь вводит email и полное имя ученика, если он есть в базе, то
-         * он добавляется в список и, соответсвенно, в бд
+         * пользователь вводит email и полное имя ученика, если он есть в базе, то
+         * он добавляется в список и в соответствующую таблицу
          */
 
+        //Dialog для ввода email пользователя
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -327,7 +321,7 @@ public class Group extends Fragment{
     }
 
     @SuppressLint("InflateParams")
-    private void enableBottomSheet(final List<TestsResult> results, List<Mate> mates2) {
+    private void enableBottomSheet(final List<TestsResult> results) {
 
         List<TestsResult> testsResults = new ArrayList<>(results);
 
@@ -346,15 +340,8 @@ public class Group extends Fragment{
                         PieChart pieChart = bottomSheet.findViewById(R.id.chart);
                         if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
                             int countDiff = 0;
-                            int countPassed = 0;
-
                             for (TestsResult result : testsResults) {
                                 countDiff += Integer.valueOf(result.getDifficultiesCount());
-                                for (Mate mate : mates2) {
-                                    if (result.getUserEmail().equals(mate.getEmail())) {
-                                        countPassed++;
-                                    }
-                                }
                             }
                             List<GroupInfo> dataGroups = response.body().getData().getGroupInfos();
                             //показываем диаграмму, показывающую процент заданий с затруднениями
@@ -508,7 +495,7 @@ public class Group extends Fragment{
                                 fileName.toString(), file.getFileUrl()));
                     }
 
-                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, view);
+                    FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences);
                     RecyclerView recyclerView = fileBottomSheet.findViewById(R.id.rec_view);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                             LinearLayoutManager.HORIZONTAL, true));
@@ -600,6 +587,7 @@ public class Group extends Fragment{
     }
 
     private void uploadFile(){
+        //окно выбора файлов
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -610,7 +598,7 @@ public class Group extends Fragment{
         properties.show_hidden_files = false;
 
         FilePickerDialog dialog = new FilePickerDialog(getActivity(), properties);
-        dialog.setTitle("Select a File");
+        dialog.setTitle("Выберите файл");
 
         dialog.setDialogSelectionListener(files -> {
             String file_path = files[0];
@@ -629,7 +617,7 @@ public class Group extends Fragment{
                     }
 
 
-                    fileName = UUID.randomUUID() + extension.toString();
+                    fileName = UUID.fromString(fileName) + extension.toString();
                 }
                 MultipartBody.Part body =
                         MultipartBody.Part.createFormData("file", fileName.toLowerCase(), requestFile);
@@ -639,9 +627,10 @@ public class Group extends Fragment{
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
                 FileUploadApi fileUploadApi = retrofit.create(FileUploadApi.class);
-
+                //запрос
                 Call<Void> resultCall = fileUploadApi.uploadFile(body);
                 String finalFileName = fileName;
+
                 resultCall.enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -692,7 +681,7 @@ public class Group extends Fragment{
                                                             fileName.toString(), file.getFileUrl()));
                                                 }
 
-                                                FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences, view);
+                                                FilesAdapter adapter = new FilesAdapter(files, getContext(), preferences);
                                                 RecyclerView recyclerView = fileBottomSheet.findViewById(R.id.rec_view);
                                                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                                                         LinearLayoutManager.HORIZONTAL, true));

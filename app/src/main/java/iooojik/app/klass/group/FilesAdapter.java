@@ -12,8 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,20 +26,19 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+//адаптер для списка файлов
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> {
 
     private List<FileInfo> infoList;
     private LayoutInflater inflater;
     private SharedPreferences preferences;
     private Api api;
-    private View view;
     private Context context;
 
-    FilesAdapter(List<FileInfo> infoList, Context context, SharedPreferences preferences, View view) {
+    FilesAdapter(List<FileInfo> infoList, Context context, SharedPreferences preferences) {
         this.infoList = infoList;
         this.inflater = LayoutInflater.from(context);
         this.preferences = preferences;
-        this.view = view;
         this.context = context;
     }
 
@@ -54,15 +51,22 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        //получаем объект файла
         FileInfo fileInfo = infoList.get(position);
+        //показываем соответствующую файлу иконку
         holder.imageView.setImageResource(fileInfo.getRes_id());
+        //показываем название файла
         holder.name.setText(String.format("%s...", fileInfo.getName()));
+
         doRetrofit();
         holder.itemView.setOnClickListener(v -> {
-
+            //слушатель для нажатого файла
+            //если нажать на файл, то он покажется на "стене" группы
             HashMap<String, String> map = new HashMap<>();
+
             map.put(AppСonstants.GROUP_ID_FIELD, String.valueOf(Group.id));
             map.put(AppСonstants.FILE_URL_FIELD, fileInfo.getFileURL());
+
             Call<ServerResponse<PostResult>> addAttachment = api.addAttachment(AppСonstants.X_API_KEY,
                     preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
             addAttachment.enqueue(new Callback<ServerResponse<PostResult>>() {
