@@ -231,10 +231,9 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                 break;
             case R.id.fab:
                 bottomSheetDialog.show();
-                fab.hide();
                 break;
             case R.id.open_case:
-                if (Integer.valueOf(preferences.getString(AppСonstants.CASES, "-1")) != 0) {
+                if (Integer.valueOf(preferences.getString(AppСonstants.CASES, "-1")) > 0) {
                     int openedCases = 0;
                     if (openedCases == 0) {
                         //получаем рандомные координаты в радиусе 1км и строим маршрут до этих координат
@@ -260,11 +259,11 @@ public class CoinsSearch extends Fragment implements OnMapReadyCallback, View.On
                             loadCase();
                         });
 
-                        // обработать получение кейса, когда пользователь пришёл за ним (попробовать через поток)
-
-                    } else Snackbar.make(getView(), "Вы уже открыли кейс, сходите за ним! " +
-                          "Или нажмите \"Отменить поиск кейса\", чтобы открыть новый!", Snackbar.LENGTH_LONG).show();
-              } else Snackbar.make(getView(), "У вас нет кейсов", Snackbar.LENGTH_LONG).show();
+                    } else Snackbar.make(getView(), "Вы уже открыли кейс, сходите за ним!", Snackbar.LENGTH_LONG).show();
+              } else {
+                    Snackbar.make(getView(), "У вас нет кейсов", Snackbar.LENGTH_LONG).show();
+                    bottomSheetDialog.hide();
+                }
                 break;
         }
     }

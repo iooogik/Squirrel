@@ -97,9 +97,11 @@ public class Tests extends Fragment implements View.OnClickListener{
             public void onResponse(Call<ServerResponse<DataPassedTest>> call, Response<ServerResponse<DataPassedTest>> response) {
                 if (response.code() == 200){
                     RecyclerView results = bottomSheet.findViewById(R.id.results);
-                    TestResultAdapter testResultAdapter = new TestResultAdapter(response.body().getData().getPassedTests(), getContext());
-                    results.setLayoutManager(new LinearLayoutManager(getContext()));
-                    results.setAdapter(testResultAdapter);
+                    if (response.body().getData().getPassedTests() != null) {
+                        TestResultAdapter testResultAdapter = new TestResultAdapter(response.body().getData().getPassedTests(), getContext());
+                        results.setLayoutManager(new LinearLayoutManager(getContext()));
+                        results.setAdapter(testResultAdapter);
+                    }
                 } else Log.e("GETTING RESULTS", String.valueOf(response.raw()));
             }
 

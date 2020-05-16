@@ -346,6 +346,7 @@ public class Notes extends Fragment {
                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
                     if (response.code() != 200)
                         Log.e("UPLOAD NOTES", String.valueOf(response.raw()));
+                    else Snackbar.make(view, "Ваши заметки успешно загружены на сервер!", Snackbar.LENGTH_LONG).show();
                 }
 
                 @Override
@@ -355,7 +356,7 @@ public class Notes extends Fragment {
             });
         }
 
-        Snackbar.make(view, "Ваши заметки успешно загружены на сервер!", Snackbar.LENGTH_LONG).show();
+
 
     }
 

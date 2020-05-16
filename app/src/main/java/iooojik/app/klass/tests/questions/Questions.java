@@ -414,4 +414,10 @@ public class Questions extends Fragment implements View.OnClickListener{
             }
         });
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        running = false;
+    }
 }

@@ -62,7 +62,7 @@
     <string name="enterButton">Войти</string>
     <string name="createNewAccountButton">Создать новый аккаунт</string>
     <string name="radioBTNteacher">Я учитель</string>
-    <string name="radioBTNpupil">Я ученик</string>
+    <string name="radioBTNpupil">Я ученик(-ца)</string>
     <string name="delete">Удалить</string>
     <string name="cancel">Отмена</string>
     <string name="addPupil">Добавить ученика</string>

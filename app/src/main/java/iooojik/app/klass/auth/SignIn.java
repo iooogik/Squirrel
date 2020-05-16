@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -64,6 +65,10 @@ public class SignIn extends Fragment implements View.OnClickListener {
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         String email = preferences.getString(AppСonstants.USER_EMAIL, "");
         if (!(token.isEmpty()) && !email.isEmpty()) navController.navigate(R.id.nav_profile);
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {@Override public void handleOnBackPressed() {}};
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
 
         //кнопка входа
         Button signIn = view.findViewById(R.id.login);
@@ -215,4 +220,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
             }
         });
     }
+
+
+
 }

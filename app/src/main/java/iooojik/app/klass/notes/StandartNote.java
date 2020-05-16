@@ -370,14 +370,14 @@ public class StandartNote extends Fragment{
             @SuppressLint("SetTextI18n")
             @Override
             public void afterTextChanged(Editable s) {
-                String numRegex   = "[0-99]";
 
-                Log.e("ttttt", String.valueOf(s));
-                if (s.toString().isEmpty() && s.toString().matches(numRegex)){
+
+
+                if (s.toString().isEmpty()){
                     fontSize.setText("14");
                     noteText.setTextSize(14.0f);
                     textSize = 14;
-                } else if (!s.toString().isEmpty() && Float.parseFloat(s.toString()) > 0 && s.toString().matches(numRegex)) {
+                } else if (!s.toString().isEmpty() && Float.parseFloat(s.toString()) > 0) {
                     noteText.setTextSize(Float.parseFloat(s.toString()));
                     textSize = Integer.parseInt(s.toString());
                 }

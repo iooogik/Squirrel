@@ -160,7 +160,11 @@ public class SignUp extends Fragment implements View.OnClickListener{
                                 preferences.edit().putString(AppСonstants.USER_LOGIN, login);
 
                                 if (dataAuth.getStatus()) signIN(uEmail, uPassword);
-                            } else Log.e("Sign Up", String.valueOf(response.raw()));
+                            } else {
+                                Log.e("Sign Up", String.valueOf(response.message()));
+                                Snackbar.make(getView(), "Пользователь с указанными данными уже существует в базе",
+                                        Snackbar.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override

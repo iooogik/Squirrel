@@ -339,53 +339,61 @@ public class Group extends Fragment{
 
                         PieChart pieChart = bottomSheet.findViewById(R.id.chart);
                         if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
-                            int countDiff = 0;
-                            for (TestsResult result : testsResults) {
-                                countDiff += Integer.valueOf(result.getDifficultiesCount());
+
+                            if (testsResults.size() > 0) {
+                                int countDiff = 0;
+                                for (TestsResult result : testsResults) {
+                                    countDiff += Integer.valueOf(result.getDifficultiesCount());
+                                }
+                                List<GroupInfo> dataGroups = response.body().getData().getGroupInfos();
+                                //показываем диаграмму, показывающую процент заданий с затруднениями
+                                List<Float> score = new ArrayList<>();
+
+                                float rightScore = Float.valueOf(countDiff);
+                                float wrongScore =
+                                        Float.valueOf(Integer.valueOf(dataGroups.get(0).getCount_questions()) * testsResults.size());
+
+                                TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
+                                textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore / wrongScore * 100)));
+
+                                score.add((rightScore / wrongScore) * 100);
+                                score.add(100 - (rightScore / wrongScore) * 100);
+
+                                //преобразуем в понятные для диаграммы данные
+                                List<PieEntry> entries = new ArrayList<>();
+                                for (int i = 0; i < score.size(); i++)
+                                    entries.add(new PieEntry(score.get(i), i));
+                                PieDataSet pieDataSet = new PieDataSet(entries, "");
+                                //устанавливаем цвета
+                                List<Integer> colors = new ArrayList<>();
+                                int green = Color.parseColor("#56CF54");
+                                int red = Color.parseColor("#FF5252");
+                                colors.add(red);
+                                colors.add(green);
+
+                                pieDataSet.setColors(colors);
+
+                                PieData pieData = new PieData(pieDataSet);
+                                //анимация
+                                pieChart.animateY(500);
+                                //убираем надписи
+                                Description description = new Description();
+                                description.setText("");
+                                pieChart.setDescription(description);
+
+                                pieChart.getLegend().setFormSize(0f);
+                                pieData.setValueTextSize(0f);
+
+                                pieChart.setTransparentCircleRadius(0);
+
+                                pieChart.setHoleRadius(0);
+                                pieChart.setData(pieData);
                             }
-                            List<GroupInfo> dataGroups = response.body().getData().getGroupInfos();
-                            //показываем диаграмму, показывающую процент заданий с затруднениями
-                            List<Float> score = new ArrayList<>();
-
-                            float rightScore = Float.valueOf(countDiff);
-                            float wrongScore =
-                                    Float.valueOf(Integer.valueOf(dataGroups.get(0).getCount_questions()) * testsResults.size());
-
-                            TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
-                            textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore/wrongScore * 100)));
-
-                            score.add((rightScore / wrongScore) * 100);
-                            score.add(100 - (rightScore / wrongScore) * 100);
-
-                            //преобразуем в понятные для диаграммы данные
-                            List<PieEntry> entries = new ArrayList<>();
-                            for (int i = 0; i < score.size(); i++)
-                                entries.add(new PieEntry(score.get(i), i));
-                            PieDataSet pieDataSet = new PieDataSet(entries, "");
-                            //устанавливаем цвета
-                            List<Integer> colors = new ArrayList<>();
-                            int green = Color.parseColor("#56CF54");
-                            int red = Color.parseColor("#FF5252");
-                            colors.add(red);
-                            colors.add(green);
-
-                            pieDataSet.setColors(colors);
-
-                            PieData pieData = new PieData(pieDataSet);
-                            //анимация
-                            pieChart.animateY(500);
-                            //убираем надписи
-                            Description description = new Description();
-                            description.setText("");
-                            pieChart.setDescription(description);
-
-                            pieChart.getLegend().setFormSize(0f);
-                            pieData.setValueTextSize(0f);
-
-                            pieChart.setTransparentCircleRadius(0);
-
-                            pieChart.setHoleRadius(0);
-                            pieChart.setData(pieData);
+                            else {
+                                pieChart.setVisibility(View.GONE);
+                                TextView textView = bottomSheet.findViewById(R.id.dif_percent);
+                                textView.setVisibility(View.GONE);
+                            }
 
                         } else {
                             pieChart.setVisibility(View.GONE);
@@ -617,7 +625,7 @@ public class Group extends Fragment{
                     }
 
 
-                    fileName = UUID.fromString(fileName) + extension.toString();
+                    fileName = UUID.randomUUID() + extension.toString();
                 }
                 MultipartBody.Part body =
                         MultipartBody.Part.createFormData("file", fileName.toLowerCase(), requestFile);
@@ -646,7 +654,7 @@ public class Group extends Fragment{
                                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
                                     if (response.code() == 200)
                                         Snackbar.make(getView(), "Файл успешно загружен", Snackbar.LENGTH_LONG).show();
-
+                                    @SuppressLint("InflateParams")
                                     View fileBottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_file_selector, null);
 
                                     Call<ServerResponse<DataFiles>> serverResponseCall = api.getUserFiles(AppСonstants.X_API_KEY,
@@ -662,7 +670,6 @@ public class Group extends Fragment{
                                                 List<FileInfo> files = new ArrayList<>();
                                                 for (FileObject file : fileObjects){
 
-
                                                     int pointIndex = file.getFileUrl().lastIndexOf('.');
                                                     StringBuilder extension = new StringBuilder();
                                                     for (int i = pointIndex + 1; i < file.getFileUrl().length(); i++) {
@@ -675,8 +682,8 @@ public class Group extends Fragment{
                                                         fileName.append(file.getFileUrl().charAt(i));
                                                     }
 
-                                                    files.add(new FileInfo(
-                                                            fragment.getResources().
+
+                                                    files.add(new FileInfo(fragment.getResources().
                                                                     getIdentifier(extension.toString(), "drawable", "iooojik.app.klass"),
                                                             fileName.toString(), file.getFileUrl()));
                                                 }

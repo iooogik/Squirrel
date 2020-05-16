@@ -117,6 +117,9 @@
             android:id="@+id/action_nav_signIn_to_nav_signUp"
             app:destination="@id/nav_signUp"
             app:popUpTo="@id/nav_signIn" />
+        <action
+            android:id="@+id/action_nav_signIn_to_nav_profile"
+            app:destination="@id/nav_profile" />
     </fragment>
 
     <fragment

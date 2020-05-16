@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,6 +41,9 @@ public class Games extends Fragment {
         gamesList.add(new GameObject("Крестики-нолики", R.drawable.tiktaktoe_logo, R.id.nav_gameTikTak));
 
         games.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {@Override public void handleOnBackPressed() {}};
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         GamesAdapter gamesAdapter = new GamesAdapter(gamesList, context, this);
         games.setAdapter(gamesAdapter);

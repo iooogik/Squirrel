@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.L;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -127,6 +130,10 @@ public class Profile extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);
         //запускаем поток получения/обновления данных
         new Thread(this::getUserProfile).start();
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {@Override public void handleOnBackPressed() {}};
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
         return view;
     }
 
@@ -337,11 +344,13 @@ public class Profile extends Fragment implements View.OnClickListener {
             public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
                 if (response.code() == 200){
                     AchievementsData data = response.body().getData();
-                    AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
-                    preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
-                    preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
-                    TextView coins = view.findViewById(R.id.coins);
-                    coins.setText(String.valueOf(achievements.getCoins()));
+                    if (data.getAchievementsToUsers().size() > 0) {
+                        AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
+                        preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
+                        preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
+                        TextView coins = view.findViewById(R.id.coins);
+                        coins.setText(String.valueOf(achievements.getCoins()));
+                    }
                 }
                 else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
             }
@@ -565,9 +574,11 @@ public class Profile extends Fragment implements View.OnClickListener {
                         HashMap<String, String> post = new HashMap<>();
                         post.put("author_email", email);
                         post.put("name", nameGroup);
-                        post.put("test", "null");
                         post.put("author_name", fullName);
                         post.put("count_questions", "0");
+                        post.put("attachments", "null");
+                        post.put("test", "null");
+
 
                         Call<ServerResponse<AddGroupResult>> responseCall = api.addGroup(
                                 AppСonstants.X_API_KEY, preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),

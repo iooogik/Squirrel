@@ -2,6 +2,7 @@ package iooojik.app.klass.group;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,9 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         //получаем объект файла
         FileInfo fileInfo = infoList.get(position);
         //показываем соответствующую файлу иконку
-        holder.imageView.setImageResource(fileInfo.getRes_id());
+        if (fileInfo.getRes_id() != 0)
+            holder.imageView.setImageResource(fileInfo.getRes_id());
+        else holder.imageView.setImageResource(R.drawable.blank);
         //показываем название файла
         holder.name.setText(String.format("%s...", fileInfo.getName()));
 

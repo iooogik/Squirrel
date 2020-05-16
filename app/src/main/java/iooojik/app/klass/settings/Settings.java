@@ -26,8 +26,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -121,6 +123,9 @@ public class Settings extends Fragment implements View.OnClickListener{
         mDBHelper = new Database(getContext());
         mDBHelper.openDataBase();
         mDBHelper.updateDataBase();
+
+
+
     }
 
     private void setDarkTheme() {
@@ -248,8 +253,12 @@ public class Settings extends Fragment implements View.OnClickListener{
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TODO_NAME);
+                MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+                materialToolbar.setVisibility(View.GONE);
+                DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-                startActivity(new Intent(getContext(), MainActivity.class));
+                Navigation.findNavController(getView()).navigate(R.id.nav_signIn);
             });
 
             builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
@@ -521,4 +530,6 @@ public class Settings extends Fragment implements View.OnClickListener{
         }
 
     }
+
+
 }
