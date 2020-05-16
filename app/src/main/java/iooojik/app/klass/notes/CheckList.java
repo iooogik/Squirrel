@@ -219,23 +219,24 @@ public class CheckList extends Fragment implements View.OnClickListener {
             LinearLayout linearLayout = new LinearLayout(getContext());
             @SuppressLint("InflateParams") View view1 = getLayoutInflater().inflate(R.layout.edit_text, null, false);
             TextInputEditText editText = view1.findViewById(R.id.edit_text);
-            TextInputLayout textInputLayout = view1.findViewById(R.id.text_input_layout);
-            textInputLayout.setHint("Введите новое имя");
+            editText.setText(CHECK.getText().toString());
             linearLayout.addView(view1);
             builder.setView(linearLayout);
             builder.setPositiveButton("Изменить", (dialog, which) -> {
-                mDb = mDBHelper.getWritableDatabase();
-                int id = Items.indexOf(CHECK.getText());
-                Items.set(id, editText.getText().toString());
-                ContentValues cv = new ContentValues();
-                StringBuilder stringBuilder = new StringBuilder();
-                for(String item: Items) {
-                    stringBuilder.append(item).append("\n");
-                }
-                cv.put("points", stringBuilder.toString());
+                if (!editText.getText().toString().trim().isEmpty()) {
+                    mDb = mDBHelper.getWritableDatabase();
+                    int id = Items.indexOf(CHECK.getText());
+                    Items.set(id, editText.getText().toString());
+                    ContentValues cv = new ContentValues();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String item : Items) {
+                        stringBuilder.append(item).append("\n");
+                    }
+                    cv.put("points", stringBuilder.toString());
 
-                mDb.update("Notes", cv, "_id=" + getButtonID(), null);
-                getPoints();
+                    mDb.update("Notes", cv, "_id=" + getButtonID(), null);
+                    getPoints();
+                }
 
             });
 
