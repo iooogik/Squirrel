@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
 import iooojik.app.klass.NotificationReceiver;
 import iooojik.app.klass.R;
@@ -92,7 +93,7 @@ public class CheckList extends Fragment implements View.OnClickListener {
 
     private void updateData(String name, String shortNote) {
         mDb = mDBHelper.getWritableDatabase();
-        setHasOptionsMenu(true);
+
         //код сохранения в бд
         ContentValues cv = new ContentValues();
         cv.put("name", name);
@@ -104,7 +105,7 @@ public class CheckList extends Fragment implements View.OnClickListener {
         cv.put("date", dateFormat.format(currentDate));
 
         //обновление базы данных
-        mDb.update("Notes", cv, "_id =" + (getButtonID()), null);
+        mDb.update(AppСonstants.TABLE_NOTES, cv, "_id =" + (getButtonID()), null);
 
         // Скрываем клавиатуру при открытии Navigation Drawer
         try {
@@ -114,9 +115,10 @@ public class CheckList extends Fragment implements View.OnClickListener {
                 inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
             }
         } catch (Exception e){
-            Log.i("StandartNotes", String.valueOf(e));
+            Log.i("Note", String.valueOf(e));
         }
-        Snackbar.make(view, "Сохранено", Snackbar.LENGTH_LONG).show();
+
+        Snackbar.make(getView(), "Сохранено", Snackbar.LENGTH_LONG).show();
     }
 
     @SuppressLint("Recycle")

@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.Database;
@@ -296,6 +297,7 @@ public class Notes extends Fragment {
         if (uploadNoteObjects.size() > 0) clearNotes();
 
         for (NoteObject noteObject : uploadNoteObjects) {
+
             //заносим каждую заметку в базу
             HashMap<String, String> map = new HashMap<>();
             userCursor = mDb.rawQuery("Select * from "+ AppСonstants.TABLE_NOTES +" WHERE _id=?",
@@ -303,10 +305,12 @@ public class Notes extends Fragment {
 
             userCursor.moveToFirst();
             String name = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_NAME)));
+            if (name.trim().isEmpty()) name = "null";
             //собираем данные
-
             String shortName = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_SHORT_NAME)));
+            if (shortName.trim().isEmpty()) shortName = "null";
             String text = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TEXT)));
+            if (text.trim().isEmpty()) text = "null";
             String date = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.DATE_FIELD)));
             String type = String.valueOf(userCursor.getString(userCursor.getColumnIndex(AppСonstants.TABLE_TYPE)));
             String isNotifSet = String.valueOf(userCursor.getInt(userCursor.getColumnIndex(AppСonstants.TABLE_IS_NOTIF_SET)));
@@ -337,16 +341,14 @@ public class Notes extends Fragment {
             map.put(AppСonstants.TABLE_FONT_SIZE, fontSize);
             //отправляем данные
             Call<ServerResponse<PostResult>> call = api.uploadNotes(AppСonstants.X_API_KEY,
-                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                    map);
-
+                    preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
 
             call.enqueue(new Callback<ServerResponse<PostResult>>() {
                 @Override
                 public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                    if (response.code() != 200)
+                    if (response.code() != 200) {
                         Log.e("UPLOAD NOTES", String.valueOf(response.raw()));
-                    else Snackbar.make(view, "Ваши заметки успешно загружены на сервер!", Snackbar.LENGTH_LONG).show();
+                    }
                 }
 
                 @Override
@@ -355,9 +357,7 @@ public class Notes extends Fragment {
                 }
             });
         }
-
-
-
+        Snackbar.make(view, "Ваши заметки успешно загружены на сервер!", Snackbar.LENGTH_LONG).show();
     }
 
     private void clearNotes() {

@@ -88,7 +88,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
         if (!(noteObject.getName().equals("Математические формулы") && val == 1)) {
             //ставим название и описание картинки
-            holder.name.setText(noteObject.getName());
+            if (!noteObject.getName().equals("null"))
+                holder.name.setText(noteObject.getName());
             if (noteObject.getDescription() != null && !noteObject.getDescription().toString().equals("null"))
                 holder.desc.setText(noteObject.getDescription());
 

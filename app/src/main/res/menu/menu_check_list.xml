@@ -4,15 +4,15 @@
 
     <item
         android:id="@+id/action_notif"
-        android:title="Установить уведомление"
+        android:title="@string/setNotif"
         android:icon="@drawable/baseline_notifications_active_24"
         app:showAsAction="always"
         />
     <item
-        android:id="@+id/action_read_qr"
-        android:title="Сохранить"
+        android:id="@+id/action_save"
+        android:title="@string/save"
         android:icon="@drawable/round_save_24"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         />
 
 </menu>

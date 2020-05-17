@@ -120,7 +120,12 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         ExtendedFloatingActionButton savePict = findViewById(R.id.saveQR);
         savePict.setOnClickListener(v -> {
             GraphicOverlay graphicOverlay = findViewById(R.id.graphicOverlay);
-            onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
+            try {
+                onTap(graphicOverlay.getWidth()/2, graphicOverlay.getHeight()/2);
+            } catch (Exception e){
+                Log.e("ttttt", String.valueOf(e));
+            }
+
         });
 
         FloatingActionButton back = findViewById(R.id.back);
@@ -223,10 +228,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
                 .setRequestedFps(30.0f);
 
         // make sure that auto focus is an available option
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            builder = builder.setFocusMode(
-                    autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
-        }
+        builder = builder.setFocusMode(
+                autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
 
         mCameraSource = builder.build();
     }
@@ -346,7 +349,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             userCursor =  mDb.rawQuery("Select * from Notes", null);
             // перемещаем курсор
             userCursor.moveToPosition(getButtonID() - 1);
-            // устанавливаем дынные
+            // устанавливаем данные
             ContentValues cv = new ContentValues();
             Bitmap bitmap = null;
             try {
@@ -395,7 +398,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         bitmap.setPixels(pixels, 0, 200, 0, 0, w, h);
         return bitmap;
     }
-
+/*
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         boolean b = scaleGestureDetector.onTouchEvent(e);
@@ -404,6 +407,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
         return b || c; //|| super.onTouchEvent(e);
     }
+    
+ */
 
     private int getButtonID() {
         int id = -199;

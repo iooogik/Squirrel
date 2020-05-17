@@ -139,9 +139,15 @@ public class StandartNote extends Fragment{
         String text = userCursor.getString((userCursor.getColumnIndex("shortName")));
         if (text != null && !text.toString().equals("null") && !text.isEmpty())
             shortNote.setText(userCursor.getString((userCursor.getColumnIndex("shortName"))));
-        name.setText(userCursor.getString(userCursor.getColumnIndex("name")));
 
-        note.setText(userCursor.getString(userCursor.getColumnIndex("text")));
+
+        text = userCursor.getString((userCursor.getColumnIndex("text")));
+        if (text != null && !text.toString().equals("null") && !text.isEmpty())
+            note.setText(userCursor.getString((userCursor.getColumnIndex("text"))));
+
+        text = userCursor.getString((userCursor.getColumnIndex("name")));
+        if (text != null && !text.toString().equals("null") && !text.isEmpty())
+            name.setText(userCursor.getString(userCursor.getColumnIndex("name")));
 
 
         ImageView img = view.findViewById(R.id.qr_view);
@@ -370,8 +376,6 @@ public class StandartNote extends Fragment{
             @SuppressLint("SetTextI18n")
             @Override
             public void afterTextChanged(Editable s) {
-
-
 
                 if (s.toString().isEmpty()){
                     fontSize.setText("14");

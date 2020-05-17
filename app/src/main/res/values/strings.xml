@@ -287,6 +287,8 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="addFilePicture">Добавить файл/картинку</string>
     <string name="openInBrowser">открыть в браузере</string>
     <string name="addedFile">Прикреплено</string>
+    <string name="setNotif">Установить уведомление</string>
+    <string name="save">Сохранить</string>
 
 
 </resources>
