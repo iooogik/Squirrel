@@ -419,7 +419,6 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         if (success)
             Snackbar.make(getView(), "Файл скачан и находится в папке Download", Snackbar.LENGTH_LONG).show();
         else Snackbar.make(getView(), "Что-то пошло не так", Snackbar.LENGTH_LONG).show();
-        Log.i("***", "************** " + success);
     }
 
     public class LoadFile extends Thread {

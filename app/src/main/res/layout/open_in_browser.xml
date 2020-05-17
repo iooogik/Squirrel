@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="?attr/colorAccent"
+        android:layout_height="wrap_content"
+        android:text="@string/teacherAttachment" />
+
+    <Button
+        android:id="@+id/openInBrowser"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/openInBrowser" />
+
+</LinearLayout>

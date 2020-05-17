@@ -1,25 +1,26 @@
 package iooojik.app.klass.tests.questions;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.media.AudioManager;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import iooojik.app.klass.R;
 
@@ -55,7 +57,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         return new ViewHolder(view);
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility", "InflateParams" })
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         QuestionObject object = questionObjects.get(position);
@@ -138,17 +140,122 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
                 case "mp3":
                 case "wav":
                 case "aac":
+                    View audioView = inflater.inflate(R.layout.open_in_browser, null);
+                    /*MediaPlayer mediaPlayer = new MediaPlayer();
+                    ImageView playButton = audioView.findViewById(R.id.play);
+                    TextView timeAudio = audioView.findViewById(R.id.time);
+                    SeekBar seekBar2 = audioView.findViewById(R.id.seekBar);
+                    ProgressBar progressBar = audioView.findViewById(R.id.progressBar);
+                    AtomicBoolean isLoadedAudio = new AtomicBoolean(false);
+                    playButton.setEnabled(false);
+                    seekBar2.setMax(100);
+                    new Thread(() -> {
+                        try {
+                            mediaPlayer.setDataSource(fileURL);
+                            mediaPlayer.setOnPreparedListener(mp -> {
+                                playButton.setEnabled(true);
+                                isLoadedAudio.set(true);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                timeAudio.setText(msToTime(mediaPlayer.getDuration()));
+                            });
+                            mediaPlayer.prepare();
+                        }
+                        catch (IOException e) { e.printStackTrace(); }
+                    }).start();
+
+                    seekBar2.setOnTouchListener((v, event) -> {
+                        mediaPlayer.seekTo((mediaPlayer.getDuration() / 100) * mediaPlayer.getCurrentPosition());
+                        timeAudio.setText(msToTime(mediaPlayer.getCurrentPosition()));
+                        mediaPlayer.start();
+                        return false;
+                    });
+
+                    playButton.setOnClickListener(v -> {
+                        if (!mediaPlayer.isPlaying()){
+                            if (isLoadedAudio.get()){
+                                playButton.setImageResource(R.drawable.baseline_pause_circle_outline_24);
+                                mediaPlayer.start();
+                            }
+                        }
+                        else {
+                            playButton.setImageResource(R.drawable.baseline_play_arrow_24);
+                            mediaPlayer.pause();
+                        }
+                    });
+
+                     */
+
+                    Button openInBrowser = audioView.findViewById(R.id.openInBrowser);
+                    openInBrowser.setOnClickListener(v -> {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileURL));
+                        context.startActivity(browserIntent);
+                    });
+
+
+                    holder.questionLayout.addView(audioView);
+                    break;
                 case "mp4":
                 case "avi":
                 case "mov":
-                    holder.openInBrowser.setVisibility(View.VISIBLE);
-                    holder.openInBrowser.setOnClickListener(v -> {
-                        View webView = inflater.inflate(R.layout.web_view, null);
-                        WebView web = webView.findViewById(R.id.web);
-                        web.getSettings().setJavaScriptEnabled(true);
-                        web.loadUrl(fileURL);
-                        holder.questionLayout.addView(webView);
+
+                    View videoView = inflater.inflate(R.layout.video_player, null);
+                    /*VideoView video = videoView.findViewById(R.id.videoView);
+
+                    TextView time = videoView.findViewById(R.id.time);
+                    ImageView play = videoView.findViewById(R.id.play);
+                    SeekBar seekBar = videoView.findViewById(R.id.seekBar);
+                    AtomicBoolean isLoaded = new AtomicBoolean(false);
+
+                    play.setOnClickListener(v -> {
+                        if (!video.isPlaying()) {
+                            if (!isLoaded.get()) {
+
+                                ProgressDialog progressDialog = new ProgressDialog(context);
+                                progressDialog.setMessage("Загрузка...");
+                                progressDialog.setCancelable(false);
+                                progressDialog.show();
+
+                                try {
+                                    if (!video.isPlaying()) {
+                                        video.setVideoPath(fileURL);
+                                    }
+                                } catch (Exception e) {
+                                    Log.e("VIDEO PLAY", String.valueOf(e));
+                                }
+                                video.requestFocus();
+                                video.setOnPreparedListener(mp -> {
+                                    progressDialog.dismiss();
+                                    play.setImageResource(R.drawable.baseline_pause_circle_outline_24);
+                                    video.start();
+                                    isLoaded.set(true);
+                                });
+                            }else {
+                                play.setImageResource(R.drawable.baseline_pause_circle_outline_24);
+                                video.start();
+                            }
+                        } else {
+                            play.setImageResource(R.drawable.baseline_play_arrow_24);
+                            video.pause();
+                        }
                     });
+
+                    seekBar.setMax(100);
+                    seekBar.setOnTouchListener((v, event) -> {
+                        video.seekTo((video.getDuration() / 100) * seekBar.getProgress());
+                        time.setText(msToTime(video.getCurrentPosition()));
+                        return false;
+                    });
+
+                     */
+
+                    //кнопка "открыть в браузере"
+                    Button openInBrowser2 = videoView.findViewById(R.id.openInBrowser);
+                    openInBrowser2.setOnClickListener(v -> {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileURL));
+                        context.startActivity(browserIntent);
+                    });
+
+                    holder.questionLayout.addView(videoView);
                     break;
                 default:
 
@@ -171,6 +278,21 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
         }
 
         Questions.recyclerViewItems.add(holder);
+    }
+
+    private String msToTime(long ms){
+        String timeText = "";
+        String secondsText = "";
+        int hours = (int) (ms / (1000 * 60 * 60));
+        int minutes = (int) (ms % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((ms % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        if (hours > 0) timeText = String.valueOf(hours) + ':';
+        if (seconds < 10)secondsText = "0" + seconds; else secondsText = String.valueOf(seconds);
+
+        timeText = timeText + minutes + ":" + secondsText;
+
+        return timeText;
     }
 
     private void onDownloadComplete(boolean success) {
@@ -208,7 +330,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
 
     static class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView question;
+        TextView question, time;
         RadioButton firstAnswer;
         RadioButton secondAnswer;
         RadioButton thirdAnswer;
@@ -231,6 +353,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             downloadButton = view.findViewById(R.id.downloadAttachment);
             questionLayout = view.findViewById(R.id.questionLayout);
             openInBrowser = view.findViewById(R.id.open_in_browser);
+            time = view.findViewById(R.id.time);
         }
     }
 }

@@ -249,6 +249,7 @@ public class Settings extends Fragment implements View.OnClickListener{
 
             builder.setPositiveButton("Выйти", (dialog, which) -> {
                 preferences.edit().clear().apply();
+                getActivity().setTheme(R.style.AppThemeLight);
                 mDb = mDBHelper.getWritableDatabase();
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
                 mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
