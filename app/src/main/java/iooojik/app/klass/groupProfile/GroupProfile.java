@@ -211,6 +211,14 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                                         public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
                                             if (response.code() == 200) {
                                                 getTestTeacherInfo();
+                                                TextView teacher_name = view.findViewById(R.id.teacher_name);
+                                                TextView teacher_email = view.findViewById(R.id.teacher_email);
+
+
+                                                teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
+                                                        + " ", ""));
+                                                teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
+                                                        + " ", ""));
                                             }
                                         }
 

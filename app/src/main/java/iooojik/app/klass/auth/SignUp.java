@@ -31,6 +31,7 @@ import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.authorization.SignUpResult;
+import iooojik.app.klass.models.getToken.DataToken;
 import iooojik.app.klass.models.userData.UserData;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,7 +61,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
         //ещё одна проверка на авторизацию
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         if (!(token.isEmpty())) navController.navigate(R.id.nav_profile);
-
+        getAdminToken();
         //инициализация кнопок
         Button signIn = view.findViewById(R.id.signIn);
         Button signUp = view.findViewById(R.id.sign_up);
@@ -97,6 +98,38 @@ public class SignUp extends Fragment implements View.OnClickListener{
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(Api.class);
+    }
+
+    private void getAdminToken() {
+        doRetrofit();
+        //HashMap, в который передаём админские параметры для получения админского токена,
+        // который необходим, чтобы зайти пользователю или зарегистрировть его
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", AppСonstants.adminEmail);
+        map.put("password", AppСonstants.adminPassword);
+        //создание запроса
+        Call<DataToken> authResponse = api.request_token(AppСonstants.X_API_KEY, map);
+        authResponse.enqueue(new Callback<DataToken>() {
+            @SuppressLint("CommitPrefEdits")
+            @Override
+            public void onResponse(Call<DataToken> call, Response<DataToken> response) {
+                if (response.code() == 200) {
+                    //получаем данные с сервера
+                    DataToken dataToken = response.body();
+                    //сохраняем админский токен
+                    preferences.edit().putString(AppСonstants.STANDART_TOKEN,
+                            dataToken.getToken().getToken()).apply();
+                }
+                else {
+                    Log.e("GET TOKEN", String.valueOf(response.raw()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataToken> call, Throwable t) {
+                Log.e("GET TOKEN", String.valueOf(t));
+            }
+        });
     }
 
     @Override
@@ -143,6 +176,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
                     map.put("password", uPassword);
                     map.put("full_name", uFullName);
 
+
                     String group = "[4]";
                     if (accountType.equals("Teacher")) group = "[5]";
                     else group = "[6]";  //id группы (типа аккаунта)
@@ -161,7 +195,7 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
                                 if (dataAuth.getStatus()) signIN(uEmail, uPassword);
                             } else {
-                                Log.e("Sign Up", String.valueOf(response.message()));
+                                Log.e("Sign Up", String.valueOf(response.raw()));
                                 Snackbar.make(getView(), "Пользователь с указанными данными уже существует в базе",
                                         Snackbar.LENGTH_SHORT).show();
                             }

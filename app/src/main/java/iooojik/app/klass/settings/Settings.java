@@ -259,7 +259,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                 DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-                Navigation.findNavController(getView()).navigate(R.id.nav_signIn);
+                startActivity(new Intent(getContext(), MainActivity.class));
             });
 
             builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());

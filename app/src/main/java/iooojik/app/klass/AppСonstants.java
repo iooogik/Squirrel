@@ -67,9 +67,9 @@ public class AppСonstants {
     //id "достижений" пользователя
     public static String ACHIEVEMENTS_ID = "ACHIEVEMENTS_ID" ;
     //админский email
-    static final String adminEmail = "test@test.com";
+    public static final String adminEmail = "test@test.com";
     //админский пароль
-    static final String adminPassword = "123456";
+    public static final String adminPassword = "123456";
     //специальный символ для тестов
     public static final String testDivider = "{#$#}";
     //переменная, индентифицируящая выбранную пользователем картинку
