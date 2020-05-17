@@ -148,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
         //получаем токен пользователя
         //если токен пустой, то переходим на фрагмент авторизации
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
-        if(token.isEmpty() || preferences.getString(AppСonstants.USER_EMAIL, "").isEmpty()){
+
+        if(token.isEmpty()){
             navController.navigate(R.id.nav_signIn);
             materialToolbar.setVisibility(View.GONE);
             //убираем боковое меню

@@ -30,7 +30,7 @@
             android:maxHeight="200dp"
             android:layout_margin="10dp"
             android:contentDescription="@string/todo"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/downloadAttachment"

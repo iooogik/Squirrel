@@ -64,7 +64,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
         //ещё одна проверка на авторизацию
         String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
         String email = preferences.getString(AppСonstants.USER_EMAIL, "");
-        if (!(token.isEmpty()) && !email.isEmpty()) navController.navigate(R.id.nav_profile);
+        //if (!(token.isEmpty()) && !email.isEmpty()) navController.navigate(R.id.nav_profile);
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {@Override public void handleOnBackPressed() {}};
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);

@@ -135,7 +135,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
                 case "png":
                 case "tiff":
                     holder.urlImage.setVisibility(View.VISIBLE);
-                    Picasso.with(context).load(fileURL).resize(150, 150).into(holder.urlImage);
+                    Picasso.with(context).load(fileURL).into(holder.urlImage);
                     break;
                 case "mp3":
                 case "wav":
