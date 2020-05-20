@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.commons.io.FileUtils;
@@ -58,12 +59,14 @@ import iooojik.app.klass.models.isUserGetTest.DataIsUserGetTest;
 import iooojik.app.klass.models.isUserGetTest.IsUserGetTest;
 import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mate;
+import iooojik.app.klass.room_models.mates.MateEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static iooojik.app.klass.AppСonstants.database;
 import static iooojik.app.klass.AppСonstants.testDivider;
 
 public class GroupProfile extends Fragment implements View.OnClickListener{
@@ -73,7 +76,7 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     private Api api;
     private Context context;
     private SharedPreferences sharedPreferences;
-
+    private int matesCount = 0;
     private Fragment fragment;
     private NavController navController;
 
@@ -86,7 +89,16 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         fragment = this;
         getExtraData();
         //потоки получения/обновления данных
-        new Thread(this::getGroupInformation).start();
+        Thread threadSetMates = new Thread(this::setMates);
+        Thread threadGetMates = new Thread(this::getGroupMates);
+        threadSetMates.start();
+        try {
+            threadSetMates.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadGetMates.start();
+
         new Thread(this::getTestTeacherInfo).start();
         new Thread(this::getGroupMessage).start();
         new Thread(this::getAttachment).start();
@@ -97,11 +109,27 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
         Button leave = view.findViewById(R.id.leave_group);
         leave.setOnClickListener(this);
         navController = NavHostFragment.findNavController(this);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.hide();
         return view;
 
     }
 
-    private void getGroupInformation() {
+    private void setMates(){
+        List<MateEntity> mateEntities = database.matesDao().getAllByGroupId(Integer.valueOf(groupID));
+        matesCount = mateEntities.size();
+        if (matesCount > 0) {
+            getActivity().runOnUiThread(() -> {
+                GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mateEntities, fragment, false);
+                RecyclerView recyclerView = view.findViewById(R.id.group_mates);
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                recyclerView.setAdapter(groupmatesAdapter);
+            });
+        }
+
+    }
+
+    private void getGroupMates() {
         doRetrofit();
         //получаем список одноклассников
         Call<ServerResponse<DataUsersToGroup>> response = api.getMatesList(AppСonstants.X_API_KEY, AppСonstants.GROUP_ID_FIELD, groupID);
@@ -111,16 +139,48 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                 if(response.code() == 200) {
                     ServerResponse<DataUsersToGroup> result = response.body();
                     List<Mate> mates = result.getData().getMates();
-                    for (Mate mate : mates){
-                        if (mate.getEmail().equals(sharedPreferences.getString(AppСonstants.USER_EMAIL, ""))){
-                            sharedPreferences.edit().putString(AppСonstants.USER_CURR_GROUP_ID, mate.getId()).apply();
-                            break;
+                    boolean anyChanges = false;
+                    if (matesCount != mates.size()){
+                        for (Mate mate : mates){
+                            MateEntity entity = new MateEntity();
+                            entity.setMate_name(mate.getFullName());
+                            entity.setMate_email(mate.getEmail());
+                            entity.setMate_avatar(mate.getAvatar());
+                            entity.setMate_id(Integer.valueOf(mate.getId()));
+                            entity.setMate_group_id(Integer.valueOf(groupID));
+                            entity.setTest_result(-1);
+                            database.matesDao().insert(entity);
+
+                            if (mate.getEmail().equals(sharedPreferences.getString(AppСonstants.USER_EMAIL, ""))){
+                                sharedPreferences.edit().putString(AppСonstants.USER_CURR_GROUP_ID, mate.getId()).apply();
+                            }
+                        }
+                        anyChanges = true;
+                    }
+                    else if (!anyChanges){
+                        for (Mate mate : mates){
+                            MateEntity entity = database.matesDao().getById(Integer.valueOf(mate.getId()));
+                            if (
+                                    !(entity.getMate_avatar().equals(mate.getAvatar())
+                                            || entity.getMate_name().equals(mate.getFullName())
+                                            || entity.getMate_email().equals(mate.getEmail()))
+
+                            ) {
+                                entity.setMate_name(mate.getFullName());
+                                entity.setMate_email(mate.getEmail());
+                                entity.setMate_avatar(mate.getAvatar());
+                                database.matesDao().update(entity);
+                                anyChanges = true;
+                            }
+
+                            if (mate.getEmail().equals(sharedPreferences.getString(AppСonstants.USER_EMAIL, ""))){
+                                sharedPreferences.edit().putString(AppСonstants.USER_CURR_GROUP_ID, mate.getId()).apply();
+                            }
                         }
                     }
-                    GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mates, null, fragment, false);
-                    RecyclerView recyclerView = view.findViewById(R.id.group_mates);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    recyclerView.setAdapter(groupmatesAdapter);
+
+                    if (anyChanges) new Thread(GroupProfile.this::setMates).start();
+
 
                 } else {
                     Log.e("GETTING MATES", response.raw() + "");
@@ -134,7 +194,16 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
     }
 
     private void getTestTeacherInfo(){
-        //получение информации о преподавателе
+        TextView teacher_name = view.findViewById(R.id.teacher_name);
+        TextView teacher_email = view.findViewById(R.id.teacher_email);
+
+
+        teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
+                + " ", database.groupPupilDao().getById(Integer.valueOf(groupID)).getAuthor_email()));
+        teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
+                + " ", database.groupPupilDao().getById(Integer.valueOf(groupID)).getAuthor_name()));
+
+        //получение информации
         doRetrofit();
         Call<ServerResponse<DataGroup>> responseCall = api.groupDetail(AppСonstants.X_API_KEY,
                 sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), Integer.parseInt(groupID));
@@ -160,39 +229,17 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                                 boolean k = false;
                                 //проверяем, получил ли уже пользователь тест
                                 for (IsUserGetTest isUserGetTest : dataIsUserGetTest.getIsUserGetTest()){
-
                                     if (isUserGetTest.getGroupId().equals(groupID) &&
                                             Integer.valueOf(isUserGetTest.getIs_Passed()) == 0){
-
-                                        TextView teacher_name = view.findViewById(R.id.teacher_name);
-                                        TextView teacher_email = view.findViewById(R.id.teacher_email);
-
-
-                                        teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
-                                                + " ", group.getAuthorName()));
-                                        teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
-                                                + " ", group.getAuthorEmail()));
-
                                         getTest(isUserGetTest, group);
-
                                         k = true;
                                         break;
                                     }
                                     else if (isUserGetTest.getGroupId().equals(groupID)){
-
-                                        TextView teacher_name = view.findViewById(R.id.teacher_name);
-                                        TextView teacher_email = view.findViewById(R.id.teacher_email);
-
-                                        teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
-                                                + " ", group.getAuthorName()));
-                                        teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
-                                                + " ", group.getAuthorEmail()));
-
                                         test.setTextColor(ContextCompat.getColor(context, R.color.Completed));
                                         test.setText("Тест доступен");
                                         execTest.setVisibility(View.VISIBLE);
-                                        execTest.setTextColor(ContextCompat.getColor(getContext(),
-                                                R.color.color_secondary_text));
+                                        execTest.setTextColor(ContextCompat.getColor(getContext(), R.color.color_secondary_text));
                                         execTest.setEnabled(false);
                                         k = true;
                                     }else k = false;
@@ -208,26 +255,10 @@ public class GroupProfile extends Fragment implements View.OnClickListener{
                                             sharedPreferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""), map);
                                     responseCall2.enqueue(new Callback<ServerResponse<PostResult>>() {
                                         @Override
-                                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
-                                            if (response.code() == 200) {
-                                                getTestTeacherInfo();
-                                                TextView teacher_name = view.findViewById(R.id.teacher_name);
-                                                TextView teacher_email = view.findViewById(R.id.teacher_email);
-
-
-                                                teacher_name.setText(String.format("%s%s", teacher_name.getText().toString()
-                                                        + " ", ""));
-                                                teacher_email.setText(String.format("%s%s", teacher_email.getText().toString()
-                                                        + " ", ""));
-                                            }
-                                        }
-
-                                        @Override
+                                        public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {}                                        @Override
                                         public void onFailure(Call<ServerResponse<PostResult>> call, Throwable t) {
-
                                         }
                                     });
-
                                 }
                             }
                         }

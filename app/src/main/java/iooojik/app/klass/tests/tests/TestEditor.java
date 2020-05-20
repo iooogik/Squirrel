@@ -213,7 +213,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
         properties.show_hidden_files = false;
 
         FilePickerDialog dialog = new FilePickerDialog(getActivity(), properties);
-        dialog.setTitle("Select a File");
+        dialog.setTitle("Выберите файл");
         dialog.setDialogSelectionListener(files -> {
             String file_path = files[0];
             if (file_path != null && !file_path.trim().isEmpty()) {
@@ -414,6 +414,7 @@ public class TestEditor extends Fragment implements View.OnClickListener {
                 updateMap.put("name", groupName);
                 updateMap.put("test", SQL);
                 updateMap.put("count_questions", String.valueOf(questions.size()));
+                Log.e("tttt", String.valueOf(attachmentObjects.size()));
                 if (attachmentObjects.size() > 0)
                     updateMap.put("attachments", fileBuilder.toString());
                 else updateMap.put("attachments", "null");

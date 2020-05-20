@@ -26,6 +26,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -40,7 +41,12 @@ import java.util.List;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.getToken.DataToken;
+import iooojik.app.klass.models.profileData.Group;
+import iooojik.app.klass.models.profileData.ProfileData;
+import iooojik.app.klass.models.profileData.User;
 import iooojik.app.klass.models.userData.UserData;
+import iooojik.app.klass.room_models.AppDatabase;
+import iooojik.app.klass.room_models.profile.ProfileEntity;
 import iooojik.app.klass.settings.Settings;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +56,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES;
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
+import static iooojik.app.klass.AppСonstants.database;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppСonstants.database =  Room.databaseBuilder(getApplicationContext(), AppDatabase.class, AppСonstants.LOCAL_DATABASE_NAME)
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
         // получение настроек
         preferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         // изменение темы
@@ -101,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
         //если нет разрешения, то запрашиваем его, иначе показываем погоду
         if (!(permissionStatus == PackageManager.PERMISSION_GRANTED))
             ActivityCompat.requestPermissions(this, perms, 1);
+
+
     }
 
     private void doRetrofit(){
@@ -156,11 +169,13 @@ public class MainActivity extends AppCompatActivity {
             DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else {
+            if (database.profileDao().getAll().size() == 0){
+                profileUser();
+            }
             //если токен не пустой, то проводим аторизацию, чтобы получить актуальные данные о пользователе
             signIN(preferences.getString(AppСonstants.USER_EMAIL, ""),
                     preferences.getString(AppСonstants.USER_PASSWORD, ""));
-            //переходим на "главный" фрагмент
-            navController.navigate(R.id.nav_profile);
+
         }
     }
 
@@ -253,6 +268,36 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    private void profileUser(){
+        Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                Integer.parseInt(preferences.getString(AppСonstants.USER_ID, "")));
+        call.enqueue(new Callback<ServerResponse<ProfileData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
+                if (response.code() == 200){
+                    ProfileData profileData = response.body().getData();
+                    User user = profileData.getUser();
+                    Group group = user.getGroup().get(user.getGroup().size() - 1);
+
+                    ProfileEntity newUser = new ProfileEntity();
+                    newUser.setAvatar(user.getAvatar());
+                    newUser.setFull_name(user.getFullName());
+                    newUser.setProfile_type(group.getName().toLowerCase());
+
+                    database.profileDao().insert(newUser);
+                    //переходим на "главный" фрагмент
+                    navController.navigate(R.id.nav_profile);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<ProfileData>> call, Throwable t) {
+
+            }
+        });
     }
 
 

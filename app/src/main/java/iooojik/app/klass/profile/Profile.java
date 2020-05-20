@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,11 +21,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -31,37 +33,56 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
-import com.airbnb.lottie.L;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import iooojik.app.klass.AppСonstants;
+import iooojik.app.klass.Database;
+import iooojik.app.klass.MainActivity;
 import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
-import iooojik.app.klass.api.FileUploadApi;
 import iooojik.app.klass.api.WeatherApi;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.bonusCrate.CratesData;
+import iooojik.app.klass.models.passed_test_result.DataPassedTest;
+import iooojik.app.klass.models.passed_test_result.PassedTest;
 import iooojik.app.klass.models.profileData.Group;
 import iooojik.app.klass.models.profileData.ProfileData;
 import iooojik.app.klass.models.profileData.User;
@@ -72,6 +93,12 @@ import iooojik.app.klass.models.teacher.DataGroup;
 import iooojik.app.klass.models.teacher.GroupInfo;
 import iooojik.app.klass.models.weather.Weather;
 import iooojik.app.klass.models.weather.WeatherData;
+import iooojik.app.klass.room_models.AppDatabase;
+import iooojik.app.klass.room_models.profile.ProfileEntity;
+import iooojik.app.klass.room_models.pupil_groups.GroupPupilEntity;
+import iooojik.app.klass.room_models.statistic.StatisticDao;
+import iooojik.app.klass.room_models.statistic.StatisticEntity;
+import iooojik.app.klass.room_models.tests_results.TestResultEntity;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -84,7 +111,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static iooojik.app.klass.AppСonstants.DATABASE_USER_ID;
 import static iooojik.app.klass.AppСonstants.PICK_IMAGE_AVATAR;
+import static iooojik.app.klass.AppСonstants.database;
 
 public class Profile extends Fragment implements View.OnClickListener {
     public Profile() {
@@ -98,43 +127,127 @@ public class Profile extends Fragment implements View.OnClickListener {
     private Fragment fragment;
     private SharedPreferences preferences;
     private Api api;
-    private String email, fullName;
     private View header;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private BottomSheetDialog statisticsDialog;
+    private int groupCount = 0;
+    private int resultsCount = 0;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
-        header = navigationView.getHeaderView(0);
-        header.setPadding(0, 110, 0, 80);
 
-        //получение текущего фрагмента, чтобы использовать его в адаптере
-        fragment = this;
-        //контекст
-        context = getContext();
-        //получаем fab и ставим слушатель на него
-        fab = getActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(this);
-        fab.setImageResource(R.drawable.baseline_add_24);
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
 
-        //получаем координаты пользователя и показываем погоду, основываясь на координатах
-        setLocationManager();
+        if (database.profileDao().getAll().size() == 0){
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override public void handleOnBackPressed() {}};
+            requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+            preferences.edit().clear().apply();
 
-        ImageView main_avatar = view.findViewById(R.id.avatar);
-        main_avatar.setOnClickListener(this);
-        setHasOptionsMenu(true);
-        //запускаем поток получения/обновления данных
-        new Thread(this::getUserProfile).start();
+            getActivity().setTheme(R.style.AppThemeLight);
 
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {@Override public void handleOnBackPressed() {}};
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+            database.notesDao().deleteAll();
+            database.testDao().deleteAll();
+            database.todoDao().deleteAll();
+            database.groupPupilDao().deleteAll();
+            database.matesDao().deleteAll();
 
+            MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+            materialToolbar.setVisibility(View.GONE);
+            DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+            startActivity(new Intent(getContext(), MainActivity.class));
+        } else {
+
+            NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+            header = navigationView.getHeaderView(0);
+            header.setPadding(0, 110, 0, 80);
+
+            //получение текущего фрагмента, чтобы использовать его в адаптере
+            fragment = this;
+            //контекст
+            context = getContext();
+            //получаем fab и ставим слушатель на него
+            fab = getActivity().findViewById(R.id.fab);
+            fab.setOnClickListener(this);
+            fab.show();
+
+
+            //получаем координаты пользователя и показываем погоду, основываясь на координатах
+            setLocationManager();
+
+            ImageView main_avatar = view.findViewById(R.id.avatar);
+            main_avatar.setOnClickListener(this);
+            setHasOptionsMenu(true);
+            userRole = database.profileDao().getById(DATABASE_USER_ID).getProfile_type();
+            //запускаем поток получения/обновления данных
+            new Thread(this::loadProfileData).start();
+            new Thread(this::getUserProfile).start();
+            new Thread(this::loadResultsFromDataBase).start();
+            if (!userRole.isEmpty())
+                getActivity().runOnUiThread(this::getDataByProfile);
+
+
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                }
+            };
+            requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+        }
         return view;
+    }
+
+    private void loadProfileData(){
+        if (database.profileDao().getAll().size() > 0) {
+            String email, fullName, avatarLink;
+            int coins;
+            ProfileEntity profileData = database.profileDao().getById(DATABASE_USER_ID);
+            email = preferences.getString(AppСonstants.USER_EMAIL, "");
+            fullName = profileData.getFull_name();
+            avatarLink = AppСonstants.IMAGE_URL + profileData.getAvatar();
+            coins = preferences.getInt(AppСonstants.USER_COINS, 0);
+
+            TextView name = view.findViewById(R.id.name);
+            TextView emailText = view.findViewById(R.id.email);
+            TextView nameHeader = header.findViewById(R.id.textView);
+            TextView email_text = header.findViewById(R.id.textView2);
+            TextView coinsText = view.findViewById(R.id.coins);
+
+            getActivity().runOnUiThread(() -> {
+                name.setText(fullName);
+                emailText.setText(email);
+                nameHeader.setText(fullName);
+                email_text.setText(email);
+                coinsText.setText(String.valueOf(coins));
+            });
+
+            ImageView avatar = view.findViewById(R.id.avatar);
+            ImageView main_avatar = header.findViewById(R.id.side_avatar);
+
+            //если есть пользовательская автарка, то показываем её, иначе показываем стандартный значок
+            if (profileData.getAvatar().trim().isEmpty()){
+                avatar.setImageResource(R.drawable.baseline_account_circle_24);
+                main_avatar.setImageResource(R.drawable.baseline_account_circle_24);
+            }else {
+                getActivity().runOnUiThread(() -> {
+                    Picasso.with(context).load(avatarLink)
+                            .resize(100, 100)
+                            .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
+
+                    Picasso.with(context).load(avatarLink)
+                            .resize(100, 100)
+                            .transform(new RoundedCornersTransformation(30, 5)).into(main_avatar);
+                });
+
+            }
+        }
+
     }
 
     private void setLocationManager() {
@@ -348,8 +461,10 @@ public class Profile extends Fragment implements View.OnClickListener {
                         AchievementsToUser achievements = data.getAchievementsToUsers().get(0);
                         preferences.edit().putInt(AppСonstants.USER_COINS, Integer.parseInt(achievements.getCoins())).apply();
                         preferences.edit().putInt(AppСonstants.ACHIEVEMENTS_ID, Integer.parseInt(achievements.getId())).apply();
-                        TextView coins = view.findViewById(R.id.coins);
-                        coins.setText(String.valueOf(achievements.getCoins()));
+                        int coins = Integer.valueOf(achievements.getCoins());
+                        if (coins != database.profileDao().getById(DATABASE_USER_ID).getCoins()){
+                            new Thread(Profile.this::loadProfileData).start();
+                        }
                     }
                 }
                 else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
@@ -374,60 +489,35 @@ public class Profile extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
                 if (response.code() == 200){
+
                     ProfileData profileData = response.body().getData();
                     User user = profileData.getUser();
 
-                    email = user.getEmail();
-                    fullName = user.getFullName();
-
-                    preferences.edit().putString(AppСonstants.USER_EMAIL, email).apply();
+                    preferences.edit().putString(AppСonstants.USER_EMAIL, user.getEmail()).apply();
                     preferences.edit().putString(AppСonstants.USER_ID, user.getId()).apply();
-                    preferences.edit().putString(AppСonstants.USER_FULL_NAME, fullName).apply();
-
-                    TextView name = view.findViewById(R.id.name);
-                    TextView emailText = view.findViewById(R.id.email);
-                    name.setText(fullName);
-                    emailText.setText(email);
-
-                    ImageView avatar = header.findViewById(R.id.side_avatar);
-                    ImageView main_avatar = view.findViewById(R.id.avatar);
-                    //если есть пользовательская автарка, то показываем её, иначе показываем стандартный значок
-                    if (!user.getAvatar().isEmpty()) {
-                        preferences.edit().putString(AppСonstants.USER_AVATAR,
-                                AppСonstants.IMAGE_URL + user.getAvatar()).apply();
-
-                        Picasso.with(context).load(AppСonstants.IMAGE_URL + user.getAvatar())
-                                .resize(100, 100)
-                                .transform(new RoundedCornersTransformation(30, 5)).into(avatar);
-
-                        Picasso.with(context).load(AppСonstants.IMAGE_URL + user.getAvatar())
-                                .resize(100, 100)
-                                .transform(new RoundedCornersTransformation(30, 5)).into(main_avatar);
-
-                    } else {
-                        avatar.setImageResource(R.drawable.baseline_account_circle_24);
-                        main_avatar.setImageResource(R.drawable.baseline_account_circle_24);
-                    }
-
-                    TextView nameHeader = header.findViewById(R.id.textView);
-                    TextView email_text = header.findViewById(R.id.textView2);
-
-                    nameHeader.setText(preferences.getString(AppСonstants.USER_FULL_NAME, ""));
-                    email_text.setText(preferences.getString(AppСonstants.USER_EMAIL, ""));
+                    preferences.edit().putString(AppСonstants.USER_FULL_NAME, user.getFullName()).apply();
 
                     Group group = user.getGroup().get(user.getGroup().size() - 1);
-                    switch (group.getName().toLowerCase()){
-                        case "teacher":
-                            preferences.edit().putString(AppСonstants.USER_ROLE, "teacher").apply();
-                            getGroups();
-                            break;
-                        case "pupil":
-                            preferences.edit().putString(AppСonstants.USER_ROLE, "pupil").apply();
-                            getPupilGroups();
-                            break;
-                    }
-
+                    preferences.edit().putString(AppСonstants.USER_ROLE, group.getName().toLowerCase()).apply();
                     userRole = preferences.getString(AppСonstants.USER_ROLE, "").toLowerCase();
+
+                    //если данные не отличаются от предыдущих, то оставляем их и подгружаем остальные данные,
+                    //иначе заменяем данные и в потоке подгружаем остальные данные
+                    ProfileEntity profileEntity = database.profileDao().getById(DATABASE_USER_ID);
+                    if (!(profileEntity.getFull_name().equals(user.getFullName())
+                            || profileEntity.getAvatar().equals(user.getAvatar())
+                            || profileEntity.getProfile_type().equals(group.getName().toLowerCase())))
+                    {
+
+                        ProfileEntity entity = database.profileDao().getById(DATABASE_USER_ID);
+
+                        entity.setAvatar(user.getAvatar());
+                        entity.setFull_name(user.getFullName());
+                        entity.setProfile_type(group.getName().toLowerCase());
+
+                        database.profileDao().update(entity);
+                        new Thread(Profile.this::loadProfileData).start();
+                    }
 
                 }
             }
@@ -437,18 +527,95 @@ public class Profile extends Fragment implements View.OnClickListener {
 
             }
         });
+
         getCoins(preferences.getString(AppСonstants.USER_EMAIL, ""));
         getBonusCases();
 
     }
 
+    private void getDataByProfile(){
+        switch (userRole){
+            case "teacher":
+                getGroups();
+                break;
+            case "pupil":
+                Thread threadLoadLocalGroups = new Thread(this::loadGroupsPupil);
+                Thread threadLoadGroups = new Thread(this::getPupilGroups);
+                threadLoadLocalGroups.start();
+                try {
+                    threadLoadLocalGroups.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                threadLoadGroups.start();
+               // loadLocalResults();
+                break;
+        }
+    }
+
+    private void loadLocalResults(){
+        new Thread(this::showStatistic).start();
+    }
+
+    private void loadResultsFromDataBase(){
+        doRetrofit();
+        Call<ServerResponse<DataPassedTest>> responseCall = api.getPassedTestResult(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                AppСonstants.USER_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
+        responseCall.enqueue(new Callback<ServerResponse<DataPassedTest>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<DataPassedTest>> call, Response<ServerResponse<DataPassedTest>> response) {
+                if (response.code() == 200){
+                    if (response.body().getData().getPassedTests() != null) {
+                        if (response.body().getData().getPassedTests().size() != resultsCount) {
+                            database.testResultDao().deleteAll();
+                            for (PassedTest result : response.body().getData().getPassedTests()) {
+                                TestResultEntity entity = new TestResultEntity();
+                                entity.setTest_name(result.getTestName());
+                                entity.setResult(Integer.valueOf(result.getResult()));
+                                database.testResultDao().insert(entity);
+                            }
+                            loadLocalResults();
+                        }
+                    }
+                } else Log.e("GETTING RESULTS", String.valueOf(response.raw()));
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<DataPassedTest>> call, Throwable t) {
+                Log.e("GETTING RESULTS", String.valueOf(t));
+            }
+        });
+    }
+
+    private void loadGroupsPupil(){
+        List<GroupPupilEntity> groups = database.groupPupilDao().getAll();
+        groupCount = groups.size();
+        TextView notif = view.findViewById(R.id.notif_text);
+        if (groupCount == 0){
+
+            notif.setVisibility(View.VISIBLE);
+            notif.setText("Вы ещё не присодинились ни к одной группе");
+        }else {
+            getActivity().runOnUiThread(() -> {
+                notif.setVisibility(View.GONE);
+                PupilGroupsAdapter groupsAdapter = new PupilGroupsAdapter(groups, fragment, context);
+                RecyclerView recyclerView = view.findViewById(R.id.classes);
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                recyclerView.setAdapter(groupsAdapter);
+            });
+
+
+        }
+
+    }
+
     private void getPupilGroups() {
-        fab.hide();
         //получаем к каким группам относится пользователь
         doRetrofit();
         Call<ServerResponse<DataPupilList>> responseCall = api.getPupilActiveGroups(AppСonstants.X_API_KEY,
                 preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                AppСonstants.EMAIL_FIELD, email);
+                AppСonstants.EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
 
         responseCall.enqueue(new Callback<ServerResponse<DataPupilList>>() {
             @Override
@@ -456,15 +623,19 @@ public class Profile extends Fragment implements View.OnClickListener {
                 if (response.code() == 200){
                     DataPupilList dataPupilList = response.body().getData();
                     List<PupilGroups> pupilGroups = dataPupilList.getPupilGroups();
-                    if (pupilGroups.size() == 0){
-                        TextView notif = view.findViewById(R.id.notif_text);
-                        notif.setVisibility(View.VISIBLE);
-                        notif.setText("Вы ещё не присодинились ни к одной группе");
-                    } else {
-                        PupilGroupsAdapter groupsAdapter = new PupilGroupsAdapter(pupilGroups, fragment, context);
-                        RecyclerView recyclerView = view.findViewById(R.id.classes);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                        recyclerView.setAdapter(groupsAdapter);
+                    //если количество групп разное, то обновляем список,
+                    // иначе подгружаем списки, сохранённые локально
+                    if (pupilGroups.size() != groupCount){
+                        database.groupPupilDao().deleteAll();
+                        for (PupilGroups group : pupilGroups){
+                            GroupPupilEntity entity = new GroupPupilEntity();
+                            entity.setGroup_id(Integer.valueOf(group.getGroupId()));
+                            entity.setGroup_name(group.getGroup_name());
+                            entity.setAuthor_email(group.getEmail());
+                            entity.setAuthor_name(group.getFullName());
+                            database.groupPupilDao().insert(entity);
+                        }
+                        new Thread(Profile.this::loadGroupsPupil).start();
                     }
                 }else {
                     Log.e("GET PUPIL GROUPS", String.valueOf(response.raw()));
@@ -493,7 +664,8 @@ public class Profile extends Fragment implements View.OnClickListener {
         fab.show();
         fab.setImageResource(R.drawable.baseline_add_24);
         doRetrofit();
-        Call<ServerResponse<DataGroup>> response = api.getGroups(AppСonstants.X_API_KEY, AppСonstants.AUTHOR_EMAIL_FIELD, email);
+        Call<ServerResponse<DataGroup>> response = api.getGroups(AppСonstants.X_API_KEY,
+                AppСonstants.AUTHOR_EMAIL_FIELD, preferences.getString(AppСonstants.USER_EMAIL, ""));
 
         response.enqueue(new Callback<ServerResponse<DataGroup>>() {
             @Override
@@ -572,9 +744,9 @@ public class Profile extends Fragment implements View.OnClickListener {
                         String nameGroup = name.getText().toString();
 
                         HashMap<String, String> post = new HashMap<>();
-                        post.put("author_email", email);
+                        post.put("author_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
                         post.put("name", nameGroup);
-                        post.put("author_name", fullName);
+                        post.put("author_name", preferences.getString(AppСonstants.FULL_NAME_FIELD, ""));
                         post.put("count_questions", "0");
                         post.put("attachments", "null");
                         post.put("test", "null");
@@ -758,6 +930,138 @@ public class Profile extends Fragment implements View.OnClickListener {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
+    }
+
+    @SuppressLint({"SetTextI18n", "DefaultLocale", "InflateParams"})
+    private void showStatistic(){
+        getActivity().runOnUiThread(() -> {
+            fab.setImageResource(R.drawable.round_keyboard_arrow_up_24);
+            fab.show();
+            fab.setOnClickListener(v -> statisticsDialog.show());
+            StatisticDao statisticDao = AppСonstants.database.statisticDao();
+            List<StatisticEntity> statisticEntities = statisticDao.getAll();
+            List<TestResultEntity> testResultEntities = database.testResultDao().getAll();
+            //показываем нижнее меню
+            statisticsDialog = new BottomSheetDialog(getActivity());
+            View bottomDialogView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_statistics, null);
+            statisticsDialog.setContentView(bottomDialogView);
+
+            if (statisticEntities.size() > 0 || testResultEntities.size() > 0) {
+                //инициализируем переменные
+                //общее время прохождения тестов
+                int testTimeSeconds = 0;
+                //количество вопросов
+                int testCount = 0;
+                //сумма результатов
+                int totalScore = 0;
+                //средний балл
+                int averageScore = 0;
+                int averageTime = 0;
+                //все очки/баллы
+
+                resultsCount = testResultEntities.size();
+
+                //список времени прохождения (в секундах)
+                List<Integer> times = new ArrayList<>();
+                //инициализируем базу данных
+
+
+                //получаем все необходимые переменные
+                for (StatisticEntity object : statisticEntities) {
+                    testTimeSeconds += object.getTest_time();
+                    testCount++;
+                    totalScore += object.getScore();
+                    times.add(object.getTest_time());
+                }
+                for (TestResultEntity entity : testResultEntities){
+                    totalScore+=entity.getResult();
+                }
+                //считаем средний балл
+                if (testResultEntities.size() > 0)
+                    averageScore = totalScore / testResultEntities.size();
+
+                //считаем среднее время
+                if (statisticEntities.size() > 0)
+                    averageTime = testTimeSeconds / statisticEntities.size();
+
+
+
+                //показываем статистику с результами
+                LineChart lineChart = bottomDialogView.findViewById(R.id.results);
+                List<Entry> resultsEntries = new ArrayList<>();
+                for (int i = 0; i < testResultEntities.size(); i++)
+                    resultsEntries.add(new Entry(i, testResultEntities.get(i).getResult()));
+                LineDataSet resultDataSet = new LineDataSet(resultsEntries, "Результаты тестов");
+                resultDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                resultDataSet.setCubicIntensity(0.2f);
+                resultDataSet.setDrawFilled(true);
+                resultDataSet.setDrawCircles(false);
+                resultDataSet.setLineWidth(1.8f);
+                resultDataSet.setCircleRadius(4f);
+                resultDataSet.setCircleColor(Color.MAGENTA);
+                resultDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+                resultDataSet.setColor(Color.MAGENTA);
+                resultDataSet.setFillColor(Color.MAGENTA);
+                resultDataSet.setFillAlpha(100);
+                resultDataSet.setDrawHorizontalHighlightIndicator(false);
+
+                // resultDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                LineData resultData = new LineData(resultDataSet);
+                YAxis resultYAxis = lineChart.getAxisRight();
+                resultYAxis.setEnabled(false);
+                XAxis resultXAxis = lineChart.getXAxis();
+                resultXAxis.setEnabled(false);
+                lineChart.setTouchEnabled(false);
+                lineChart.setDoubleTapToZoomEnabled(false);
+                lineChart.getDescription().setEnabled(false);
+                lineChart.setData(resultData);
+                lineChart.invalidate();
+
+                //Показываем средий балл
+                TextView averageScoreText = bottomDialogView.findViewById(R.id.averageScoreText);
+                averageScoreText.setText(averageScoreText.getText().toString() + averageScore);
+
+                //показываем статистику с временем прохождения
+                BarChart timeChart = bottomDialogView.findViewById(R.id.timeTests);
+                List<BarEntry> timeEntries = new ArrayList<>();
+                for (int i = 0; i < times.size(); i++) timeEntries.add(new BarEntry(i, times.get(i)));
+                BarDataSet timeDataSet = new BarDataSet(timeEntries, "Время прохождения");
+                timeDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                BarData timeData = new BarData(timeDataSet);
+                YAxis timeYAxis = timeChart.getAxisRight();
+                timeYAxis.setEnabled(false);
+                XAxis timeXAxis = timeChart.getXAxis();
+                timeXAxis.setEnabled(false);
+                timeChart.setClickable(false);
+                timeChart.setTouchEnabled(false);
+                timeChart.getDescription().setEnabled(false);
+                timeChart.setData(timeData);
+                timeChart.invalidate();
+
+                //Показываем среднее время прохождения тестов
+                TextView averageTimeText = bottomDialogView.findViewById(R.id.averageTimeText);
+                averageTimeText.setText(averageTimeText.getText().toString() + " " + msToTime(averageTime * 1000));
+            } else {
+                LinearLayout statsLayout = bottomDialogView.findViewById(R.id.statsLayout);
+                statsLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+
+    }
+
+    private String msToTime(long ms){
+        String timeText = "";
+        String secondsText = "";
+        int hours = (int) (ms / (1000 * 60 * 60));
+        int minutes = (int) (ms % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((ms % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        if (hours > 0) timeText = String.valueOf(hours) + ':';
+        if (seconds < 10)secondsText = "0" + seconds; else secondsText = String.valueOf(seconds);
+
+        timeText = timeText + minutes + ":" + secondsText;
+
+        return timeText;
     }
 
 }

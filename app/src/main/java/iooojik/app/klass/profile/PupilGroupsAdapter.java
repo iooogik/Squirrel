@@ -19,17 +19,18 @@ import java.util.List;
 import iooojik.app.klass.AppСonstants;
 import iooojik.app.klass.R;
 import iooojik.app.klass.models.pupil.PupilGroups;
+import iooojik.app.klass.room_models.pupil_groups.GroupPupilEntity;
 
 public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.ViewHolder> {
 
-    private List<PupilGroups> pupilGroups;
+    private List<GroupPupilEntity> pupilGroups;
     public Fragment fragment;
     public Context context;
     public LayoutInflater inflater;
     private SharedPreferences preferences;
 
 
-    PupilGroupsAdapter(List<PupilGroups> pupilGroups, Fragment fragment, Context context) {
+    PupilGroupsAdapter(List<GroupPupilEntity> pupilGroups, Fragment fragment, Context context) {
         this.pupilGroups = pupilGroups;
         this.fragment = fragment;
         this.context = context;
@@ -46,17 +47,17 @@ public class PupilGroupsAdapter extends RecyclerView.Adapter<PupilGroupsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PupilGroups pupilGroup = pupilGroups.get(position);
+        GroupPupilEntity pupilGroup = pupilGroups.get(position);
         if (preferences.getInt(AppСonstants.SHOW_GROUP_ID, 0) == 1){
             holder.groupID.setVisibility(View.VISIBLE);
         } else holder.groupID.setVisibility(View.INVISIBLE);
         holder.groupName.setText(pupilGroup.getGroup_name());
 
         holder.groupID.setText(String.format("%s%s", holder.groupID.getText().toString(),
-                String.valueOf(pupilGroup.getGroupId())));
+                String.valueOf(pupilGroup.getGroup_id())));
 
         Bundle args = new Bundle();
-        args.putString("groupID", pupilGroup.getGroupId());
+        args.putString("groupID", String.valueOf(pupilGroup.getGroup_id()));
         args.putString("groupName", pupilGroup.getGroup_name());
         holder.itemView.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(fragment);

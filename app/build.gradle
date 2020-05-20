@@ -48,10 +48,12 @@ dependencies {
     implementation 'com.github.TutorialsAndroid:FilePicker:v8.0.19'
     implementation 'commons-io:commons-io:2.4'
 
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 
-    implementation 'com.google.ar:core:1.16.0'
+    implementation 'com.google.ar:core:1.17.0'
     implementation "com.google.ar.sceneform.ux:sceneform-ux:1.15.0"
-    implementation 'com.google.ar.sceneform:core:1.15.0'
+    implementation 'com.google.ar.sceneform:core:1.17.0'
 
     implementation 'com.airbnb.android:lottie:2.7.0'
 

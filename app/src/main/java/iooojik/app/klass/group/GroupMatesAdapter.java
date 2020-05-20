@@ -29,6 +29,7 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.test_results.TestsResult;
 import iooojik.app.klass.models.matesList.Mate;
+import iooojik.app.klass.room_models.mates.MateEntity;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,19 +40,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.ViewHolder> {
 
     private Context context;
-    private List<Mate> mates;
-    private List<TestsResult> testsResults;
+    private List<MateEntity> mates;
+
     private LayoutInflater inflater;
     private Api api;
     private Fragment fragment;
     private boolean isTeacher;
 
 
-    public GroupMatesAdapter(Context context, List<Mate> mates, List<TestsResult> testsResults,
+    public GroupMatesAdapter(Context context, List<MateEntity> mates,
                              Fragment fragment, boolean isTeacher) {
         this.context = context;
         this.mates = mates;
-        this.testsResults = testsResults;
         this.fragment = fragment;
         this.isTeacher = isTeacher;
         inflater = LayoutInflater.from(context);
@@ -67,24 +67,14 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
     @Override
     @SuppressLint("InflateParams")
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Mate mate = mates.get(position);
+        MateEntity mate = mates.get(position);
 
-        if (testsResults != null){
+        if (mate.getTest_result() != -1){
             boolean wasFound = false;
             //ищем ученика с его результами
-            for (TestsResult testResult: testsResults) {
-                if (testResult.getUserEmail().equals(mate.getEmail())){
-                    int result = Math.round(Float.valueOf(testResult.getResult()));
-                    //ставим результат и показываем его
-                    holder.progress.setVisibility(View.VISIBLE);
-                    holder.text_result.setText(String.format("Тест был пройден на %s/100", String.valueOf(result)));
-                    holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.Completed));
-
-                    testsResults.remove(testResult);
-                    wasFound = true;
-                    break;
-                }
-            }
+            holder.progress.setVisibility(View.VISIBLE);
+            holder.text_result.setText(String.format("Тест был пройден на %s/100", String.valueOf(mate.getTest_result())));
+            holder.text_result.setTextColor(ContextCompat.getColor(context, R.color.Completed));
 
             if (!wasFound){
                 holder.progress.setVisibility(View.VISIBLE);
@@ -103,7 +93,7 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
                 Button delete = bottomSheet.findViewById(R.id.delete);
                 delete.setOnClickListener(v -> {
                     doRetrofit();
-                    Call<ServerResponse<PostResult>> deleteUser = api.removeMate(AppСonstants.X_API_KEY, mate.getId());
+                    Call<ServerResponse<PostResult>> deleteUser = api.removeMate(AppСonstants.X_API_KEY, String.valueOf(mate.getMate_id()));
                     deleteUser.enqueue(new Callback<ServerResponse<PostResult>>() {
                         @Override
                         public void onResponse(Call<ServerResponse<PostResult>> call, Response<ServerResponse<PostResult>> response) {
@@ -131,11 +121,11 @@ public class GroupMatesAdapter extends RecyclerView.Adapter<GroupMatesAdapter.Vi
             }
 
         }
-        holder.email.setText(mate.getEmail());
-        holder.name.setText(mate.getFullName());
+        holder.email.setText(mate.getMate_email());
+        holder.name.setText(mate.getMate_name());
 
-        if (!mate.getAvatar().equals("null") && !mate.getAvatar().isEmpty()){
-            Picasso.with(context).load(AppСonstants.IMAGE_URL + mate.getAvatar())
+        if (!mate.getMate_avatar().equals("null") && !mate.getMate_avatar().isEmpty()){
+            Picasso.with(context).load(AppСonstants.IMAGE_URL + mate.getMate_avatar())
                     .resize(100, 100)
                     .transform(new RoundedCornersTransformation(30, 5)).into(holder.img);
 

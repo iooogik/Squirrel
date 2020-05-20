@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/statistics"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/statsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/averageTimeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:text="@string/averageTime" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/timeTests"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="@dimen/fab_margin" />
+
+            <TextView
+                android:id="@+id/averageScoreText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:text="@string/averageScore" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/results"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="@dimen/fab_margin">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

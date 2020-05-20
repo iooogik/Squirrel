@@ -57,6 +57,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static iooojik.app.klass.AppСonstants.APP_PREFERENCES_THEME;
+import static iooojik.app.klass.AppСonstants.database;
 
 public class Settings extends Fragment implements View.OnClickListener{
 
@@ -65,8 +66,6 @@ public class Settings extends Fragment implements View.OnClickListener{
     private View view;
     private PackageInfo packageInfo;
     private SharedPreferences preferences;
-    private Database mDBHelper;
-    private SQLiteDatabase mDb;
     private BottomSheetDialog weather;
     private Switch darkTheme, show, showID;
     private Button deleteTests, deleteNotes, showBottomWeather;
@@ -119,13 +118,6 @@ public class Settings extends Fragment implements View.OnClickListener{
 
         TextView policy = view.findViewById(R.id.policy);
         policy.setOnClickListener(this);
-
-        mDBHelper = new Database(getContext());
-        mDBHelper.openDataBase();
-        mDBHelper.updateDataBase();
-
-
-
     }
 
     private void setDarkTheme() {
@@ -250,10 +242,11 @@ public class Settings extends Fragment implements View.OnClickListener{
             builder.setPositiveButton("Выйти", (dialog, which) -> {
                 preferences.edit().clear().apply();
                 getActivity().setTheme(R.style.AppThemeLight);
-                mDb = mDBHelper.getWritableDatabase();
-                mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
-                mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
-                mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TODO_NAME);
+                database.notesDao().deleteAll();
+                database.testDao().deleteAll();
+                database.todoDao().deleteAll();
+                database.groupPupilDao().deleteAll();
+                database.matesDao().deleteAll();
                 MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
                 materialToolbar.setVisibility(View.GONE);
                 DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
@@ -327,9 +320,8 @@ public class Settings extends Fragment implements View.OnClickListener{
 
                 builder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
                 builder.setPositiveButton("Удалить", (dialog, which) -> {
-                    mDb = mDBHelper.getWritableDatabase();
-                    mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_TESTS);
-                    mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_FILES_TO_QUESTIONS);
+                    database.testDao().deleteAll();
+                    database.filesToQuestionsDao().deleteAll();
                 });
                 builder.create().show();
                 break;
@@ -342,10 +334,7 @@ public class Settings extends Fragment implements View.OnClickListener{
                         "При очистке будут удалены и обычные заметки, и справочники!");
 
                 builder2.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
-                builder2.setPositiveButton("Удалить", (dialog, which) -> {
-                    mDb = mDBHelper.getWritableDatabase();
-                    mDb.execSQL("DELETE FROM " + AppСonstants.TABLE_NOTES);
-                });
+                builder2.setPositiveButton("Удалить", (dialog, which) -> database.notesDao().deleteAll());
                 builder2.create().show();
                 break;
             case R.id.policy:

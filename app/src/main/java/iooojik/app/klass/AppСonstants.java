@@ -3,9 +3,11 @@ package iooojik.app.klass;
 import android.annotation.SuppressLint;
 import android.hardware.Camera;
 
+import iooojik.app.klass.room_models.AppDatabase;
+
 //класс с константами
 public class AppСonstants {
-
+    public static final int DATABASE_USER_ID = 1;
     // идентификатор уведомления
     static int NOTIFY_ID = 101;
     // название настроек
@@ -19,7 +21,7 @@ public class AppСonstants {
     // путь к бд
     static String DB_PATH;
     // версия бд
-    static int DB_VERSION = 9;
+    public static final int DB_VERSION = 21;
     // код запроса для намерения для обработки обновления play services, если это необходимо
     public static final int RC_HANDLE_GMS = 9001;
     // код разрешения
@@ -35,6 +37,8 @@ public class AppСonstants {
     public static final String TAG = "OpenCameraSource";
     public static final int DUMMY_TEXTURE_NAME = 100;
     public static final float ASPECT_RATIO_TOLERANCE = 0.01f;
+
+    public static final String LOCAL_DATABASE_NAME = "data.db";
 
     //базовый url, чтобы получать данные с сервера
     public static final String BASE_URL = "http://195.19.44.146:89/";
@@ -80,6 +84,9 @@ public class AppСonstants {
     public static final String TABLE_TESTS = "Tests";
     public static final String TABLE_NOTES = "Notes";
     public static final String TABLE_FILES_TO_QUESTIONS = "files_to_questions";
+    public static final String TABLE_PUPIL_GROUPS = "pupil_groups";
+    public static final String TABLE_MATES_LIST = "mates_list";
+    public static final String TABLE_TESTS_RESULTS = "tests_results";
     //название колонок ////////////////////////////////////////////////////
     public static final String TABLE_ID = "_id";
     public static final String TABLE_NAME = "name";
@@ -113,6 +120,8 @@ public class AppСonstants {
     public static final String TABLE_TEST_ID = "test_id";
     public static final String TABLE_QUESTION_NUM = "question_num";
     public static final String TABLE_FILE_URL = "file_url";
+    public static final String TABLE_STATISTIC = "statistics";
+    public static final String TABLE_PROFILE = "profile";
     ///////////////////////////////////////////////////////////////////////////////////
     //id группы, в которой находится пользователь
     public static String USER_CURR_GROUP_ID = "USER_CURR_GROUP_ID";
@@ -157,5 +166,10 @@ public class AppСonstants {
     public static final String TEST_NAME_FIELD = "test_name";
     public static final String DIFFICULTIES_FIELD = "difficultiesCount";
     public static final String FILE_URL_FIELD = "file_url";
+    public static final String TEST_TIME_FIELD = "test_time";
+    public static final String COUNT_TESTS_FIELD = "count_tests";
+    public static final String SCORE_FIELD = "score";
+
+    public static AppDatabase database;
 
 }

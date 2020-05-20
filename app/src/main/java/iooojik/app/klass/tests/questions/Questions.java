@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -42,12 +41,14 @@ import iooojik.app.klass.R;
 import iooojik.app.klass.api.Api;
 import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
+import iooojik.app.klass.room_models.statistic.StatisticEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static iooojik.app.klass.AppСonstants.database;
 import static iooojik.app.klass.AppСonstants.testDivider;
 
 
@@ -66,7 +67,9 @@ public class Questions extends Fragment implements View.OnClickListener{
     private int totalScore = 0;
     private Api api;
     private SharedPreferences preferences;
+    private final Handler chronoTimer = new Handler();
     private final Handler chrono = new Handler();
+    private int passedSeconds = 0;
     private boolean running = true;
     private int seconds;
     private String testName = "";
@@ -381,11 +384,31 @@ public class Questions extends Fragment implements View.OnClickListener{
                     Log.e("ADD ACHIEVEMENT", String.valueOf(t));
                 }
         });
+        addStatistics();
+    }
 
+    private void addStatistics() {
+        StatisticEntity statisticEntity = new StatisticEntity();
+        statisticEntity.setScore(Math.round ((Float.valueOf(userScore) / Float.valueOf(totalScore)) * 100.0f));
+        statisticEntity.setTest_time(passedSeconds);
+        statisticEntity.setCount_tests(questionObjects.size());
+        database.statisticDao().insert(statisticEntity);
+    }
+
+    private void setChrono(){
+        chrono.post(new Runnable() {
+            @Override
+            public void run() {
+                if (running && context == getContext())
+                    passedSeconds++;
+                chrono.postDelayed(this, 1000);
+            }
+        });
     }
 
     @SuppressLint("DefaultLocale")
     private void setTimer(){
+        setChrono();
         userCursor =  mDb.rawQuery("Select * from " + AppСonstants.TABLE_TESTS + " WHERE _id=?",
                 new String[]{String.valueOf(getTestID())});
         userCursor.moveToFirst();
@@ -395,7 +418,7 @@ public class Questions extends Fragment implements View.OnClickListener{
         running = true;
         seconds = time * 60;
 
-        chrono.post(new Runnable() {
+        chronoTimer.post(new Runnable() {
             @Override
             public void run() {
                 if(running && seconds != 0 && context == getContext()) {
@@ -404,7 +427,7 @@ public class Questions extends Fragment implements View.OnClickListener{
                     String time = String.format("%02d:%02d", minutes, secon);
                     time_process.setText(time);
                     seconds--;
-                    chrono.postDelayed(this, 1000);
+                    chronoTimer.postDelayed(this, 1000);
                 } else {
                     running = false;
                     if (context == getContext() && !isTestEnd) {

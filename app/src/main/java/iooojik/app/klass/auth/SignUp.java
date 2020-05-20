@@ -32,12 +32,18 @@ import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
 import iooojik.app.klass.models.authorization.SignUpResult;
 import iooojik.app.klass.models.getToken.DataToken;
+import iooojik.app.klass.models.profileData.Group;
+import iooojik.app.klass.models.profileData.ProfileData;
+import iooojik.app.klass.models.profileData.User;
 import iooojik.app.klass.models.userData.UserData;
+import iooojik.app.klass.room_models.profile.ProfileEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static iooojik.app.klass.AppСonstants.database;
 
 
 public class SignUp extends Fragment implements View.OnClickListener{
@@ -192,7 +198,6 @@ public class SignUp extends Fragment implements View.OnClickListener{
                             if (response.code() == 200) {
                                 SignUpResult dataAuth = response.body();
                                 preferences.edit().putString(AppСonstants.USER_LOGIN, login);
-
                                 if (dataAuth.getStatus()) signIN(uEmail, uPassword);
                             } else {
                                 Log.e("Sign Up", String.valueOf(response.raw()));
@@ -237,16 +242,32 @@ public class SignUp extends Fragment implements View.OnClickListener{
                     preferences.edit().putString(AppСonstants.USER_ID, result.getId()).apply();
                     preferences.edit().putString(AppСonstants.USER_PASSWORD, uPassword).apply();
                     preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
-                    //получение достижений пользователя
-                    getUserAchievements(uEmail);
 
-                    DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
-                    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                    navController.navigate(R.id.nav_profile);
-                    Log.i("Sign In", String.valueOf(dataAuth.getToken()));
+                    synchronized (this){
+                        //профиль пользователя
+                        Thread thread1 = new Thread(SignUp.this::profileUser);
+                        //получение достижений и монеток пользователя
+                        Thread thread2 = new Thread(SignUp.this::getUserAchievements);
+                        thread1.start();
+                        try {
+                            thread1.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        thread2.start();
+                        try {
+                            thread2.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        //показываем шторку и перемещаемся на главный фрагмент
+                        DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+                        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        navController.navigate(R.id.nav_profile);
+                        MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+                        materialToolbar.setVisibility(View.VISIBLE);
+                    }
 
-                    MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
-                    materialToolbar.setVisibility(View.VISIBLE);
 
                 }
                 else {
@@ -264,9 +285,37 @@ public class SignUp extends Fragment implements View.OnClickListener{
 
     }
 
-    private void getUserAchievements(String userEmail) {
+    private void profileUser(){
+        Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                Integer.parseInt(preferences.getString(AppСonstants.USER_ID, "")));
+        call.enqueue(new Callback<ServerResponse<ProfileData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
+                if (response.code() == 200){
+                    ProfileData profileData = response.body().getData();
+                    User user = profileData.getUser();
+                    Group group = user.getGroup().get(user.getGroup().size() - 1);
+
+                    ProfileEntity newUser = new ProfileEntity();
+                    newUser.setAvatar(user.getAvatar());
+                    newUser.setFull_name(user.getFullName());
+                    newUser.setProfile_type(group.getName().toLowerCase());
+
+                    database.profileDao().insert(newUser);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<ProfileData>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void getUserAchievements() {
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
-                "user_email", userEmail);
+                "user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
         call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
             @Override
             public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {

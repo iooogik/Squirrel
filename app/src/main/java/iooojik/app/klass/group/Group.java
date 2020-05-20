@@ -60,6 +60,7 @@ import iooojik.app.klass.models.matesList.DataUsersToGroup;
 import iooojik.app.klass.models.matesList.Mate;
 import iooojik.app.klass.models.paramUsers.ParamData;
 import iooojik.app.klass.models.paramUsers.UserParams;
+import iooojik.app.klass.room_models.mates.MateEntity;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -69,6 +70,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static iooojik.app.klass.AppСonstants.database;
+
 
 public class Group extends Fragment{
 
@@ -76,16 +79,14 @@ public class Group extends Fragment{
 
     private View view;
     //id группы
-    private int groupID = -1;
+    private int groupID;
     //название группы
     private String groupName;
-    //уитель
+    //учитель
     private String groupAuthor;
     private String groupAuthorName;
     public static int id = -1;
     private Context context;
-    //адаптер
-    private GroupMatesAdapter groupmatesAdapter;
     //fab
     private FloatingActionButton fab;
     //апи
@@ -97,6 +98,7 @@ public class Group extends Fragment{
     private Fragment fragment;
     private BottomSheetDialog bottomSheetDialog;
     private BottomSheetDialog fileBottomSheetDialog;
+    private int matesCount = 0;
 
 
 
@@ -107,16 +109,23 @@ public class Group extends Fragment{
         //настройки
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
         //потоки получения данных
-        new Thread(this::getGroupMates).start();
         new Thread(this::getGroupInfo).start();
+
+        Thread threadSetMates = new Thread(this::setMates);
+        Thread threadGetMates = new Thread(this::getGroupMates);
+        threadSetMates.start();
+        try {
+            threadSetMates.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadGetMates.start();
+
+
         //контекст
         context = getContext();
         //текущий фрагмент
         fragment = this;
-        //адаптер с одногруппникми и информацией о прохождении теста
-        RecyclerView groupmates = view.findViewById(R.id.groupmates);
-        groupmates.setLayoutManager(new LinearLayoutManager(context));
-        groupmates.setAdapter(groupmatesAdapter);
 
         fab = getActivity().findViewById(R.id.fab);
         fab.show();
@@ -135,6 +144,20 @@ public class Group extends Fragment{
         api = retrofit.create(Api.class);
     }
 
+    private void setMates(){
+        List<MateEntity> mateEntities = database.matesDao().getAllByGroupId(Integer.valueOf(id));
+        matesCount = mateEntities.size();
+        if (matesCount > 0) {
+            getActivity().runOnUiThread(() -> {
+                GroupMatesAdapter groupmatesAdapter = new GroupMatesAdapter(context, mateEntities, fragment, true);
+                RecyclerView recyclerView = view.findViewById(R.id.groupmates);
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                recyclerView.setAdapter(groupmatesAdapter);
+            });
+        }
+
+    }
+
     private void getGroupMates(){
 
         //получаем список учеников(их полное имя и email) из бд
@@ -149,32 +172,40 @@ public class Group extends Fragment{
                     ServerResponse<DataUsersToGroup> result = response.body();
                     //список одногруппников
                     mates = result.getData().getMates();
+                    boolean anyChanges = false;
+                    if (mates.size() != matesCount) {
+                        for (Mate mate : mates) {
+                            MateEntity entity = new MateEntity();
+                            entity.setMate_name(mate.getFullName());
+                            entity.setMate_email(mate.getEmail());
+                            entity.setMate_avatar(mate.getAvatar());
+                            entity.setMate_id(Integer.valueOf(mate.getId()));
+                            entity.setMate_group_id(Integer.valueOf(id));
+                            entity.setTest_result(-1);
+                            database.matesDao().insert(entity);
+                        }
+                        anyChanges = true;
+                    }  else if (!anyChanges){
+                        for (Mate mate : mates){
+                            MateEntity entity = database.matesDao().getById(Integer.valueOf(mate.getId()));
+                            if (
+                                    !(entity.getMate_avatar().equals(mate.getAvatar())
+                                            || entity.getMate_name().equals(mate.getFullName())
+                                            || entity.getMate_email().equals(mate.getEmail()))
 
-                    Call<ServerResponse<DataTestResult>> call2 = api.getTestResults(AppСonstants.X_API_KEY,
-                            preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
-                            AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
-
-                    call2.enqueue(new Callback<ServerResponse<DataTestResult>>() {
-                        @Override
-                        public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
-                            if (response.code() == 200){
-                                //ставим адаптер
-                                DataTestResult result = response.body().getData();
-                                List<TestsResult> testsResults = result.getTestsResult();
-                                groupmatesAdapter = new GroupMatesAdapter(context, mates, testsResults, fragment, true);
-                                RecyclerView recyclerView = view.findViewById(R.id.groupmates);
-                                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                                recyclerView.setAdapter(groupmatesAdapter);
-                                //инициализируем нижнее меню
-                                enableBottomSheet(testsResults);
+                            ) {
+                                entity.setMate_name(mate.getFullName());
+                                entity.setMate_email(mate.getEmail());
+                                entity.setMate_avatar(mate.getAvatar());
+                                database.matesDao().update(entity);
+                                anyChanges = true;
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<ServerResponse<DataTestResult>> call, Throwable t) {
+                    if (anyChanges) new Thread(Group.this::setMates).start();
 
-                        }
-                    });
+                    getActivity().runOnUiThread(() -> enableBottomSheet());
 
 
                 } else {
@@ -321,91 +352,109 @@ public class Group extends Fragment{
     }
 
     @SuppressLint("InflateParams")
-    private void enableBottomSheet(final List<TestsResult> results) {
-
-        List<TestsResult> testsResults = new ArrayList<>(results);
+    private void enableBottomSheet() {
 
         bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheet = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_group_editor, null);
 
-        Call<ServerResponse<DataGroup>> call = api.getGroupsById(AppСonstants.X_API_KEY, "_id", String.valueOf(id));
-        call.enqueue(new Callback<ServerResponse<DataGroup>>() {
-            @SuppressLint("DefaultLocale")
+        Call<ServerResponse<DataTestResult>> call2 = api.getTestResults(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                AppСonstants.GROUP_ID_FIELD, String.valueOf(id));
+
+        call2.enqueue(new Callback<ServerResponse<DataTestResult>>() {
             @Override
-            public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
-                if (response.code()==200) {
-                    if (response.body().getData() != null) {
+            public void onResponse(Call<ServerResponse<DataTestResult>> call, Response<ServerResponse<DataTestResult>> response) {
+                if (response.code() == 200){
+                    //ставим адаптер
+                    DataTestResult result = response.body().getData();
+                    List<TestsResult> testsResults = result.getTestsResult();
+                    //инициализируем нижнее меню
+                    Call<ServerResponse<DataGroup>> call2 = api.getGroupsById(AppСonstants.X_API_KEY, "_id", String.valueOf(id));
+                    call2.enqueue(new Callback<ServerResponse<DataGroup>>() {
+                        @SuppressLint("DefaultLocale")
+                        @Override
+                        public void onResponse(Call<ServerResponse<DataGroup>> call, Response<ServerResponse<DataGroup>> response) {
+                            if (response.code()==200) {
+                                if (response.body().getData() != null) {
 
 
-                        PieChart pieChart = bottomSheet.findViewById(R.id.chart);
-                        if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
+                                    PieChart pieChart = bottomSheet.findViewById(R.id.chart);
+                                    if (!response.body().getData().getGroupInfos().get(0).getTest().equals("null")) {
 
-                            if (testsResults.size() > 0) {
-                                int countDiff = 0;
-                                for (TestsResult result : testsResults) {
-                                    countDiff += Integer.valueOf(result.getDifficultiesCount());
+                                        if (testsResults.size() > 0) {
+                                            int countDiff = 0;
+                                            for (TestsResult result : testsResults) {
+                                                countDiff += Integer.valueOf(result.getDifficultiesCount());
+                                            }
+                                            List<GroupInfo> dataGroups = response.body().getData().getGroupInfos();
+                                            //показываем диаграмму, показывающую процент заданий с затруднениями
+                                            List<Float> score = new ArrayList<>();
+
+                                            float rightScore = Float.valueOf(countDiff);
+                                            float wrongScore =
+                                                    Float.valueOf(Integer.valueOf(dataGroups.get(0).getCount_questions()) * testsResults.size());
+
+                                            TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
+                                            textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore / wrongScore * 100)));
+
+                                            score.add((rightScore / wrongScore) * 100);
+                                            score.add(100 - (rightScore / wrongScore) * 100);
+
+                                            //преобразуем в понятные для диаграммы данные
+                                            List<PieEntry> entries = new ArrayList<>();
+                                            for (int i = 0; i < score.size(); i++)
+                                                entries.add(new PieEntry(score.get(i), i));
+                                            PieDataSet pieDataSet = new PieDataSet(entries, "");
+                                            //устанавливаем цвета
+                                            List<Integer> colors = new ArrayList<>();
+                                            int green = Color.parseColor("#56CF54");
+                                            int red = Color.parseColor("#FF5252");
+                                            colors.add(red);
+                                            colors.add(green);
+
+                                            pieDataSet.setColors(colors);
+
+                                            PieData pieData = new PieData(pieDataSet);
+                                            //анимация
+                                            pieChart.animateY(500);
+                                            //убираем надписи
+                                            Description description = new Description();
+                                            description.setText("");
+                                            pieChart.setDescription(description);
+
+                                            pieChart.getLegend().setFormSize(0f);
+                                            pieData.setValueTextSize(0f);
+
+                                            pieChart.setTransparentCircleRadius(0);
+
+                                            pieChart.setHoleRadius(0);
+                                            pieChart.setData(pieData);
+                                        }
+                                        else {
+                                            pieChart.setVisibility(View.GONE);
+                                            TextView textView = bottomSheet.findViewById(R.id.dif_percent);
+                                            textView.setVisibility(View.GONE);
+                                        }
+
+                                    } else {
+                                        pieChart.setVisibility(View.GONE);
+                                        TextView textView = bottomSheet.findViewById(R.id.dif_percent);
+                                        textView.setVisibility(View.GONE);
+                                    }
                                 }
-                                List<GroupInfo> dataGroups = response.body().getData().getGroupInfos();
-                                //показываем диаграмму, показывающую процент заданий с затруднениями
-                                List<Float> score = new ArrayList<>();
-
-                                float rightScore = Float.valueOf(countDiff);
-                                float wrongScore =
-                                        Float.valueOf(Integer.valueOf(dataGroups.get(0).getCount_questions()) * testsResults.size());
-
-                                TextView textView = bottomSheetDialog.findViewById(R.id.dif_percent);
-                                textView.setText(String.format("%s %d%%", textView.getText(), Math.round(rightScore / wrongScore * 100)));
-
-                                score.add((rightScore / wrongScore) * 100);
-                                score.add(100 - (rightScore / wrongScore) * 100);
-
-                                //преобразуем в понятные для диаграммы данные
-                                List<PieEntry> entries = new ArrayList<>();
-                                for (int i = 0; i < score.size(); i++)
-                                    entries.add(new PieEntry(score.get(i), i));
-                                PieDataSet pieDataSet = new PieDataSet(entries, "");
-                                //устанавливаем цвета
-                                List<Integer> colors = new ArrayList<>();
-                                int green = Color.parseColor("#56CF54");
-                                int red = Color.parseColor("#FF5252");
-                                colors.add(red);
-                                colors.add(green);
-
-                                pieDataSet.setColors(colors);
-
-                                PieData pieData = new PieData(pieDataSet);
-                                //анимация
-                                pieChart.animateY(500);
-                                //убираем надписи
-                                Description description = new Description();
-                                description.setText("");
-                                pieChart.setDescription(description);
-
-                                pieChart.getLegend().setFormSize(0f);
-                                pieData.setValueTextSize(0f);
-
-                                pieChart.setTransparentCircleRadius(0);
-
-                                pieChart.setHoleRadius(0);
-                                pieChart.setData(pieData);
                             }
-                            else {
-                                pieChart.setVisibility(View.GONE);
-                                TextView textView = bottomSheet.findViewById(R.id.dif_percent);
-                                textView.setVisibility(View.GONE);
-                            }
-
-                        } else {
-                            pieChart.setVisibility(View.GONE);
-                            TextView textView = bottomSheet.findViewById(R.id.dif_percent);
-                            textView.setVisibility(View.GONE);
                         }
-                    }
+
+                        @Override
+                        public void onFailure(Call<ServerResponse<DataGroup>> call, Throwable t) {
+
+                        }
+                    });
                 }
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<DataGroup>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<DataTestResult>> call, Throwable t) {
 
             }
         });

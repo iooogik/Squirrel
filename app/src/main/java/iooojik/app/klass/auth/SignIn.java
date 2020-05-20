@@ -1,15 +1,18 @@
 package iooojik.app.klass.auth;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -31,12 +34,18 @@ import iooojik.app.klass.models.PostResult;
 import iooojik.app.klass.models.ServerResponse;
 import iooojik.app.klass.models.achievements.AchievementsData;
 import iooojik.app.klass.models.achievements.AchievementsToUser;
+import iooojik.app.klass.models.profileData.Group;
+import iooojik.app.klass.models.profileData.ProfileData;
+import iooojik.app.klass.models.profileData.User;
 import iooojik.app.klass.models.userData.UserData;
+import iooojik.app.klass.room_models.profile.ProfileEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static iooojik.app.klass.AppСonstants.database;
 
 //авторизация
 public class SignIn extends Fragment implements View.OnClickListener {
@@ -50,6 +59,8 @@ public class SignIn extends Fragment implements View.OnClickListener {
     private NavController navController;
     //апи
     private Api api;
+    //окно загрузки
+    ProgressBar progressBar;
 
 
     @Override
@@ -61,10 +72,9 @@ public class SignIn extends Fragment implements View.OnClickListener {
         navController = NavHostFragment.findNavController(this);
         //инициализация настроке
         preferences = getActivity().getSharedPreferences(AppСonstants.APP_PREFERENCES, Context.MODE_PRIVATE);
-        //ещё одна проверка на авторизацию
-        String token = preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, "");
-        String email = preferences.getString(AppСonstants.USER_EMAIL, "");
-        //if (!(token.isEmpty()) && !email.isEmpty()) navController.navigate(R.id.nav_profile);
+
+        progressBar = view.findViewById(R.id.progressBar);
+
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {@Override public void handleOnBackPressed() {}};
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
@@ -87,6 +97,7 @@ public class SignIn extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login:
+                progressBar.setVisibility(View.VISIBLE);
                 /*
                  * Обработка нажатия кнопки "Войти"
                  * 1. проверяем, не пустые ли поля с email и password
@@ -131,9 +142,31 @@ public class SignIn extends Fragment implements View.OnClickListener {
                                 preferences.edit().putString(AppСonstants.USER_LOGIN, result.getUsername()).apply();
                                 preferences.edit().putString(AppСonstants.USER_EMAIL, result.getEmail()).apply();
 
+                                synchronized (this){
+                                    //профиль пользователя
+                                    Thread thread1 = new Thread(SignIn.this::profileUser);
+                                    //получение достижений и монеток пользователя
+                                    Thread thread2 = new Thread(SignIn.this::getUserAchievements);
+                                    thread1.start();
+                                    try {
+                                        thread1.join();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    thread2.start();
+                                    try {
+                                        thread2.join();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    //показываем шторку и перемещаемся на главный фрагмент
+                                    DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+                                    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                                    navController.navigate(R.id.nav_profile);
+                                    MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
+                                    materialToolbar.setVisibility(View.VISIBLE);
+                                }
 
-                                //получение достижений и монеток пользователя
-                                getUserAchievements(uEmail);
 
 
                             }
@@ -162,10 +195,38 @@ public class SignIn extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void getUserAchievements(String userEmail) {
+    private void profileUser(){
+        Call<ServerResponse<ProfileData>> call = api.getUserDetail(AppСonstants.X_API_KEY,
+                preferences.getString(AppСonstants.AUTH_SAVED_TOKEN, ""),
+                Integer.parseInt(preferences.getString(AppСonstants.USER_ID, "")));
+        call.enqueue(new Callback<ServerResponse<ProfileData>>() {
+            @Override
+            public void onResponse(Call<ServerResponse<ProfileData>> call, Response<ServerResponse<ProfileData>> response) {
+                if (response.code() == 200){
+                    ProfileData profileData = response.body().getData();
+                    User user = profileData.getUser();
+                    Group group = user.getGroup().get(user.getGroup().size() - 1);
+
+                    ProfileEntity newUser = new ProfileEntity();
+                    newUser.setAvatar(user.getAvatar());
+                    newUser.setFull_name(user.getFullName());
+                    newUser.setProfile_type(group.getName().toLowerCase());
+
+                    database.profileDao().insert(newUser);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<ProfileData>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void getUserAchievements() {
         //запрос на получение пользовательских "достижений"
         Call<ServerResponse<AchievementsData>> call = api.getAchievements(AppСonstants.X_API_KEY,
-                "user_email", userEmail);
+                "user_email", preferences.getString(AppСonstants.USER_EMAIL, ""));
         call.enqueue(new Callback<ServerResponse<AchievementsData>>() {
             @Override
             public void onResponse(Call<ServerResponse<AchievementsData>> call, Response<ServerResponse<AchievementsData>> response) {
@@ -180,13 +241,6 @@ public class SignIn extends Fragment implements View.OnClickListener {
                     } else {
                         addFirstAchievement();
                     }
-                    //показываем шторку и перемещаемся на главный фрагмент
-                    DrawerLayout mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
-                    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                    navController.navigate(R.id.nav_profile);
-                    MaterialToolbar materialToolbar = getActivity().findViewById(R.id.bar);
-                    materialToolbar.setVisibility(View.VISIBLE);
-
                 }
                 else Log.e("GET ACHIEVEMENTS", String.valueOf(response.raw()));
             }
@@ -196,6 +250,8 @@ public class SignIn extends Fragment implements View.OnClickListener {
                 Log.e("GET ACHIEVEMENTS", String.valueOf(t));
             }
         });
+
+
     }
 
     private void addFirstAchievement() {
@@ -220,7 +276,5 @@ public class SignIn extends Fragment implements View.OnClickListener {
             }
         });
     }
-
-
 
 }

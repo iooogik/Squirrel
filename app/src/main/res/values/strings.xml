@@ -289,6 +289,9 @@ If you have any questions or suggestions about my Terms and Conditions, do not h
     <string name="addedFile">Прикреплено</string>
     <string name="setNotif">Установить уведомление</string>
     <string name="save">Сохранить</string>
+    <string name="statistics">Статистика</string>
+    <string name="averageTime">Среднее время прохождения тестов:</string>
+    <string name="averageScore">Средний балл:</string>
 
 
 </resources>
